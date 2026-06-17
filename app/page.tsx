@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { PricingCard } from "@/components/PricingCard";
 import { ToolCategorySection } from "@/components/ToolCategorySection";
-import { allToolLinks, toolCategories } from "@/lib/tool-configs";
+import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 
 export default function HomePage() {
   return (
@@ -71,8 +71,8 @@ export default function HomePage() {
           <p className="max-w-md text-sm leading-6 text-muted">Tập trung vào các việc giáo viên thường cần chuẩn bị trước giờ lên lớp hoặc cuối kỳ.</p>
         </div>
         <div className="mt-8 space-y-8">
-          {toolCategories.map((category) => (
-            <ToolCategorySection key={category} title={category} tools={allToolLinks.filter((tool) => tool.category === category)} />
+          {categoryOrder.slice(0, 3).map((category) => (
+            <ToolCategorySection key={category} title={categoryLabels[category]} tools={toolRegistry.filter((tool) => tool.category === category).slice(0, 6)} />
           ))}
         </div>
       </section>

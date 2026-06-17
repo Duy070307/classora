@@ -18,7 +18,8 @@ export type ToolType =
   | "mindmap-outline"
   | "homeroom-plan"
   | "parent-meeting-minutes"
-  | "latex-converter";
+  | "latex-converter"
+  | "bulk-student-comments";
 
 export type GeneratedDocument = {
   id: string;

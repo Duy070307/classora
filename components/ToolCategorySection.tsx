@@ -4,6 +4,7 @@ export type ToolLink = {
   title: string;
   description: string;
   href: string;
+  badge?: string;
 };
 
 export function ToolCategorySection({ title, tools }: { title: string; tools: ToolLink[] }) {

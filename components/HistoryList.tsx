@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { CalendarDays, Eye, FileText, Trash2 } from "lucide-react";
+import { CopyButton } from "@/components/CopyButton";
+import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
 import type { GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory } from "@/lib/history";
@@ -26,13 +28,16 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "mindmap-outline": "Sơ đồ tư duy",
   "homeroom-plan": "Kế hoạch chủ nhiệm",
   "parent-meeting-minutes": "Biên bản họp phụ huynh",
-  "latex-converter": "Công thức LaTeX"
+  "latex-converter": "Công thức LaTeX",
+  "bulk-student-comments": "Nhận xét hàng loạt"
 };
 
 export function HistoryList() {
   const [items, setItems] = useState<GeneratedDocument[]>([]);
   const [selected, setSelected] = useState<GeneratedDocument | null>(null);
   const [message, setMessage] = useState("");
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("Tất cả");
 
   function refresh() {
     setItems(getHistory());
@@ -50,6 +55,21 @@ export function HistoryList() {
     setTimeout(() => setMessage(""), 2200);
   }
 
+  function clearAll() {
+    if (!window.confirm("Bạn có chắc muốn xóa toàn bộ lịch sử không?")) return;
+    localStorage.removeItem("classora_history");
+    setItems([]);
+    setSelected(null);
+    setMessage("Đã xóa toàn bộ lịch sử.");
+  }
+
+  const filteredItems = items.filter((item) => {
+    const normalized = query.trim().toLowerCase();
+    const matchQuery = !normalized || item.title.toLowerCase().includes(normalized) || item.content.toLowerCase().includes(normalized);
+    const matchType = typeFilter === "Tất cả" || labels[item.type] === typeFilter;
+    return matchQuery && matchType;
+  });
+
   if (items.length === 0) {
     return (
       <div className="empty-state">
@@ -63,9 +83,19 @@ export function HistoryList() {
   return (
     <div className="space-y-4">
       {message ? <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{message}</div> : null}
+      <div className="card p-4">
+        <div className="grid gap-3 md:grid-cols-[1fr_240px_auto]">
+          <input className="form-field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tiêu đề hoặc nội dung..." />
+          <select className="form-field" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+            <option>Tất cả</option>
+            {Object.values(labels).map((label) => <option key={label}>{label}</option>)}
+          </select>
+          <button type="button" onClick={clearAll} className="btn-secondary text-red-600">Xóa tất cả</button>
+        </div>
+      </div>
       <div className="grid gap-4 lg:grid-cols-[0.9fr_1.2fr]">
         <div className="space-y-3">
-          {items.map((item) => (
+          {filteredItems.length ? filteredItems.map((item) => (
             <article key={item.id} className="card p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -86,11 +116,17 @@ export function HistoryList() {
                 Xem
               </button>
             </article>
-          ))}
+          )) : <div className="empty-state">Không tìm thấy tài liệu phù hợp.</div>}
         </div>
         <div className="min-h-80">
           {selected ? (
-            <OutputPreview document={selected} />
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                <CopyButton text={selected.content} />
+                <ExportDocxButton document={selected} />
+              </div>
+              <OutputPreview document={selected} />
+            </div>
           ) : (
             <div className="empty-state h-full">
               <Eye className="mx-auto mb-3 text-slate-400" size={34} />

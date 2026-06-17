@@ -1,6 +1,7 @@
 "use client";
 
 import { AlignmentType, Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
+import { getDocumentSettings } from "@/lib/document-settings";
 import type { GeneratedDocument } from "@/lib/types";
 
 function safeFileName(value: string) {
@@ -15,31 +16,50 @@ function safeFileName(value: string) {
 }
 
 export async function exportDocx(document: GeneratedDocument) {
-  const headingPattern = /^(HEADER|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT HỌC SINH|I\.|II\.|III\.|IV\.|V\.|VI\.|PHẦN|ĐÁP ÁN|THANG ĐIỂM|MA TRẬN|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|LƯU Ý)/i;
+  const settings = getDocumentSettings();
+  const fontSize = Number(settings.fontSize) * 2;
+  const headingPattern = /^(#{1,3}\s+|HEADER|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT|I\.|II\.|III\.|IV\.|V\.|VI\.|PHẦN|ĐÁP ÁN|THANG ĐIỂM|MA TRẬN|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|LƯU Ý|KẾ HOẠCH|BIÊN BẢN|TRỘN MÃ ĐỀ|DÀN Ý|TÓM TẮT|SƠ ĐỒ)/i;
   const paragraphs = document.content.split("\n").map((line) => {
-    const text = line.trim();
+    const text = line.trim().replace(/^#{1,3}\s+/, "");
     if (!text) return new Paragraph({ text: "" });
     if (headingPattern.test(text)) {
       return new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 220, after: 100 },
-        children: [new TextRun({ text, bold: true })]
+        children: [new TextRun({ text, bold: true, font: settings.fontFamily, size: fontSize + 2 })]
+      });
+    }
+    if (/^[-*•]\s+/.test(text)) {
+      return new Paragraph({
+        spacing: { after: 70 },
+        children: [new TextRun({ text: `• ${text.replace(/^[-*•]\s+/, "")}`, font: settings.fontFamily, size: fontSize })]
       });
     }
     return new Paragraph({
       spacing: { after: 90 },
-      children: [new TextRun({ text })]
+      children: [new TextRun({ text, font: settings.fontFamily, size: fontSize })]
     });
   });
+  const headerLines = [
+    settings.schoolName,
+    settings.department ? `Tổ/Bộ môn: ${settings.department}` : "",
+    settings.teacherName ? `Giáo viên: ${settings.teacherName}` : "",
+    settings.schoolYear ? `Năm học: ${settings.schoolYear}` : ""
+  ].filter(Boolean);
 
   const doc = new Document({
     sections: [
       {
         children: [
+          ...headerLines.map((line) => new Paragraph({
+            spacing: { after: 60 },
+            children: [new TextRun({ text: line, font: settings.fontFamily, size: fontSize })]
+          })),
+          ...(headerLines.length ? [new Paragraph({ text: "" })] : []),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 240 },
-            children: [new TextRun({ text: document.title, bold: true, size: 34 })]
+            children: [new TextRun({ text: document.title, bold: true, size: fontSize + 8, font: settings.fontFamily })]
           }),
           ...paragraphs
         ]

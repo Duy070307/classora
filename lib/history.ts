@@ -37,7 +37,8 @@ export function getHistory(): GeneratedDocument[] {
           "mindmap-outline",
           "homeroom-plan",
           "parent-meeting-minutes",
-          "latex-converter"
+          "latex-converter",
+          "bulk-student-comments"
         ].includes(candidate.type ?? "")
       );
     });

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Home, MessageCircle, ScrollText } from "lucide-react";
+import { Home, MessageCircle, ScrollText, Settings, Wrench } from "lucide-react";
 import { DemoNotice } from "@/components/DemoNotice";
-import { allToolLinks, toolCategories } from "@/lib/tool-configs";
+import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 
 export function Sidebar() {
   return (
@@ -25,17 +25,25 @@ export function Sidebar() {
             <ScrollText size={18} />
             Lịch sử
           </Link>
+          <Link href="/tools" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <Wrench size={18} />
+            Tất cả công cụ
+          </Link>
+          <Link href="/settings" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <Settings size={18} />
+            Cài đặt
+          </Link>
           <Link href="/feedback" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
             <MessageCircle size={18} />
             Góp ý
           </Link>
         </div>
         <div className="mt-5 space-y-5">
-          {toolCategories.map((category) => (
+          {categoryOrder.map((category) => (
             <div key={category}>
-              <p className="px-3 text-xs font-bold uppercase tracking-wide text-slate-400">{category}</p>
+              <p className="px-3 text-xs font-bold uppercase tracking-wide text-slate-400">{categoryLabels[category]}</p>
               <div className="mt-2 space-y-1">
-                {allToolLinks.filter((tool) => tool.category === category).map((tool) => (
+                {toolRegistry.filter((tool) => tool.category === category).map((tool) => (
                   <Link key={tool.href} href={tool.href} className="block rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
                     {tool.title}
                   </Link>

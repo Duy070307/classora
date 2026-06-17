@@ -10,8 +10,10 @@ export function Navbar() {
         </Link>
         <nav className="flex items-center gap-4 text-sm font-medium text-muted">
           <Link href="/dashboard" className="hover:text-brand">Dashboard</Link>
+          <Link href="/tools" className="hover:text-brand">Công cụ</Link>
           <Link href="/history" className="hover:text-brand">Lịch sử</Link>
           <Link href="/templates" className="hover:text-brand">Mẫu cá nhân</Link>
+          <Link href="/settings" className="hover:text-brand">Cài đặt</Link>
           <Link href="/feedback" className="hover:text-brand">Góp ý</Link>
           <Link href="/dashboard" className="btn-primary">Bắt đầu</Link>
         </nav>

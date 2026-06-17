@@ -43,6 +43,9 @@ npm run build
 - `/`
 - `/dashboard`
 - `/history`
+- `/tools`
+- `/settings`
+- `/templates`
 - `/tools/exam-generator`
 - `/tools/worksheet-generator`
 - `/tools/student-comments`
@@ -64,7 +67,7 @@ npm run build
 - `/tools/parent-meeting-minutes`
 - `/tools/latex-converter`
 - `/tools/latex-preview`
-- `/templates`
+- `/tools/bulk-student-comments`
 
 ## Current Limitations
 

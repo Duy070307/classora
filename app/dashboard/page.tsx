@@ -10,7 +10,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { UsageBadge } from "@/components/UsageBadge";
 import { getHistory } from "@/lib/history";
 import { getRecentTools, type RecentTool } from "@/lib/recent-tools";
-import { allToolLinks, toolCategories } from "@/lib/tool-configs";
+import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 import type { GeneratedDocument } from "@/lib/types";
 
 const highlightedHrefs = [
@@ -36,14 +36,14 @@ export default function DashboardPage() {
 
   const filteredTools = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return allToolLinks.filter((tool) => {
-      const matchCategory = category === "Tất cả" || tool.category === category;
+    return toolRegistry.filter((tool) => {
+      const matchCategory = category === "Tất cả" || categoryLabels[tool.category] === category;
       const matchQuery = !normalizedQuery || tool.title.toLowerCase().includes(normalizedQuery) || tool.description.toLowerCase().includes(normalizedQuery);
       return matchCategory && matchQuery;
     });
   }, [category, query]);
 
-  const highlightedTools = allToolLinks.filter((tool) => highlightedHrefs.includes(tool.href));
+  const highlightedTools = toolRegistry.filter((tool) => highlightedHrefs.includes(tool.href));
 
   return (
     <div className="min-h-screen md:flex">
@@ -94,8 +94,8 @@ export default function DashboardPage() {
               </label>
               <select className="form-field" value={category} onChange={(event) => setCategory(event.target.value)}>
                 <option>Tất cả</option>
-                {toolCategories.map((item) => (
-                  <option key={item}>{item}</option>
+                {categoryOrder.map((item) => (
+                  <option key={item}>{categoryLabels[item]}</option>
                 ))}
               </select>
             </div>
@@ -113,10 +113,10 @@ export default function DashboardPage() {
         </section>
 
         <div className="space-y-8">
-          {toolCategories.map((item) => {
+          {categoryOrder.map((item) => {
             const tools = filteredTools.filter((tool) => tool.category === item);
             if (!tools.length) return null;
-            return <ToolCategorySection key={item} title={item} tools={tools} />;
+            return <ToolCategorySection key={item} title={categoryLabels[item]} tools={tools} />;
           })}
           {!filteredTools.length ? <div className="empty-state">Không tìm thấy công cụ phù hợp.</div> : null}
         </div>
