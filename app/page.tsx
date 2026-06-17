@@ -101,7 +101,7 @@ export default function HomePage() {
           <div>
             <div className="space-y-4 text-sm leading-7 text-slate-700 md:text-base">
               <p>
-                Classora được tạo ra bởi một sinh viên của TUM và HCMUT, với mong muốn giúp giáo viên tiết kiệm thời gian trong những công việc đơn giản nhưng lặp lại hằng ngày như soạn đề, tạo phiếu học tập, viết nhận xét học sinh và chuẩn bị tài liệu giảng dạy.
+                Classora được tạo ra bởi Trần Đức Duy, sinh viên của TUM và HCMUT, với mong muốn giúp giáo viên tiết kiệm thời gian trong những công việc đơn giản nhưng lặp lại hằng ngày như soạn đề, tạo phiếu học tập, viết nhận xét học sinh và chuẩn bị tài liệu giảng dạy.
               </p>
               <p>
                 Mục tiêu của Classora không phải là thay thế giáo viên, mà là giúp giáo viên có thêm thời gian cho những việc quan trọng hơn: giảng dạy, hỗ trợ học sinh và cải thiện chất lượng bài học.
