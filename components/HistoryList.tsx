@@ -9,7 +9,17 @@ import { deleteDocument, getHistory } from "@/lib/history";
 const labels: Record<GeneratedDocument["type"], string> = {
   exam: "Đề kiểm tra",
   worksheet: "Phiếu học tập",
-  "student-comment": "Nhận xét học sinh"
+  "student-comment": "Nhận xét học sinh",
+  "lesson-plan": "Giáo án",
+  matrix: "Ma trận đề",
+  "answer-key": "Đáp án và thang điểm",
+  rubric: "Rubric",
+  "parent-message": "Tin nhắn phụ huynh",
+  "question-bank": "Ngân hàng câu hỏi",
+  "question-variant": "Biến thể câu hỏi",
+  "exam-checker": "Kiểm tra lỗi đề",
+  activity: "Hoạt động lớp học",
+  "differentiated-exercises": "Bài tập phân hóa"
 };
 
 export function HistoryList() {

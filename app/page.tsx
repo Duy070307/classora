@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { PricingCard } from "@/components/PricingCard";
-import { ToolCard } from "@/components/ToolCard";
+import { ToolCategorySection } from "@/components/ToolCategorySection";
+import { allToolLinks, toolCategories } from "@/lib/tool-configs";
 
 export default function HomePage() {
   return (
@@ -69,10 +70,10 @@ export default function HomePage() {
           </div>
           <p className="max-w-md text-sm leading-6 text-muted">Tập trung vào các việc giáo viên thường cần chuẩn bị trước giờ lên lớp hoặc cuối kỳ.</p>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <ToolCard title="Tạo đề kiểm tra" description="Sinh đề, đáp án, thang điểm và ma trận đề đơn giản." href="/tools/exam-generator" />
-          <ToolCard title="Tạo phiếu học tập" description="Tạo mục tiêu, kiến thức cần nhớ, bài tập, chỗ trống và đáp án gợi ý." href="/tools/worksheet-generator" />
-          <ToolCard title="Tạo nhận xét học sinh" description="Viết nhận xét ngắn gọn, trang trọng hoặc thân thiện gửi phụ huynh." href="/tools/student-comments" />
+        <div className="mt-8 space-y-8">
+          {toolCategories.map((category) => (
+            <ToolCategorySection key={category} title={category} tools={allToolLinks.filter((tool) => tool.category === category)} />
+          ))}
         </div>
       </section>
 

@@ -5,9 +5,10 @@ import Link from "next/link";
 import { ArrowRight, Clock3 } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
 import { PageHeader } from "@/components/PageHeader";
-import { ToolCard } from "@/components/ToolCard";
+import { ToolCategorySection } from "@/components/ToolCategorySection";
 import { UsageBadge } from "@/components/UsageBadge";
 import { getHistory } from "@/lib/history";
+import { allToolLinks, toolCategories } from "@/lib/tool-configs";
 import type { GeneratedDocument } from "@/lib/types";
 
 export default function DashboardPage() {
@@ -43,10 +44,10 @@ export default function DashboardPage() {
             </Link>
           </div>
         </section>
-        <div className="grid gap-4 md:grid-cols-3">
-          <ToolCard title="Tạo đề kiểm tra" description="Tạo đề có đáp án, thang điểm và ma trận." href="/tools/exam-generator" />
-          <ToolCard title="Tạo phiếu học tập" description="Chuẩn bị phiếu học tập có bài tập và đáp án." href="/tools/worksheet-generator" />
-          <ToolCard title="Tạo nhận xét học sinh" description="Viết nhận xét phù hợp nhiều mục đích." href="/tools/student-comments" />
+        <div className="space-y-8">
+          {toolCategories.map((category) => (
+            <ToolCategorySection key={category} title={category} tools={allToolLinks.filter((tool) => tool.category === category)} />
+          ))}
         </div>
         <section className="mt-8">
           <h2 className="text-xl font-bold text-ink">Lịch sử gần đây</h2>

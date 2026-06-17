@@ -1,17 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Home, MessageCircle, MessageSquareText, NotebookPen, ScrollText } from "lucide-react";
+import { Home, MessageCircle, ScrollText } from "lucide-react";
 import { DemoNotice } from "@/components/DemoNotice";
-
-const links = [
-  { href: "/dashboard", label: "Tổng quan", icon: Home },
-  { href: "/tools/exam-generator", label: "Tạo đề kiểm tra", icon: FileText },
-  { href: "/tools/worksheet-generator", label: "Phiếu học tập", icon: NotebookPen },
-  { href: "/tools/student-comments", label: "Nhận xét học sinh", icon: MessageSquareText },
-  { href: "/history", label: "Lịch sử", icon: ScrollText },
-  { href: "/feedback", label: "Góp ý", icon: MessageCircle }
-];
+import { allToolLinks, toolCategories } from "@/lib/tool-configs";
 
 export function Sidebar() {
   return (
@@ -23,16 +15,35 @@ export function Sidebar() {
       <div className="px-4 pb-4">
         <DemoNotice compact />
       </div>
-      <nav className="flex gap-2 overflow-x-auto px-4 pb-4 md:block md:space-y-1 md:overflow-visible">
-        {links.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link key={item.href} href={item.href} className="flex shrink-0 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
-              <Icon size={18} />
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="max-h-[calc(100vh-180px)] overflow-y-auto px-4 pb-4">
+        <div className="space-y-1">
+          <Link href="/dashboard" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <Home size={18} />
+            Tổng quan
+          </Link>
+          <Link href="/history" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <ScrollText size={18} />
+            Lịch sử
+          </Link>
+          <Link href="/feedback" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <MessageCircle size={18} />
+            Góp ý
+          </Link>
+        </div>
+        <div className="mt-5 space-y-5">
+          {toolCategories.map((category) => (
+            <div key={category}>
+              <p className="px-3 text-xs font-bold uppercase tracking-wide text-slate-400">{category}</p>
+              <div className="mt-2 space-y-1">
+                {allToolLinks.filter((tool) => tool.category === category).map((tool) => (
+                  <Link key={tool.href} href={tool.href} className="block rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+                    {tool.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </nav>
     </aside>
   );

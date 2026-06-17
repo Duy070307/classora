@@ -17,7 +17,21 @@ export function getHistory(): GeneratedDocument[] {
         typeof candidate.title === "string" &&
         typeof candidate.content === "string" &&
         typeof candidate.createdAt === "string" &&
-        (candidate.type === "exam" || candidate.type === "worksheet" || candidate.type === "student-comment")
+        [
+          "exam",
+          "worksheet",
+          "student-comment",
+          "lesson-plan",
+          "matrix",
+          "answer-key",
+          "rubric",
+          "parent-message",
+          "question-bank",
+          "question-variant",
+          "exam-checker",
+          "activity",
+          "differentiated-exercises"
+        ].includes(candidate.type ?? "")
       );
     });
   } catch {

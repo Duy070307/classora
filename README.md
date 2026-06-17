@@ -46,6 +46,16 @@ npm run build
 - `/tools/exam-generator`
 - `/tools/worksheet-generator`
 - `/tools/student-comments`
+- `/tools/lesson-plan-generator`
+- `/tools/matrix-generator`
+- `/tools/answer-key-generator`
+- `/tools/rubric-generator`
+- `/tools/parent-message-generator`
+- `/tools/question-bank-generator`
+- `/tools/question-variant-generator`
+- `/tools/exam-checker`
+- `/tools/activity-generator`
+- `/tools/differentiated-exercises`
 
 ## Current Limitations
 

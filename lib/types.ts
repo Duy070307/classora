@@ -1,4 +1,17 @@
-export type ToolType = "exam" | "worksheet" | "student-comment";
+export type ToolType =
+  | "exam"
+  | "worksheet"
+  | "student-comment"
+  | "lesson-plan"
+  | "matrix"
+  | "answer-key"
+  | "rubric"
+  | "parent-message"
+  | "question-bank"
+  | "question-variant"
+  | "exam-checker"
+  | "activity"
+  | "differentiated-exercises";
 
 export type GeneratedDocument = {
   id: string;
@@ -46,4 +59,46 @@ export type StudentCommentInput = {
   limitations: string;
   tone: "Nhẹ nhàng" | "Trang trọng" | "Ngắn gọn" | "Chi tiết";
   purpose: "Nhận xét học bạ" | "Tin nhắn phụ huynh" | "Nhận xét cuối kỳ";
+};
+
+export type GenericToolInput = Record<string, string | number | boolean | string[]>;
+
+export type ToolField =
+  | {
+      name: string;
+      label: string;
+      type: "text" | "number" | "textarea";
+      placeholder?: string;
+      defaultValue: string | number;
+    }
+  | {
+      name: string;
+      label: string;
+      type: "select";
+      options: string[];
+      defaultValue: string;
+    }
+  | {
+      name: string;
+      label: string;
+      type: "checkbox";
+      defaultValue: boolean;
+    }
+  | {
+      name: string;
+      label: string;
+      type: "multicheckbox";
+      options: string[];
+      defaultValue: string[];
+    };
+
+export type ToolConfig = {
+  type: ToolType;
+  href: string;
+  title: string;
+  description: string;
+  category: string;
+  fields: ToolField[];
+  generate: (input: GenericToolInput) => Promise<string>;
+  makeTitle: (input: GenericToolInput) => string;
 };
