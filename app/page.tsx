@@ -89,8 +89,38 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-4 py-14">
+        <div className="card grid gap-8 p-6 md:grid-cols-[0.85fr_1.15fr] md:p-8">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-brand">Founder note</p>
+            <h2 className="mt-2 text-2xl font-bold text-ink">Về người tạo ra Classora</h2>
+            <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">
+              Classora hiện đang ở giai đoạn MVP/demo và sẽ tiếp tục được cải thiện dựa trên góp ý thực tế từ giáo viên.
+            </p>
+          </div>
+          <div>
+            <div className="space-y-4 text-sm leading-7 text-slate-700 md:text-base">
+              <p>
+                Classora được tạo ra bởi một sinh viên của TUM và HCMUT, với mong muốn giúp giáo viên tiết kiệm thời gian trong những công việc đơn giản nhưng lặp lại hằng ngày như soạn đề, tạo phiếu học tập, viết nhận xét học sinh và chuẩn bị tài liệu giảng dạy.
+              </p>
+              <p>
+                Mục tiêu của Classora không phải là thay thế giáo viên, mà là giúp giáo viên có thêm thời gian cho những việc quan trọng hơn: giảng dạy, hỗ trợ học sinh và cải thiện chất lượng bài học.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/tools" className="btn-primary">
+                Khám phá công cụ
+                <ArrowRight size={16} />
+              </Link>
+              <Link href="/feedback" className="btn-secondary">Góp ý cho Classora</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-line bg-white px-4 py-8 text-center text-sm text-muted">
-        Classora - Soạn đề, tạo tài liệu, xuất Word trong vài phút.
+        <p>Classora - Soạn đề, tạo tài liệu, xuất Word trong vài phút.</p>
+        <p className="mt-2">Được xây dựng để hỗ trợ giáo viên Việt Nam.</p>
       </footer>
     </main>
   );
