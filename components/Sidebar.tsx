@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Home, MessageSquareText, NotebookPen, ScrollText } from "lucide-react";
+import { FileText, Home, MessageCircle, MessageSquareText, NotebookPen, ScrollText } from "lucide-react";
 import { DemoNotice } from "@/components/DemoNotice";
 
 const links = [
@@ -9,7 +9,8 @@ const links = [
   { href: "/tools/exam-generator", label: "Tạo đề kiểm tra", icon: FileText },
   { href: "/tools/worksheet-generator", label: "Phiếu học tập", icon: NotebookPen },
   { href: "/tools/student-comments", label: "Nhận xét học sinh", icon: MessageSquareText },
-  { href: "/history", label: "Lịch sử", icon: ScrollText }
+  { href: "/history", label: "Lịch sử", icon: ScrollText },
+  { href: "/feedback", label: "Góp ý", icon: MessageCircle }
 ];
 
 export function Sidebar() {
