@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 30rem),
+    #f7f9fc;
+  color: #18212f;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.form-field {
+  @apply w-full rounded-md border border-line bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-blue-100;
+}
+
+.label {
+  @apply text-sm font-semibold text-ink;
+}
+
+.btn-primary {
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.btn-secondary {
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.card {
+  @apply rounded-lg border border-line bg-white shadow-soft;
+}
+
+.form-section {
+  @apply rounded-lg border border-slate-100 bg-slate-50/70 p-4;
+}
+
+.form-section-title {
+  @apply mb-3 text-sm font-bold uppercase tracking-wide text-slate-500;
+}
+
+.empty-state {
+  @apply rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-muted;
+}
