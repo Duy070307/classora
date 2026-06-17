@@ -56,6 +56,15 @@ npm run build
 - `/tools/exam-checker`
 - `/tools/activity-generator`
 - `/tools/differentiated-exercises`
+- `/tools/exam-shuffler`
+- `/tools/slide-outline-generator`
+- `/tools/lesson-summary`
+- `/tools/mindmap-outline`
+- `/tools/homeroom-plan`
+- `/tools/parent-meeting-minutes`
+- `/tools/latex-converter`
+- `/tools/latex-preview`
+- `/templates`
 
 ## Current Limitations
 

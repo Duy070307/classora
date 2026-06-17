@@ -456,3 +456,259 @@ IV. GỢI Ý GIAO BÀI
 
 ${warning}`;
 }
+
+function parseQuestionBlocks(raw: string) {
+  const blocks = raw
+    .split(/(?=Câu\s+\d+\.|Cau\s+\d+\.)/i)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return blocks.length ? blocks : ["Câu 1. Nội dung câu hỏi mẫu\nA. Phương án A\nB. Phương án B\nC. Phương án C\nD. Phương án D\nĐáp án: A"];
+}
+
+export async function shuffleExam(input: GenericToolInput): Promise<string> {
+  await wait();
+  const codeCount = limitedCount(numberValue(input, "codeCount", 4), 4, 8);
+  const questions = parseQuestionBlocks(textValue(input, "questions", ""));
+  const codes = Array.from({ length: codeCount }, (_, index) => 101 + index);
+  const codeSections = codes.map((code, codeIndex) => {
+    const ordered = boolValue(input, "shuffleQuestions") ? [...questions].sort((a, b) => ((a.length + codeIndex) % 3) - ((b.length + codeIndex) % 3)) : questions;
+    const answerRows = ordered.map((_, index) => `${index + 1}${["A", "B", "C", "D"][(index + codeIndex) % 4]}`).join(", ");
+    return `MÃ ĐỀ ${code}
+${ordered.map((question, index) => `${index + 1}. ${question.replace(/^Câu\s+\d+\.\s*/i, "")}`).join("\n\n")}
+
+Bảng đáp án mã ${code}: ${answerRows}`;
+  }).join("\n\n");
+
+  return `TRỘN MÃ ĐỀ
+Tên đề kiểm tra: ${textValue(input, "examName", "Đề kiểm tra")}
+Môn học: ${textValue(input, "subject", "Toán")}
+Lớp: ${textValue(input, "grade", "8")}
+Số mã đề: ${codeCount}
+Trộn thứ tự câu: ${boolValue(input, "shuffleQuestions") ? "Có" : "Không"}
+Trộn đáp án A/B/C/D: ${boolValue(input, "shuffleAnswers") ? "Có" : "Không"}
+
+I. DANH SÁCH MÃ ĐỀ
+${codes.map((code) => `- Mã đề ${code}`).join("\n")}
+
+II. NỘI DUNG CÁC MÃ ĐỀ
+${codeSections}
+
+III. LƯU Ý
+Bản demo chỉ mô phỏng trộn đề, giáo viên cần kiểm tra lại thứ tự câu, đáp án và định dạng trước khi dùng chính thức.
+
+GHI CHÚ
+${textValue(input, "notes", "Không có ghi chú thêm.")}
+
+${warning}`;
+}
+
+export async function generateSlideOutline(input: GenericToolInput): Promise<string> {
+  await wait();
+  const count = limitedCount(numberValue(input, "slideCount", 8), 8, 20);
+  const lesson = textValue(input, "lessonName", "Bài học");
+  const slides = Array.from({ length: count }, (_, index) => `${index + 1}. Slide ${index + 1}: ${index === 0 ? `Khởi động bài ${lesson}` : index === count - 1 ? "Củng cố và kiểm tra nhanh" : `Ý chính ${index} của bài ${lesson}`}
+- Bullet: nêu vấn đề trọng tâm, ví dụ minh họa và câu hỏi dẫn dắt.
+- Minh họa: hình ảnh/sơ đồ liên quan đến nội dung bài.
+- Tương tác: hỏi nhanh, thảo luận cặp đôi hoặc mini quiz.`).join("\n\n");
+
+  return `DÀN Ý SLIDE BÀI GIẢNG
+Môn học: ${textValue(input, "subject", "Sinh học")}
+Lớp: ${textValue(input, "grade", "7")}
+Tên bài học: ${lesson}
+Thời lượng: ${textValue(input, "duration", "45 phút")}
+Phong cách: ${textValue(input, "style", "Sinh động")}
+
+I. DANH SÁCH SLIDE
+${slides}
+
+II. GỢI Ý CÂU HỎI KIỂM TRA NHANH
+- Em nhớ được khái niệm nào quan trọng nhất?
+- Ví dụ nào trong bài có thể liên hệ thực tế?
+- Còn phần nào em cần giáo viên giải thích thêm?
+
+NỘI DUNG CHÍNH
+${textValue(input, "mainContent", "Chưa nhập nội dung chính.")}
+
+YÊU CẦU THÊM
+${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
+
+${warning}`;
+}
+
+export async function generateLessonSummary(input: GenericToolInput): Promise<string> {
+  await wait();
+  const topic = textValue(input, "topic", "Bài học");
+  return `TÓM TẮT BÀI HỌC
+Môn học: ${textValue(input, "subject", "Địa lí")}
+Lớp: ${textValue(input, "grade", "6")}
+Bài/chủ đề: ${topic}
+Độ dài: ${textValue(input, "length", "Vừa")}
+Đối tượng: ${textValue(input, "audience", "Học sinh trung bình")}
+
+I. TÓM TẮT KIẾN THỨC TRỌNG TÂM
+${topic} gồm các ý chính: khái niệm cơ bản, đặc điểm nổi bật, ví dụ minh họa và cách vận dụng vào bài tập hoặc tình huống thực tế.
+
+II. TỪ KHÓA CẦN NHỚ
+- Khái niệm chính
+- Dấu hiệu nhận biết
+- Ví dụ thực tế
+- Cách trình bày câu trả lời
+
+III. VÍ DỤ MINH HỌA
+Giáo viên có thể dùng một tình huống gần gũi với học sinh để giải thích ${topic}, sau đó yêu cầu học sinh tự nêu thêm ví dụ.
+
+${boolValue(input, "includeQuestions") ? `IV. CÂU HỎI ÔN TẬP
+1. Nêu khái niệm chính của bài.
+2. Cho một ví dụ minh họa.
+3. Giải thích vì sao ví dụ đó phù hợp với kiến thức đã học.` : ""}
+
+V. GỢI Ý CÁCH HỌC
+Đọc lại vở ghi, gạch chân từ khóa, tự đặt 3 câu hỏi ngắn và thử giải thích lại bài bằng lời của mình.
+
+NỘI DUNG BÀI HỌC GỐC
+${textValue(input, "lessonContent", "Chưa nhập nội dung bài học.")}
+
+${warning}`;
+}
+
+export async function generateMindmapOutline(input: GenericToolInput): Promise<string> {
+  await wait();
+  const branches = limitedCount(numberValue(input, "branchCount", 5), 5, 10);
+  const topic = textValue(input, "centralTopic", "Chủ đề trung tâm");
+  const branchText = Array.from({ length: branches }, (_, index) => `Nhánh ${index + 1}: Ý chính ${index + 1}
+- Nhánh phụ: khái niệm, ví dụ, dấu hiệu nhận biết.
+- Từ khóa: ${topic.toLowerCase()}-${index + 1}
+${boolValue(input, "includeExamples") ? "- Ví dụ: liên hệ một tình huống quen thuộc trong lớp học hoặc đời sống." : ""}`).join("\n\n");
+
+  return `SƠ ĐỒ TƯ DUY DẠNG OUTLINE
+Môn học: ${textValue(input, "subject", "Ngữ văn")}
+Lớp: ${textValue(input, "grade", "6")}
+Chủ đề trung tâm: ${topic}
+Phong cách: ${textValue(input, "style", "Dễ nhớ")}
+
+I. CHỦ ĐỀ TRUNG TÂM
+${topic}
+
+II. CÁC NHÁNH CHÍNH
+${branchText}
+
+III. GỢI Ý TRÌNH BÀY
+Viết chủ đề ở giữa trang, dùng màu khác nhau cho từng nhánh chính, mỗi nhánh chỉ nên có từ khóa ngắn và ví dụ dễ nhớ. Nếu làm slide, dùng bố cục radial hoặc bảng 2 cột.
+
+NỘI DUNG CHÍNH
+${textValue(input, "mainContent", "Chưa nhập nội dung chính.")}
+
+${warning}`;
+}
+
+export async function generateHomeroomPlan(input: GenericToolInput): Promise<string> {
+  await wait();
+  return `KẾ HOẠCH CHỦ NHIỆM
+Lớp: ${textValue(input, "className", "7A1")}
+Tuần/tháng: ${textValue(input, "period", "Tuần 1")}
+
+I. MỤC TIÊU
+${textValue(input, "mainGoal", "Ổn định nề nếp, theo dõi học tập và tăng cường phối hợp với phụ huynh.")}
+
+II. TÌNH HÌNH LỚP
+${textValue(input, "classSituation", "Lớp cơ bản ổn định, một số học sinh cần được nhắc nhở về chuẩn bị bài.")}
+
+III. NỘI DUNG CÔNG VIỆC
+- Theo dõi chuyên cần, nề nếp, việc chuẩn bị bài.
+- Trao đổi với giáo viên bộ môn về học sinh cần hỗ trợ.
+- Nhắc lớp thực hiện nội quy và kế hoạch tuần.
+
+IV. BIỆN PHÁP THỰC HIỆN
+- Giao ban cán sự lớp đầu tuần.
+- Ghi nhận tiến bộ và nhắc nhở riêng học sinh vi phạm.
+- Liên hệ phụ huynh khi cần phối hợp.
+
+V. PHÂN CÔNG
+- Lớp trưởng: tổng hợp tình hình nề nếp.
+- Tổ trưởng: theo dõi bài tập và vệ sinh.
+- Giáo viên chủ nhiệm: đánh giá, phản hồi, phối hợp phụ huynh.
+
+VI. ĐÁNH GIÁ CUỐI KỲ/TUẦN
+Đánh giá theo chuyên cần, học tập, nề nếp, tinh thần hợp tác và mức độ hoàn thành mục tiêu.
+
+VII. GHI CHÚ PHỐI HỢP PHỤ HUYNH
+${textValue(input, "notes", "Trao đổi nhẹ nhàng, cụ thể, ưu tiên hướng hỗ trợ học sinh tiến bộ.")}
+
+VẤN ĐỀ CẦN THEO DÕI
+${textValue(input, "issues", "Chưa nhập.")}
+
+HOẠT ĐỘNG DỰ KIẾN
+${textValue(input, "activities", "Sinh hoạt lớp, tuyên dương, nhắc nhở nề nếp.")}
+
+${warning}`;
+}
+
+export async function generateParentMeetingMinutes(input: GenericToolInput): Promise<string> {
+  await wait();
+  return `BIÊN BẢN HỌP PHỤ HUYNH
+Lớp: ${textValue(input, "className", "7A1")}
+Thời gian họp: ${textValue(input, "meetingTime", "19:30 ngày ...")}
+Địa điểm: ${textValue(input, "location", "Phòng học lớp")}
+Giáo viên chủ nhiệm: ${textValue(input, "homeroomTeacher", "Chưa nhập")}
+
+I. THÀNH PHẦN THAM DỰ
+- Giáo viên chủ nhiệm.
+- Đại diện phụ huynh lớp.
+- Số phụ huynh tham dự: ${textValue(input, "parentCount", "chưa nhập")}.
+
+II. NỘI DUNG CUỘC HỌP
+${textValue(input, "mainContent", "Thông tin tình hình học tập, rèn luyện và kế hoạch phối hợp trong thời gian tới.")}
+
+III. CÁC KHOẢN CẦN THỐNG NHẤT
+${textValue(input, "agreements", "Các khoản đóng góp hoặc nội dung phối hợp được trao đổi công khai, minh bạch.")}
+
+IV. Ý KIẾN TRAO ĐỔI
+${textValue(input, "parentOpinions", "Phụ huynh trao đổi, góp ý và thống nhất phương hướng hỗ trợ học sinh.")}
+
+V. KẾT LUẬN
+${textValue(input, "conclusion", "Cuộc họp thống nhất các nội dung chính và cam kết phối hợp giữa gia đình và nhà trường.")}
+
+VI. CAM KẾT/PHỐI HỢP
+Gia đình phối hợp nhắc nhở học sinh học tập, rèn luyện nề nếp; giáo viên chủ nhiệm thường xuyên thông tin khi có vấn đề cần hỗ trợ.
+
+VII. CHỮ KÝ ĐẠI DIỆN
+Giáo viên chủ nhiệm: ............................
+Đại diện phụ huynh: .............................
+
+${warning}`;
+}
+
+export async function convertTextToLatex(input: GenericToolInput): Promise<string> {
+  await wait();
+  const raw = textValue(input, "formulaText", "a/b + sqrt(x)");
+  const latex = raw
+    .replace(/sqrt\((.*?)\)/gi, "\\sqrt{$1}")
+    .replace(/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/g, "\\frac{$1}{$2}")
+    .replace(/\^(\w+)/g, "^{$1}")
+    .replace(/\bpi\b/gi, "\\pi");
+  const outputType = textValue(input, "outputType", "Cả hai");
+
+  return `CHUYỂN CÔNG THỨC SANG LATEX
+Môn học: ${textValue(input, "subject", "Toán")}
+Kiểu output: ${outputType}
+
+I. LATEX INLINE
+\\(${latex}\\)
+
+II. LATEX DISPLAY
+\\[
+${latex}
+\\]
+
+III. GIẢI THÍCH KÝ HIỆU
+- \\frac{a}{b}: phân số a trên b.
+- \\sqrt{x}: căn bậc hai của x.
+- ^{n}: lũy thừa n.
+
+YÊU CẦU THÊM
+${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
+
+Lưu ý: Công cụ này không dùng OCR, chỉ chuyển công thức dạng text đã nhập thành LaTeX mô phỏng.
+
+${warning}`;
+}

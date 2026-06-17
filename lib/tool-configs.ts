@@ -1,14 +1,21 @@
 import {
   checkExam,
+  convertTextToLatex,
   generateAnswerKey,
   generateClassActivity,
   generateDifferentiatedExercises,
+  generateHomeroomPlan,
   generateLessonPlan,
+  generateLessonSummary,
+  generateMindmapOutline,
   generateMatrix,
+  generateParentMeetingMinutes,
   generateParentMessage,
   generateQuestionBank,
   generateQuestionVariants,
-  generateRubric
+  generateRubric,
+  generateSlideOutline,
+  shuffleExam
 } from "@/lib/mock-ai";
 import type { GenericToolInput, ToolConfig } from "@/lib/types";
 
@@ -193,6 +200,136 @@ export const expandedToolConfigs: ToolConfig[] = [
   }
 ];
 
+export const batch2ToolConfigs: ToolConfig[] = [
+  {
+    type: "exam-shuffler",
+    href: "/tools/exam-shuffler",
+    title: "Trộn mã đề",
+    description: "Mô phỏng trộn thứ tự câu hỏi, đáp án và tạo bảng đáp án theo từng mã đề.",
+    category: "Soạn đề & kiểm tra",
+    generate: shuffleExam,
+    makeTitle: (input) => `Trộn mã đề - ${text(input, "examName", "Đề kiểm tra")}`,
+    fields: [
+      { name: "examName", label: "Tên đề kiểm tra", type: "text", defaultValue: "Đề kiểm tra giữa kỳ" },
+      { name: "subject", label: "Môn học", type: "text", defaultValue: "Toán" },
+      { name: "grade", label: "Lớp", type: "text", defaultValue: "8" },
+      { name: "codeCount", label: "Số mã đề muốn tạo", type: "number", defaultValue: 4 },
+      { name: "questions", label: "Nội dung câu hỏi trắc nghiệm", type: "textarea", defaultValue: "Câu 1. Kết quả của 2 + 3 là?\nA. 4\nB. 5\nC. 6\nD. 7\nĐáp án: B\n\nCâu 2. Số nào là số chẵn?\nA. 3\nB. 5\nC. 8\nD. 9\nĐáp án: C" },
+      { name: "shuffleQuestions", label: "Có trộn thứ tự câu không?", type: "checkbox", defaultValue: true },
+      { name: "shuffleAnswers", label: "Có trộn thứ tự đáp án A/B/C/D không?", type: "checkbox", defaultValue: true },
+      { name: "notes", label: "Ghi chú", type: "textarea", defaultValue: "" }
+    ]
+  },
+  {
+    type: "slide-outline",
+    href: "/tools/slide-outline-generator",
+    title: "Tạo dàn ý slide bài giảng",
+    description: "Tạo cấu trúc slide, bullet, gợi ý minh họa, tương tác và câu hỏi nhanh.",
+    category: "Soạn bài & tài liệu",
+    generate: generateSlideOutline,
+    makeTitle: (input) => `Dàn ý slide - ${text(input, "subject")} lớp ${text(input, "grade")} - ${text(input, "lessonName")}`,
+    fields: [
+      { name: "subject", label: "Môn học", type: "text", defaultValue: "Sinh học" },
+      { name: "grade", label: "Lớp", type: "text", defaultValue: "7" },
+      { name: "lessonName", label: "Tên bài học", type: "text", defaultValue: "Trao đổi chất ở sinh vật" },
+      { name: "duration", label: "Thời lượng", type: "text", defaultValue: "45 phút" },
+      { name: "slideCount", label: "Số slide mong muốn", type: "number", defaultValue: 8 },
+      { name: "style", label: "Phong cách", type: "select", options: ["Ngắn gọn", "Sinh động", "Nhiều ví dụ", "Ôn tập kiểm tra"], defaultValue: "Sinh động" },
+      { name: "mainContent", label: "Nội dung chính", type: "textarea", defaultValue: "Khái niệm, vai trò và ví dụ về trao đổi chất." },
+      { name: "extraRequirements", label: "Yêu cầu thêm", type: "textarea", defaultValue: "" }
+    ]
+  },
+  {
+    type: "lesson-summary",
+    href: "/tools/lesson-summary",
+    title: "Tóm tắt bài học",
+    description: "Tóm tắt kiến thức trọng tâm, từ khóa, ví dụ, câu hỏi ôn tập và cách học.",
+    category: "Soạn bài & tài liệu",
+    generate: generateLessonSummary,
+    makeTitle: (input) => `Tóm tắt bài học - ${text(input, "subject")} lớp ${text(input, "grade")} - ${text(input, "topic")}`,
+    fields: [
+      { name: "subject", label: "Môn học", type: "text", defaultValue: "Địa lí" },
+      { name: "grade", label: "Lớp", type: "text", defaultValue: "6" },
+      { name: "topic", label: "Tên bài/chủ đề", type: "text", defaultValue: "Khí hậu và thời tiết" },
+      { name: "lessonContent", label: "Nội dung bài học", type: "textarea", defaultValue: "Nội dung chính của bài học gồm khái niệm, đặc điểm và ví dụ thực tế." },
+      { name: "length", label: "Độ dài", type: "select", options: ["Rất ngắn", "Vừa", "Chi tiết"], defaultValue: "Vừa" },
+      { name: "audience", label: "Đối tượng", type: "select", options: ["Học sinh yếu", "Học sinh trung bình", "Học sinh khá giỏi"], defaultValue: "Học sinh trung bình" },
+      { name: "includeQuestions", label: "Có câu hỏi ôn tập không?", type: "checkbox", defaultValue: true }
+    ]
+  },
+  {
+    type: "mindmap-outline",
+    href: "/tools/mindmap-outline",
+    title: "Tạo sơ đồ tư duy",
+    description: "Tạo outline sơ đồ tư duy dạng text với nhánh chính, nhánh phụ và từ khóa.",
+    category: "Soạn bài & tài liệu",
+    generate: generateMindmapOutline,
+    makeTitle: (input) => `Sơ đồ tư duy - ${text(input, "centralTopic", "Chủ đề")}`,
+    fields: [
+      { name: "subject", label: "Môn học", type: "text", defaultValue: "Ngữ văn" },
+      { name: "grade", label: "Lớp", type: "text", defaultValue: "6" },
+      { name: "centralTopic", label: "Chủ đề trung tâm", type: "text", defaultValue: "Truyện truyền thuyết" },
+      { name: "mainContent", label: "Nội dung chính", type: "textarea", defaultValue: "Khái niệm, đặc điểm, nhân vật, sự kiện, ý nghĩa." },
+      { name: "branchCount", label: "Số nhánh chính", type: "number", defaultValue: 5 },
+      { name: "style", label: "Phong cách", type: "select", options: ["Ngắn gọn", "Dễ nhớ", "Chi tiết"], defaultValue: "Dễ nhớ" },
+      { name: "includeExamples", label: "Có thêm ví dụ không?", type: "checkbox", defaultValue: true }
+    ]
+  },
+  {
+    type: "homeroom-plan",
+    href: "/tools/homeroom-plan",
+    title: "Tạo kế hoạch chủ nhiệm",
+    description: "Tạo kế hoạch chủ nhiệm tuần/tháng, biện pháp thực hiện và phối hợp phụ huynh.",
+    category: "Chủ nhiệm & phụ huynh",
+    generate: generateHomeroomPlan,
+    makeTitle: (input) => `Kế hoạch chủ nhiệm - ${text(input, "className")} - ${text(input, "period")}`,
+    fields: [
+      { name: "className", label: "Lớp", type: "text", defaultValue: "7A1" },
+      { name: "period", label: "Tuần/tháng", type: "text", defaultValue: "Tuần 12" },
+      { name: "mainGoal", label: "Mục tiêu chính", type: "textarea", defaultValue: "Ổn định nề nếp, nâng cao ý thức học tập và theo dõi học sinh cần hỗ trợ." },
+      { name: "classSituation", label: "Tình hình lớp", type: "textarea", defaultValue: "Lớp học tương đối ổn định, còn vài học sinh quên bài tập." },
+      { name: "issues", label: "Vấn đề cần theo dõi", type: "textarea", defaultValue: "Chuyên cần, bài tập về nhà, nề nếp đầu giờ." },
+      { name: "activities", label: "Hoạt động dự kiến", type: "textarea", defaultValue: "Sinh hoạt lớp, tuyên dương học sinh tiến bộ, nhắc nhở nhóm cần hỗ trợ." },
+      { name: "notes", label: "Ghi chú", type: "textarea", defaultValue: "" }
+    ]
+  },
+  {
+    type: "parent-meeting-minutes",
+    href: "/tools/parent-meeting-minutes",
+    title: "Tạo biên bản họp phụ huynh",
+    description: "Soạn biên bản họp phụ huynh có thành phần, nội dung, ý kiến và kết luận.",
+    category: "Chủ nhiệm & phụ huynh",
+    generate: generateParentMeetingMinutes,
+    makeTitle: (input) => `Biên bản họp phụ huynh - ${text(input, "className")}`,
+    fields: [
+      { name: "className", label: "Tên lớp", type: "text", defaultValue: "7A1" },
+      { name: "meetingTime", label: "Thời gian họp", type: "text", defaultValue: "19:30 ngày 20/06/2026" },
+      { name: "location", label: "Địa điểm", type: "text", defaultValue: "Phòng học lớp 7A1" },
+      { name: "homeroomTeacher", label: "Giáo viên chủ nhiệm", type: "text", defaultValue: "Nguyễn Thị Lan" },
+      { name: "parentCount", label: "Số phụ huynh tham dự", type: "number", defaultValue: 38 },
+      { name: "mainContent", label: "Nội dung chính", type: "textarea", defaultValue: "Thông báo tình hình học tập, rèn luyện và kế hoạch cuối kỳ." },
+      { name: "agreements", label: "Các khoản cần thống nhất", type: "textarea", defaultValue: "Quỹ lớp, hoạt động trải nghiệm, phối hợp ôn tập." },
+      { name: "parentOpinions", label: "Ý kiến phụ huynh", type: "textarea", defaultValue: "Phụ huynh thống nhất phối hợp nhắc học sinh tự học ở nhà." },
+      { name: "conclusion", label: "Kết luận", type: "textarea", defaultValue: "Cuộc họp thống nhất các nội dung đã trao đổi." }
+    ]
+  },
+  {
+    type: "latex-converter",
+    href: "/tools/latex-converter",
+    title: "Chuyển công thức sang LaTeX",
+    description: "Chuyển công thức dạng text nhập tay sang LaTeX inline/display mô phỏng.",
+    category: "Công thức & LaTeX",
+    generate: convertTextToLatex,
+    makeTitle: () => "Công thức LaTeX",
+    fields: [
+      { name: "formulaText", label: "Nội dung công thức dạng text", type: "textarea", defaultValue: "sqrt(x) + a/b = pi" },
+      { name: "subject", label: "Môn học", type: "select", options: ["Toán", "Lý", "Hóa", "Khác"], defaultValue: "Toán" },
+      { name: "outputType", label: "Kiểu output", type: "select", options: ["Inline LaTeX", "Display LaTeX", "Cả hai"], defaultValue: "Cả hai" },
+      { name: "extraRequirements", label: "Yêu cầu thêm", type: "textarea", defaultValue: "" }
+    ]
+  }
+];
+
 export const existingToolLinks = [
   {
     category: "Soạn đề & kiểm tra",
@@ -221,11 +358,35 @@ export const allToolLinks = [
     title: tool.title,
     description: tool.description,
     href: tool.href
-  }))
+  })),
+  ...batch2ToolConfigs.map((tool) => ({
+    category: tool.category,
+    title: tool.title,
+    description: tool.description,
+    href: tool.href
+  })),
+  {
+    category: "Công thức & LaTeX",
+    title: "Preview LaTeX",
+    description: "Nhập LaTeX và xem preview công thức bằng KaTeX nếu có thể.",
+    href: "/tools/latex-preview"
+  },
+  {
+    category: "Cá nhân hóa",
+    title: "Mẫu cá nhân",
+    description: "Tạo, sửa, xóa, copy các mẫu tài liệu cá nhân lưu bằng localStorage.",
+    href: "/templates"
+  },
+  {
+    category: "Cá nhân hóa",
+    title: "Góp ý",
+    description: "Gửi góp ý beta cho Classora bằng cách sao chép nội dung phản hồi.",
+    href: "/feedback"
+  }
 ];
 
-export const toolCategories = ["Soạn đề & kiểm tra", "Soạn bài & tài liệu", "Chủ nhiệm & phụ huynh"] as const;
+export const toolCategories = ["Soạn đề & kiểm tra", "Soạn bài & tài liệu", "Chủ nhiệm & phụ huynh", "Công thức & LaTeX", "Cá nhân hóa"] as const;
 
 export function getToolConfig(href: string) {
-  return expandedToolConfigs.find((tool) => tool.href === href);
+  return [...expandedToolConfigs, ...batch2ToolConfigs].find((tool) => tool.href === href);
 }

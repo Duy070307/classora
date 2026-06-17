@@ -11,7 +11,14 @@ export type ToolType =
   | "question-variant"
   | "exam-checker"
   | "activity"
-  | "differentiated-exercises";
+  | "differentiated-exercises"
+  | "exam-shuffler"
+  | "slide-outline"
+  | "lesson-summary"
+  | "mindmap-outline"
+  | "homeroom-plan"
+  | "parent-meeting-minutes"
+  | "latex-converter";
 
 export type GeneratedDocument = {
   id: string;

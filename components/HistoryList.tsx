@@ -19,7 +19,14 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "question-variant": "Biến thể câu hỏi",
   "exam-checker": "Kiểm tra lỗi đề",
   activity: "Hoạt động lớp học",
-  "differentiated-exercises": "Bài tập phân hóa"
+  "differentiated-exercises": "Bài tập phân hóa",
+  "exam-shuffler": "Trộn mã đề",
+  "slide-outline": "Dàn ý slide",
+  "lesson-summary": "Tóm tắt bài học",
+  "mindmap-outline": "Sơ đồ tư duy",
+  "homeroom-plan": "Kế hoạch chủ nhiệm",
+  "parent-meeting-minutes": "Biên bản họp phụ huynh",
+  "latex-converter": "Công thức LaTeX"
 };
 
 export function HistoryList() {

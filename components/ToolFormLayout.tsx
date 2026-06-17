@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { createDocument, saveDocument } from "@/lib/history";
+import { saveRecentTool } from "@/lib/recent-tools";
 import { incrementUsage } from "@/lib/usage";
 import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from "@/lib/types";
 
@@ -38,6 +39,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     const next = createDocument(config.makeTitle(input), config.type, content);
     setDocument(next);
     incrementUsage();
+    saveRecentTool({ title: config.title, href: config.href });
     setMessage("Đã tạo tài liệu thành công.");
     setLoading(false);
   }
