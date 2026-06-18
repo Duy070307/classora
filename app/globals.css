@@ -4,6 +4,10 @@
 
 :root {
   color-scheme: light;
+  --page-bg: #f6f8fc;
+  --card-border: #e6eaf2;
+  --ink: #172033;
+  --muted: #667085;
 }
 
 * {
@@ -15,8 +19,8 @@ body {
   background:
     radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12), transparent 32rem),
     radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.08), transparent 28rem),
-    #f8fafc;
-  color: #18212f;
+    var(--page-bg);
+  color: var(--ink);
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
@@ -34,23 +38,35 @@ textarea {
 }
 
 .form-field {
-  @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-brand focus:ring-4 focus:ring-blue-100/70;
+  @apply min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-brand focus:ring-4 focus:ring-blue-100/70;
 }
 
 .label {
-  @apply text-sm font-semibold text-ink;
+  @apply text-sm font-bold text-slate-700;
 }
 
 .btn-primary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-blue-200/70 transition hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-secondary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/40 hover:text-brand hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.btn-ghost {
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-muted transition hover:bg-blue-50 hover:text-brand;
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft;
+  @apply rounded-2xl border border-slate-200/70 bg-white shadow-[0_10px_35px_rgba(35,50,85,0.07)];
+}
+
+.section-card {
+  @apply rounded-3xl border border-slate-200/70 bg-white p-5 shadow-[0_12px_40px_rgba(35,50,85,0.07)] sm:p-6;
+}
+
+.soft-badge {
+  @apply inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700;
 }
 
 .form-section {
@@ -62,7 +78,7 @@ textarea {
 }
 
 .empty-state {
-  @apply rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-muted sm:p-8;
+  @apply rounded-2xl border border-dashed border-blue-200 bg-gradient-to-br from-white to-blue-50/50 p-7 text-center text-sm leading-6 text-muted shadow-sm sm:p-9;
 }
 
 main {

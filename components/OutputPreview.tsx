@@ -45,7 +45,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
             }
             return <p key={index} className="break-words text-sm leading-7 text-slate-800">{trimmed}</p>;
           })}
-          <div className="mt-8 flex flex-col gap-2 border-t border-amber-200 pt-4 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs font-medium leading-5 text-amber-700">Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.</p><BugReportLink source={document.type} className="shrink-0" /></div>
+          <div className="mt-8 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs font-semibold leading-5 text-amber-800">Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.</p><BugReportLink source={document.type} className="shrink-0" /></div>
         </article>
       </div>
     </section>

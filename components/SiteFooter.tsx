@@ -7,9 +7,9 @@ const links = [
 ];
 
 export function SiteFooter() {
-  return <footer className="border-t border-line bg-white px-4 py-8 text-center text-sm text-muted">
+  return <footer className="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50 px-4 py-10 text-center text-sm text-muted">
     <nav className="flex flex-wrap justify-center gap-x-5 gap-y-3">{links.map(([label, href]) => <Link key={href} href={href} className="hover:text-brand">{label}</Link>)}</nav>
-    <p className="mx-auto mt-5 max-w-3xl leading-6">Soạn Lab được tạo ra bởi Trần Đức Duy, sinh viên của TUM và HCMUT, nhằm hỗ trợ giáo viên Việt Nam tiết kiệm thời gian trong các công việc lặp lại.</p>
+    <p className="mx-auto mt-6 max-w-3xl leading-7">Soạn Lab được tạo ra bởi Trần Đức Duy, sinh viên của TUM và HCMUT, nhằm hỗ trợ giáo viên Việt Nam tiết kiệm thời gian trong các công việc lặp lại.</p>
     <p className="mt-3 text-xs font-semibold text-slate-400">v0.5 RC</p>
   </footer>;
 }
