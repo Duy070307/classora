@@ -14,6 +14,7 @@ import type { GeneratedDocument, StudentCommentInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import { sampleStudentCommentInput } from "@/lib/sample-data";
+import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -65,6 +66,12 @@ export default function StudentCommentsPage() {
     setMessage("Đã lưu vào lịch sử.");
   }
 
+  function handleRefined(content: string) {
+    if (!document) return;
+    setDocument({ ...document, content });
+    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
+  }
+
   return (
     <div className="min-h-screen md:flex">
       <Sidebar />
@@ -114,6 +121,7 @@ export default function StudentCommentsPage() {
                   <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Lưu lịch sử</button>
                   <ExportDocxButton document={document} />
                 </div>
+                <OutputRefinementBar tool="student-comments" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
             ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}

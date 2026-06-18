@@ -12,7 +12,11 @@ const requiredFiles = [
   "app/tools/bulk-student-comments/page.tsx",
   "app/demo-data/page.tsx",
   "app/diagnostics/page.tsx",
+  "app/ai-lab/page.tsx",
+  "app/api/ai/generate/route.ts",
   "lib/ai/index.ts",
+  "lib/ai/refine-output.ts",
+  "components/tools/OutputRefinementBar.tsx",
   "lib/sample-data.ts"
 ];
 

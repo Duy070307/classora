@@ -1,3 +1,5 @@
+import type { AIRefinementAction } from "@/lib/ai/types";
+
 const rules = `Yêu cầu chung:
 - Trả lời bằng tiếng Việt và dùng Markdown sạch.
 - Chia nội dung thành các phần rõ ràng; dùng bảng khi phù hợp.
@@ -22,11 +24,27 @@ export const buildAnswerKeyPrompt = (input: unknown) => prompt("Tạo đáp án 
 export const buildExamCheckerPrompt = (input: unknown) => prompt("Rà soát đề kiểm tra", input, "Vấn đề phát hiện, mức độ ảnh hưởng, gợi ý sửa và các mục cần giáo viên xác minh.");
 export const buildLessonPlanPrompt = (input: unknown) => prompt("Soạn giáo án", input, "Mục tiêu, chuẩn bị, tiến trình hoạt động, đánh giá và nhiệm vụ sau bài.");
 
-export function buildPrompt(tool: string, input: unknown) {
+const refinementInstructions: Record<AIRefinementAction, string> = {
+  regenerate: "Tạo lại một phiên bản khác nhưng giữ nguyên mục tiêu và dữ liệu đầu vào.",
+  shorter: "Rút gọn nội dung, giữ lại ý quan trọng và cấu trúc cần thiết.",
+  "more-detailed": "Bổ sung giải thích, ví dụ và chi tiết hữu ích.",
+  simpler: "Diễn đạt dễ hiểu hơn, dùng câu ngắn và từ ngữ phổ thông.",
+  "more-formal": "Điều chỉnh sang văn phong trang trọng, chuẩn mực.",
+  easier: "Giảm độ khó của câu hỏi/nhiệm vụ, phù hợp học sinh cần hỗ trợ.",
+  harder: "Tăng độ khó và mức vận dụng nhưng vẫn bám sát dữ liệu đầu vào."
+};
+
+export function buildPrompt(tool: string, input: unknown, action?: AIRefinementAction, currentContent?: string) {
   const builders: Record<string, (value: unknown) => string> = {
     exam: buildExamPrompt, worksheet: buildWorksheetPrompt, "student-comments": buildStudentCommentsPrompt,
     matrix: buildMatrixPrompt, "answer-key": buildAnswerKeyPrompt, "exam-checker": buildExamCheckerPrompt,
     "lesson-plan": buildLessonPlanPrompt
   };
-  return (builders[tool] ?? ((value) => prompt(tool, value, "Các phần có tiêu đề rõ ràng và nội dung dễ kiểm tra.")))(input);
+  const base = (builders[tool] ?? ((value) => prompt(tool, value, "Các phần có tiêu đề rõ ràng và nội dung dễ kiểm tra.")))(input);
+  if (!action) return base;
+  return `${base}
+
+Yêu cầu tinh chỉnh: ${refinementInstructions[action]}
+Nội dung hiện tại:
+${currentContent || "(chưa có; hãy tạo mới từ dữ liệu đầu vào)"}`;
 }

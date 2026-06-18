@@ -14,6 +14,7 @@ import type { GeneratedDocument, WorksheetInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import { sampleWorksheetInput } from "@/lib/sample-data";
+import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -55,6 +56,12 @@ export default function WorksheetGeneratorPage() {
     if (!document) return;
     saveDocument(document);
     setMessage("Đã lưu vào lịch sử.");
+  }
+
+  function handleRefined(content: string) {
+    if (!document) return;
+    setDocument({ ...document, content });
+    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
   }
 
   return (
@@ -105,6 +112,7 @@ export default function WorksheetGeneratorPage() {
                   <ExportDocxButton document={document} />
                   <button type="button" onClick={generate} className="btn-secondary"><RotateCcw size={16} />Tạo lại</button>
                 </div>
+                <OutputRefinementBar tool="worksheet" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
             ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}

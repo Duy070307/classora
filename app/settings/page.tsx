@@ -54,6 +54,15 @@ export default function SettingsPage() {
           {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           <p className="text-sm text-muted">Dữ liệu chỉ lưu trên trình duyệt. <Link href="/privacy" className="font-semibold text-brand">Xem ghi chú quyền riêng tư</Link>.</p>
         </section>
+        <section className="card mt-6 max-w-3xl p-5">
+          <h2 className="text-lg font-bold text-ink">AI demo</h2>
+          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Nhà cung cấp hiện tại</dt><dd className="mt-1 font-semibold text-ink">Mock AI</dd></div>
+            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">AI thật</dt><dd className="mt-1 font-semibold text-ink">Chưa được bật</dd></div>
+          </dl>
+          <p className="mt-4 text-sm text-muted">Classora không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
+          <Link href="/ai-lab" className="btn-secondary mt-4">Mở AI Lab</Link>
+        </section>
       </main>
     </div>
   );

@@ -9,6 +9,7 @@ import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
+import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
@@ -59,6 +60,12 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     if (!document) return;
     saveDocument(document);
     setMessage("Đã lưu vào lịch sử.");
+  }
+
+  function handleRefined(content: string) {
+    if (!document) return;
+    setDocument({ ...document, content });
+    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
   }
 
   return (
@@ -144,6 +151,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
             ) : document ? (
               <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
+                <OutputRefinementBar tool={config.type} input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
             ) : (

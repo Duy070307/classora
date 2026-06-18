@@ -8,6 +8,7 @@ import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
+import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateExam } from "@/lib/mock-ai";
 import { getDocumentSettings } from "@/lib/document-settings";
@@ -95,6 +96,12 @@ export default function ExamGeneratorPage() {
     if (!document) return;
     saveDocument(document);
     setMessage("Đã lưu vào lịch sử.");
+  }
+
+  function handleRefined(content: string) {
+    if (!document) return;
+    setDocument({ ...document, content });
+    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
   }
 
   function useSampleData() {
@@ -188,6 +195,7 @@ export default function ExamGeneratorPage() {
                   <ExportDocxButton document={document} />
                   <button type="button" onClick={generate} className="btn-secondary"><RotateCcw size={16} />Tạo lại</button>
                 </div>
+                <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
             ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}
