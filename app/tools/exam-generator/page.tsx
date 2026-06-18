@@ -7,10 +7,13 @@ import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateExam } from "@/lib/mock-ai";
 import { getDocumentSettings } from "@/lib/document-settings";
-import type { ExamInput, GeneratedDocument } from "@/lib/types";
+import { getQuestions } from "@/lib/question-bank";
+import { applyTemplate, getTemplates } from "@/lib/templates";
+import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 
 const initialInput: ExamInput = {
@@ -41,6 +44,11 @@ export default function ExamGeneratorPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [templateId, setTemplateId] = useState("");
+  const [useBank, setUseBank] = useState(false);
+  const [bankQuestions, setBankQuestions] = useState<QuestionItem[]>([]);
+  const [bankDifficulty, setBankDifficulty] = useState("");
+  const [bankCount, setBankCount] = useState(5);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -50,6 +58,7 @@ export default function ExamGeneratorPage() {
         schoolName: current.schoolName || settings.schoolName,
         teacherName: current.teacherName || settings.teacherName
       }));
+      setBankQuestions(getQuestions());
     });
   }, []);
 
@@ -61,7 +70,19 @@ export default function ExamGeneratorPage() {
   async function generate() {
     setLoading(true);
     setMessage("");
-    const content = await generateExam(input);
+    const generated = await generateExam(input);
+    const matching = bankQuestions.filter((item) =>
+      item.subject.toLowerCase() === input.subject.toLowerCase()
+      && item.grade.toLowerCase() === input.grade.toLowerCase()
+      && (!input.topic || item.topic.toLowerCase().includes(input.topic.toLowerCase()) || input.topic.toLowerCase().includes(item.topic.toLowerCase()))
+      && (!bankDifficulty || item.difficulty === bankDifficulty)
+    ).slice(0, bankCount);
+    const bankContent = useBank && matching.length
+      ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map((item, index) => `Câu NH${index + 1}. ${item.question}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}`).join("\n\n")}`
+      : "";
+    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated + bankContent, {
+      subject: input.subject, grade: input.grade, topic: input.topic
+    });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
     setDocument(next);
     incrementUsage();
@@ -110,6 +131,7 @@ export default function ExamGeneratorPage() {
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
+            <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
               <p className="form-section-title">Thông tin đề</p>
               <div className="space-y-4">
@@ -149,6 +171,21 @@ export default function ExamGeneratorPage() {
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeRubric} onChange={(e) => setInput({ ...input, includeRubric: e.target.checked })} /> Có tạo thang điểm không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeMatrix} onChange={(e) => setInput({ ...input, includeMatrix: e.target.checked })} /> Có tạo ma trận đề không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeSpecification} onChange={(e) => setInput({ ...input, includeSpecification: e.target.checked })} /> Có bản đặc tả đề không</label>
+            </div>
+            <div className="form-section space-y-3">
+              <p className="form-section-title">Dùng câu hỏi từ ngân hàng</p>
+              <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={useBank} onChange={(e) => setUseBank(e.target.checked)} /> Lấy câu hỏi từ ngân hàng câu hỏi</label>
+              {useBank ? <>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div><label className="label">Mức độ</label><select className="form-field mt-1" value={bankDifficulty} onChange={(e) => setBankDifficulty(e.target.value)}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>
+                  <div><label className="label">Số câu lấy tối đa</label><input type="number" min="1" className="form-field mt-1" value={bankCount} onChange={(e) => setBankCount(Number(e.target.value))} /></div>
+                </div>
+                {bankQuestions.filter((item) => item.subject.toLowerCase() === input.subject.toLowerCase() && item.grade.toLowerCase() === input.grade.toLowerCase() && (!bankDifficulty || item.difficulty === bankDifficulty)).length ? (
+                  <div className="max-h-40 space-y-2 overflow-auto rounded-md border border-line bg-white p-3 text-sm">
+                    {bankQuestions.filter((item) => item.subject.toLowerCase() === input.subject.toLowerCase() && item.grade.toLowerCase() === input.grade.toLowerCase() && (!bankDifficulty || item.difficulty === bankDifficulty)).slice(0, bankCount).map((item) => <p key={item.id} className="border-b border-line pb-2 last:border-0">{item.question}</p>)}
+                  </div>
+                ) : <p className="text-sm text-muted">Không có câu phù hợp. <a className="font-semibold text-brand" href="/question-bank">Thêm câu hỏi</a> hoặc <a className="font-semibold text-brand" href="/tools/import-questions">nhập từ text/CSV</a>.</p>}
+              </> : null}
             </div>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>

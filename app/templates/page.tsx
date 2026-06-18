@@ -4,32 +4,7 @@ import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
-
-type TemplateItem = {
-  id: string;
-  name: string;
-  type: string;
-  content: string;
-  notes: string;
-  updatedAt: string;
-};
-
-const TEMPLATE_KEY = "classora_templates";
-const templateTypes = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Tin nhắn phụ huynh"];
-
-function readTemplates(): TemplateItem[] {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(TEMPLATE_KEY) || "[]") as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item): item is TemplateItem => {
-      if (!item || typeof item !== "object") return false;
-      const candidate = item as Partial<TemplateItem>;
-      return typeof candidate.id === "string" && typeof candidate.name === "string" && typeof candidate.content === "string";
-    });
-  } catch {
-    return [];
-  }
-}
+import { getTemplates, saveTemplates, templateTypes, type TemplateItem } from "@/lib/templates";
 
 export default function TemplatesPage() {
   const [items, setItems] = useState<TemplateItem[]>([]);
@@ -41,12 +16,12 @@ export default function TemplatesPage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    queueMicrotask(() => setItems(readTemplates()));
+    queueMicrotask(() => setItems(getTemplates()));
   }, []);
 
   function persist(next: TemplateItem[]) {
     setItems(next);
-    localStorage.setItem(TEMPLATE_KEY, JSON.stringify(next));
+    saveTemplates(next);
   }
 
   function resetForm() {
@@ -115,7 +90,8 @@ export default function TemplatesPage() {
             </div>
             <div>
               <label className="label">Template content</label>
-              <textarea className="form-field mt-1 min-h-40" value={content} onChange={(event) => setContent(event.target.value)} placeholder="Nhập nội dung mẫu..." />
+              <textarea className="form-field mt-1 min-h-40" value={content} onChange={(event) => setContent(event.target.value)} placeholder={"Ví dụ:\n{{ten_truong}}\nMôn: {{mon_hoc}} - Lớp: {{lop}}\n{{noi_dung}}"} />
+              <p className="mt-2 text-xs leading-5 text-muted">Placeholder: {"{{ten_truong}}, {{ten_giao_vien}}, {{nam_hoc}}, {{mon_hoc}}, {{lop}}, {{chu_de}}, {{noi_dung}}"}</p>
             </div>
             <div>
               <label className="label">Notes</label>

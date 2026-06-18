@@ -46,6 +46,8 @@ npm run build
 - `/tools`
 - `/settings`
 - `/templates`
+- `/question-bank`
+- `/tools/import-questions`
 - `/tools/exam-generator`
 - `/tools/worksheet-generator`
 - `/tools/student-comments`
@@ -80,6 +82,16 @@ npm run build
 - Trộn mã đề đang ở mức demo, giáo viên phải kiểm tra lại thứ tự câu và đáp án trước khi in.
 - Lịch sử chỉ lưu trong `localStorage` của trình duyệt hiện tại.
 - Nội dung do AI mô phỏng tạo ra cần được giáo viên kiểm tra trước khi sử dụng.
+- Ngân hàng câu hỏi, mẫu và thư mục lịch sử chỉ lưu trong `localStorage`.
+- Nhập câu hỏi chỉ hỗ trợ văn bản và CSV; không đọc PDF hoặc hình ảnh.
+
+## Batch 5 Improvements
+
+- Ngân hàng câu hỏi cục bộ: thêm, sửa, xóa, lọc, chọn và xuất Word.
+- Nhập câu hỏi từ văn bản hoặc CSV, chỉnh sửa preview trước khi lưu.
+- Dùng lại câu hỏi ngân hàng trong công cụ tạo đề.
+- Áp dụng mẫu cá nhân với placeholder `{{ten_truong}}`, `{{ten_giao_vien}}`, `{{nam_hoc}}`, `{{mon_hoc}}`, `{{lop}}`, `{{chu_de}}`, `{{noi_dung}}`.
+- Tổ chức lịch sử tài liệu theo thư mục.
 
 ## Batch 4 Improvements
 

@@ -7,10 +7,12 @@ import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateStudentComments } from "@/lib/mock-ai";
 import type { GeneratedDocument, StudentCommentInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
+import { applyTemplate, getTemplates } from "@/lib/templates";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -37,11 +39,13 @@ export default function StudentCommentsPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [templateId, setTemplateId] = useState("");
 
   async function generate() {
     setLoading(true);
     setMessage("");
-    const content = await generateStudentComments(input);
+    const generated = await generateStudentComments(input);
+    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, { className: input.className });
     const next = createDocument(`Nhận xét học sinh ${input.studentName || input.className}`, "student-comment", content);
     setDocument(next);
     incrementUsage();
@@ -67,6 +71,7 @@ export default function StudentCommentsPage() {
         <PageHeader title="Tạo nhận xét học sinh" description="Soạn nhận xét phù hợp học bạ, tin nhắn phụ huynh hoặc tổng kết cuối kỳ." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin học sinh</p>
             <div className="grid gap-3 sm:grid-cols-2">

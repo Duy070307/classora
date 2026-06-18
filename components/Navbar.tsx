@@ -11,6 +11,7 @@ export function Navbar() {
         <nav className="flex items-center gap-4 text-sm font-medium text-muted">
           <Link href="/dashboard" className="hover:text-brand">Dashboard</Link>
           <Link href="/tools" className="hover:text-brand">Công cụ</Link>
+          <Link href="/question-bank" className="hover:text-brand">Ngân hàng câu hỏi</Link>
           <Link href="/history" className="hover:text-brand">Lịch sử</Link>
           <Link href="/templates" className="hover:text-brand">Mẫu cá nhân</Link>
           <Link href="/settings" className="hover:text-brand">Cài đặt</Link>

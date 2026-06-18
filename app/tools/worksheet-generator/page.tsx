@@ -7,10 +7,12 @@ import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateWorksheet } from "@/lib/mock-ai";
 import type { GeneratedDocument, WorksheetInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
+import { applyTemplate, getTemplates } from "@/lib/templates";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -29,11 +31,13 @@ export default function WorksheetGeneratorPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [templateId, setTemplateId] = useState("");
 
   async function generate() {
     setLoading(true);
     setMessage("");
-    const content = await generateWorksheet(input);
+    const generated = await generateWorksheet(input);
+    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, { subject: input.subject, grade: input.grade, topic: input.topic });
     const next = createDocument(`Phiếu học tập ${input.subject} lớp ${input.grade}`, "worksheet", content);
     setDocument(next);
     incrementUsage();
@@ -59,6 +63,7 @@ export default function WorksheetGeneratorPage() {
         <PageHeader title="Tạo phiếu học tập" description="Tạo nhanh phiếu học tập có mục tiêu, tóm tắt kiến thức, bài tập và đáp án." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            <TemplateSelect type="Phiếu học tập" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin phiếu</p>
             <div className="grid gap-3 sm:grid-cols-2">

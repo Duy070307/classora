@@ -14,6 +14,8 @@ import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry
 import type { GeneratedDocument } from "@/lib/types";
 
 const highlightedHrefs = [
+  "/question-bank",
+  "/tools/import-questions",
   "/tools/exam-generator",
   "/tools/exam-shuffler",
   "/tools/matrix-generator",

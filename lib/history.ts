@@ -1,6 +1,6 @@
 "use client";
 
-import type { GeneratedDocument } from "@/lib/types";
+import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 
 const HISTORY_KEY = "classora_history";
 
@@ -57,12 +57,26 @@ export function deleteDocument(id: string) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
 }
 
+export function updateDocumentFolder(id: string, folder: DocumentFolder) {
+  const next = getHistory().map((item) => item.id === id ? { ...item, folder } : item);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+}
+
+function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {
+  if (["exam", "matrix", "answer-key", "exam-checker", "exam-shuffler", "question-bank", "question-variant"].includes(type)) return "Đề kiểm tra";
+  if (type === "lesson-plan") return "Giáo án";
+  if (type === "worksheet") return "Phiếu học tập";
+  if (["student-comment", "bulk-student-comments"].includes(type)) return "Nhận xét học sinh";
+  return "Khác";
+}
+
 export function createDocument(title: string, type: GeneratedDocument["type"], content: string): GeneratedDocument {
   return {
     id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     title,
     type,
     content,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    folder: defaultFolder(type)
   };
 }

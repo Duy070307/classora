@@ -27,6 +27,25 @@ export type GeneratedDocument = {
   type: ToolType;
   content: string;
   createdAt: string;
+  folder?: DocumentFolder;
+};
+
+export type DocumentFolder = "Đề kiểm tra" | "Giáo án" | "Phiếu học tập" | "Nhận xét học sinh" | "Khác";
+
+export type QuestionType = "Trắc nghiệm" | "Tự luận" | "Điền khuyết" | "Đúng/Sai";
+export type QuestionDifficulty = "Nhận biết" | "Thông hiểu" | "Vận dụng" | "Vận dụng cao";
+
+export type QuestionItem = {
+  id: string;
+  subject: string;
+  grade: string;
+  topic: string;
+  question: string;
+  type: QuestionType;
+  difficulty: QuestionDifficulty;
+  answer: string;
+  explanation: string;
+  createdAt: string;
 };
 
 export type ExamInput = {

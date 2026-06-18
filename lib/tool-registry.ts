@@ -31,6 +31,8 @@ export const categoryOrder: ToolCategory[] = [
 ];
 
 export const toolRegistry: ToolMeta[] = [
+  { title: "Ngân hàng câu hỏi", description: "Lưu, lọc, chỉnh sửa và tái sử dụng câu hỏi trên trình duyệt.", href: "/question-bank", category: "exam-assessment", popular: true, badge: "Mới" },
+  { title: "Nhập câu hỏi từ văn bản/CSV", description: "Phân tích câu hỏi đã có và lưu vào ngân hàng cục bộ.", href: "/tools/import-questions", category: "exam-assessment", badge: "Import" },
   { title: "Tạo đề kiểm tra", description: "Tạo đề có đáp án, thang điểm và ma trận.", href: "/tools/exam-generator", category: "exam-assessment", popular: true },
   { title: "Tạo ma trận đề", description: "Tạo bảng ma trận, phân bổ câu hỏi và gợi ý thang điểm.", href: "/tools/matrix-generator", category: "exam-assessment", popular: true },
   { title: "Tạo đáp án và thang điểm", description: "Tạo đáp án, lời giải, thang điểm và lưu ý khi chấm.", href: "/tools/answer-key-generator", category: "exam-assessment" },

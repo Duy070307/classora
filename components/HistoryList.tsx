@@ -5,8 +5,10 @@ import { CalendarDays, Eye, FileText, Trash2 } from "lucide-react";
 import { CopyButton } from "@/components/CopyButton";
 import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
-import type { GeneratedDocument } from "@/lib/types";
-import { deleteDocument, getHistory } from "@/lib/history";
+import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
+import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
+
+const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
 const labels: Record<GeneratedDocument["type"], string> = {
   exam: "Đề kiểm tra",
@@ -38,6 +40,7 @@ export function HistoryList() {
   const [message, setMessage] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("Tất cả");
+  const [folderFilter, setFolderFilter] = useState("Tất cả thư mục");
 
   function refresh() {
     setItems(getHistory());
@@ -67,7 +70,8 @@ export function HistoryList() {
     const normalized = query.trim().toLowerCase();
     const matchQuery = !normalized || item.title.toLowerCase().includes(normalized) || item.content.toLowerCase().includes(normalized);
     const matchType = typeFilter === "Tất cả" || labels[item.type] === typeFilter;
-    return matchQuery && matchType;
+    const matchFolder = folderFilter === "Tất cả thư mục" || (item.folder || "Khác") === folderFilter;
+    return matchQuery && matchType && matchFolder;
   });
 
   if (items.length === 0) {
@@ -84,11 +88,15 @@ export function HistoryList() {
     <div className="space-y-4">
       {message ? <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{message}</div> : null}
       <div className="card p-4">
-        <div className="grid gap-3 md:grid-cols-[1fr_240px_auto]">
+        <div className="grid gap-3 md:grid-cols-[1fr_220px_220px_auto]">
           <input className="form-field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tiêu đề hoặc nội dung..." />
           <select className="form-field" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
             <option>Tất cả</option>
             {Object.values(labels).map((label) => <option key={label}>{label}</option>)}
+          </select>
+          <select className="form-field" value={folderFilter} onChange={(event) => setFolderFilter(event.target.value)}>
+            <option>Tất cả thư mục</option>
+            {folders.map((folder) => <option key={folder}>{folder}</option>)}
           </select>
           <button type="button" onClick={clearAll} className="btn-secondary text-red-600">Xóa tất cả</button>
         </div>
@@ -100,6 +108,7 @@ export function HistoryList() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <span className="inline-flex rounded-md bg-blue-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-brand">{labels[item.type]}</span>
+                  <span className="ml-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{item.folder || "Khác"}</span>
                   <h3 className="mt-2 font-bold text-ink">{item.title}</h3>
                   <p className="mt-1 flex items-center gap-1 text-xs text-muted">
                     <CalendarDays size={13} />
@@ -111,6 +120,9 @@ export function HistoryList() {
                 </button>
               </div>
               <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted">{item.content}</p>
+              <select className="form-field mt-3" value={item.folder || "Khác"} onChange={(event) => { updateDocumentFolder(item.id, event.target.value as DocumentFolder); refresh(); }}>
+                {folders.map((folder) => <option key={folder}>{folder}</option>)}
+              </select>
               <button type="button" onClick={() => setSelected(item)} className="mt-3 btn-secondary">
                 <Eye size={16} />
                 Xem

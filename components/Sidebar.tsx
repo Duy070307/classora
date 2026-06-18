@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, MessageCircle, ScrollText, Settings, Wrench } from "lucide-react";
+import { BookOpenCheck, Home, MessageCircle, ScrollText, Settings, Wrench } from "lucide-react";
 import { DemoNotice } from "@/components/DemoNotice";
 import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 
@@ -28,6 +28,10 @@ export function Sidebar() {
           <Link href="/tools" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
             <Wrench size={18} />
             Tất cả công cụ
+          </Link>
+          <Link href="/question-bank" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
+            <BookOpenCheck size={18} />
+            Ngân hàng câu hỏi
           </Link>
           <Link href="/settings" className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-blue-50 hover:text-brand">
             <Settings size={18} />

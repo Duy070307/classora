@@ -9,9 +9,11 @@ import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 import { incrementUsage } from "@/lib/usage";
+import { applyTemplate, getTemplates } from "@/lib/templates";
 import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from "@/lib/types";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
@@ -27,6 +29,8 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [templateId, setTemplateId] = useState("");
+  const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
 
   function update(name: string, value: string | number | boolean | string[]) {
     setInput((current) => ({ ...current, [name]: value }));
@@ -35,7 +39,9 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   async function generate() {
     setLoading(true);
     setMessage("");
-    const content = await config.generate(input);
+    const generated = await config.generate(input);
+    const values = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, String(value)]));
+    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, values);
     const next = createDocument(config.makeTitle(input), config.type, content);
     setDocument(next);
     incrementUsage();
@@ -67,6 +73,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
                 Dùng dữ liệu mẫu
               </button>
             ) : null}
+            {templateType ? <TemplateSelect type={templateType} value={templateId} onChange={setTemplateId} /> : null}
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin tạo tài liệu</p>
               {config.fields.map((field) => {
