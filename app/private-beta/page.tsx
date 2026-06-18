@@ -1,15 +1,20 @@
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, FlaskConical, MessageSquareText, Users } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const focus = ["Công cụ có dễ dùng không?", "Output có đúng nhu cầu giáo viên không?", "File Word có đủ dùng không?", "Giao diện có rối không?", "Có lỗi nào khi thao tác không?"];
+const sections = [
+  ["Soạn Lab là gì?", "Bộ công cụ hỗ trợ giáo viên tạo đề, tài liệu, nhận xét và xuất Word bằng các workflow có form rõ ràng.", FlaskConical],
+  ["Ai nên dùng thử?", "Giáo viên THCS/THPT, giáo viên chủ nhiệm và gia sư thường xuyên chuẩn bị tài liệu.", Users],
+  ["Nên thử điều gì?", "Tạo đề, ma trận, phiếu học tập, nhận xét hàng loạt, lịch sử và xuất Word.", CheckCircle2],
+  ["Góp ý nào hữu ích?", "Độ dễ dùng, cấu trúc tài liệu, chất lượng file Word và lỗi gặp trong quá trình thao tác.", MessageSquareText]
+];
 
 export default function PrivateBetaPage() {
-  return <main><Navbar /><section className="mx-auto max-w-5xl px-4 py-12 md:py-16">
-    <p className="text-sm font-bold uppercase text-brand">Thử nghiệm riêng · v0.5 RC</p><h1 className="mt-2 text-4xl font-bold text-ink">Soạn Lab Private Beta</h1>
-    <p className="mt-5 max-w-3xl text-lg leading-8 text-muted">Soạn Lab đang ở giai đoạn thử nghiệm riêng với một nhóm nhỏ giáo viên. Mục tiêu hiện tại là kiểm tra giao diện, quy trình tạo tài liệu, lưu lịch sử và xuất Word.</p>
-    <div className="mt-8 grid gap-6 md:grid-cols-2"><section className="card p-5"><h2 className="text-xl font-bold text-ink">Bản hiện tại có gì?</h2><ul className="mt-4 space-y-3 text-sm leading-6 text-muted"><li>• Chưa sử dụng AI thật; nội dung được tạo bằng AI mô phỏng.</li><li>• Không có đăng nhập, database hoặc thanh toán.</li><li>• Dữ liệu chỉ lưu trên trình duyệt hiện tại.</li><li>• Tester nên tập trung đánh giá workflow và file Word.</li></ul></section><section className="card p-5"><h2 className="text-xl font-bold text-ink">Mong thầy cô góp ý</h2><ul className="mt-4 space-y-3">{focus.map((item) => <li key={item} className="flex gap-2 text-sm text-muted"><CheckCircle2 size={17} className="mt-0.5 shrink-0 text-brand" />{item}</li>)}</ul></section></div>
-    <div className="mt-8 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Mở dashboard</Link><Link href="/tools" className="btn-secondary">Xem tất cả công cụ</Link><Link href="/feedback" className="btn-secondary">Gửi góp ý</Link><Link href="/release-candidate" className="btn-secondary">Checklist release</Link><Link href="/known-issues" className="btn-secondary">Giới hạn hiện tại</Link><Link href="/share" className="btn-secondary">Chia sẻ bản demo</Link><Link href="/tester-guide" className="btn-secondary">Hướng dẫn tester</Link></div>
+  return <main><Navbar /><section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+    <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-7 text-white shadow-2xl shadow-blue-200 sm:p-10"><span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold">v0.5 RC · Thử nghiệm riêng</span><h1 className="mt-5 text-4xl font-extrabold sm:text-5xl">Soạn Lab Private Beta</h1><p className="mt-4 max-w-3xl text-lg leading-8 text-blue-100">Cùng giáo viên kiểm thử giao diện, quy trình tạo tài liệu, lưu lịch sử và xuất Word trước khi phát triển bản beta.</p><div className="mt-7 flex flex-wrap gap-3"><Link href="/dashboard" className="inline-flex min-h-11 items-center rounded-xl bg-white px-5 py-2 text-sm font-bold text-blue-700">Mở dashboard</Link><Link href="/feedback" className="inline-flex min-h-11 items-center rounded-xl border border-white/30 px-5 py-2 text-sm font-bold">Gửi góp ý</Link></div></div>
+    <div className="mt-8 grid gap-5 md:grid-cols-2">{sections.map(([title, text, Icon]) => { const SectionIcon = Icon as typeof FlaskConical; return <section key={title as string} className="card p-6"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-brand"><SectionIcon size={21} /></span><h2 className="mt-4 text-xl font-bold text-ink">{title as string}</h2><p className="mt-2 text-sm leading-7 text-muted">{text as string}</p></section>; })}</div>
+    <section className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5"><h2 className="font-bold text-amber-900">Giới hạn hiện tại</h2><p className="mt-2 text-sm leading-6 text-amber-800">Chưa có AI thật, đăng nhập, database hoặc thanh toán. Dữ liệu chỉ lưu trên trình duyệt và mọi nội dung cần được giáo viên kiểm tra lại.</p><Link href="/known-issues" className="mt-3 inline-flex text-sm font-bold text-amber-900 underline">Xem đầy đủ giới hạn</Link></section>
+    <div className="mt-8 flex flex-wrap gap-3"><Link href="/tools" className="btn-secondary">Xem tất cả công cụ</Link><Link href="/share" className="btn-secondary">Chia sẻ bản demo</Link><Link href="/tester-guide" className="btn-secondary">Hướng dẫn tester</Link></div>
   </section><SiteFooter /></main>;
 }

@@ -29,7 +29,7 @@ export default function FeedbackPage() {
   async function handleCopy(event: FormEvent) {
     event.preventDefault();
     const browserNote = `${navigator.userAgent} | ${window.innerWidth}x${window.innerHeight}`;
-    const feedback = `GÓP Ý PRIVATE BETA CLASSORA
+    const feedback = `GÓP Ý PRIVATE BETA SOẠN LAB
 
 Họ tên: ${name || "Chưa nhập"}
 Vai trò: ${role}
