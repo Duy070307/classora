@@ -30,6 +30,8 @@ export type GeneratedDocument = {
 };
 
 export type ExamInput = {
+  schoolName: string;
+  teacherName: string;
   subject: string;
   grade: string;
   topic: string;
@@ -39,9 +41,14 @@ export type ExamInput = {
   essayCount: number;
   totalScore: number;
   level: "Dễ" | "Trung bình" | "Khó";
+  recognitionRate: number;
+  understandingRate: number;
+  applicationRate: number;
+  advancedRate: number;
   includeAnswers: boolean;
   includeRubric: boolean;
   includeMatrix: boolean;
+  includeSpecification: boolean;
   extraRequirements: string;
 };
 
@@ -109,4 +116,5 @@ export type ToolConfig = {
   fields: ToolField[];
   generate: (input: GenericToolInput) => Promise<string>;
   makeTitle: (input: GenericToolInput) => string;
+  sampleInput?: GenericToolInput;
 };

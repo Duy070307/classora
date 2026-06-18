@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, RotateCcw, Save } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -9,10 +9,13 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateExam } from "@/lib/mock-ai";
+import { getDocumentSettings } from "@/lib/document-settings";
 import type { ExamInput, GeneratedDocument } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 
 const initialInput: ExamInput = {
+  schoolName: "",
+  teacherName: "",
   subject: "Toán",
   grade: "7",
   topic: "Tỉ lệ thức và dãy tỉ số bằng nhau",
@@ -22,9 +25,14 @@ const initialInput: ExamInput = {
   essayCount: 3,
   totalScore: 10,
   level: "Trung bình",
+  recognitionRate: 30,
+  understandingRate: 40,
+  applicationRate: 20,
+  advancedRate: 10,
   includeAnswers: true,
   includeRubric: true,
   includeMatrix: true,
+  includeSpecification: true,
   extraRequirements: ""
 };
 
@@ -33,6 +41,17 @@ export default function ExamGeneratorPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      const settings = getDocumentSettings();
+      setInput((current) => ({
+        ...current,
+        schoolName: current.schoolName || settings.schoolName,
+        teacherName: current.teacherName || settings.teacherName
+      }));
+    });
+  }, []);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -56,6 +75,33 @@ export default function ExamGeneratorPage() {
     setMessage("Đã lưu vào lịch sử.");
   }
 
+  function useSampleData() {
+    const settings = getDocumentSettings();
+    setInput({
+      schoolName: settings.schoolName || "Trường THCS Demo",
+      teacherName: settings.teacherName || "Cô Lan",
+      subject: "Toán",
+      grade: "8",
+      topic: "Phương trình bậc nhất một ẩn",
+      duration: "45 phút",
+      examType: "Kết hợp",
+      multipleChoiceCount: 8,
+      essayCount: 3,
+      totalScore: 10,
+      level: "Trung bình",
+      recognitionRate: 30,
+      understandingRate: 40,
+      applicationRate: 20,
+      advancedRate: 10,
+      includeAnswers: true,
+      includeRubric: true,
+      includeMatrix: true,
+      includeSpecification: true,
+      extraRequirements: "Có 1 câu vận dụng gắn với tình huống thực tế, câu chữ phù hợp học sinh lớp 8."
+    });
+    setMessage("Đã điền dữ liệu mẫu.");
+  }
+
   return (
     <div className="min-h-screen md:flex">
       <Sidebar />
@@ -63,9 +109,14 @@ export default function ExamGeneratorPage() {
         <PageHeader title="Tạo đề kiểm tra" description="Nhập yêu cầu, Classora sẽ tạo bản nháp đề kiểm tra kèm đáp án, thang điểm và ma trận." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
             <div className="form-section">
               <p className="form-section-title">Thông tin đề</p>
               <div className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div><label className="label">Tên trường/trung tâm</label><input className="form-field mt-1" value={input.schoolName} onChange={(e) => setInput({ ...input, schoolName: e.target.value })} /></div>
+                  <div><label className="label">Tên giáo viên</label><input className="form-field mt-1" value={input.teacherName} onChange={(e) => setInput({ ...input, teacherName: e.target.value })} /></div>
+                </div>
                 <div><label className="label">Môn học</label><input className="form-field mt-1" value={input.subject} onChange={(e) => setInput({ ...input, subject: e.target.value })} /></div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Lớp</label><input className="form-field mt-1" value={input.grade} onChange={(e) => setInput({ ...input, grade: e.target.value })} /></div>
@@ -77,13 +128,19 @@ export default function ExamGeneratorPage() {
             <div className="form-section">
               <p className="form-section-title">Cấu trúc</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div><label className="label">Loại đề</label><select className="form-field mt-1" value={input.examType} onChange={(e) => setInput({ ...input, examType: e.target.value as ExamInput["examType"] })}><option>Trắc nghiệm</option><option>Tự luận</option><option>Kết hợp</option></select></div>
-                <div><label className="label">Mức độ</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
+                <div><label className="label">Hình thức đề</label><select className="form-field mt-1" value={input.examType} onChange={(e) => setInput({ ...input, examType: e.target.value as ExamInput["examType"] })}><option>Trắc nghiệm</option><option>Tự luận</option><option>Kết hợp</option></select></div>
+                <div><label className="label">Mức độ chung</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-3">
                 <div><label className="label">Số câu trắc nghiệm</label><input type="number" className="form-field mt-1" value={input.multipleChoiceCount} onChange={(e) => setInput({ ...input, multipleChoiceCount: Number(e.target.value) })} /></div>
                 <div><label className="label">Số câu tự luận</label><input type="number" className="form-field mt-1" value={input.essayCount} onChange={(e) => setInput({ ...input, essayCount: Number(e.target.value) })} /></div>
                 <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
+              </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-4">
+                <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ thông hiểu</label><input type="number" className="form-field mt-1" value={input.understandingRate} onChange={(e) => setInput({ ...input, understandingRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ vận dụng</label><input type="number" className="form-field mt-1" value={input.applicationRate} onChange={(e) => setInput({ ...input, applicationRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ vận dụng cao</label><input type="number" className="form-field mt-1" value={input.advancedRate} onChange={(e) => setInput({ ...input, advancedRate: Number(e.target.value) })} /></div>
               </div>
             </div>
             <div className="form-section space-y-3">
@@ -91,6 +148,7 @@ export default function ExamGeneratorPage() {
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeAnswers} onChange={(e) => setInput({ ...input, includeAnswers: e.target.checked })} /> Có tạo đáp án không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeRubric} onChange={(e) => setInput({ ...input, includeRubric: e.target.checked })} /> Có tạo thang điểm không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeMatrix} onChange={(e) => setInput({ ...input, includeMatrix: e.target.checked })} /> Có tạo ma trận đề không</label>
+              <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeSpecification} onChange={(e) => setInput({ ...input, includeSpecification: e.target.checked })} /> Có bản đặc tả đề không</label>
             </div>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>

@@ -72,12 +72,22 @@ npm run build
 ## Current Limitations
 
 - Chưa có AI thật, đang dùng AI mô phỏng.
+- Chưa có real OCR hoặc image recognition.
 - Chưa có đăng nhập.
 - Chưa có database.
 - Chưa có thanh toán.
 - Chưa có OCR, upload ảnh hoặc upload PDF.
+- Trộn mã đề đang ở mức demo, giáo viên phải kiểm tra lại thứ tự câu và đáp án trước khi in.
 - Lịch sử chỉ lưu trong `localStorage` của trình duyệt hiện tại.
 - Nội dung do AI mô phỏng tạo ra cần được giáo viên kiểm tra trước khi sử dụng.
+
+## Batch 4 Improvements
+
+- Cải thiện công cụ tạo đề kiểm tra với header, tỉ lệ mức độ, ma trận và bản đặc tả đề.
+- Cải thiện ma trận đề theo bảng chủ đề, mức độ, số câu, số điểm và tỉ lệ.
+- Cải thiện đáp án và thang điểm với bảng đáp án trắc nghiệm, lỗi thường gặp và gợi ý chấm linh hoạt.
+- Cải thiện trộn mã đề demo với parser câu hỏi A/B/C/D và bảng đáp án theo mã.
+- Cải thiện export Word với header từ cài đặt, heading, bullet-like paragraphs, font và cỡ chữ theo settings.
 
 ## Future Roadmap
 

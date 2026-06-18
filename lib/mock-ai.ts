@@ -13,60 +13,88 @@ export async function generateExam(input: ExamInput): Promise<string> {
   await wait();
   const mcCount = limitedCount(input.multipleChoiceCount, 6, 12);
   const essayCount = limitedCount(input.essayCount, 2, 5);
+  const showMc = input.examType !== "Tự luận" && mcCount > 0;
+  const showEssay = input.examType !== "Trắc nghiệm" && essayCount > 0;
+  const school = input.schoolName || "........................................................";
+  const teacher = input.teacherName || "........................................................";
+  const rates = [
+    ["Nhận biết", input.recognitionRate],
+    ["Thông hiểu", input.understandingRate],
+    ["Vận dụng", input.applicationRate],
+    ["Vận dụng cao", input.advancedRate]
+  ] as const;
   const mcQuestions = Array.from({ length: mcCount }, (_, index) => {
     const n = index + 1;
-    return `${n}. Khi học chủ đề "${input.topic}", bước nào sau đây giúp học sinh giải quyết bài tập chính xác nhất?
-A. Đọc kỹ yêu cầu, xác định kiến thức cần dùng rồi trình bày theo từng bước.
-B. Chọn ngay đáp án quen thuộc mà không cần kiểm tra dữ kiện.
-C. Chỉ ghi kết quả cuối cùng, bỏ qua phần lập luận.
-D. Học thuộc định nghĩa nhưng không vận dụng vào tình huống.`;
+    return `Câu ${n}. Khi học chủ đề "${input.topic}", nhận định nào sau đây là đúng?
+A. Cần đọc kỹ yêu cầu, xác định kiến thức cần dùng rồi trình bày theo từng bước.
+B. Chỉ cần ghi nhớ máy móc, không cần hiểu bản chất.
+C. Có thể bỏ qua dữ kiện nếu đã quen dạng bài.
+D. Chỉ ghi đáp án cuối cùng là đủ.`;
   }).join("\n\n");
   const essayQuestions = Array.from({ length: essayCount }, (_, index) => {
     const n = index + 1;
-    return `${n}. Vận dụng kiến thức về ${input.topic} để giải quyết một bài toán/tình huống trong chương trình ${input.subject} lớp ${input.grade}. Trình bày đầy đủ các bước, nêu kết luận và giải thích vì sao cách làm phù hợp.`;
+    return `Câu ${n}. Vận dụng kiến thức về ${input.topic} để giải quyết một bài toán/tình huống trong chương trình ${input.subject} lớp ${input.grade}. Trình bày đầy đủ các bước, nêu kết luận và giải thích vì sao cách làm phù hợp.`;
   }).join("\n\n");
+  const matrixRows = rates.map(([label, rate]) => {
+    const totalQuestions = (showMc ? mcCount : 0) + (showEssay ? essayCount : 0);
+    const questions = Math.max(1, Math.round((totalQuestions * rate) / 100));
+    const score = ((input.totalScore * rate) / 100).toFixed(1);
+    return `| ${label} | ${rate}% | ${questions} câu | ${score} điểm | ${label === "Nhận biết" ? "Nhận diện khái niệm, dấu hiệu cơ bản" : label === "Thông hiểu" ? "Giải thích, phân loại, lựa chọn cách làm" : label === "Vận dụng" ? "Giải quyết bài tập/tình huống quen thuộc" : "Xử lý tình huống tổng hợp, có lập luận"} |`;
+  }).join("\n");
 
-  return `HEADER
-Trường: ............................................................
-Họ và tên học sinh: ................................................
-Lớp: ${input.grade}        Ngày kiểm tra: ........../........../..........
+  return `${school}
+Giáo viên: ${teacher}
+Năm học: .......... - ..........
 
-ĐỀ KIỂM TRA ${input.subject.toUpperCase()} - LỚP ${input.grade}
+ĐỀ KIỂM TRA ${input.subject.toUpperCase()}
+Lớp: ${input.grade}
 Chủ đề/chương: ${input.topic}
 Thời gian làm bài: ${input.duration}
-Loại đề: ${input.examType}
-Mức độ: ${input.level}
+Hình thức đề: ${input.examType}
 Tổng điểm: ${input.totalScore}
+Mức độ chung: ${input.level}
+
+Họ và tên: ........................................................
+Lớp: ..............................................................
+
+HƯỚNG DẪN LÀM BÀI
+- Học sinh làm bài trực tiếp trên đề hoặc giấy kiểm tra theo hướng dẫn của giáo viên.
+- Phần trắc nghiệm chọn một đáp án đúng nhất.
+- Phần tự luận trình bày rõ ràng, đủ bước, có kết luận.
+- Không sử dụng tài liệu nếu giáo viên không cho phép.
 
 I. TRẮC NGHIỆM
-Khoanh tròn vào chữ cái đứng trước đáp án đúng nhất.
-
-${mcCount > 0 ? mcQuestions : "Không yêu cầu phần trắc nghiệm."}
+${showMc ? `Khoanh tròn vào chữ cái đứng trước đáp án đúng nhất.\n\n${mcQuestions}` : "Không có phần trắc nghiệm theo lựa chọn hiện tại."}
 
 II. TỰ LUẬN
-Học sinh trình bày bài làm rõ ràng, đủ bước và có kết luận.
-
-${essayCount > 0 ? essayQuestions : "Không yêu cầu phần tự luận."}
+${showEssay ? `Học sinh trình bày bài làm rõ ràng, đủ bước và có kết luận.\n\n${essayQuestions}` : "Không có phần tự luận theo lựa chọn hiện tại."}
 
 III. ĐÁP ÁN
-${input.includeAnswers ? `Trắc nghiệm: ${Array.from({ length: mcCount }, (_, index) => `${index + 1}A`).join(", ")}.
-Tự luận: Học sinh xác định đúng kiến thức trọng tâm của chủ đề ${input.topic}, lập luận hợp lý, trình bày mạch lạc và có kết luận phù hợp.` : "Giáo viên chưa chọn tạo đáp án."}
+${input.includeAnswers ? `${showMc ? `Trắc nghiệm: ${Array.from({ length: mcCount }, (_, index) => `${index + 1}. A`).join("; ")}.` : "Không có đáp án trắc nghiệm."}
+Tự luận: Học sinh xác định đúng kiến thức trọng tâm của chủ đề ${input.topic}, lập luận hợp lý, trình bày mạch lạc và có kết luận phù hợp. Chấp nhận cách giải khác nếu đúng bản chất kiến thức.` : "Giáo viên chưa chọn tạo đáp án."}
 
 IV. THANG ĐIỂM
-${input.includeRubric ? `Phần trắc nghiệm: ${mcCount > 0 ? `mỗi câu đúng được ${(input.totalScore * 0.4 / mcCount).toFixed(2)} điểm, tổng khoảng 40% số điểm.` : "không có."}
+${input.includeRubric ? `Phần trắc nghiệm: ${showMc ? `mỗi câu đúng được ${(input.totalScore * 0.4 / mcCount).toFixed(2)} điểm, tổng khoảng 40% số điểm.` : "không có."}
 Phần tự luận: đúng kiến thức trọng tâm 50%, lập luận và vận dụng 30%, trình bày/kết luận 20%.
+Điểm trình bày: có thể trừ tối đa 0,5 điểm nếu bài làm thiếu rõ ràng nhưng không làm thay đổi bản chất kết quả.
 Giáo viên có thể điều chỉnh tỉ lệ điểm theo phân phối chương trình của lớp.` : "Giáo viên chưa chọn tạo thang điểm."}
 
-V. MA TRẬN ĐỀ ĐƠN GIẢN
-${input.includeMatrix ? `- Nhận biết: khoảng 30% số câu, kiểm tra khái niệm và dấu hiệu cơ bản của ${input.topic}.
-- Thông hiểu: khoảng 40% số câu, yêu cầu giải thích, phân loại hoặc lựa chọn cách làm.
-- Vận dụng: khoảng 30% số câu, gắn với bài tập tổng hợp hoặc tình huống thực tế.
-- Năng lực hướng tới: tự học, giải quyết vấn đề, trình bày lập luận.` : "Giáo viên chưa chọn tạo ma trận đề."}
+V. MA TRẬN ĐỀ
+${input.includeMatrix ? `| Mức độ | Tỉ lệ | Số câu gợi ý | Số điểm | Yêu cầu cần đạt |
+|---|---:|---:|---:|---|
+${matrixRows}
+| Tổng cộng | 100% | ${(showMc ? mcCount : 0) + (showEssay ? essayCount : 0)} câu | ${input.totalScore} điểm | Bao quát chủ đề ${input.topic} |` : "Giáo viên chưa chọn tạo ma trận đề."}
+
+VI. BẢN ĐẶC TẢ ĐỀ
+${input.includeSpecification ? `- Nội dung kiểm tra: ${input.topic}.
+- Chuẩn kiến thức: nắm khái niệm, hiểu phương pháp, biết vận dụng vào bài tập.
+- Năng lực hướng tới: tự học, giải quyết vấn đề, giao tiếp toán học/ngôn ngữ môn học, trình bày lập luận.
+- Gợi ý cân đối: kiểm tra lại tổng tỉ lệ mức độ, số câu và tổng điểm trước khi in.` : "Giáo viên chưa chọn tạo bản đặc tả đề."}
 
 YÊU CẦU THÊM
 ${input.extraRequirements || "Không có yêu cầu thêm."}
 
-${warning}`;
+Nội dung do AI mô phỏng tạo ra, giáo viên cần kiểm tra lại trước khi sử dụng.`;
 }
 
 export async function generateWorksheet(input: WorksheetInput): Promise<string> {
@@ -194,7 +222,8 @@ export async function generateMatrix(input: GenericToolInput): Promise<string> {
   const rows = levels.map(([label, rate]) => {
     const questions = Math.max(1, Math.round((totalQuestions * rate) / 100));
     const score = ((totalScore * rate) / 100).toFixed(1);
-    return `| ${label} | ${rate}% | ${questions} câu | ${score} điểm |`;
+    const requirement = label === "Nhận biết" ? "Nhận diện khái niệm, sự kiện, công thức hoặc dấu hiệu cơ bản" : label === "Thông hiểu" ? "Giải thích, so sánh, phân loại, lựa chọn cách làm phù hợp" : label === "Vận dụng" ? "Giải quyết bài tập/tình huống quen thuộc có yêu cầu lập luận" : "Giải quyết tình huống tổng hợp, có yếu tố mới hoặc mở rộng";
+    return `| ${topic} | ${label} | ${questions} | ${score} | ${rate}% | ${requirement} |`;
   }).join("\n");
 
   return `MA TRẬN ĐỀ ${subject.toUpperCase()} - LỚP ${grade}
@@ -204,19 +233,27 @@ Tổng điểm: ${totalScore}
 Số câu: ${totalQuestions}
 
 I. BẢNG MA TRẬN ĐỀ
-| Mức độ | Tỉ lệ | Số câu gợi ý | Điểm gợi ý |
-|---|---:|---:|---:|
+| Chủ đề/nội dung | Mức độ | Số câu | Số điểm | Tỉ lệ | Yêu cầu cần đạt |
+|---|---|---:|---:|---:|---|
 ${rows}
+| Tổng cộng | 4 mức độ | ${totalQuestions} | ${totalScore} | 100% | Đảm bảo bao quát nội dung trọng tâm |
 
 II. BẢNG PHÂN BỔ CÂU HỎI
-- Câu 1-${Math.max(1, Math.round(totalQuestions * 0.3))}: nhận biết kiến thức cơ bản của ${topic}.
-- Nhóm câu tiếp theo: kiểm tra khả năng giải thích, phân tích và lựa chọn cách làm.
-- Câu cuối: vận dụng kiến thức vào tình huống hoặc bài tập tổng hợp.
+- Nhận biết: ưu tiên câu hỏi ngắn, rõ yêu cầu, kiểm tra khái niệm hoặc dấu hiệu cơ bản.
+- Thông hiểu: dùng câu hỏi giải thích, phân loại, lựa chọn phương án/cách làm.
+- Vận dụng: dùng bài tập hoặc tình huống quen thuộc, yêu cầu trình bày lập luận.
+- Vận dụng cao: dùng tình huống tổng hợp, có dữ kiện mới, phù hợp năng lực lớp.
 
 III. GỢI Ý SỐ CÂU THEO MỨC ĐỘ
 Nên giữ câu nhận biết ngắn, câu thông hiểu có dữ kiện rõ, câu vận dụng yêu cầu học sinh trình bày lập luận.
 
-IV. GỢI Ý THANG ĐIỂM
+IV. GỢI Ý KIỂM TRA TÍNH CÂN ĐỐI
+- Tổng tỉ lệ nên xấp xỉ 100%.
+- Số câu vận dụng cao không nên quá nhiều nếu đề dùng cho kiểm tra thường xuyên.
+- Tổng điểm từng phần cần khớp với thang điểm chi tiết.
+- Câu tự luận nên có tiêu chí chấm rõ để tránh chấm cảm tính.
+
+V. GỢI Ý THANG ĐIỂM
 Phân bổ điểm theo tỉ lệ mức độ, ưu tiên chấm rõ phần lập luận và kết luận ở câu vận dụng.
 
 GHI CHÚ
@@ -227,6 +264,11 @@ ${warning}`;
 
 export async function generateAnswerKey(input: GenericToolInput): Promise<string> {
   await wait();
+  const examContent = textValue(input, "examContent", "Giáo viên dán nội dung đề bài tại đây.");
+  const mcMatches = [...examContent.matchAll(/Câu\s+(\d+)[\s\S]*?(?:Đáp án|Đáp\s*án)\s*:\s*([A-D])/gi)];
+  const mcTable = mcMatches.length
+    ? mcMatches.map((match) => `| ${match[1]} | ${match[2].toUpperCase()} | Cần đối chiếu lại với đề gốc trước khi in |`).join("\n")
+    : "| Chưa phát hiện | - | Nếu đề có trắc nghiệm, hãy ghi rõ “Đáp án: A/B/C/D” dưới mỗi câu để Classora mô phỏng bảng đáp án tốt hơn. |";
   return `ĐÁP ÁN VÀ THANG ĐIỂM
 Môn học: ${textValue(input, "subject", "Toán")}
 Lớp: ${textValue(input, "grade", "8")}
@@ -234,27 +276,40 @@ Tổng điểm: ${textValue(input, "totalScore", "10")}
 Kiểu đáp án: ${textValue(input, "answerStyle", "Chi tiết")}
 
 I. NỘI DUNG ĐỀ BÀI
-${textValue(input, "examContent", "Giáo viên dán nội dung đề bài tại đây.")}
+${examContent}
 
-II. ĐÁP ÁN
-- Xác định đúng yêu cầu của đề bài.
-- Trình bày được kiến thức trọng tâm.
-- Kết luận đúng, phù hợp dữ kiện.
+II. BẢNG ĐÁP ÁN TRẮC NGHIỆM
+| Câu | Đáp án | Ghi chú |
+|---:|:---:|---|
+${mcTable}
 
-III. LỜI GIẢI
+III. LỜI GIẢI TỰ LUẬN
 1. Đọc kỹ đề và gạch chân dữ kiện quan trọng.
 2. Chọn kiến thức/công thức/luận điểm phù hợp.
 3. Trình bày lời giải theo từng bước, tránh nhảy bước.
 4. Kiểm tra lại kết quả và ghi kết luận.
+5. Với câu hỏi mở, học sinh cần có lập luận hợp lý, ví dụ phù hợp và kết luận rõ.
 
 IV. THANG ĐIỂM
-- Hiểu đúng đề: 20%.
-- Vận dụng kiến thức chính xác: 40%.
-- Lập luận/trình bày: 25%.
-- Kết luận và kiểm tra kết quả: 15%.
+- Xác định đúng yêu cầu đề bài: 20%.
+- Vận dụng đúng kiến thức/công thức/luận điểm: 40%.
+- Lập luận, trình bày các bước hợp lý: 25%.
+- Kết luận, đơn vị, kiểm tra kết quả: 15%.
+- Có thể trừ điểm trình bày nếu bài làm thiếu rõ ràng nhưng không làm sai bản chất.
 
 V. LƯU Ý KHI CHẤM
 Chấp nhận cách giải khác nếu hợp lý, đúng bản chất kiến thức và có kết quả phù hợp.
+
+VI. CÁC LỖI THƯỜNG GẶP CỦA HỌC SINH
+- Đọc thiếu dữ kiện hoặc hiểu sai yêu cầu.
+- Nhầm công thức/khái niệm gần giống nhau.
+- Có kết quả đúng nhưng thiếu bước lập luận.
+- Quên kết luận hoặc ghi sai đơn vị.
+
+VII. GỢI Ý CHẤM LINH HOẠT
+- Với bài tự luận, ưu tiên bản chất lập luận hơn cách trình bày máy móc.
+- Có thể cho điểm từng phần nếu học sinh làm đúng hướng nhưng sai tính toán nhỏ.
+- Cần thống nhất đáp án trước khi chấm hàng loạt để đảm bảo công bằng.
 
 YÊU CẦU THÊM
 ${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
@@ -457,12 +512,43 @@ IV. GỢI Ý GIAO BÀI
 ${warning}`;
 }
 
-function parseQuestionBlocks(raw: string) {
+type ParsedQuestion = {
+  stem: string;
+  options: { key: string; text: string }[];
+  answer: string;
+};
+
+function parseQuestionBlocks(raw: string): ParsedQuestion[] {
   const blocks = raw
     .split(/(?=Câu\s+\d+\.|Cau\s+\d+\.)/i)
     .map((item) => item.trim())
     .filter(Boolean);
-  return blocks.length ? blocks : ["Câu 1. Nội dung câu hỏi mẫu\nA. Phương án A\nB. Phương án B\nC. Phương án C\nD. Phương án D\nĐáp án: A"];
+  const parsed = blocks.map((block) => {
+    const stem = block.split(/\nA\./i)[0]?.replace(/^Câu\s+\d+\.\s*/i, "").trim();
+    const optionMatches = [...block.matchAll(/^([A-D])\.\s*(.+)$/gim)].map((match) => ({ key: match[1].toUpperCase(), text: match[2].trim() }));
+    const answer = block.match(/Đáp\s*án\s*:\s*([A-D])/i)?.[1]?.toUpperCase() ?? "A";
+    if (!stem || optionMatches.length < 2) return null;
+    return { stem, options: optionMatches, answer };
+  }).filter((item): item is ParsedQuestion => Boolean(item));
+
+  return parsed.length ? parsed : [
+    {
+      stem: "Nội dung câu hỏi mẫu chưa parse được từ dữ liệu đã nhập.",
+      options: [
+        { key: "A", text: "Phương án A" },
+        { key: "B", text: "Phương án B" },
+        { key: "C", text: "Phương án C" },
+        { key: "D", text: "Phương án D" }
+      ],
+      answer: "A"
+    }
+  ];
+}
+
+function rotateArray<T>(items: T[], amount: number) {
+  if (!items.length) return items;
+  const offset = amount % items.length;
+  return [...items.slice(offset), ...items.slice(0, offset)];
 }
 
 export async function shuffleExam(input: GenericToolInput): Promise<string> {
@@ -470,13 +556,22 @@ export async function shuffleExam(input: GenericToolInput): Promise<string> {
   const codeCount = limitedCount(numberValue(input, "codeCount", 4), 4, 8);
   const questions = parseQuestionBlocks(textValue(input, "questions", ""));
   const codes = Array.from({ length: codeCount }, (_, index) => 101 + index);
+  const answerTable: string[] = [];
   const codeSections = codes.map((code, codeIndex) => {
-    const ordered = boolValue(input, "shuffleQuestions") ? [...questions].sort((a, b) => ((a.length + codeIndex) % 3) - ((b.length + codeIndex) % 3)) : questions;
-    const answerRows = ordered.map((_, index) => `${index + 1}${["A", "B", "C", "D"][(index + codeIndex) % 4]}`).join(", ");
+    const ordered = boolValue(input, "shuffleQuestions") ? rotateArray(questions, codeIndex) : questions;
+    const answerRows: string[] = [];
+    const renderedQuestions = ordered.map((question, index) => {
+      const options = boolValue(input, "shuffleAnswers") ? rotateArray(question.options, codeIndex + index) : question.options;
+      const renderedOptions = options.map((option, optionIndex) => {
+        const newKey = ["A", "B", "C", "D"][optionIndex] ?? option.key;
+        if (option.key === question.answer) answerRows.push(`${index + 1}${newKey}`);
+        return `${newKey}. ${option.text}`;
+      }).join("\n");
+      return `Câu ${index + 1}. ${question.stem}\n${renderedOptions}`;
+    }).join("\n\n");
+    answerTable.push(`| ${code} | ${answerRows.join(", ")} |`);
     return `MÃ ĐỀ ${code}
-${ordered.map((question, index) => `${index + 1}. ${question.replace(/^Câu\s+\d+\.\s*/i, "")}`).join("\n\n")}
-
-Bảng đáp án mã ${code}: ${answerRows}`;
+${renderedQuestions}`;
   }).join("\n\n");
 
   return `TRỘN MÃ ĐỀ
@@ -493,7 +588,12 @@ ${codes.map((code) => `- Mã đề ${code}`).join("\n")}
 II. NỘI DUNG CÁC MÃ ĐỀ
 ${codeSections}
 
-III. LƯU Ý
+III. BẢNG ĐÁP ÁN TỪNG MÃ
+| Mã đề | Đáp án |
+|---:|---|
+${answerTable.join("\n")}
+
+IV. LƯU Ý
 Bản demo chỉ mô phỏng trộn đề, giáo viên cần kiểm tra lại thứ tự câu, đáp án và định dạng trước khi dùng chính thức.
 
 GHI CHÚ

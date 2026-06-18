@@ -62,6 +62,11 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
         <PageHeader title={config.title} description={config.description} />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            {config.sampleInput ? (
+              <button type="button" onClick={() => setInput(config.sampleInput ?? initialInput)} className="btn-secondary w-full">
+                Dùng dữ liệu mẫu
+              </button>
+            ) : null}
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin tạo tài liệu</p>
               {config.fields.map((field) => {
