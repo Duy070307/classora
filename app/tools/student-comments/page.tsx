@@ -111,7 +111,7 @@ export default function StudentCommentsPage() {
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN NGẮN GỌN")} label="Copy ngắn gọn" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN TRANG TRỌNG")} label="Copy trang trọng" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN THÂN THIỆN GỬI PHỤ HUYNH")} label="Copy phụ huynh" />
-                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Save to history</button>
+                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Lưu lịch sử</button>
                   <ExportDocxButton document={document} />
                 </div>
                 <OutputPreview document={document} />

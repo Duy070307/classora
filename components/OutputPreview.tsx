@@ -1,4 +1,5 @@
 import type { GeneratedDocument } from "@/lib/types";
+import { BugReportLink } from "@/components/BugReportLink";
 
 const headingPattern = /^(#{1,3}\s+|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT|MA TRẬN|ĐÁP ÁN|TRỘN MÃ ĐỀ|MÃ ĐỀ|I\.|II\.|III\.|IV\.|V\.|VI\.|VII\.|PHẦN|THANG ĐIỂM|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|CHỖ TRỐNG|NGẮN GỌN|TRANG TRỌNG|THÂN THIỆN|LƯU Ý|HƯỚNG DẪN)/i;
 
@@ -30,7 +31,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
             }
             return <p key={index} className="break-words text-sm leading-7 text-slate-800">{trimmed}</p>;
           })}
-          <p className="mt-8 border-t border-amber-200 pt-4 text-xs font-medium leading-5 text-amber-700">Nội dung do AI mô phỏng tạo ra, giáo viên cần kiểm tra lại trước khi sử dụng.</p>
+          <div className="mt-8 flex flex-col gap-2 border-t border-amber-200 pt-4 sm:flex-row sm:items-center sm:justify-between"><p className="text-xs font-medium leading-5 text-amber-700">Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.</p><BugReportLink source={document.type} className="shrink-0" /></div>
         </article>
       </div>
     </section>

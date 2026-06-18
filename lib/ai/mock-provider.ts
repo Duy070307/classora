@@ -22,7 +22,7 @@ export const mockProvider: AIProvider = {
     return {
       title: `Classora mock - ${request.tool}`,
       content: await generate(),
-      warnings: ["Nội dung do AI mô phỏng tạo ra, giáo viên cần kiểm tra lại trước khi sử dụng."]
+      warnings: ["Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng."]
     };
   }
 };

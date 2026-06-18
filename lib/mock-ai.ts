@@ -1,6 +1,6 @@
 import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput } from "@/lib/types";
 
-const warning = "Lưu ý: Nội dung do AI tạo, giáo viên nên kiểm tra lại trước khi sử dụng.";
+const warning = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
 
 const wait = (ms = 900) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -94,7 +94,7 @@ ${input.includeSpecification ? `- Nội dung kiểm tra: ${input.topic}.
 YÊU CẦU THÊM
 ${input.extraRequirements || "Không có yêu cầu thêm."}
 
-Nội dung do AI mô phỏng tạo ra, giáo viên cần kiểm tra lại trước khi sử dụng.`;
+Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
 }
 
 export async function generateWorksheet(input: WorksheetInput): Promise<string> {

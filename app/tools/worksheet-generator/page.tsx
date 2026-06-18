@@ -101,9 +101,9 @@ export default function WorksheetGeneratorPage() {
               <>
                 <div className="flex flex-wrap gap-2">
                   <CopyButton text={document.content} />
-                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Save to history</button>
+                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Lưu lịch sử</button>
                   <ExportDocxButton document={document} />
-                  <button type="button" onClick={generate} className="btn-secondary"><RotateCcw size={16} />Generate again</button>
+                  <button type="button" onClick={generate} className="btn-secondary"><RotateCcw size={16} />Tạo lại</button>
                 </div>
                 <OutputPreview document={document} />
               </>

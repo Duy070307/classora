@@ -108,7 +108,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       setMessage("Vui lòng tải CSV trước khi tạo nhận xét.");
       return;
     }
-    const content = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nLưu ý: Nội dung do AI mô phỏng tạo, giáo viên nên kiểm tra lại trước khi gửi.`;
+    const content = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
     const next = createDocument(`Nhận xét hàng loạt - ${rows.length} học sinh`, "bulk-student-comments", content);
     setDocument(next);
     setMessage("Đã tạo nhận xét hàng loạt.");
@@ -164,10 +164,10 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
             {document ? (
               <>
                 <div className="flex flex-wrap gap-2">
-                  <CopyButton text={document.content} label="Copy all" />
-                  <button type="button" onClick={save} className="btn-secondary">Save to history</button>
+                  <CopyButton text={document.content} label="Sao chép tất cả" />
+                  <button type="button" onClick={save} className="btn-secondary">Lưu lịch sử</button>
                   <ExportDocxButton document={document} />
-                  <button type="button" onClick={exportCsv} className="btn-secondary"><Download size={16} />Export CSV</button>
+                  <button type="button" onClick={exportCsv} className="btn-secondary"><Download size={16} />Xuất CSV</button>
                 </div>
                 <OutputPreview document={document} />
               </>

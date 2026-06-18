@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { defaultDocumentSettings, getDocumentSettings, resetDocumentSettings, saveDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
 import { PlanSelector } from "@/components/PlanSelector";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<DocumentSettings>(defaultDocumentSettings);
@@ -47,10 +48,11 @@ export default function SettingsPage() {
             <div><label className="label">Cỡ chữ</label><select className="form-field mt-1" value={settings.fontSize} onChange={(e) => update("fontSize", e.target.value as DocumentSettings["fontSize"])}><option>12</option><option>13</option><option>14</option></select></div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={save} className="btn-primary"><Save size={16} />Save settings</button>
-            <button type="button" onClick={reset} className="btn-secondary"><RotateCcw size={16} />Reset settings</button>
+            <button type="button" onClick={save} className="btn-primary"><Save size={16} />Lưu cài đặt</button>
+            <button type="button" onClick={reset} className="btn-secondary"><RotateCcw size={16} />Đặt lại</button>
           </div>
           {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
+          <p className="text-sm text-muted">Dữ liệu chỉ lưu trên trình duyệt. <Link href="/privacy" className="font-semibold text-brand">Xem ghi chú quyền riêng tư</Link>.</p>
         </section>
       </main>
     </div>

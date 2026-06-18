@@ -9,6 +9,7 @@ import { createDocument } from "@/lib/history";
 import { createQuestion, getQuestions, questionsToDocument, saveQuestions } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
 import Link from "next/link";
+import { BugReportLink } from "@/components/BugReportLink";
 
 const emptyForm = {
   subject: "Toán",
@@ -83,6 +84,7 @@ export default function QuestionBankPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
+        <BugReportLink source="question-bank" className="mb-4" />
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
           <form onSubmit={submit} className="card space-y-4 p-5">
             <div className="flex items-center gap-2"><Plus size={18} className="text-brand" /><h2 className="font-bold text-ink">{editingId ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi"}</h2></div>

@@ -12,6 +12,7 @@ import { getHistory } from "@/lib/history";
 import { getRecentTools, type RecentTool } from "@/lib/recent-tools";
 import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 import type { GeneratedDocument } from "@/lib/types";
+import { BugReportLink } from "@/components/BugReportLink";
 
 const highlightedHrefs = [
   "/question-bank",
@@ -121,7 +122,7 @@ export default function DashboardPage() {
 
         <section className="mb-8"><h2 className="text-lg font-bold text-ink">Lối tắt workspace</h2><div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{quickLinks.map(([title, href, Icon]) => { const QuickIcon = Icon as typeof Wrench; return <Link key={href as string} href={href as string} className="card flex items-center gap-3 p-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"><QuickIcon size={18} />{title as string}</Link>; })}</div></section>
         <Link href="/demo-checklist" className="mb-8 inline-flex text-sm font-semibold text-brand">Mở checklist trước khi demo <ArrowRight size={15} className="ml-1" /></Link>
-        <span className="mb-8 ml-4 inline-flex gap-4 text-sm"><Link href="/demo-data" className="font-semibold text-brand">Dữ liệu demo</Link><Link href="/diagnostics" className="font-semibold text-brand">Diagnostics</Link></span>
+        <span className="mb-8 ml-4 inline-flex flex-wrap gap-4 text-sm"><Link href="/demo-data" className="font-semibold text-brand">Dữ liệu demo</Link><Link href="/diagnostics" className="font-semibold text-brand">Diagnostics</Link><Link href="/private-beta" className="font-semibold text-brand">Private Beta</Link><Link href="/tester-guide" className="font-semibold text-brand">Hướng dẫn tester</Link><BugReportLink source="dashboard" /></span>
 
         <div className="space-y-8">
           {categoryOrder.map((item) => {

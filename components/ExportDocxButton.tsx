@@ -22,7 +22,7 @@ export function ExportDocxButton({ document }: { document: GeneratedDocument }) 
   return (
     <button type="button" onClick={handleExport} className="btn-primary" disabled={status === "loading"}>
       {status === "loading" ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-      {status === "success" ? "Đã xuất Word" : status === "error" ? "Xuất lỗi" : "Export Word"}
+      {status === "success" ? "Đã xuất Word" : status === "error" ? "Xuất Word lỗi" : "Xuất Word"}
     </button>
   );
 }

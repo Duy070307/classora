@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, Clock3, FileText, FolderClock, Library, Spark
 import { Navbar } from "@/components/Navbar";
 import { ToolCard } from "@/components/ToolCard";
 import { toolRegistry } from "@/lib/tool-registry";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const painPoints = ["Soạn đề", "Làm đáp án và thang điểm", "Tạo ma trận đề", "Viết nhận xét học sinh", "Chuẩn bị phiếu học tập", "Chỉnh file Word"];
 const benefits = [
@@ -44,6 +45,7 @@ export default function HomePage() {
 
     <section className="mx-auto max-w-6xl px-4 py-16"><div className="rounded-lg bg-ink px-6 py-10 text-white md:px-10"><h2 className="text-3xl font-bold">Dùng thử Classora bản demo</h2><p className="mt-3 max-w-2xl leading-7 text-slate-300">Khám phá workflow hiện tại và gửi góp ý để sản phẩm gần hơn với công việc thật của giáo viên.</p><div className="mt-6 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Mở dashboard</Link><Link href="/feedback" className="btn-secondary">Góp ý cho Classora</Link></div></div></section>
 
-    <footer className="border-t border-line bg-white px-4 py-8 text-center text-sm text-muted"><div className="flex flex-wrap justify-center gap-4"><Link href="/pricing">Bảng giá dự kiến</Link><Link href="/getting-started">Bắt đầu</Link><Link href="/changelog">Nhật ký phát triển</Link><Link href="/feedback">Góp ý</Link></div><p className="mt-4">Classora · Được xây dựng để hỗ trợ giáo viên Việt Nam.</p></footer>
+    <section className="border-t border-line bg-slate-50"><div className="mx-auto max-w-6xl px-4 py-14"><p className="text-sm font-bold uppercase text-brand">Trạng thái hiện tại</p><h2 className="mt-2 text-2xl font-bold text-ink">Bản demo trung thực, dữ liệu nằm trên máy của bạn</h2><div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{["MVP/demo", "Chưa dùng AI thật", "Chưa thu phí", "Không lưu lên server", "Dữ liệu chỉ ở localStorage"].map((item) => <div key={item} className="card p-4 text-sm font-semibold text-ink">{item}</div>)}</div><p className="mt-5 max-w-3xl text-sm leading-6 text-muted">Mục tiêu hiện tại là kiểm tra quy trình với giáo viên thật trước khi đầu tư vào AI, tài khoản và hạ tầng dữ liệu.</p></div></section>
+    <SiteFooter />
   </main>;
 }

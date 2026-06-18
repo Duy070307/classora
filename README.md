@@ -2,7 +2,7 @@
 
 Classora là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
 
-Trạng thái hiện tại: zero-cost MVP/demo, không cần API key.
+Trạng thái hiện tại: zero-cost MVP/demo dành cho private beta, không cần API key.
 
 Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 
@@ -66,6 +66,10 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/demo-checklist`
 - `/demo-data`
 - `/diagnostics`
+- `/private-beta`
+- `/tester-guide`
+- `/privacy`
+- `/terms`
 - `/question-bank`
 - `/tools/import-questions`
 - `/tools/exam-generator`
@@ -106,6 +110,22 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - Nhập câu hỏi chỉ hỗ trợ văn bản và CSV; không đọc PDF hoặc hình ảnh.
 - Free/Pro và bảng giá hiện chỉ là mô phỏng bằng `localStorage`, không có giao dịch thật.
 - Giáo viên phải kiểm tra lại mọi output trước khi sử dụng.
+
+## Private Beta
+
+- Giới thiệu chương trình: `/private-beta`
+- Hướng dẫn tester: `/tester-guide`
+- Gửi góp ý: `/feedback`
+- Quyền riêng tư: `/privacy`
+- Điều khoản demo: `/terms`
+- Tài liệu nội bộ: `docs/PRIVATE_BETA.md`
+- Checklist phát hành: `docs/RELEASE_CHECKLIST.md`
+
+Classora không lưu feedback lên server. Form feedback chỉ tạo nội dung có định dạng và sao chép vào clipboard để tester gửi thủ công.
+
+## Privacy & Demo Disclaimer
+
+Dữ liệu người dùng hiện chỉ lưu trong localStorage. Bản demo không đảm bảo độ chính xác tuyệt đối, không nên dùng để xử lý dữ liệu nhạy cảm và mọi output cần được giáo viên xác minh trước khi sử dụng.
 
 ## Demo Checklist
 
