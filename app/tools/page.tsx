@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolCard } from "@/components/ToolCard";
 import { getFavoriteTools } from "@/lib/favorites";
@@ -11,6 +12,13 @@ import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry
 type Mode = "Tất cả" | "Phổ biến" | "Yêu thích" | "Gần đây";
 
 export default function ToolsPage() {
+  return <Suspense fallback={null}><ToolsContent /></Suspense>;
+}
+
+function ToolsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Tất cả");
   const [mode, setMode] = useState<Mode>("Tất cả");
@@ -19,15 +27,14 @@ export default function ToolsPage() {
 
   useEffect(() => {
     const refresh = () => { setFavorites(getFavoriteTools()); setRecent(getRecentTools().map((item) => item.href)); };
-    const value = new URLSearchParams(window.location.search).get("category");
     queueMicrotask(() => {
-      if (value && value in categoryLabels) setCategory(categoryLabels[value as keyof typeof categoryLabels]);
+      setCategory(categoryParam && categoryParam in categoryLabels ? categoryLabels[categoryParam as keyof typeof categoryLabels] : "Tất cả");
       refresh();
     });
     window.addEventListener("classora-favorites-change", refresh);
     window.addEventListener("classora-recent-tools-change", refresh);
     return () => { window.removeEventListener("classora-favorites-change", refresh); window.removeEventListener("classora-recent-tools-change", refresh); };
-  }, []);
+  }, [categoryParam]);
 
   const filteredTools = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -39,14 +46,25 @@ export default function ToolsPage() {
     }).sort((a, b) => mode === "Gần đây" ? recent.indexOf(a.href) - recent.indexOf(b.href) : 0);
   }, [category, favorites, mode, query, recent]);
 
-  function clearFilters() { setQuery(""); setCategory("Tất cả"); setMode("Tất cả"); }
+  function changeCategory(value: string) {
+    setCategory(value);
+    const slug = categoryOrder.find((item) => categoryLabels[item] === value);
+    router.replace(slug ? `/tools?category=${slug}` : "/tools", { scroll: false });
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setCategory("Tất cả");
+    setMode("Tất cả");
+    router.replace("/tools", { scroll: false });
+  }
 
   return <div className="min-h-screen md:flex"><Sidebar /><main className="flex-1 p-5 md:p-8">
     <section className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-200 sm:p-8"><p className="text-xs font-bold uppercase tracking-wider text-blue-200">Thư viện workflow</p><h1 className="mt-2 text-3xl font-bold sm:text-4xl">Tất cả công cụ Soạn Lab</h1><p className="mt-3 max-w-2xl text-blue-100">Tìm kiếm, lọc và đánh dấu yêu thích để mở workflow nhanh hơn.</p></section>
     <section className="card mb-6 p-5 sm:p-6">
       <div className="grid gap-3 lg:grid-cols-[1fr_240px]">
         <label className="relative block"><Search className="absolute left-3 top-3 text-slate-400" size={17} /><input className="form-field pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tên hoặc mô tả công cụ..." /></label>
-        <select className="form-field" value={category} onChange={(event) => setCategory(event.target.value)}><option>Tất cả</option>{categoryOrder.map((item) => <option key={item}>{categoryLabels[item]}</option>)}</select>
+        <select className="form-field" value={category} onChange={(event) => changeCategory(event.target.value)}><option>Tất cả</option>{categoryOrder.map((item) => <option key={item}>{categoryLabels[item]}</option>)}</select>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">{(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map((item) => <button key={item} type="button" className={mode === item ? "btn-primary" : "btn-secondary"} onClick={() => setMode(item)}>{item}</button>)}<button type="button" className="btn-secondary" onClick={clearFilters}>Xóa bộ lọc</button></div>
       <p className="mt-3 text-sm font-medium text-muted">Hiển thị {filteredTools.length} công cụ</p>
