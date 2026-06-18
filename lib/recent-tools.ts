@@ -1,7 +1,7 @@
 "use client";
-import { readJson, writeJson } from "@/lib/safe-storage";
+import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
-const RECENT_TOOLS_KEY = "classora_recent_tools";
+const RECENT_TOOLS_KEY = STORAGE_KEYS.recentTools;
 
 export type RecentTool = {
   title: string;

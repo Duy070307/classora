@@ -1,9 +1,9 @@
 "use client";
 
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
-import { readJson, writeJson } from "@/lib/safe-storage";
+import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
-const HISTORY_KEY = "classora_history";
+const HISTORY_KEY = STORAGE_KEYS.history;
 
 export function getHistory(): GeneratedDocument[] {
   if (typeof window === "undefined") return [];

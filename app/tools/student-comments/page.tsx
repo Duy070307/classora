@@ -13,6 +13,7 @@ import { generateStudentComments } from "@/lib/mock-ai";
 import type { GeneratedDocument, StudentCommentInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
+import { sampleStudentCommentInput } from "@/lib/sample-data";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -71,6 +72,7 @@ export default function StudentCommentsPage() {
         <PageHeader title="Tạo nhận xét học sinh" description="Soạn nhận xét phù hợp học bạ, tin nhắn phụ huynh hoặc tổng kết cuối kỳ." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleStudentCommentInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin học sinh</p>

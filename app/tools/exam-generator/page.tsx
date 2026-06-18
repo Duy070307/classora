@@ -15,6 +15,7 @@ import { getQuestions } from "@/lib/question-bank";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
+import { sampleExamInput } from "@/lib/sample-data";
 
 const initialInput: ExamInput = {
   schoolName: "",
@@ -98,28 +99,7 @@ export default function ExamGeneratorPage() {
 
   function useSampleData() {
     const settings = getDocumentSettings();
-    setInput({
-      schoolName: settings.schoolName || "Trường THCS Demo",
-      teacherName: settings.teacherName || "Cô Lan",
-      subject: "Toán",
-      grade: "8",
-      topic: "Phương trình bậc nhất một ẩn",
-      duration: "45 phút",
-      examType: "Kết hợp",
-      multipleChoiceCount: 8,
-      essayCount: 3,
-      totalScore: 10,
-      level: "Trung bình",
-      recognitionRate: 30,
-      understandingRate: 40,
-      applicationRate: 20,
-      advancedRate: 10,
-      includeAnswers: true,
-      includeRubric: true,
-      includeMatrix: true,
-      includeSpecification: true,
-      extraRequirements: "Có 1 câu vận dụng gắn với tình huống thực tế, câu chữ phù hợp học sinh lớp 8."
-    });
+    setInput({ ...sampleExamInput, schoolName: settings.schoolName || sampleExamInput.schoolName, teacherName: settings.teacherName || sampleExamInput.teacherName });
     setMessage("Đã điền dữ liệu mẫu.");
   }
 

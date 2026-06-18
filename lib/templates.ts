@@ -1,7 +1,7 @@
 "use client";
 
 import { getDocumentSettings } from "@/lib/document-settings";
-import { readJson, writeJson } from "@/lib/safe-storage";
+import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
 export type TemplateItem = {
   id: string;
@@ -12,7 +12,7 @@ export type TemplateItem = {
   updatedAt: string;
 };
 
-const TEMPLATE_KEY = "classora_templates";
+const TEMPLATE_KEY = STORAGE_KEYS.templates;
 
 export const templateTypes = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Tin nhắn phụ huynh"];
 

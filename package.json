@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "start": "next start",
     "build": "next build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "smoke": "node scripts/smoke-test-routes.mjs"
   },
   "dependencies": {
     "@types/katex": "^0.16.8",

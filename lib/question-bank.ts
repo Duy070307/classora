@@ -1,9 +1,9 @@
 "use client";
 
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
-import { readJson, writeJson } from "@/lib/safe-storage";
+import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
-const QUESTION_BANK_KEY = "classora_question_bank";
+const QUESTION_BANK_KEY = STORAGE_KEYS.questions;
 
 const types: QuestionType[] = ["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"];
 const difficulties: QuestionDifficulty[] = ["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"];

@@ -1,5 +1,5 @@
 "use client";
-import { readJson, removeStored, writeJson } from "@/lib/safe-storage";
+import { readJson, removeStored, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
 export type DocumentSettings = {
   schoolName: string;
@@ -19,7 +19,7 @@ export const defaultDocumentSettings: DocumentSettings = {
   fontSize: "13"
 };
 
-const SETTINGS_KEY = "classora_document_settings";
+const SETTINGS_KEY = STORAGE_KEYS.settings;
 
 export function getDocumentSettings(): DocumentSettings {
   if (typeof window === "undefined") return defaultDocumentSettings;

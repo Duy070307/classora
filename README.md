@@ -2,6 +2,8 @@
 
 Classora là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
 
+Trạng thái hiện tại: zero-cost MVP/demo, không cần API key.
+
 Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 
 ## Tech Stack
@@ -62,6 +64,8 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/getting-started`
 - `/changelog`
 - `/demo-checklist`
+- `/demo-data`
+- `/diagnostics`
 - `/question-bank`
 - `/tools/import-questions`
 - `/tools/exam-generator`
@@ -119,6 +123,26 @@ Mở `/demo-checklist` và kiểm tra:
 - Bộ đếm được lưu theo tháng trong `localStorage`.
 - Khi hết lượt, Classora chỉ hiển thị nhắc nhẹ và vẫn cho tiếp tục dùng demo.
 - Có thể chuyển sang `Pro demo` tại `/pricing` hoặc `/settings`; chế độ này không giới hạn lượt mô phỏng.
+
+## Demo Data
+
+Mở `/demo-data` để nạp ngân hàng câu hỏi, mẫu tài liệu và cài đặt mẫu. Dữ liệu chỉ được lưu trong `localStorage` của trình duyệt hiện tại.
+
+## Smoke Test
+
+```bash
+npm run smoke
+```
+
+Script kiểm tra sự tồn tại của các route/file quan trọng mà không cần khởi động server.
+
+## Mock AI & Future Architecture
+
+- Classora hiện gọi các hàm trong `lib/mock-ai.ts`.
+- Provider layer tương lai nằm trong `lib/ai`.
+- Prompt builders tiếng Việt nằm tại `lib/ai/prompts.ts`.
+- Provider mặc định luôn là `mock`; không có SDK hoặc API call trả phí.
+- Xem thêm `docs/AI_READINESS.md`.
 
 ## Batch 5 Improvements
 

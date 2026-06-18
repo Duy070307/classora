@@ -13,6 +13,7 @@ import { generateWorksheet } from "@/lib/mock-ai";
 import type { GeneratedDocument, WorksheetInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
+import { sampleWorksheetInput } from "@/lib/sample-data";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -63,6 +64,7 @@ export default function WorksheetGeneratorPage() {
         <PageHeader title="Tạo phiếu học tập" description="Tạo nhanh phiếu học tập có mục tiêu, tóm tắt kiến thức, bài tập và đáp án." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+            <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleWorksheetInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <TemplateSelect type="Phiếu học tập" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin phiếu</p>

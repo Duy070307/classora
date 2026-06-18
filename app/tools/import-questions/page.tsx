@@ -8,18 +8,9 @@ import { Sidebar } from "@/components/Sidebar";
 import { createDocument } from "@/lib/history";
 import { addQuestions, createQuestion, questionsToDocument } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
+import { sampleImportQuestionsText } from "@/lib/sample-data";
 
 type Draft = Omit<QuestionItem, "id" | "createdAt"> & { selected: boolean };
-
-const sampleText = `Câu 1. Phương trình nào là phương trình bậc nhất một ẩn?
-A. 2x + 3 = 0
-B. x² + 1 = 0
-C. 1/x = 2
-D. 0x = 5
-Đáp án: A
-
-Câu 2. Giải phương trình 3x - 6 = 0.
-Đáp án: x = 2`;
 
 function parseText(text: string, subject: string, grade: string, topic: string): Draft[] {
   const blocks = text.trim().split(/\n\s*\n|(?=Câu\s+\d+[.:])/i).map((block) => block.trim()).filter(Boolean);
@@ -73,7 +64,7 @@ export default function ImportQuestionsPage() {
   const [subject, setSubject] = useState("Toán");
   const [grade, setGrade] = useState("8");
   const [topic, setTopic] = useState("Phương trình");
-  const [text, setText] = useState(sampleText);
+  const [text, setText] = useState(sampleImportQuestionsText);
   const [rows, setRows] = useState<Draft[]>([]);
   const [message, setMessage] = useState("");
 
@@ -120,6 +111,7 @@ export default function ImportQuestionsPage() {
           </div>
           <div><label className="label">Nội dung câu hỏi</label><textarea className="form-field mt-1 min-h-56 font-mono text-sm" value={text} onChange={(e) => setText(e.target.value)} /></div>
           <div className="flex flex-wrap gap-2">
+            <button className="btn-secondary" type="button" onClick={() => { setSubject("Toán"); setGrade("8"); setTopic("Phương trình"); setText(sampleImportQuestionsText); setRows([]); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <button className="btn-primary" type="button" onClick={parseInput}>Phân tích văn bản</button>
             <label className="btn-secondary cursor-pointer"><FileUp size={16} />Nhập CSV<input className="hidden" type="file" accept=".csv,text/csv" onChange={uploadCsv} /></label>
             <button className="btn-secondary" type="button" onClick={downloadSample}><Download size={16} />Tải file mẫu CSV</button>

@@ -18,6 +18,7 @@ import {
   shuffleExam
 } from "@/lib/mock-ai";
 import type { GenericToolInput, ToolConfig } from "@/lib/types";
+import { sampleAnswerKeyInput, sampleExamShufflerInput, sampleLessonPlanInput, sampleMatrixInput } from "@/lib/sample-data";
 
 const text = (input: GenericToolInput, key: string, fallback = "") => String(input[key] ?? fallback);
 
@@ -28,6 +29,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     title: "Tạo giáo án",
     description: "Soạn giáo án có mục tiêu, chuẩn bị, tiến trình dạy học và đánh giá cuối bài.",
     category: "Soạn bài & tài liệu",
+    sampleInput: sampleLessonPlanInput,
     generate: generateLessonPlan,
     makeTitle: (input) => `Giáo án - ${text(input, "subject")} lớp ${text(input, "grade")} - ${text(input, "lessonName")}`,
     fields: [
@@ -49,19 +51,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     category: "Soạn đề & kiểm tra",
     generate: generateMatrix,
     makeTitle: (input) => `Ma trận đề - ${text(input, "subject")} lớp ${text(input, "grade")}`,
-    sampleInput: {
-      subject: "Ngữ văn",
-      grade: "6",
-      topic: "Truyện đồng thoại",
-      duration: "45 phút",
-      totalScore: 10,
-      questionCount: 12,
-      recognitionRate: 30,
-      understandingRate: 40,
-      applicationRate: 20,
-      advancedRate: 10,
-      notes: "Ưu tiên câu hỏi đọc hiểu và một câu vận dụng viết đoạn ngắn."
-    },
+    sampleInput: sampleMatrixInput,
     fields: [
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Ngữ văn" },
       { name: "grade", label: "Lớp", type: "text", defaultValue: "6" },
@@ -84,14 +74,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     category: "Soạn đề & kiểm tra",
     generate: generateAnswerKey,
     makeTitle: (input) => `Đáp án và thang điểm - ${text(input, "subject")} lớp ${text(input, "grade")}`,
-    sampleInput: {
-      subject: "Toán",
-      grade: "8",
-      examContent: "Câu 1. Kết quả của 2x + 3 = 7 là?\nA. x = 1\nB. x = 2\nC. x = 3\nD. x = 4\nĐáp án: B\n\nCâu 2. Giải phương trình 3x - 6 = 0 và trình bày các bước.",
-      totalScore: 10,
-      answerStyle: "Có lời giải từng bước",
-      extraRequirements: "Thang điểm rõ từng ý, có lưu ý lỗi thường gặp."
-    },
+    sampleInput: sampleAnswerKeyInput,
     fields: [
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Toán" },
       { name: "grade", label: "Lớp", type: "text", defaultValue: "8" },
@@ -230,16 +213,7 @@ export const batch2ToolConfigs: ToolConfig[] = [
     category: "Soạn đề & kiểm tra",
     generate: shuffleExam,
     makeTitle: (input) => `Trộn mã đề - ${text(input, "examName", "Đề kiểm tra")}`,
-    sampleInput: {
-      examName: "Đề kiểm tra 15 phút",
-      subject: "Toán",
-      grade: "8",
-      codeCount: 4,
-      questions: "Câu 1. Kết quả của 2 + 3 là?\nA. 4\nB. 5\nC. 6\nD. 7\nĐáp án: B\n\nCâu 2. Số nào là số chẵn?\nA. 3\nB. 5\nC. 8\nD. 9\nĐáp án: C\n\nCâu 3. Phương trình x + 1 = 4 có nghiệm là?\nA. 2\nB. 3\nC. 4\nD. 5\nĐáp án: B",
-      shuffleQuestions: true,
-      shuffleAnswers: true,
-      notes: "Tạo 4 mã đề để in cho lớp."
-    },
+    sampleInput: sampleExamShufflerInput,
     fields: [
       { name: "examName", label: "Tên đề kiểm tra", type: "text", defaultValue: "Đề kiểm tra giữa kỳ" },
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Toán" },

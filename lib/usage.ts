@@ -1,10 +1,10 @@
 "use client";
-import { readJson, readText, writeJson, writeText } from "@/lib/safe-storage";
+import { readJson, readText, STORAGE_KEYS, writeJson, writeText } from "@/lib/storage";
 
 export type MockPlan = "free" | "pro";
 
-const USAGE_KEY = "classora_usage";
-const PLAN_KEY = "classora_mock_plan";
+const USAGE_KEY = STORAGE_KEYS.usage;
+const PLAN_KEY = STORAGE_KEYS.plan;
 export const FREE_MONTHLY_LIMIT = 10;
 
 type UsageState = { month: string; count: number };

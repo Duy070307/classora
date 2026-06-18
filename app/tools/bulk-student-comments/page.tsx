@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
+import { sampleBulkCommentsCsv } from "@/lib/sample-data";
 
 type StudentRow = {
   name: string;
@@ -19,10 +20,6 @@ type StudentRow = {
   limitations: string;
   purpose: string;
 };
-
-const sampleCsv = `Họ tên,Lớp,Mức học tập,Thái độ,Ưu điểm,Hạn chế,Mục đích
-Nguyễn Minh An,7A1,Khá,Tích cực,Có ý thức học tập,Cần cẩn thận hơn khi làm bài,Tin nhắn phụ huynh
-Trần Gia Bảo,7A1,Trung bình,Ít phát biểu,Có cố gắng,Cần chủ động học bài hơn,Nhận xét cuối kỳ`;
 
 function normalizeHeader(value: string) {
   return value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
@@ -93,7 +90,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
   }).join("\n\n"), [rows]);
 
   function downloadSample() {
-    downloadText("classora-mau-nhan-xet-hang-loat.csv", sampleCsv, "text/csv;charset=utf-8");
+    downloadText("classora-mau-nhan-xet-hang-loat.csv", sampleBulkCommentsCsv, "text/csv;charset=utf-8");
   }
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
@@ -143,6 +140,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
               CSV cần có cột: Họ tên, Lớp, Mức học tập, Thái độ, Ưu điểm, Hạn chế, Mục đích. Cũng hỗ trợ: ho_ten, lop, muc_hoc_tap, thai_do, uu_diem, han_che, muc_dich.
             </div>
             <button type="button" onClick={downloadSample} className="btn-secondary"><FileDown size={16} />Tải file mẫu CSV</button>
+            <button type="button" onClick={() => { const parsed = parseCsv(sampleBulkCommentsCsv); setRows(parsed); setDocument(null); setMessage(`Đã điền ${parsed.length} học sinh mẫu.`); }} className="btn-secondary">Dùng dữ liệu mẫu</button>
             <input type="file" accept=".csv,text/csv" onChange={handleFile} className="form-field" />
             {rows.length ? (
               <div className="overflow-auto rounded-md border border-line">
