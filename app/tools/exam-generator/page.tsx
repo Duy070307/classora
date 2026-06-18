@@ -16,7 +16,7 @@ import { createDocument, saveDocument } from "@/lib/history";
 import { generateExam } from "@/lib/mock-ai";
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getQuestions } from "@/lib/question-bank";
-import { applyTemplate, getTemplates } from "@/lib/templates";
+import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
@@ -80,7 +80,10 @@ export default function ExamGeneratorPage() {
     if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
     setLoading(true);
     setMessage("");
-    const generated = await generateExam(input);
+    const generatedRaw = await generateExam(input);
+    const generated = generatedRaw
+      .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
+      .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. ");
     const matching = bankQuestions.filter((item) =>
       item.subject.toLowerCase() === input.subject.toLowerCase()
       && item.grade.toLowerCase() === input.grade.toLowerCase()
@@ -90,8 +93,12 @@ export default function ExamGeneratorPage() {
     const bankContent = useBank && matching.length
       ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map((item, index) => `Câu NH${index + 1}. ${item.question}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}`).join("\n\n")}`
       : "";
-    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated + bankContent, {
-      subject: input.subject, grade: input.grade, topic: input.topic
+    const content = applyTemplate(resolveTemplate(templateId), generated + bankContent, {
+      subject: input.subject,
+      grade: input.grade,
+      topic: input.topic,
+      duration: input.duration,
+      extraRequirements: input.extraRequirements
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
     setDocument(next);

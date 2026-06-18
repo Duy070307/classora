@@ -16,7 +16,7 @@ import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 import { incrementUsage } from "@/lib/usage";
-import { applyTemplate, getTemplates } from "@/lib/templates";
+import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from "@/lib/types";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { genericPresets } from "@/lib/presets";
@@ -28,6 +28,25 @@ function getInitialInput(fields: ToolField[]): GenericToolInput {
   }, {});
 }
 
+function polishGeneratedContent(type: string, input: GenericToolInput, content: string) {
+  if (type === "answer-key" && !/ĐÁP ÁN VÀ THANG ĐIỂM/i.test(content)) {
+    return `ĐÁP ÁN VÀ THANG ĐIỂM\n\n${content}\n\nLƯU Ý KHI CHẤM\n- Chấp nhận cách diễn đạt tương đương nếu đúng bản chất.\n- Giáo viên có thể điều chỉnh điểm chi tiết theo thực tế lớp học.\n- Kiểm tra lại lỗi thường gặp trước khi trả bài.`;
+  }
+  if (type === "matrix") {
+    const totalQuestions = Number(input.questionCount || 0);
+    const totalScore = Number(input.totalScore || 10);
+    const rates = {
+      recognitionRate: Number(input.recognitionRate || 0),
+      understandingRate: Number(input.understandingRate || 0),
+      applicationRate: Number(input.applicationRate || 0),
+      advancedRate: Number(input.advancedRate || 0)
+    };
+    const row = `| ${input.topic || "Chủ đề kiểm tra"} | ${rates.recognitionRate}% | ${rates.understandingRate}% | ${rates.applicationRate}% | ${rates.advancedRate}% | ${totalQuestions || "…"} | ${totalScore} | ${rates.recognitionRate + rates.understandingRate + rates.applicationRate + rates.advancedRate}% |`;
+    return `MA TRẬN ĐỀ\nMôn: ${input.subject || ""} - Lớp: ${input.grade || ""}\n\n| Nội dung/chủ đề | Nhận biết | Thông hiểu | Vận dụng | Vận dụng cao | Tổng số câu | Tổng điểm | Tỉ lệ |\n|---|---:|---:|---:|---:|---:|---:|---:|\n${row}\n| Tổng cộng | ${rates.recognitionRate}% | ${rates.understandingRate}% | ${rates.applicationRate}% | ${rates.advancedRate}% | ${totalQuestions || "…"} | ${totalScore} | 100% |\n\n${content}`;
+  }
+  return content;
+}
+
 export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const initialInput = useMemo(() => getInitialInput(config.fields), [config.fields]);
   const [input, setInput] = useState<GenericToolInput>(initialInput);
@@ -36,7 +55,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft(config.href, input, setInput);
-  const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
+  const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "matrix" ? "Ma trận đề" : config.type === "answer-key" ? "Đáp án và thang điểm" : config.type === "exam-shuffler" ? "Đề kiểm tra" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
 
   function update(name: string, value: string | number | boolean | string[]) {
     setInput((current) => ({ ...current, [name]: value }));
@@ -58,9 +77,9 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     }
     setLoading(true);
     setMessage("");
-    const generated = await config.generate(input);
+    const generated = polishGeneratedContent(config.type, input, await config.generate(input));
     const values = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, String(value)]));
-    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, values);
+    const content = applyTemplate(resolveTemplate(templateId), generated, values);
     const next = createDocument(config.makeTitle(input), config.type, content);
     setDocument(next);
     incrementUsage();

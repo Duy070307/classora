@@ -1,6 +1,7 @@
 "use client";
 
 import { getDocumentSettings } from "@/lib/document-settings";
+import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
 
 const warning = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
@@ -14,10 +15,7 @@ export function cleanFileName(title: string) {
 function header(document: GeneratedDocument) {
   const settings = getDocumentSettings();
   return [
-    settings.schoolName,
-    settings.teacherName ? `Giáo viên: ${settings.teacherName}` : "",
-    settings.department ? `Tổ/Bộ môn: ${settings.department}` : "",
-    settings.schoolYear ? `Năm học: ${settings.schoolYear}` : "",
+    ...getDocumentHeaderLines(settings),
     document.title,
     `Ngày tạo: ${new Date(document.createdAt).toLocaleString("vi-VN")}`
   ].filter(Boolean);

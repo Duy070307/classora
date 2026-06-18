@@ -11,7 +11,7 @@ import { createDocument, saveDocument } from "@/lib/history";
 import { generateWorksheet } from "@/lib/mock-ai";
 import type { GeneratedDocument, WorksheetInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
-import { applyTemplate, getTemplates } from "@/lib/templates";
+import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import { sampleWorksheetInput } from "@/lib/sample-data";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
@@ -46,7 +46,7 @@ export default function WorksheetGeneratorPage() {
     setLoading(true);
     setMessage("");
     const generated = await generateWorksheet(input);
-    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, { subject: input.subject, grade: input.grade, topic: input.topic });
+    const content = applyTemplate(resolveTemplate(templateId), generated, { subject: input.subject, grade: input.grade, topic: input.topic, objective: input.objective, extraRequirements: input.extraRequirements });
     const next = createDocument(`Phiếu học tập ${input.subject} lớp ${input.grade}`, "worksheet", content);
     setDocument(next);
     incrementUsage();

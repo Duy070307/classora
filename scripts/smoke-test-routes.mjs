@@ -30,7 +30,10 @@ const requiredFiles = [
   "lib/sample-data.ts",
   "lib/local-data-manager.ts",
   "lib/export-text.ts",
-  "lib/print-document.ts"
+  "lib/print-document.ts",
+  "lib/built-in-templates.ts",
+  "lib/document-header.ts",
+  "docs/TEMPLATES.md"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
+import { getDocumentHeaderLines } from "@/lib/document-header";
 import { PRINT_DOCUMENT_KEY } from "@/lib/print-document";
 import type { GeneratedDocument } from "@/lib/types";
 
@@ -20,12 +21,7 @@ export default function PrintPage() {
 
   if (!document) return <main className="mx-auto max-w-3xl p-5 md:p-10"><div className="empty-state"><p className="font-semibold text-ink">Không tìm thấy tài liệu để in.</p><Link href="/history" className="btn-primary mt-4">Quay lại lịch sử</Link></div></main>;
 
-  const header = [
-    settings?.schoolName,
-    settings?.teacherName ? `Giáo viên: ${settings.teacherName}` : "",
-    settings?.department ? `Tổ/Bộ môn: ${settings.department}` : "",
-    settings?.schoolYear ? `Năm học: ${settings.schoolYear}` : ""
-  ].filter(Boolean);
+  const header = settings ? getDocumentHeaderLines(settings) : [];
 
   return <main className="print-page mx-auto max-w-4xl p-4 md:p-8">
     <div className="document-actions mb-5 flex flex-wrap gap-2"><button className="btn-primary" onClick={() => window.print()}><Printer size={16} />In hoặc lưu PDF</button><button className="btn-secondary" onClick={() => window.history.back()}>Quay lại</button></div>

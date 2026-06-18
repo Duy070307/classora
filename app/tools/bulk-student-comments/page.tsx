@@ -3,6 +3,7 @@
 import { Copy, Download, FileDown, Trash2 } from "lucide-react";
 import { ChangeEvent, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
+import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -11,6 +12,7 @@ import type { GeneratedDocument } from "@/lib/types";
 import { sampleBulkCommentsCsv } from "@/lib/sample-data";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { useFormDraft } from "@/hooks/useFormDraft";
+import { applyTemplate, resolveTemplate } from "@/lib/templates";
 
 type StudentRow = {
   name: string;
@@ -81,6 +83,7 @@ export default function BulkStudentCommentsPage() {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [message, setMessage] = useState("");
+  const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft("/tools/bulk-student-comments", rows, setRows);
 
   const output = useMemo(() => rows.map((row, index) => {
@@ -112,7 +115,8 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       setMessage("Vui lòng tải CSV trước khi tạo nhận xét.");
       return;
     }
-    const content = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
+    const generated = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
+    const content = applyTemplate(resolveTemplate(templateId), generated, { className: `${rows.length} học sinh`, ghi_chu: "Giáo viên kiểm tra lại từng nhận xét trước khi gửi." });
     const next = createDocument(`Nhận xét hàng loạt - ${rows.length} học sinh`, "bulk-student-comments", content);
     setDocument(next);
     setMessage("Đã tạo nhận xét hàng loạt.");
@@ -147,6 +151,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
             <button type="button" onClick={() => navigator.clipboard.writeText(sampleBulkCommentsCsv)} className="btn-secondary"><Copy size={16} />Copy mẫu CSV</button>
             <button type="button" onClick={() => { const parsed = parseCsv(sampleBulkCommentsCsv); setRows(parsed); setDocument(null); setMessage(`Đã điền ${parsed.length} học sinh mẫu.`); }} className="btn-secondary">Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
+            <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />
             <input type="file" accept=".csv,text/csv" onChange={handleFile} className="form-field" />
             {rows.length ? (
               <div className="overflow-auto rounded-md border border-line">

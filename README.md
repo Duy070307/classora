@@ -15,6 +15,7 @@ Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 - `docx` để xuất file `.docx`
 - `localStorage` cho lịch sử tài liệu và số lượt sử dụng
 - Mock AI, không cần API key
+- Built-in Vietnamese teacher document templates and placeholder-based personal templates
 
 ## Install
 
@@ -104,6 +105,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - Chưa có AI thật, đang dùng AI mô phỏng.
 - Form công cụ có tự lưu bản nháp vào `localStorage`, có thể xem và khôi phục tại `/drafts`.
 - Một số công cụ có preset “Dùng mẫu nhanh” để điền nhanh workflow giáo viên Việt Nam.
+- Có mẫu tài liệu tiếng Việt dựng sẵn cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh.
 - Chưa có real OCR hoặc image recognition.
 - Chưa có đăng nhập.
 - Chưa có database.
@@ -165,6 +167,12 @@ Bản demo chưa có backend/database và không tự đồng bộ dữ liệu. 
 Các form công cụ lõi tự lưu bản nháp sau khi giáo viên nhập dữ liệu. Mở `/drafts` để tìm, khôi phục hoặc xóa bản nháp. Bản nháp chỉ nằm trong `localStorage` của trình duyệt hiện tại và cũng được đưa vào backup JSON tại `/data`.
 
 Một số workflow thường gặp có nút “Dùng mẫu nhanh” để điền nhanh cấu hình như kiểm tra 15 phút, kiểm tra 45 phút, ma trận tỉ lệ phổ biến, phiếu học tập và nhận xét học sinh. Giáo viên vẫn có thể sửa mọi trường sau khi áp dụng preset.
+
+## Mẫu tài liệu tiếng Việt
+
+Các công cụ lõi có selector “Mẫu tài liệu” với lựa chọn “Tự động”, mẫu có sẵn và mẫu cá nhân từ `/templates`. Placeholder như `{{ten_truong}}`, `{{ten_giao_vien}}`, `{{mon_hoc}}`, `{{lop}}`, `{{chu_de}}`, `{{noi_dung}}`, `{{dap_an}}`, `{{thang_diem}}`, `{{ma_tran}}` được thay đơn giản khi tạo output.
+
+Word export, Markdown/TXT export và `/print` dùng header từ `/settings` khi có dữ liệu. Xem thêm `docs/TEMPLATES.md`.
 
 ## Smoke Test
 

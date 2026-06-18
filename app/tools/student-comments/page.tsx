@@ -12,7 +12,7 @@ import { createDocument, saveDocument } from "@/lib/history";
 import { generateStudentComments } from "@/lib/mock-ai";
 import type { GeneratedDocument, StudentCommentInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
-import { applyTemplate, getTemplates } from "@/lib/templates";
+import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import { sampleStudentCommentInput } from "@/lib/sample-data";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
@@ -55,7 +55,7 @@ export default function StudentCommentsPage() {
     setLoading(true);
     setMessage("");
     const generated = await generateStudentComments(input);
-    const content = applyTemplate(getTemplates().find((item) => item.id === templateId), generated, { className: input.className });
+    const content = applyTemplate(resolveTemplate(templateId), generated, { className: input.className, lop: `${input.studentName} - ${input.className}`, ghi_chu: input.limitations });
     const next = createDocument(`Nhận xét học sinh ${input.studentName || input.className}`, "student-comment", content);
     setDocument(next);
     incrementUsage();

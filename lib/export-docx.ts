@@ -2,6 +2,7 @@
 
 import { AlignmentType, Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
 import { getDocumentSettings } from "@/lib/document-settings";
+import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
 
 function safeFileName(value: string) {
@@ -40,12 +41,7 @@ export async function exportDocx(document: GeneratedDocument) {
       children: [new TextRun({ text, font: settings.fontFamily, size: fontSize })]
     });
   });
-  const headerLines = [
-    settings.schoolName,
-    settings.department ? `Tổ/Bộ môn: ${settings.department}` : "",
-    settings.teacherName ? `Giáo viên: ${settings.teacherName}` : "",
-    settings.schoolYear ? `Năm học: ${settings.schoolYear}` : ""
-  ].filter(Boolean);
+  const headerLines = getDocumentHeaderLines(settings);
 
   const doc = new Document({
     sections: [

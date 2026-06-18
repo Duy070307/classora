@@ -73,6 +73,6 @@ main {
   body { background: white !important; color: #111827 !important; }
   .document-actions, aside, nav, footer, button { display: none !important; }
   .print-page { max-width: none !important; padding: 0 !important; }
-  .print-document { box-shadow: none !important; border: 0 !important; ring: 0 !important; padding: 0 !important; }
+  .print-document { background: white !important; box-shadow: none !important; border: 0 !important; ring: 0 !important; padding: 0 !important; color: #111827 !important; }
   @page { margin: 18mm; }
 }
