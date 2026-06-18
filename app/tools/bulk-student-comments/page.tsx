@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileDown, Trash2 } from "lucide-react";
+import { Copy, Download, FileDown, Trash2 } from "lucide-react";
 import { ChangeEvent, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -9,6 +9,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { createDocument, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
 import { sampleBulkCommentsCsv } from "@/lib/sample-data";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 type StudentRow = {
   name: string;
@@ -79,6 +81,7 @@ export default function BulkStudentCommentsPage() {
   const [rows, setRows] = useState<StudentRow[]>([]);
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [message, setMessage] = useState("");
+  const draft = useFormDraft("/tools/bulk-student-comments", rows, setRows);
 
   const output = useMemo(() => rows.map((row, index) => {
     const comments = makeComments(row);
@@ -95,11 +98,13 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".csv")) return setMessage("Vui lòng chọn đúng file CSV.");
     const text = await file.text();
     const parsed = parseCsv(text);
     setRows(parsed);
     setDocument(null);
-    setMessage(parsed.length ? `Đã đọc ${parsed.length} học sinh từ CSV.` : "Không đọc được dữ liệu CSV. Vui lòng kiểm tra cột.");
+    const invalid = parsed.filter((row) => row.name === "Chưa có tên").length;
+    setMessage(parsed.length ? `Đã đọc ${parsed.length} dòng; ${invalid} dòng thiếu Họ tên.` : "File CSV thiếu dữ liệu hoặc cột Họ tên.");
   }
 
   function generate() {
@@ -139,7 +144,9 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
               CSV cần có cột: Họ tên, Lớp, Mức học tập, Thái độ, Ưu điểm, Hạn chế, Mục đích. Cũng hỗ trợ: ho_ten, lop, muc_hoc_tap, thai_do, uu_diem, han_che, muc_dich.
             </div>
             <button type="button" onClick={downloadSample} className="btn-secondary"><FileDown size={16} />Tải file mẫu CSV</button>
+            <button type="button" onClick={() => navigator.clipboard.writeText(sampleBulkCommentsCsv)} className="btn-secondary"><Copy size={16} />Copy mẫu CSV</button>
             <button type="button" onClick={() => { const parsed = parseCsv(sampleBulkCommentsCsv); setRows(parsed); setDocument(null); setMessage(`Đã điền ${parsed.length} học sinh mẫu.`); }} className="btn-secondary">Dùng dữ liệu mẫu</button>
+            <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <input type="file" accept=".csv,text/csv" onChange={handleFile} className="form-field" />
             {rows.length ? (
               <div className="overflow-auto rounded-md border border-line">

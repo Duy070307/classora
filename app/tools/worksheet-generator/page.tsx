@@ -14,6 +14,10 @@ import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import { sampleWorksheetInput } from "@/lib/sample-data";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { PresetSelect } from "@/components/tools/PresetSelect";
+import { useFormDraft } from "@/hooks/useFormDraft";
+import { worksheetPresets } from "@/lib/presets";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -33,8 +37,12 @@ export default function WorksheetGeneratorPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
+  const draft = useFormDraft("/tools/worksheet-generator", input, setInput);
 
   async function generate() {
+    if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");
+    if (!input.topic.trim()) return setMessage("Vui lòng nhập chủ đề.");
+    if (input.exerciseCount <= 0) return setMessage("Số bài tập phải lớn hơn 0.");
     setLoading(true);
     setMessage("");
     const generated = await generateWorksheet(input);
@@ -71,6 +79,8 @@ export default function WorksheetGeneratorPage() {
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
             <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleWorksheetInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
+            <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
+            <PresetSelect presets={worksheetPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />
             <TemplateSelect type="Phiếu học tập" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin phiếu</p>

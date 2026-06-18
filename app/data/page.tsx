@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { Download, Upload, Trash2 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -13,9 +14,10 @@ import {
 import { getQuestions } from "@/lib/question-bank";
 import { getTemplates } from "@/lib/templates";
 import { getMockPlan, getUsageCount } from "@/lib/usage";
+import { clearAllFormDrafts, getAllFormDrafts } from "@/lib/form-drafts";
 
-type Summary = { history: number; templates: number; questions: number; settings: boolean; plan: string; usage: number };
-const emptySummary: Summary = { history: 0, templates: 0, questions: 0, settings: false, plan: "Free demo", usage: 0 };
+type Summary = { history: number; templates: number; questions: number; drafts: number; settings: boolean; plan: string; usage: number };
+const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, settings: false, plan: "Free demo", usage: 0 };
 
 function readSummary(): Summary {
   const settings = getDocumentSettings();
@@ -23,6 +25,7 @@ function readSummary(): Summary {
     history: getHistory().length,
     templates: getTemplates().length,
     questions: getQuestions().length,
+    drafts: getAllFormDrafts().length,
     settings: Boolean(settings.schoolName || settings.teacherName || settings.department || settings.schoolYear),
     plan: getMockPlan() === "pro" ? "Pro demo" : "Free demo",
     usage: getUsageCount()
@@ -73,6 +76,7 @@ export default function DataManagementPage() {
     ["Số tài liệu trong lịch sử", summary.history],
     ["Số mẫu cá nhân", summary.templates],
     ["Số câu hỏi trong ngân hàng", summary.questions],
+    ["Số bản nháp biểu mẫu", summary.drafts],
     ["Cài đặt tài liệu", summary.settings ? "Có" : "Chưa có"],
     ["Gói demo hiện tại", summary.plan],
     ["Lượt dùng demo", summary.usage]
@@ -83,6 +87,7 @@ export default function DataManagementPage() {
     <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">Classora hiện dùng localStorage. Nếu bạn xóa dữ liệu trình duyệt, dữ liệu có thể mất.</div>
     {message ? <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700">{message}</div> : null}
     {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div> : null}
+    <Link href="/drafts" className="btn-secondary mb-6 inline-flex">Mở bản nháp biểu mẫu</Link>
     <div className="grid gap-6 xl:grid-cols-2">
       <section className="card overflow-hidden"><h2 className="border-b border-line p-5 text-lg font-bold text-ink">Dữ liệu đang lưu trên trình duyệt</h2><dl>{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-5 py-3 last:border-0"><dt className="text-sm text-muted">{label}</dt><dd className="text-sm font-bold text-ink">{value}</dd></div>)}</dl></section>
       <div className="space-y-6">
@@ -96,6 +101,7 @@ export default function DataManagementPage() {
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa ngân hàng câu hỏi", clearQuestionBank)}>Xóa ngân hàng câu hỏi</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa cài đặt tài liệu", clearSettings)}>Xóa cài đặt tài liệu</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa lượt dùng demo", clearUsage)}>Xóa lượt dùng demo</button>
+      <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa bản nháp biểu mẫu", clearAllFormDrafts)}>Xóa bản nháp biểu mẫu</button>
       <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onClick={() => confirmClear("xóa toàn bộ dữ liệu Classora", clearAllClassoraData)}><Trash2 size={16} />Xóa toàn bộ dữ liệu Classora</button>
     </div></section>
   </main></div>;

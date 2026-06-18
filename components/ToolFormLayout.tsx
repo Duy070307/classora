@@ -10,12 +10,16 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { PresetSelect } from "@/components/tools/PresetSelect";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from "@/lib/types";
+import { useFormDraft } from "@/hooks/useFormDraft";
+import { genericPresets } from "@/lib/presets";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -31,6 +35,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
+  const draft = useFormDraft(config.href, input, setInput);
   const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
 
   function update(name: string, value: string | number | boolean | string[]) {
@@ -38,6 +43,19 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   }
 
   async function generate() {
+    const required = config.fields.find((field) => field.type !== "checkbox" && field.type !== "multicheckbox" && field.defaultValue !== "" && String(input[field.name] ?? "").trim() === "");
+    if (required) return setMessage(`Vui lòng nhập ${required.label.toLowerCase()}.`);
+    const negativeNumber = config.fields.find((field) => field.type === "number" && Number(input[field.name]) < 0);
+    if (negativeNumber) return setMessage(`${negativeNumber.label} không được âm.`);
+    const positiveNumber = config.fields.find((field) => field.type === "number" && /(count|score|totalScore|levelCount|slideCount|exerciseCount|codeCount|questionCount|classSize|parentCount)/i.test(field.name) && Number(input[field.name]) <= 0);
+    if (positiveNumber) return setMessage(`${positiveNumber.label} phải lớn hơn 0.`);
+    if (config.type === "matrix") {
+      const total = ["recognitionRate", "understandingRate", "applicationRate", "advancedRate"].reduce((sum, key) => sum + Number(input[key] || 0), 0);
+      if (total !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
+    }
+    if (config.type === "exam-shuffler" && !/Câu\s*\d+/i.test(String(input.questions || ""))) {
+      return setMessage("Không tìm thấy khối câu hỏi. Hãy nhập câu bắt đầu bằng “Câu 1”, “Câu 2”...");
+    }
     setLoading(true);
     setMessage("");
     const generated = await config.generate(input);
@@ -80,6 +98,8 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
                 Dùng dữ liệu mẫu
               </button>
             ) : null}
+            <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
+            <PresetSelect presets={genericPresets[config.href] ?? []} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />
             {templateType ? <TemplateSelect type={templateType} value={templateId} onChange={setTemplateId} /> : null}
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin tạo tài liệu</p>

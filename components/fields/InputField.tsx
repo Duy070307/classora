@@ -20,6 +20,7 @@ export function InputField({
       <input
         id={id}
         type={type}
+        min={type === "number" ? 0 : undefined}
         className="form-field mt-1"
         value={value}
         placeholder={placeholder}

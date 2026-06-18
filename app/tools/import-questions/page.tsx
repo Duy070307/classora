@@ -9,6 +9,8 @@ import { createDocument } from "@/lib/history";
 import { addQuestions, createQuestion, questionsToDocument } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
 import { sampleImportQuestionsText } from "@/lib/sample-data";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { useFormDraft } from "@/hooks/useFormDraft";
 
 type Draft = Omit<QuestionItem, "id" | "createdAt"> & { selected: boolean };
 
@@ -67,6 +69,7 @@ export default function ImportQuestionsPage() {
   const [text, setText] = useState(sampleImportQuestionsText);
   const [rows, setRows] = useState<Draft[]>([]);
   const [message, setMessage] = useState("");
+  const draft = useFormDraft("/tools/import-questions", text, setText);
 
   function parseInput() {
     const parsed = parseText(text, subject, grade, topic);
@@ -77,9 +80,10 @@ export default function ImportQuestionsPage() {
   async function uploadCsv(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".csv")) return setMessage("Vui lòng chọn đúng file CSV.");
     const parsed = parseCsv(await file.text());
     setRows(parsed);
-    setMessage(parsed.length ? `Đã nhập ${parsed.length} câu từ CSV.` : "Không đọc được câu hỏi. Hãy kiểm tra tên cột hoặc chỉnh sửa thủ công.");
+    setMessage(parsed.length ? `Đã nhập ${parsed.length} dòng hợp lệ từ CSV.` : "File CSV thiếu cột Nội dung câu hỏi hoặc không có dòng hợp lệ.");
   }
 
   function downloadSample() {
@@ -110,11 +114,13 @@ export default function ImportQuestionsPage() {
             <div><label className="label">Chủ đề</label><input className="form-field mt-1" value={topic} onChange={(e) => setTopic(e.target.value)} /></div>
           </div>
           <div><label className="label">Nội dung câu hỏi</label><textarea className="form-field mt-1 min-h-56 font-mono text-sm" value={text} onChange={(e) => setText(e.target.value)} /></div>
+          <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
           <div className="flex flex-wrap gap-2">
             <button className="btn-secondary" type="button" onClick={() => { setSubject("Toán"); setGrade("8"); setTopic("Phương trình"); setText(sampleImportQuestionsText); setRows([]); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <button className="btn-primary" type="button" onClick={parseInput}>Phân tích văn bản</button>
             <label className="btn-secondary cursor-pointer"><FileUp size={16} />Nhập CSV<input className="hidden" type="file" accept=".csv,text/csv" onChange={uploadCsv} /></label>
             <button className="btn-secondary" type="button" onClick={downloadSample}><Download size={16} />Tải file mẫu CSV</button>
+            <button className="btn-secondary" type="button" onClick={() => navigator.clipboard.writeText("Môn học,Lớp,Chủ đề,Loại câu hỏi,Mức độ,Nội dung câu hỏi,Đáp án,Lời giải")}><Download size={16} />Copy tiêu đề CSV</button>
           </div>
           {message ? <p className="text-sm font-medium text-brand">{message}</p> : null}
         </section>

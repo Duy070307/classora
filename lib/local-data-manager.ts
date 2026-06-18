@@ -1,6 +1,7 @@
 "use client";
 
 import { STORAGE_KEYS } from "@/lib/storage";
+import { clearAllFormDrafts, FORM_DRAFT_PREFIX, getAllFormDrafts, saveFormDraft } from "@/lib/form-drafts";
 
 export type ClassoraBackup = {
   version: string;
@@ -43,7 +44,8 @@ function writeValue(key: string, value: unknown) {
 export function getClassoraStorageKeys(): string[] {
   if (typeof window === "undefined") return [];
   try {
-    return Object.values(STORAGE_KEYS).filter((key) => localStorage.getItem(key) !== null);
+    const fixed = Object.values(STORAGE_KEYS).filter((key) => localStorage.getItem(key) !== null);
+    return [...fixed, ...getAllFormDrafts().map((draft) => `${FORM_DRAFT_PREFIX}${draft.toolKey}`)];
   } catch {
     return [];
   }
@@ -61,7 +63,7 @@ export function exportAllLocalData(): ClassoraBackup {
       questionBank: readValue(STORAGE_KEYS.questions),
       usage: readValue(STORAGE_KEYS.usage),
       demoData: readValue(STORAGE_KEYS.plan),
-      other: { recentTools: readValue(STORAGE_KEYS.recentTools) }
+      other: { recentTools: readValue(STORAGE_KEYS.recentTools), formDrafts: getAllFormDrafts() }
     }
   };
 }
@@ -98,6 +100,13 @@ export function importLocalDataBackup(backup: ClassoraBackup): void {
   writeValue(STORAGE_KEYS.usage, backup.data.usage);
   writeValue(STORAGE_KEYS.plan, backup.data.demoData);
   writeValue(STORAGE_KEYS.recentTools, backup.data.other?.recentTools);
+  const drafts = backup.data.other?.formDrafts;
+  if (Array.isArray(drafts)) drafts.forEach((draft) => {
+    if (draft && typeof draft === "object" && typeof (draft as { toolKey?: unknown }).toolKey === "string") {
+      const value = draft as { toolKey: string; data?: unknown };
+      saveFormDraft(value.toolKey, value.data);
+    }
+  });
   window.dispatchEvent(new Event("classora-usage-change"));
 }
 
@@ -115,5 +124,6 @@ export function clearUsage(): void {
 }
 export function clearAllClassoraData(): void {
   Object.values(STORAGE_KEYS).forEach(remove);
+  clearAllFormDrafts();
   window.dispatchEvent(new Event("classora-usage-change"));
 }

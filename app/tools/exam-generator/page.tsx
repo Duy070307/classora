@@ -8,6 +8,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { PresetSelect } from "@/components/tools/PresetSelect";
+import { useFormDraft } from "@/hooks/useFormDraft";
+import { examPresets } from "@/lib/presets";
 import { createDocument, saveDocument } from "@/lib/history";
 import { generateExam } from "@/lib/mock-ai";
 import { getDocumentSettings } from "@/lib/document-settings";
@@ -50,6 +54,7 @@ export default function ExamGeneratorPage() {
   const [bankQuestions, setBankQuestions] = useState<QuestionItem[]>([]);
   const [bankDifficulty, setBankDifficulty] = useState("");
   const [bankCount, setBankCount] = useState(5);
+  const draft = useFormDraft("/tools/exam-generator", input, setInput);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -69,6 +74,10 @@ export default function ExamGeneratorPage() {
   }
 
   async function generate() {
+    if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");
+    if (!input.grade.trim()) return setMessage("Vui lòng nhập lớp.");
+    if (input.multipleChoiceCount + input.essayCount <= 0) return setMessage("Tổng số câu phải lớn hơn 0.");
+    if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
     setLoading(true);
     setMessage("");
     const generated = await generateExam(input);
@@ -117,6 +126,8 @@ export default function ExamGeneratorPage() {
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
+            <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
+            <PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
               <p className="form-section-title">Thông tin đề</p>

@@ -15,6 +15,10 @@ import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, getTemplates } from "@/lib/templates";
 import { sampleStudentCommentInput } from "@/lib/sample-data";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
+import { FormDraftControls } from "@/components/tools/FormDraftControls";
+import { PresetSelect } from "@/components/tools/PresetSelect";
+import { useFormDraft } from "@/hooks/useFormDraft";
+import { studentCommentPresets } from "@/lib/presets";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -42,8 +46,12 @@ export default function StudentCommentsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
+  const draft = useFormDraft("/tools/student-comments", input, setInput);
 
   async function generate() {
+    if (!input.studentName.trim()) return setMessage("Vui lòng nhập tên học sinh.");
+    if (!input.className.trim()) return setMessage("Vui lòng nhập lớp.");
+    if (!input.attitude.trim() && !input.strengths.trim() && !input.limitations.trim()) return setMessage("Vui lòng nhập ít nhất một nội dung nhận xét.");
     setLoading(true);
     setMessage("");
     const generated = await generateStudentComments(input);
@@ -80,6 +88,8 @@ export default function StudentCommentsPage() {
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
             <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleStudentCommentInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
+            <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
+            <PresetSelect presets={studentCommentPresets} onApply={(values) => setInput((current) => ({ ...current, ...(values as Partial<StudentCommentInput>) }))} />
             <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />
             <div className="form-section space-y-4">
               <p className="form-section-title">Thông tin học sinh</p>

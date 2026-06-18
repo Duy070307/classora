@@ -5,6 +5,7 @@
 - Giao diện responsive và thư mục công cụ.
 - Các workflow mock dành cho giáo viên.
 - Lưu lịch sử, mẫu, cài đặt và ngân hàng câu hỏi bằng localStorage.
+- Tự lưu bản nháp form và khôi phục tại `/drafts` bằng localStorage.
 - Xuất Word cơ bản.
 - Demo data, diagnostics, feedback copy-only và tester guide.
 
@@ -21,9 +22,10 @@
 2. Nạp dữ liệu tại `/demo-data`.
 3. Xuất backup tại `/data` trước khi thay đổi hoặc reset dữ liệu lớn.
 4. Thử 3-5 workflow.
-5. Xuất và mở file Word.
-6. Kiểm tra lịch sử; thử nhập backup để khôi phục dữ liệu demo.
-7. Gửi góp ý tại `/feedback`.
+5. Nhập dở một form, refresh trang, khôi phục bản nháp và xóa bản nháp tại `/drafts`.
+6. Xuất và mở file Word.
+7. Kiểm tra lịch sử; thử nhập backup để khôi phục dữ liệu demo.
+8. Gửi góp ý tại `/feedback`.
 
 ## Ai nên test trước
 

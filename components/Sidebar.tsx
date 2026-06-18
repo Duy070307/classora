@@ -8,7 +8,7 @@ import { UsageBadge } from "@/components/UsageBadge";
 const groups = [
   { title: "Tổng quan", links: [["Dashboard", "/dashboard", Home], ["Tất cả công cụ", "/tools", Wrench], ["Bắt đầu", "/getting-started", CircleHelp]] },
   { title: "Công cụ", links: [["Soạn đề & kiểm tra", "/tools?category=exam-assessment", ClipboardList], ["Soạn bài & tài liệu", "/tools?category=lesson-materials", BookOpenCheck], ["Chủ nhiệm & phụ huynh", "/tools?category=homeroom-parent", MessageCircle], ["Công thức & LaTeX", "/tools?category=formula-latex", Tags]] },
-  { title: "Dữ liệu cá nhân", links: [["Lịch sử", "/history", History], ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck], ["Mẫu cá nhân", "/templates", FileClock], ["Cài đặt tài liệu", "/settings", Settings], ["Quản lý dữ liệu", "/data", Database]] },
+  { title: "Dữ liệu cá nhân", links: [["Lịch sử", "/history", History], ["Bản nháp biểu mẫu", "/drafts", FileClock], ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck], ["Mẫu cá nhân", "/templates", FileClock], ["Cài đặt tài liệu", "/settings", Settings], ["Quản lý dữ liệu", "/data", Database]] },
   { title: "Khác", links: [["Private Beta", "/private-beta", CircleHelp], ["Hướng dẫn tester", "/tester-guide", ClipboardList], ["Bảng giá", "/pricing", Tags], ["Góp ý", "/feedback", MessageCircle], ["Nhật ký phát triển", "/changelog", FileClock]] }
 ];
 

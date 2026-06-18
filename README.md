@@ -58,6 +58,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/dashboard`
 - `/history`
 - `/history/[id]`
+- `/drafts`
 - `/print`
 - `/tools`
 - `/settings`
@@ -101,6 +102,8 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 ## Current Limitations
 
 - Chưa có AI thật, đang dùng AI mô phỏng.
+- Form công cụ có tự lưu bản nháp vào `localStorage`, có thể xem và khôi phục tại `/drafts`.
+- Một số công cụ có preset “Dùng mẫu nhanh” để điền nhanh workflow giáo viên Việt Nam.
 - Chưa có real OCR hoặc image recognition.
 - Chưa có đăng nhập.
 - Chưa có database.
@@ -156,6 +159,12 @@ Mở `/demo-data` để nạp ngân hàng câu hỏi, mẫu tài liệu và cài
 Mở `/data` để xuất toàn bộ dữ liệu Classora thành file JSON, nhập lại bản sao lưu hoặc xóa từng nhóm dữ liệu. Nên xuất backup trước khi thử reset, đổi dữ liệu demo hoặc kiểm thử lớn.
 
 Bản demo chưa có backend/database và không tự đồng bộ dữ liệu. `localStorage` gắn với trình duyệt và thiết bị hiện tại; dữ liệu có thể mất khi xóa dữ liệu trình duyệt, dùng chế độ riêng tư hoặc chuyển thiết bị.
+
+## Bản nháp biểu mẫu và preset
+
+Các form công cụ lõi tự lưu bản nháp sau khi giáo viên nhập dữ liệu. Mở `/drafts` để tìm, khôi phục hoặc xóa bản nháp. Bản nháp chỉ nằm trong `localStorage` của trình duyệt hiện tại và cũng được đưa vào backup JSON tại `/data`.
+
+Một số workflow thường gặp có nút “Dùng mẫu nhanh” để điền nhanh cấu hình như kiểm tra 15 phút, kiểm tra 45 phút, ma trận tỉ lệ phổ biến, phiếu học tập và nhận xét học sinh. Giáo viên vẫn có thể sửa mọi trường sau khi áp dụng preset.
 
 ## Smoke Test
 

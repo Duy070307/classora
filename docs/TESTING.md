@@ -13,6 +13,8 @@
 - Demo data: nạp từng nhóm, nạp tất cả và xóa.
 - Diagnostics: số liệu khớp localStorage và provider là `mock`.
 - Quản lý dữ liệu: xuất backup trước khi kiểm thử lớn; nhập lại file để khôi phục dữ liệu demo.
+- Bản nháp biểu mẫu: nhập một form, refresh trang, xác nhận bản nháp có thể khôi phục, xóa bản nháp và kiểm tra bản nháp xuất hiện tại `/drafts`.
+- Backup bản nháp: xuất backup tại `/data`, xóa bản nháp, nhập lại backup và kiểm tra bản nháp được khôi phục nếu dữ liệu backup có drafts.
 - Reset dữ liệu: kiểm tra riêng từng nút xóa, hộp xác nhận và nút xóa toàn bộ.
 - Mobile: kiểm tra landing, dashboard, form, preview, bảng và sidebar.
 - Vercel: build thành công, route không 404 và app chạy không cần env.
