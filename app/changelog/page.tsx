@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 
 const entries = [
+  ["v0.5 Release Candidate", ["Command palette", "Favorites và recent tools", "Data backup/restore", "AI-ready mock architecture", "Output refinement", "Document templates", "Word/print/Markdown/TXT export", "PWA/SEO polish", "Private beta preparation", "Release candidate checklist"]],
   ["v0.4 demo", ["SEO metadata", "PWA manifest", "Loading và error states", "Trang chia sẻ private beta"]],
   ["v0.4", ["Pricing mock", "Onboarding", "Dashboard mới", "Free/Pro demo"]],
   ["v0.3", ["Ngân hàng câu hỏi", "Nhập câu hỏi từ văn bản/CSV", "Cài đặt tài liệu", "Cải thiện xuất Word"]],

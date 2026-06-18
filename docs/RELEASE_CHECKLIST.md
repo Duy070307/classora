@@ -1,5 +1,7 @@
 # Release Checklist
 
+Phiên bản: **v0.5 RC**. Checklist tương tác nằm tại `/release-candidate`; giới hạn công khai nằm tại `/known-issues`.
+
 - [ ] `npm run lint`
 - [ ] `npm run build`
 - [ ] `npm run smoke`
@@ -26,3 +28,6 @@
 - [ ] Kiểm tra manifest, favicon, `robots.txt` và `sitemap.xml`
 - [ ] Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile
 - [ ] Xác nhận app chạy không cần env; `.env.example` chỉ dành cho AI tương lai
+- [ ] Kiểm tra checklist `/release-candidate` lưu và reset bằng localStorage
+- [ ] Kiểm tra `/known-issues` và các link từ footer, private beta, tester guide
+- [ ] Kiểm tra feedback có loại góp ý, nguồn trang, timestamp và thông tin trình duyệt

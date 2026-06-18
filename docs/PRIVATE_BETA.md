@@ -1,5 +1,7 @@
 # Classora Private Beta
 
+Phiên bản hiện tại là **v0.5 RC**. Trước khi gửi tester, hoàn thành checklist tại `/release-candidate` và đọc `/known-issues`.
+
 ## Đã sẵn sàng
 
 - Giao diện responsive và thư mục công cụ.
@@ -57,3 +59,5 @@ Có thể mở `/share` để sao chép lời mời và liên kết demo.
 > Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh, ma trận đề và xuất Word. Bản hiện tại là demo/MVP, chưa dùng AI thật. Em muốn nhờ cô/thầy dùng thử quy trình và góp ý xem công cụ nào hữu ích nhất.
 
 Sau khi deploy Vercel, tester nên kiểm tra dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile. Bản demo hiện không yêu cầu biến môi trường.
+
+Tài liệu chuẩn bị release đầy đủ: `docs/RELEASE_CANDIDATE.md`.

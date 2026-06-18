@@ -19,6 +19,8 @@ const requiredFiles = [
   "app/data/page.tsx",
   "app/ai-lab/page.tsx",
   "app/share/page.tsx",
+  "app/release-candidate/page.tsx",
+  "app/known-issues/page.tsx",
   "app/error.tsx",
   "app/loading.tsx",
   "app/not-found.tsx",
@@ -45,7 +47,8 @@ const requiredFiles = [
   "lib/print-document.ts",
   "lib/built-in-templates.ts",
   "lib/document-header.ts",
-  "docs/TEMPLATES.md"
+  "docs/TEMPLATES.md",
+  "docs/RELEASE_CANDIDATE.md"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));

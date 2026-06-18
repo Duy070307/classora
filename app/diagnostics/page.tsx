@@ -43,6 +43,8 @@ export default function DiagnosticsPage() {
   const refresh = () => setStatus(readStatus());
   useEffect(() => queueMicrotask(refresh), []);
   const rows = [
+    ["Phiên bản ứng dụng", "v0.5 RC"],
+    ["Chế độ build", process.env.NODE_ENV],
     ["localStorage khả dụng", status.storage ? "Có" : "Không"],
     ["Số tài liệu lịch sử", String(status.history)],
     ["Số mẫu tài liệu", String(status.templates)],
@@ -65,6 +67,6 @@ export default function DiagnosticsPage() {
     <PageHeader title="Kiểm tra trạng thái ứng dụng" description="Thông tin dễ đọc để kiểm tra dữ liệu và trạng thái bản demo." />
     <section className="card max-w-3xl overflow-hidden"><dl>{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-4 py-3 last:border-0"><dt className="text-sm text-muted">{label}</dt><dd className="text-sm font-bold text-ink">{value}</dd></div>)}</dl></section>
     <section className="card mt-5 max-w-3xl p-4"><h2 className="font-bold text-ink">Dữ liệu cục bộ được nhận diện</h2><p className="mt-2 text-sm leading-6 text-muted">{status.keys.length ? `Classora đang dùng ${status.keys.length} nhóm dữ liệu trên trình duyệt này.` : "Chưa có dữ liệu Classora được lưu."}</p>{status.keys.length ? <div className="mt-3 flex flex-wrap gap-2">{status.keys.map((key) => <code key={key} className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">{key}</code>)}</div> : null}</section>
-    <div className="mt-5 flex flex-wrap gap-2"><button className="btn-primary" onClick={refresh}><RefreshCw size={16} />Kiểm tra lại</button><CommandPaletteButton /><Link href="/tools" className="btn-secondary">Mở tất cả công cụ</Link><button className="btn-secondary" onClick={downloadLocalDataBackup}><Download size={16} />Xuất sao lưu</button><Link href="/drafts" className="btn-secondary">Mở bản nháp</Link><Link href="/data" className="btn-secondary">Mở quản lý dữ liệu</Link></div>
+    <div className="mt-5 flex flex-wrap gap-2"><button className="btn-primary" onClick={refresh}><RefreshCw size={16} />Kiểm tra lại</button><CommandPaletteButton /><Link href="/release-candidate" className="btn-secondary">Checklist release</Link><Link href="/known-issues" className="btn-secondary">Giới hạn hiện tại</Link><Link href="/data" className="btn-secondary">Quản lý dữ liệu</Link><Link href="/demo-data" className="btn-secondary">Dữ liệu demo</Link><Link href="/feedback" className="btn-secondary">Gửi góp ý</Link><button className="btn-secondary" onClick={downloadLocalDataBackup}><Download size={16} />Xuất sao lưu</button></div>
   </main></div>;
 }

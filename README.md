@@ -4,6 +4,8 @@ Classora là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom
 
 Trạng thái hiện tại: zero-cost MVP/demo dành cho private beta, không cần API key.
 
+Phiên bản hiện tại: **v0.5 Release Candidate**. Dùng `/release-candidate` để theo dõi QA thủ công và `/known-issues` để xem giới hạn trước khi gửi tester.
+
 Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 
 ## Tech Stack
@@ -83,6 +85,8 @@ Sau khi deploy, hãy thử dashboard, thư mục công cụ, xuất Word, in/lư
 - `/diagnostics`
 - `/data`
 - `/private-beta`
+- `/release-candidate`
+- `/known-issues`
 - `/share`
 - `/tester-guide`
 - `/privacy`

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const demoMessage = "Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh, ma trận đề và xuất Word. Bản hiện tại là demo/MVP, chưa dùng AI thật. Em muốn nhờ cô/thầy dùng thử quy trình và góp ý xem công cụ nào hữu ích nhất.";
+const demoMessage = "Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, ma trận đề, phiếu học tập, nhận xét học sinh và xuất Word. Bản hiện tại là MVP/demo, chưa dùng AI thật và chưa thu phí. Em muốn nhờ cô/thầy test thử quy trình sử dụng, đặc biệt là giao diện, xuất Word và các công cụ nào thực sự hữu ích.";
 
 export default function SharePage() {
   const [copied, setCopied] = useState<"message" | "link" | null>(null);

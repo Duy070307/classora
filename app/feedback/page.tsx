@@ -12,6 +12,7 @@ export default function FeedbackPage() {
   const [contact, setContact] = useState("");
   const [pageUrl, setPageUrl] = useState("");
   const [severity, setSeverity] = useState("Góp ý chung");
+  const [feedbackType, setFeedbackType] = useState("Lỗi giao diện");
   const [tool, setTool] = useState("");
   const [usefulTool, setUsefulTool] = useState("");
   const [content, setContent] = useState("");
@@ -19,7 +20,10 @@ export default function FeedbackPage() {
 
   useEffect(() => {
     const source = new URLSearchParams(window.location.search).get("source");
-    if (source) queueMicrotask(() => setTool(source));
+    queueMicrotask(() => {
+      if (source) setTool(source);
+      setPageUrl(window.location.pathname);
+    });
   }, []);
 
   async function handleCopy(event: FormEvent) {
@@ -29,6 +33,8 @@ export default function FeedbackPage() {
 
 Họ tên: ${name || "Chưa nhập"}
 Vai trò: ${role}
+Thời gian: ${new Date().toLocaleString("vi-VN")}
+Loại góp ý: ${feedbackType}
 Email/Zalo: ${contact || "Không cung cấp"}
 Công cụ/trang liên quan: ${tool || "Chưa chọn"}
 Link trang gặp lỗi: ${pageUrl || "Không có"}
@@ -53,6 +59,7 @@ ${browserNote}`;
       <form onSubmit={handleCopy} className="card space-y-5 p-5">
         <div className="grid gap-4 sm:grid-cols-2"><div><label className="label">Họ tên</label><input className="form-field mt-1" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ví dụ: Cô Lan" /></div><div><label className="label">Vai trò</label><select className="form-field mt-1" value={role} onChange={(e) => setRole(e.target.value)}><option>Giáo viên</option><option>Gia sư</option><option>Học sinh</option><option>Khác</option></select></div></div>
         <div className="grid gap-4 sm:grid-cols-2"><div><label className="label">Email hoặc Zalo (không bắt buộc)</label><input className="form-field mt-1" value={contact} onChange={(e) => setContact(e.target.value)} /></div><div><label className="label">Link trang đang gặp lỗi (không bắt buộc)</label><input className="form-field mt-1" value={pageUrl} onChange={(e) => setPageUrl(e.target.value)} placeholder="/tools/exam-generator" /></div></div>
+        <div><label className="label">Loại góp ý nhanh</label><div className="mt-2 flex flex-wrap gap-2">{["Lỗi giao diện", "Lỗi xuất Word", "Lỗi dữ liệu", "Công cụ khó dùng", "Ý tưởng tính năng", "Nội dung output chưa ổn"].map((type) => <button key={type} type="button" onClick={() => setFeedbackType(type)} className={feedbackType === type ? "btn-primary min-h-9 px-3 py-1 text-xs" : "btn-secondary min-h-9 px-3 py-1 text-xs"}>{type}</button>)}</div></div>
         <div className="grid gap-4 sm:grid-cols-2"><div><label className="label">Mức độ lỗi/góp ý</label><select className="form-field mt-1" value={severity} onChange={(e) => setSeverity(e.target.value)}><option>Góp ý chung</option><option>Lỗi nhỏ</option><option>Lỗi nghiêm trọng</option><option>Ý tưởng tính năng</option></select></div><div><label className="label">Công cụ liên quan</label><select className="form-field mt-1" value={tool} onChange={(e) => setTool(e.target.value)}><option value="">Chọn công cụ/trang</option><option>Dashboard</option><option>Lịch sử</option><option>Xuất Word</option>{toolRegistry.map((item) => <option key={item.href} value={item.href.replace("/tools/", "")}>{item.title}</option>)}</select></div></div>
         <div><label className="label">Công cụ hữu ích nhất</label><input className="form-field mt-1" value={usefulTool} onChange={(e) => setUsefulTool(e.target.value)} placeholder="Ví dụ: Tạo đề kiểm tra" /></div>
         <div><label className="label">Nội dung góp ý</label><textarea className="form-field mt-1 min-h-40" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Mô tả thao tác, kết quả hiện tại và kết quả bạn mong muốn..." /></div>

@@ -1,5 +1,7 @@
 # Testing Classora
 
+Release candidate hiện tại: **v0.5 RC**. Dùng `/release-candidate` để lưu trạng thái QA thủ công và `/known-issues` để đối chiếu giới hạn đã công bố.
+
 ## Kiểm tra thủ công
 
 - Dashboard: plan, usage, lối tắt và tài liệu gần đây.
@@ -24,6 +26,8 @@
 - Vercel: build thành công, route không 404 và app chạy không cần env.
 - Production shell: kiểm tra favicon, manifest, metadata, trang 404 và error boundary có thông báo tiếng Việt.
 - Chia sẻ: mở `/share`, sao chép đúng tin nhắn demo và URL hiện tại.
+- Release candidate: tick checklist, refresh để xác nhận localStorage, kiểm tra progress và đặt lại.
+- Known issues: kiểm tra nội dung không tuyên bố AI thật, thanh toán thật hoặc độ chính xác tuyệt đối.
 - Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile.
 
 ## Lệnh kiểm tra
