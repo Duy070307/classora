@@ -12,6 +12,8 @@
 - Settings: lưu/reset header tài liệu và đổi Free/Pro demo.
 - Demo data: nạp từng nhóm, nạp tất cả và xóa.
 - Diagnostics: số liệu khớp localStorage và provider là `mock`.
+- Quản lý dữ liệu: xuất backup trước khi kiểm thử lớn; nhập lại file để khôi phục dữ liệu demo.
+- Reset dữ liệu: kiểm tra riêng từng nút xóa, hộp xác nhận và nút xóa toàn bộ.
 - Mobile: kiểm tra landing, dashboard, form, preview, bảng và sidebar.
 - Vercel: build thành công, route không 404 và app chạy không cần env.
 

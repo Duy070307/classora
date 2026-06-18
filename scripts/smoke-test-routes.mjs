@@ -12,12 +12,14 @@ const requiredFiles = [
   "app/tools/bulk-student-comments/page.tsx",
   "app/demo-data/page.tsx",
   "app/diagnostics/page.tsx",
+  "app/data/page.tsx",
   "app/ai-lab/page.tsx",
   "app/api/ai/generate/route.ts",
   "lib/ai/index.ts",
   "lib/ai/refine-output.ts",
   "components/tools/OutputRefinementBar.tsx",
-  "lib/sample-data.ts"
+  "lib/sample-data.ts",
+  "lib/local-data-manager.ts"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));

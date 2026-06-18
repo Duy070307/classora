@@ -1,42 +1,56 @@
 "use client";
 
 import Link from "next/link";
-import { RefreshCw, Trash2 } from "lucide-react";
+import { Download, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
+import { getAIProviderName } from "@/lib/ai";
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getHistory } from "@/lib/history";
+import { downloadLocalDataBackup, getClassoraStorageKeys } from "@/lib/local-data-manager";
 import { getQuestions } from "@/lib/question-bank";
-import { clearClassoraStorage, isStorageAvailable } from "@/lib/storage";
+import { isStorageAvailable } from "@/lib/storage";
 import { getTemplates } from "@/lib/templates";
 import { getMockPlan, getUsageCount } from "@/lib/usage";
-import { getAIProviderName } from "@/lib/ai";
 
-type Status = { storage: boolean; history: number; templates: number; questions: number; plan: string; usage: number; settings: boolean };
+type Status = { storage: boolean; history: number; templates: number; questions: number; plan: string; usage: number; settings: boolean; keys: string[] };
 
 function readStatus(): Status {
   const settings = getDocumentSettings();
   return {
-    storage: isStorageAvailable(), history: getHistory().length, templates: getTemplates().length,
-    questions: getQuestions().length, plan: getMockPlan() === "pro" ? "Pro demo" : "Free demo",
-    usage: getUsageCount(), settings: Boolean(settings.schoolName || settings.teacherName || settings.schoolYear)
+    storage: isStorageAvailable(),
+    history: getHistory().length,
+    templates: getTemplates().length,
+    questions: getQuestions().length,
+    plan: getMockPlan() === "pro" ? "Pro demo" : "Free demo",
+    usage: getUsageCount(),
+    settings: Boolean(settings.schoolName || settings.teacherName || settings.schoolYear),
+    keys: getClassoraStorageKeys()
   };
 }
 
 export default function DiagnosticsPage() {
-  const [status, setStatus] = useState<Status>({ storage: false, history: 0, templates: 0, questions: 0, plan: "Free demo", usage: 0, settings: false });
+  const [status, setStatus] = useState<Status>({ storage: false, history: 0, templates: 0, questions: 0, plan: "Free demo", usage: 0, settings: false, keys: [] });
   const refresh = () => setStatus(readStatus());
   useEffect(() => queueMicrotask(refresh), []);
   const rows = [
-    ["localStorage khả dụng", status.storage ? "Có" : "Không"], ["Số tài liệu lịch sử", String(status.history)],
-    ["Số mẫu tài liệu", String(status.templates)], ["Số câu hỏi", String(status.questions)],
-    ["Gói hiện tại", status.plan], ["Lượt đã dùng", String(status.usage)],
-    ["Có cài đặt tài liệu", status.settings ? "Có" : "Không"], ["Chế độ demo", "Đang hoạt động"], ["AI provider", getAIProviderName()]
+    ["localStorage khả dụng", status.storage ? "Có" : "Không"],
+    ["Số tài liệu lịch sử", String(status.history)],
+    ["Số mẫu tài liệu", String(status.templates)],
+    ["Số câu hỏi", String(status.questions)],
+    ["Gói hiện tại", status.plan],
+    ["Lượt đã dùng", String(status.usage)],
+    ["Có cài đặt tài liệu", status.settings ? "Có" : "Không"],
+    ["Chế độ demo", "Đang hoạt động"],
+    ["AI provider", getAIProviderName()],
+    ["Hệ thống sao lưu", status.storage ? "Sẵn sàng" : "Không khả dụng"]
   ];
+
   return <div className="min-h-screen md:flex"><Sidebar /><main className="flex-1 p-4 sm:p-5 md:p-8">
-    <PageHeader title="Kiểm tra trạng thái ứng dụng" description="Trang này chỉ dùng để kiểm thử bản MVP." />
+    <PageHeader title="Kiểm tra trạng thái ứng dụng" description="Thông tin dễ đọc để kiểm tra dữ liệu và trạng thái bản demo." />
     <section className="card max-w-3xl overflow-hidden"><dl>{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-4 py-3 last:border-0"><dt className="text-sm text-muted">{label}</dt><dd className="text-sm font-bold text-ink">{value}</dd></div>)}</dl></section>
-    <div className="mt-5 flex flex-wrap gap-2"><button className="btn-primary" onClick={refresh}><RefreshCw size={16} />Kiểm tra lại</button><button className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa dữ liệu localStorage của Classora?")) { clearClassoraStorage(); refresh(); } }}><Trash2 size={16} />Xóa dữ liệu lỗi localStorage</button><Link href="/demo-data" className="btn-secondary">Đi tới dữ liệu demo</Link></div>
+    <section className="card mt-5 max-w-3xl p-4"><h2 className="font-bold text-ink">Dữ liệu cục bộ được nhận diện</h2><p className="mt-2 text-sm leading-6 text-muted">{status.keys.length ? `Classora đang dùng ${status.keys.length} nhóm dữ liệu trên trình duyệt này.` : "Chưa có dữ liệu Classora được lưu."}</p>{status.keys.length ? <div className="mt-3 flex flex-wrap gap-2">{status.keys.map((key) => <code key={key} className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">{key}</code>)}</div> : null}</section>
+    <div className="mt-5 flex flex-wrap gap-2"><button className="btn-primary" onClick={refresh}><RefreshCw size={16} />Kiểm tra lại</button><button className="btn-secondary" onClick={downloadLocalDataBackup}><Download size={16} />Xuất sao lưu</button><Link href="/data" className="btn-secondary">Mở quản lý dữ liệu</Link><Link href="/demo-data" className="btn-secondary">Đi tới dữ liệu demo</Link></div>
   </main></div>;
 }

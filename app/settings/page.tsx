@@ -55,6 +55,11 @@ export default function SettingsPage() {
           <p className="text-sm text-muted">Dữ liệu chỉ lưu trên trình duyệt. <Link href="/privacy" className="font-semibold text-brand">Xem ghi chú quyền riêng tư</Link>.</p>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
+          <h2 className="text-lg font-bold text-ink">Dữ liệu cá nhân trên trình duyệt</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Bạn có thể sao lưu hoặc xóa dữ liệu Classora đang lưu trên trình duyệt này.</p>
+          <Link href="/data" className="btn-secondary mt-4">Quản lý dữ liệu</Link>
+        </section>
+        <section className="card mt-6 max-w-3xl p-5">
           <h2 className="text-lg font-bold text-ink">AI demo</h2>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Nhà cung cấp hiện tại</dt><dd className="mt-1 font-semibold text-ink">Mock AI</dd></div>

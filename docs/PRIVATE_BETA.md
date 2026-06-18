@@ -19,10 +19,11 @@
 
 1. Mở `/tester-guide`.
 2. Nạp dữ liệu tại `/demo-data`.
-3. Thử 3-5 workflow.
-4. Xuất và mở file Word.
-5. Kiểm tra lịch sử.
-6. Gửi góp ý tại `/feedback`.
+3. Xuất backup tại `/data` trước khi thay đổi hoặc reset dữ liệu lớn.
+4. Thử 3-5 workflow.
+5. Xuất và mở file Word.
+6. Kiểm tra lịch sử; thử nhập backup để khôi phục dữ liệu demo.
+7. Gửi góp ý tại `/feedback`.
 
 ## Ai nên test trước
 
@@ -43,6 +44,7 @@
 - Nội dung dùng AI mô phỏng và phải được giáo viên kiểm tra.
 - Dữ liệu chỉ nằm trong localStorage.
 - Xóa dữ liệu trình duyệt có thể làm mất dữ liệu.
+- Backup JSON chỉ khôi phục dữ liệu Classora trên trình duyệt được nhập file; chưa có đồng bộ cloud.
 
 ## Tin nhắn mời tester
 

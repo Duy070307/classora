@@ -66,6 +66,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/demo-checklist`
 - `/demo-data`
 - `/diagnostics`
+- `/data`
 - `/private-beta`
 - `/tester-guide`
 - `/privacy`
@@ -147,6 +148,12 @@ Mở `/demo-checklist` và kiểm tra:
 ## Demo Data
 
 Mở `/demo-data` để nạp ngân hàng câu hỏi, mẫu tài liệu và cài đặt mẫu. Dữ liệu chỉ được lưu trong `localStorage` của trình duyệt hiện tại.
+
+## Sao lưu và khôi phục dữ liệu cục bộ
+
+Mở `/data` để xuất toàn bộ dữ liệu Classora thành file JSON, nhập lại bản sao lưu hoặc xóa từng nhóm dữ liệu. Nên xuất backup trước khi thử reset, đổi dữ liệu demo hoặc kiểm thử lớn.
+
+Bản demo chưa có backend/database và không tự đồng bộ dữ liệu. `localStorage` gắn với trình duyệt và thiết bị hiện tại; dữ liệu có thể mất khi xóa dữ liệu trình duyệt, dùng chế độ riêng tư hoặc chuyển thiết bị.
 
 ## Smoke Test
 
