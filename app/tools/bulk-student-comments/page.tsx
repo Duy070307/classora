@@ -152,7 +152,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
                     {rows.map((row, index) => (
                       <tr key={`${row.name}-${index}`} className="border-t border-line">
                         <td className="p-2">{row.name}</td><td className="p-2">{row.className}</td><td className="p-2">{row.performance}</td>
-                        <td className="p-2"><button type="button" onClick={() => setRows(rows.filter((_, i) => i !== index))} className="rounded-md border border-line p-2 text-red-600"><Trash2 size={14} /></button></td>
+                        <td className="p-2"><button type="button" onClick={() => setRows(rows.filter((_, i) => i !== index))} className="rounded-md border border-line p-2 text-red-600" aria-label={`Xóa ${row.name}`}><Trash2 size={14} /></button></td>
                       </tr>
                     ))}
                   </tbody>

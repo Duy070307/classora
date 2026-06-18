@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export function InputField({
   label,
   value,
@@ -11,10 +13,12 @@ export function InputField({
   type?: "text" | "number";
   placeholder?: string;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="label">{label}</label>
+      <label className="label" htmlFor={id}>{label}</label>
       <input
+        id={id}
         type={type}
         className="form-field mt-1"
         value={value}

@@ -15,17 +15,17 @@ export function ToolOutputActions({
   onGenerateAgain?: () => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="sticky top-2 z-10 flex flex-wrap gap-2 rounded-lg border border-line bg-white/95 p-2 shadow-sm backdrop-blur">
       <CopyButton text={document.content} />
       <button type="button" onClick={onSave} className="btn-secondary">
         <Save size={16} />
-        Save to history
+        Lưu lịch sử
       </button>
       <ExportDocxButton document={document} />
       {onGenerateAgain ? (
         <button type="button" onClick={onGenerateAgain} className="btn-secondary">
           <RotateCcw size={16} />
-          Generate again
+          Tạo lại
         </button>
       ) : null}
     </div>

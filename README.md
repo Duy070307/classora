@@ -38,6 +38,18 @@ http://localhost:3000
 npm run build
 ```
 
+## Deploy
+
+Classora là ứng dụng Next.js không cần API key. Có thể deploy lên Vercel hoặc dịch vụ hỗ trợ Next.js:
+
+```bash
+npm install
+npm run build
+npm run start
+```
+
+Không cần cấu hình database hoặc biến môi trường cho bản demo hiện tại.
+
 ## Main Routes
 
 - `/`
@@ -49,6 +61,7 @@ npm run build
 - `/pricing`
 - `/getting-started`
 - `/changelog`
+- `/demo-checklist`
 - `/question-bank`
 - `/tools/import-questions`
 - `/tools/exam-generator`
@@ -88,6 +101,17 @@ npm run build
 - Ngân hàng câu hỏi, mẫu và thư mục lịch sử chỉ lưu trong `localStorage`.
 - Nhập câu hỏi chỉ hỗ trợ văn bản và CSV; không đọc PDF hoặc hình ảnh.
 - Free/Pro và bảng giá hiện chỉ là mô phỏng bằng `localStorage`, không có giao dịch thật.
+- Giáo viên phải kiểm tra lại mọi output trước khi sử dụng.
+
+## Demo Checklist
+
+Mở `/demo-checklist` và kiểm tra:
+
+- Dashboard và thư mục công cụ.
+- Tạo đề, ma trận, phiếu học tập và nhận xét.
+- Nhập CSV nhận xét hàng loạt.
+- Lưu lịch sử và xuất Word.
+- Gửi góp ý sau khi thử.
 
 ## Mock Usage & Plan
 

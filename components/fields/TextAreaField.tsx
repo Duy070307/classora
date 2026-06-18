@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export function TextAreaField({
   label,
   value,
@@ -9,10 +11,11 @@ export function TextAreaField({
   onChange: (value: string) => void;
   placeholder?: string;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="label">{label}</label>
-      <textarea className="form-field mt-1 min-h-28" value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
+      <label className="label" htmlFor={id}>{label}</label>
+      <textarea id={id} className="form-field mt-1 min-h-28" value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
     </div>
   );
 }

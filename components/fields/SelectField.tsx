@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export function SelectField({
   label,
   value,
@@ -9,10 +11,11 @@ export function SelectField({
   options: string[];
   onChange: (value: string) => void;
 }) {
+  const id = useId();
   return (
     <div>
-      <label className="label">{label}</label>
-      <select className="form-field mt-1" value={value} onChange={(event) => onChange(event.target.value)}>
+      <label className="label" htmlFor={id}>{label}</label>
+      <select id={id} className="form-field mt-1" value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map((option) => (
           <option key={option}>{option}</option>
         ))}

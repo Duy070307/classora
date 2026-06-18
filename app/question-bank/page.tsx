@@ -128,9 +128,9 @@ export default function QuestionBankPage() {
                     <p className="mt-2 text-xs text-muted">{new Date(item.createdAt).toLocaleString("vi-VN")}</p>
                   </div>
                   <div className="flex gap-1">
-                    <button className="rounded-md border border-line p-2" title="Sao chép" onClick={() => navigator.clipboard.writeText(item.question)}><Copy size={15} /></button>
-                    <button className="rounded-md border border-line p-2" title="Chỉnh sửa" onClick={() => edit(item)}><Pencil size={15} /></button>
-                    <button className="rounded-md border border-line p-2 text-red-600" title="Xóa" onClick={() => remove(item.id)}><Trash2 size={15} /></button>
+                    <button className="rounded-md border border-line p-2" title="Sao chép" aria-label="Sao chép câu hỏi" onClick={() => navigator.clipboard.writeText(item.question)}><Copy size={15} /></button>
+                    <button className="rounded-md border border-line p-2" title="Chỉnh sửa" aria-label="Chỉnh sửa câu hỏi" onClick={() => edit(item)}><Pencil size={15} /></button>
+                    <button className="rounded-md border border-line p-2 text-red-600" title="Xóa" aria-label="Xóa câu hỏi" onClick={() => remove(item.id)}><Trash2 size={15} /></button>
                   </div>
                 </div>
               </article>

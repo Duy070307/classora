@@ -1,4 +1,5 @@
 "use client";
+import { readJson, readText, writeJson, writeText } from "@/lib/safe-storage";
 
 export type MockPlan = "free" | "pro";
 
@@ -14,18 +15,18 @@ function currentMonth() {
 
 export function getMockPlan(): MockPlan {
   if (typeof window === "undefined") return "free";
-  return localStorage.getItem(PLAN_KEY) === "pro" ? "pro" : "free";
+  return readText(PLAN_KEY) === "pro" ? "pro" : "free";
 }
 
 export function setMockPlan(plan: MockPlan) {
-  localStorage.setItem(PLAN_KEY, plan);
+  writeText(PLAN_KEY, plan);
   window.dispatchEvent(new Event("classora-usage-change"));
 }
 
 export function getUsageState(): UsageState {
   if (typeof window === "undefined") return { month: currentMonth(), count: 0 };
   try {
-    const parsed = JSON.parse(localStorage.getItem(USAGE_KEY) || "{}") as Partial<UsageState>;
+    const parsed = readJson<Partial<UsageState>>(USAGE_KEY, {});
     if (parsed.month !== currentMonth()) return { month: currentMonth(), count: 0 };
     return { month: currentMonth(), count: Number.isFinite(parsed.count) ? Number(parsed.count) : 0 };
   } catch {
@@ -43,7 +44,7 @@ export function getRemainingUsage() {
 
 export function incrementUsage() {
   const next = { month: currentMonth(), count: getUsageCount() + 1 };
-  localStorage.setItem(USAGE_KEY, JSON.stringify(next));
+  writeJson(USAGE_KEY, next);
   window.dispatchEvent(new CustomEvent("classora-usage-change", { detail: next }));
   if (getMockPlan() === "free" && next.count >= FREE_MONTHLY_LIMIT) {
     window.dispatchEvent(new Event("classora-limit-reached"));

@@ -1,6 +1,7 @@
 "use client";
 
 import { getDocumentSettings } from "@/lib/document-settings";
+import { readJson, writeJson } from "@/lib/safe-storage";
 
 export type TemplateItem = {
   id: string;
@@ -18,7 +19,7 @@ export const templateTypes = ["Đề kiểm tra", "Giáo án", "Phiếu học t�
 export function getTemplates(): TemplateItem[] {
   if (typeof window === "undefined") return [];
   try {
-    const parsed = JSON.parse(localStorage.getItem(TEMPLATE_KEY) || "[]") as unknown;
+    const parsed = readJson<unknown>(TEMPLATE_KEY, []);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is TemplateItem => {
       if (!item || typeof item !== "object") return false;
@@ -31,7 +32,7 @@ export function getTemplates(): TemplateItem[] {
 }
 
 export function saveTemplates(items: TemplateItem[]) {
-  localStorage.setItem(TEMPLATE_KEY, JSON.stringify(items));
+  writeJson(TEMPLATE_KEY, items);
 }
 
 export function applyTemplate(template: TemplateItem | undefined, content: string, values: Record<string, string>) {

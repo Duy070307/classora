@@ -1,4 +1,5 @@
 "use client";
+import { readJson, removeStored, writeJson } from "@/lib/safe-storage";
 
 export type DocumentSettings = {
   schoolName: string;
@@ -22,17 +23,21 @@ const SETTINGS_KEY = "classora_document_settings";
 
 export function getDocumentSettings(): DocumentSettings {
   if (typeof window === "undefined") return defaultDocumentSettings;
-  try {
-    return { ...defaultDocumentSettings, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
-  } catch {
-    return defaultDocumentSettings;
-  }
+  const value = readJson<Partial<DocumentSettings>>(SETTINGS_KEY, {});
+  return {
+    schoolName: typeof value.schoolName === "string" ? value.schoolName : "",
+    teacherName: typeof value.teacherName === "string" ? value.teacherName : "",
+    department: typeof value.department === "string" ? value.department : "",
+    schoolYear: typeof value.schoolYear === "string" ? value.schoolYear : "",
+    fontFamily: value.fontFamily === "Arial" ? "Arial" : "Times New Roman",
+    fontSize: ["12", "13", "14"].includes(value.fontSize ?? "") ? value.fontSize as DocumentSettings["fontSize"] : "13"
+  };
 }
 
 export function saveDocumentSettings(settings: DocumentSettings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  writeJson(SETTINGS_KEY, settings);
 }
 
 export function resetDocumentSettings() {
-  localStorage.removeItem(SETTINGS_KEY);
+  removeStored(SETTINGS_KEY);
 }

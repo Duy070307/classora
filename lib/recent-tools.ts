@@ -1,4 +1,5 @@
 "use client";
+import { readJson, writeJson } from "@/lib/safe-storage";
 
 const RECENT_TOOLS_KEY = "classora_recent_tools";
 
@@ -11,7 +12,7 @@ export type RecentTool = {
 export function getRecentTools(): RecentTool[] {
   if (typeof window === "undefined") return [];
   try {
-    const parsed = JSON.parse(localStorage.getItem(RECENT_TOOLS_KEY) || "[]") as unknown;
+    const parsed = readJson<unknown>(RECENT_TOOLS_KEY, []);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is RecentTool => {
       if (!item || typeof item !== "object") return false;
@@ -25,5 +26,5 @@ export function getRecentTools(): RecentTool[] {
 
 export function saveRecentTool(tool: Omit<RecentTool, "usedAt">) {
   const next = [{ ...tool, usedAt: new Date().toISOString() }, ...getRecentTools().filter((item) => item.href !== tool.href)].slice(0, 8);
-  localStorage.setItem(RECENT_TOOLS_KEY, JSON.stringify(next));
+  writeJson(RECENT_TOOLS_KEY, next);
 }

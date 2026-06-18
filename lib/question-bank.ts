@@ -1,6 +1,7 @@
 "use client";
 
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
+import { readJson, writeJson } from "@/lib/safe-storage";
 
 const QUESTION_BANK_KEY = "classora_question_bank";
 
@@ -10,7 +11,7 @@ const difficulties: QuestionDifficulty[] = ["Nhận biết", "Thông hiểu", "V
 export function getQuestions(): QuestionItem[] {
   if (typeof window === "undefined") return [];
   try {
-    const parsed = JSON.parse(localStorage.getItem(QUESTION_BANK_KEY) || "[]") as unknown;
+    const parsed = readJson<unknown>(QUESTION_BANK_KEY, []);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is QuestionItem => {
       if (!item || typeof item !== "object") return false;
@@ -31,7 +32,7 @@ export function getQuestions(): QuestionItem[] {
 }
 
 export function saveQuestions(items: QuestionItem[]) {
-  localStorage.setItem(QUESTION_BANK_KEY, JSON.stringify(items));
+  writeJson(QUESTION_BANK_KEY, items);
 }
 
 export function addQuestions(items: QuestionItem[]) {

@@ -120,6 +120,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="mb-8"><h2 className="text-lg font-bold text-ink">Lối tắt workspace</h2><div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{quickLinks.map(([title, href, Icon]) => { const QuickIcon = Icon as typeof Wrench; return <Link key={href as string} href={href as string} className="card flex items-center gap-3 p-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"><QuickIcon size={18} />{title as string}</Link>; })}</div></section>
+        <Link href="/demo-checklist" className="mb-8 inline-flex text-sm font-semibold text-brand">Mở checklist trước khi demo <ArrowRight size={15} className="ml-1" /></Link>
 
         <div className="space-y-8">
           {categoryOrder.map((item) => {

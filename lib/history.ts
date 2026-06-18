@@ -1,13 +1,14 @@
 "use client";
 
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
+import { readJson, writeJson } from "@/lib/safe-storage";
 
 const HISTORY_KEY = "classora_history";
 
 export function getHistory(): GeneratedDocument[] {
   if (typeof window === "undefined") return [];
   try {
-    const parsed = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]") as unknown;
+    const parsed = readJson<unknown>(HISTORY_KEY, []);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is GeneratedDocument => {
       if (!item || typeof item !== "object") return false;
@@ -49,17 +50,17 @@ export function getHistory(): GeneratedDocument[] {
 
 export function saveDocument(document: GeneratedDocument) {
   const next = [document, ...getHistory().filter((item) => item.id !== document.id)];
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  writeJson(HISTORY_KEY, next);
 }
 
 export function deleteDocument(id: string) {
   const next = getHistory().filter((item) => item.id !== id);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  writeJson(HISTORY_KEY, next);
 }
 
 export function updateDocumentFolder(id: string, folder: DocumentFolder) {
   const next = getHistory().map((item) => item.id === id ? { ...item, folder } : item);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  writeJson(HISTORY_KEY, next);
 }
 
 function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {

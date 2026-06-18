@@ -8,6 +8,7 @@ import { OutputPreview } from "@/components/OutputPreview";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
 import Link from "next/link";
+import { removeStored } from "@/lib/safe-storage";
 
 const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
@@ -61,7 +62,7 @@ export function HistoryList() {
 
   function clearAll() {
     if (!window.confirm("Bạn có chắc muốn xóa toàn bộ lịch sử không?")) return;
-    localStorage.removeItem("classora_history");
+    removeStored("classora_history");
     setItems([]);
     setSelected(null);
     setMessage("Đã xóa toàn bộ lịch sử.");
