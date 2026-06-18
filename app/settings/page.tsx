@@ -36,7 +36,7 @@ export default function SettingsPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Cài đặt tài liệu" description="Cài đặt header mặc định khi xuất Word. Dữ liệu chỉ lưu trong localStorage." />
-        <section className="card max-w-3xl space-y-5 p-5">
+        <section className="tool-form-card max-w-3xl">
           <PlanSelector />
           <hr className="border-line" />
           <div className="grid gap-4 md:grid-cols-2">

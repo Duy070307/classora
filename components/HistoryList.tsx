@@ -126,7 +126,7 @@ export function HistoryList() {
           <button type="button" onClick={clearAll} className="btn-secondary text-red-600">Xóa tất cả</button>
         </div>
       </div>
-      <div className="card flex flex-wrap items-center gap-2 p-3">
+      <div className="card sticky top-4 z-10 flex flex-wrap items-center gap-2 p-3 shadow-lg">
         <label className="flex items-center gap-2 text-sm font-semibold text-ink"><input type="checkbox" checked={filteredItems.length > 0 && filteredItems.every((item) => selected.includes(item.id))} onChange={(event) => setSelected(event.target.checked ? Array.from(new Set([...selected, ...filteredItems.map((item) => item.id)])) : selected.filter((id) => !filteredItems.some((item) => item.id === id)))} />Chọn tất cả đang hiển thị</label>
         <span className="text-sm text-muted">Đã chọn {selected.length}</span>
         <button type="button" className="btn-secondary" disabled={!selected.length} onClick={() => downloadBundle("md")}>Xuất Markdown</button>
@@ -137,7 +137,7 @@ export function HistoryList() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredItems.length ? filteredItems.map((item) => (
-            <article key={item.id} className="card p-4">
+            <article key={item.id} className={`card p-4 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl ${selected.includes(item.id) ? "border-blue-400 bg-blue-50/40 ring-2 ring-blue-100" : ""}`}>
               <div className="flex items-start justify-between gap-3">
                 <input type="checkbox" checked={selected.includes(item.id)} onChange={(event) => setSelected(event.target.checked ? [...selected, item.id] : selected.filter((id) => id !== item.id))} aria-label={`Chọn ${item.title}`} />
                 <div>

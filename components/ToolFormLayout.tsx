@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { InputField } from "@/components/fields/InputField";
 import { SelectField } from "@/components/fields/SelectField";
 import { TextAreaField } from "@/components/fields/TextAreaField";
@@ -19,6 +19,7 @@ import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from "@/lib/types";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { genericPresets } from "@/lib/presets";
+import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -106,9 +107,9 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
 
   return (
     <AppShell title={config.title}>
-        <section className="mb-6 flex flex-col gap-4 rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 p-5 shadow-sm sm:flex-row sm:items-center sm:p-6"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200"><Sparkles size={22} /></span><div><div className="flex flex-wrap items-center gap-2"><h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{config.title}</h1><span className="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-700">Demo</span></div><p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{config.description}</p></div></section>
+        <ToolPageHeader title={config.title} description={config.description} />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
-          <form onSubmit={handleSubmit} className="card h-fit space-y-5 p-5 shadow-lg shadow-slate-200/50 sm:p-6">
+          <form onSubmit={handleSubmit} className="tool-form-card">
             {config.sampleInput ? (
               <button type="button" onClick={() => setInput(config.sampleInput ?? initialInput)} className="btn-secondary w-full">
                 Dùng dữ liệu mẫu

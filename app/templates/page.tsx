@@ -106,7 +106,7 @@ export default function TemplatesPage() {
         </section>
 
         <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-          <form onSubmit={handleSubmit} className="card space-y-4 p-5">
+          <form onSubmit={handleSubmit} className="tool-form-card">
             <div className="flex items-center gap-2">
               <Plus size={18} className="text-brand" />
               <h2 className="text-lg font-bold text-ink">{editingId ? "Sửa mẫu" : "Thêm mẫu mới"}</h2>
@@ -139,7 +139,7 @@ export default function TemplatesPage() {
 
           <section className="space-y-3">
             {items.length ? items.map((item) => (
-              <article key={item.id} className="card p-4">
+              <article key={item.id} className="card p-5 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
                 <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
                   <div>
                     <span className="inline-flex rounded-md bg-blue-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-brand">{item.type}</span>

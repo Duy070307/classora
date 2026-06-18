@@ -86,7 +86,7 @@ export default function QuestionBankPage() {
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
         <BugReportLink source="question-bank" className="mb-4" />
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
-          <form onSubmit={submit} className="card space-y-4 p-5">
+          <form onSubmit={submit} className="tool-form-card">
             <div className="flex items-center gap-2"><Plus size={18} className="text-brand" /><h2 className="font-bold text-ink">{editingId ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi"}</h2></div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div><label className="label">Môn học</label><input className="form-field mt-1" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} /></div>
@@ -119,7 +119,7 @@ export default function QuestionBankPage() {
               </div>
             </div>
             {filtered.length ? filtered.map((item) => (
-              <article key={item.id} className="card p-4">
+              <article key={item.id} className={`card p-4 transition hover:border-blue-200 hover:shadow-lg ${selected.includes(item.id) ? "border-blue-400 bg-blue-50/40 ring-2 ring-blue-100" : ""}`}>
                 <div className="flex items-start gap-3">
                   <input type="checkbox" className="mt-1" checked={selected.includes(item.id)} onChange={(e) => setSelected(e.target.checked ? [...selected, item.id] : selected.filter((id) => id !== item.id))} />
                   <div className="min-w-0 flex-1">
