@@ -6,6 +6,8 @@ const requiredFiles = [
   "app/dashboard/page.tsx",
   "app/tools/page.tsx",
   "app/history/page.tsx",
+  "app/history/[id]/page.tsx",
+  "app/print/page.tsx",
   "app/settings/page.tsx",
   "app/question-bank/page.tsx",
   "app/tools/exam-generator/page.tsx",
@@ -18,8 +20,11 @@ const requiredFiles = [
   "lib/ai/index.ts",
   "lib/ai/refine-output.ts",
   "components/tools/OutputRefinementBar.tsx",
+  "components/tools/DocumentExportMenu.tsx",
   "lib/sample-data.ts",
-  "lib/local-data-manager.ts"
+  "lib/local-data-manager.ts",
+  "lib/export-text.ts",
+  "lib/print-document.ts"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));

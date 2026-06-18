@@ -57,6 +57,8 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/`
 - `/dashboard`
 - `/history`
+- `/history/[id]`
+- `/print`
 - `/tools`
 - `/settings`
 - `/templates`
@@ -162,6 +164,10 @@ npm run smoke
 ```
 
 Script kiểm tra sự tồn tại của các route/file quan trọng mà không cần khởi động server.
+
+## Xuất tài liệu
+
+Tài liệu có thể được sao chép, lưu lịch sử, xuất Word, Markdown, TXT hoặc mở tại `/print` để in/lưu PDF bằng hộp thoại của trình duyệt. Trang `/history/[id]` hiển thị đầy đủ tài liệu đã lưu cùng các thao tác xuất. Xem thêm `docs/EXPORTS.md`.
 
 ## Mock AI & Future Architecture
 

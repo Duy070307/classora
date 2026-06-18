@@ -2,8 +2,7 @@
 
 import { Download, FileDown, Trash2 } from "lucide-react";
 import { ChangeEvent, useMemo, useState } from "react";
-import { CopyButton } from "@/components/CopyButton";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -164,9 +163,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
             {document ? (
               <>
                 <div className="flex flex-wrap gap-2">
-                  <CopyButton text={document.content} label="Sao chép tất cả" />
-                  <button type="button" onClick={save} className="btn-secondary">Lưu lịch sử</button>
-                  <ExportDocxButton document={document} />
+                  <DocumentExportMenu document={document} onSave={save} />
                   <button type="button" onClick={exportCsv} className="btn-secondary"><Download size={16} />Xuất CSV</button>
                 </div>
                 <OutputPreview document={document} />

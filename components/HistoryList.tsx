@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CalendarDays, Eye, FileText, Trash2 } from "lucide-react";
-import { CopyButton } from "@/components/CopyButton";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
-import { OutputPreview } from "@/components/OutputPreview";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
 import Link from "next/link";
@@ -38,7 +36,6 @@ const labels: Record<GeneratedDocument["type"], string> = {
 
 export function HistoryList() {
   const [items, setItems] = useState<GeneratedDocument[]>([]);
-  const [selected, setSelected] = useState<GeneratedDocument | null>(null);
   const [message, setMessage] = useState("");
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("Tất cả");
@@ -54,7 +51,6 @@ export function HistoryList() {
 
   function remove(id: string) {
     deleteDocument(id);
-    if (selected?.id === id) setSelected(null);
     refresh();
     setMessage("Đã xóa tài liệu khỏi lịch sử.");
     setTimeout(() => setMessage(""), 2200);
@@ -64,7 +60,6 @@ export function HistoryList() {
     if (!window.confirm("Bạn có chắc muốn xóa toàn bộ lịch sử không?")) return;
     removeStored(STORAGE_KEYS.history);
     setItems([]);
-    setSelected(null);
     setMessage("Đã xóa toàn bộ lịch sử.");
   }
 
@@ -104,8 +99,7 @@ export function HistoryList() {
           <button type="button" onClick={clearAll} className="btn-secondary text-red-600">Xóa tất cả</button>
         </div>
       </div>
-      <div className="grid gap-4 lg:grid-cols-[0.9fr_1.2fr]">
-        <div className="space-y-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredItems.length ? filteredItems.map((item) => (
             <article key={item.id} className="card p-4">
               <div className="flex items-start justify-between gap-3">
@@ -126,30 +120,12 @@ export function HistoryList() {
               <select className="form-field mt-3" value={item.folder || "Khác"} onChange={(event) => { updateDocumentFolder(item.id, event.target.value as DocumentFolder); refresh(); }}>
                 {folders.map((folder) => <option key={folder}>{folder}</option>)}
               </select>
-              <button type="button" onClick={() => setSelected(item)} className="mt-3 btn-secondary">
-                <Eye size={16} />
-                Xem
-              </button>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link href={`/history/${item.id}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><Eye size={16} />Xem</Link>
+                <DocumentExportMenu document={item} compact />
+              </div>
             </article>
           )) : <div className="empty-state">Không tìm thấy tài liệu phù hợp.</div>}
-        </div>
-        <div className="min-h-80">
-          {selected ? (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <CopyButton text={selected.content} />
-                <ExportDocxButton document={selected} />
-              </div>
-              <OutputPreview document={selected} />
-            </div>
-          ) : (
-            <div className="empty-state h-full">
-              <Eye className="mx-auto mb-3 text-slate-400" size={34} />
-              <p className="font-semibold text-ink">Chọn một tài liệu để xem nội dung</p>
-              <p className="mt-1">Bản xem trước sẽ hiển thị theo định dạng gần giống trang Word.</p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

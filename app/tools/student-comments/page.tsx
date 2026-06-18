@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2, Save } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -118,8 +118,7 @@ export default function StudentCommentsPage() {
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN NGẮN GỌN")} label="Copy ngắn gọn" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN TRANG TRỌNG")} label="Copy trang trọng" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN THÂN THIỆN GỬI PHỤ HUYNH")} label="Copy phụ huynh" />
-                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Lưu lịch sử</button>
-                  <ExportDocxButton document={document} />
+                  <DocumentExportMenu document={document} onSave={handleSave} />
                 </div>
                 <OutputRefinementBar tool="student-comments" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />

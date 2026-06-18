@@ -1,8 +1,7 @@
 "use client";
 
-import { RotateCcw, Save } from "lucide-react";
-import { CopyButton } from "@/components/CopyButton";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { RotateCcw } from "lucide-react";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import type { GeneratedDocument } from "@/lib/types";
 
 export function ToolOutputActions({
@@ -16,12 +15,7 @@ export function ToolOutputActions({
 }) {
   return (
     <div className="sticky top-2 z-10 flex flex-wrap gap-2 rounded-lg border border-line bg-white/95 p-2 shadow-sm backdrop-blur">
-      <CopyButton text={document.content} />
-      <button type="button" onClick={onSave} className="btn-secondary">
-        <Save size={16} />
-        Lưu lịch sử
-      </button>
-      <ExportDocxButton document={document} />
+      <DocumentExportMenu document={document} onSave={onSave} />
       {onGenerateAgain ? (
         <button type="button" onClick={onGenerateAgain} className="btn-secondary">
           <RotateCcw size={16} />

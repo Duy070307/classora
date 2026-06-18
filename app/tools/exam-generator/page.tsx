@@ -1,9 +1,8 @@
 "use client";
 
-import { Loader2, RotateCcw, Save } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
-import { CopyButton } from "@/components/CopyButton";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -189,12 +188,7 @@ export default function ExamGeneratorPage() {
               </div>
             ) : document ? (
               <>
-                <div className="flex flex-wrap gap-2">
-                  <CopyButton text={document.content} />
-                  <button type="button" onClick={handleSave} className="btn-secondary"><Save size={16} />Lưu lịch sử</button>
-                  <ExportDocxButton document={document} />
-                  <button type="button" onClick={generate} className="btn-secondary"><RotateCcw size={16} />Tạo lại</button>
-                </div>
+                <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>

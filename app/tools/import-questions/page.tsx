@@ -2,7 +2,7 @@
 
 import { Download, FileUp, Save } from "lucide-react";
 import { ChangeEvent, useState } from "react";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument } from "@/lib/history";
@@ -123,7 +123,7 @@ export default function ImportQuestionsPage() {
           <section className="mt-6 space-y-4">
             <div className="flex flex-wrap gap-2">
               <button className="btn-primary" type="button" disabled={!selected.length} onClick={() => { addQuestions(selected.map((row) => createQuestion({ subject: row.subject, grade: row.grade, topic: row.topic, question: row.question, type: row.type, difficulty: row.difficulty, answer: row.answer, explanation: row.explanation }))); setMessage(`Đã lưu ${selected.length} câu vào ngân hàng.`); }}><Save size={16} />Lưu câu đã chọn</button>
-              <ExportDocxButton document={exportDocument} />
+              <DocumentExportMenu document={exportDocument} />
             </div>
             <div className="overflow-x-auto rounded-md border border-line bg-white">
               <table className="min-w-[1100px] w-full text-left text-sm">

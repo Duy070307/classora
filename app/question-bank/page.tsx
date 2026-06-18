@@ -2,7 +2,7 @@
 
 import { Copy, Download, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ExportDocxButton } from "@/components/ExportDocxButton";
+import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument } from "@/lib/history";
@@ -113,7 +113,7 @@ export default function QuestionBankPage() {
                 <select className="form-field" value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select>
               </div>
               <div className="flex flex-wrap gap-2">
-                <ExportDocxButton document={exportDocument} />
+                <DocumentExportMenu document={exportDocument} />
                 <button type="button" className="btn-secondary" onClick={() => navigator.clipboard.writeText(questionsToDocument(exportItems))}><Copy size={16} />Copy {selected.length ? "đã chọn" : "kết quả lọc"}</button>
                 <button type="button" className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa toàn bộ ngân hàng câu hỏi?")) { persist([]); setSelected([]); } }}><Trash2 size={16} />Xóa tất cả</button>
               </div>
