@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { createDocument } from "@/lib/history";
 import { createQuestion, getQuestions, questionsToDocument, saveQuestions } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
+import Link from "next/link";
 
 const emptyForm = {
   subject: "Toán",
@@ -133,7 +134,7 @@ export default function QuestionBankPage() {
                   </div>
                 </div>
               </article>
-            )) : <div className="empty-state"><Download className="mx-auto mb-3 text-slate-400" /><p className="font-semibold text-ink">Chưa có câu hỏi phù hợp</p><p className="mt-1">Thêm thủ công hoặc nhập từ văn bản/CSV.</p></div>}
+            )) : <div className="empty-state"><Download className="mx-auto mb-3 text-slate-400" /><p className="font-semibold text-ink">Chưa có câu hỏi phù hợp</p><p className="mt-1">Thêm thủ công hoặc nhập nhanh từ văn bản/CSV.</p><Link href="/tools/import-questions" className="btn-primary mt-4">Nhập câu hỏi</Link></div>}
           </section>
         </div>
       </main>

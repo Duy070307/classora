@@ -2,26 +2,13 @@ import Link from "next/link";
 import { DemoNotice } from "@/components/DemoNotice";
 
 export function Navbar() {
-  return (
-    <header className="border-b border-line bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <Link href="/" className="text-xl font-bold text-ink">
-          Classora
-        </Link>
-        <nav className="flex items-center gap-4 text-sm font-medium text-muted">
-          <Link href="/dashboard" className="hover:text-brand">Dashboard</Link>
-          <Link href="/tools" className="hover:text-brand">Công cụ</Link>
-          <Link href="/question-bank" className="hover:text-brand">Ngân hàng câu hỏi</Link>
-          <Link href="/history" className="hover:text-brand">Lịch sử</Link>
-          <Link href="/templates" className="hover:text-brand">Mẫu cá nhân</Link>
-          <Link href="/settings" className="hover:text-brand">Cài đặt</Link>
-          <Link href="/feedback" className="hover:text-brand">Góp ý</Link>
-          <Link href="/dashboard" className="btn-primary">Bắt đầu</Link>
-        </nav>
-      </div>
-      <div className="mx-auto max-w-6xl px-4 pb-3">
-        <DemoNotice compact />
-      </div>
-    </header>
-  );
+  return <header className="border-b border-line bg-white/95 backdrop-blur">
+    <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+      <Link href="/" className="text-xl font-bold text-ink">Classora</Link>
+      <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-medium text-muted">
+        <Link href="/tools" className="hover:text-brand">Công cụ</Link><Link href="/getting-started" className="hover:text-brand">Bắt đầu</Link><Link href="/pricing" className="hover:text-brand">Bảng giá</Link><Link href="/changelog" className="hover:text-brand">Cập nhật</Link><Link href="/dashboard" className="btn-primary">Dùng thử demo</Link>
+      </nav>
+    </div>
+    <div className="mx-auto max-w-6xl px-4 pb-3"><DemoNotice compact /></div>
+  </header>;
 }

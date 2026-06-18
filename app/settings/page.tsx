@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { defaultDocumentSettings, getDocumentSettings, resetDocumentSettings, saveDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
+import { PlanSelector } from "@/components/PlanSelector";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<DocumentSettings>(defaultDocumentSettings);
@@ -35,6 +36,8 @@ export default function SettingsPage() {
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Cài đặt tài liệu" description="Cài đặt header mặc định khi xuất Word. Dữ liệu chỉ lưu trong localStorage." />
         <section className="card max-w-3xl space-y-5 p-5">
+          <PlanSelector />
+          <hr className="border-line" />
           <div className="grid gap-4 md:grid-cols-2">
             <div><label className="label">Tên trường/trung tâm</label><input className="form-field mt-1" value={settings.schoolName} onChange={(e) => update("schoolName", e.target.value)} /></div>
             <div><label className="label">Tên giáo viên</label><input className="form-field mt-1" value={settings.teacherName} onChange={(e) => update("teacherName", e.target.value)} /></div>

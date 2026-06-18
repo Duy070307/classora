@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock3, Search, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Clock3, FileClock, MessageCircle, Search, Settings, Sparkles, Wrench } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
 import { PageHeader } from "@/components/PageHeader";
 import { ToolCategorySection } from "@/components/ToolCategorySection";
@@ -46,6 +46,10 @@ export default function DashboardPage() {
   }, [category, query]);
 
   const highlightedTools = toolRegistry.filter((tool) => highlightedHrefs.includes(tool.href));
+  const quickLinks = [
+    ["Tất cả công cụ", "/tools", Wrench], ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck],
+    ["Mẫu cá nhân", "/templates", FileClock], ["Cài đặt tài liệu", "/settings", Settings], ["Góp ý", "/feedback", MessageCircle]
+  ];
 
   return (
     <div className="min-h-screen md:flex">
@@ -60,6 +64,7 @@ export default function DashboardPage() {
             <p className="text-sm font-bold uppercase tracking-wide text-brand">MVP cho giáo viên</p>
             <h2 className="mt-2 text-2xl font-bold text-ink">Soạn đề, tạo tài liệu, xuất Word trong vài phút.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">Dữ liệu hiện được lưu trên trình duyệt của bạn. Chưa có đăng nhập, thanh toán hay AI thật trong bản MVP này.</p>
+            <Link href="/getting-started" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand">Xem hướng dẫn bắt đầu <ArrowRight size={15} /></Link>
           </div>
           <div className="card p-5">
             <div className="flex items-center gap-2 text-sm font-semibold text-muted">
@@ -79,9 +84,9 @@ export default function DashboardPage() {
             <Sparkles size={18} className="text-brand" />
             <h2 className="text-lg font-bold text-ink">Công cụ nổi bật</h2>
           </div>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            {highlightedTools.map((tool) => (
-              <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} />
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {highlightedTools.slice(0, 6).map((tool) => (
+              <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} categoryLabel="Phổ biến" />
             ))}
           </div>
         </section>
@@ -109,10 +114,12 @@ export default function DashboardPage() {
                 <Link key={tool.href} href={tool.href} className="block rounded-md border border-line px-3 py-2 text-sm font-medium text-muted hover:border-brand hover:text-brand">
                   {tool.title}
                 </Link>
-              )) : <p className="text-sm leading-6 text-muted">Chưa có công cụ dùng gần đây. Hãy tạo thử một tài liệu đầu tiên.</p>}
+              )) : <div className="text-sm leading-6 text-muted"><p>Chưa có công cụ dùng gần đây.</p><Link href="/getting-started" className="mt-2 inline-flex font-semibold text-brand">Chọn công cụ đầu tiên</Link></div>}
             </div>
           </div>
         </section>
+
+        <section className="mb-8"><h2 className="text-lg font-bold text-ink">Lối tắt workspace</h2><div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">{quickLinks.map(([title, href, Icon]) => { const QuickIcon = Icon as typeof Wrench; return <Link key={href as string} href={href as string} className="card flex items-center gap-3 p-4 text-sm font-semibold text-ink hover:border-brand hover:text-brand"><QuickIcon size={18} />{title as string}</Link>; })}</div></section>
 
         <div className="space-y-8">
           {categoryOrder.map((item) => {
@@ -120,7 +127,7 @@ export default function DashboardPage() {
             if (!tools.length) return null;
             return <ToolCategorySection key={item} title={categoryLabels[item]} tools={tools} />;
           })}
-          {!filteredTools.length ? <div className="empty-state">Không tìm thấy công cụ phù hợp.</div> : null}
+          {!filteredTools.length ? <div className="empty-state"><p className="font-semibold text-ink">Không tìm thấy công cụ phù hợp.</p><button className="btn-secondary mt-3" onClick={() => { setQuery(""); setCategory("Tất cả"); }}>Xóa bộ lọc</button></div> : null}
         </div>
       </main>
     </div>

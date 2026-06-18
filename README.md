@@ -1,6 +1,6 @@
 # Classora
 
-Classora là MVP web app dành cho giáo viên Việt Nam, giúp tạo nhanh bản nháp đề kiểm tra, phiếu học tập, nhận xét học sinh và xuất tài liệu ra Word.
+Classora là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
 
 Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 
@@ -46,6 +46,9 @@ npm run build
 - `/tools`
 - `/settings`
 - `/templates`
+- `/pricing`
+- `/getting-started`
+- `/changelog`
 - `/question-bank`
 - `/tools/import-questions`
 - `/tools/exam-generator`
@@ -84,6 +87,14 @@ npm run build
 - Nội dung do AI mô phỏng tạo ra cần được giáo viên kiểm tra trước khi sử dụng.
 - Ngân hàng câu hỏi, mẫu và thư mục lịch sử chỉ lưu trong `localStorage`.
 - Nhập câu hỏi chỉ hỗ trợ văn bản và CSV; không đọc PDF hoặc hình ảnh.
+- Free/Pro và bảng giá hiện chỉ là mô phỏng bằng `localStorage`, không có giao dịch thật.
+
+## Mock Usage & Plan
+
+- Mặc định là `Free demo` với 10 lượt tạo mỗi tháng.
+- Bộ đếm được lưu theo tháng trong `localStorage`.
+- Khi hết lượt, Classora chỉ hiển thị nhắc nhẹ và vẫn cho tiếp tục dùng demo.
+- Có thể chuyển sang `Pro demo` tại `/pricing` hoặc `/settings`; chế độ này không giới hạn lượt mô phỏng.
 
 ## Batch 5 Improvements
 
@@ -104,7 +115,7 @@ npm run build
 ## Future Roadmap
 
 - Real AI integration
-- Login/database
-- Upload PDF/image
-- Trộn mã đề
+- Supabase auth/database
 - Payment
+- OCR/PDF/image import
+- School workspace

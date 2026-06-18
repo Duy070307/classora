@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -11,6 +11,13 @@ import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry
 export default function ToolsPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Tất cả");
+
+  useEffect(() => {
+    const value = new URLSearchParams(window.location.search).get("category");
+    if (value && value in categoryLabels) {
+      queueMicrotask(() => setCategory(categoryLabels[value as keyof typeof categoryLabels]));
+    }
+  }, []);
 
   const filteredTools = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -36,7 +43,7 @@ export default function ToolsPage() {
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             {popularTools.map((tool) => (
-              <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} />
+              <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} categoryLabel={categoryLabels[tool.category]} />
             ))}
           </div>
         </section>
@@ -63,7 +70,7 @@ export default function ToolsPage() {
             if (!tools.length) return null;
             return <ToolCategorySection key={item} title={categoryLabels[item]} tools={tools} />;
           })}
-          {!filteredTools.length ? <div className="empty-state">Không tìm thấy công cụ phù hợp.</div> : null}
+          {!filteredTools.length ? <div className="empty-state"><p className="font-semibold text-ink">Không tìm thấy công cụ phù hợp</p><p className="mt-1">Thử từ khóa khác hoặc quay về danh sách đầy đủ.</p><button className="btn-secondary mt-4" onClick={() => { setQuery(""); setCategory("Tất cả"); }}>Xóa bộ lọc</button></div> : null}
         </div>
       </main>
     </div>

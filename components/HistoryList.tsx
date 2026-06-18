@@ -7,6 +7,7 @@ import { ExportDocxButton } from "@/components/ExportDocxButton";
 import { OutputPreview } from "@/components/OutputPreview";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
+import Link from "next/link";
 
 const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
@@ -79,7 +80,8 @@ export function HistoryList() {
       <div className="empty-state">
         <FileText className="mx-auto mb-3 text-slate-400" size={34} />
         <p className="font-semibold text-ink">Chưa có tài liệu nào được lưu</p>
-        <p className="mt-1">Sau khi tạo đề, phiếu học tập hoặc nhận xét, hãy bấm “Save to history”.</p>
+        <p className="mt-1">Hãy thử tạo một đề kiểm tra hoặc phiếu học tập đầu tiên rồi lưu lại tại đây.</p>
+        <Link href="/tools" className="btn-primary mt-4">Khám phá công cụ</Link>
       </div>
     );
   }

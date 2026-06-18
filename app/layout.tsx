@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
+import { UsageLimitNotice } from "@/components/UsageLimitNotice";
 
 export const metadata: Metadata = {
   title: "Classora",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body>{children}<UsageLimitNotice /></body>
     </html>
   );
 }

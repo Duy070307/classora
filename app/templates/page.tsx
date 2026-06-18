@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { getTemplates, saveTemplates, templateTypes, type TemplateItem } from "@/lib/templates";
+import Link from "next/link";
 
 export default function TemplatesPage() {
   const [items, setItems] = useState<TemplateItem[]>([]);
@@ -123,7 +124,7 @@ export default function TemplatesPage() {
                 {item.notes ? <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm text-muted">{item.notes}</p> : null}
               </article>
             )) : (
-              <div className="empty-state">Chưa có mẫu cá nhân. Hãy thêm mẫu đầu tiên để dùng lại nhanh hơn.</div>
+              <div className="empty-state"><p className="font-semibold text-ink">Chưa có mẫu cá nhân</p><p className="mt-1">Tạo mẫu đầu tiên để dùng lại cấu trúc tài liệu quen thuộc.</p><Link href="/getting-started" className="btn-secondary mt-4">Xem cách bắt đầu</Link></div>
             )}
           </section>
         </div>
