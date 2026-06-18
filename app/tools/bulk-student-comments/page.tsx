@@ -5,7 +5,7 @@ import { ChangeEvent, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputPreview } from "@/components/OutputPreview";
-import { PageHeader } from "@/components/PageHeader";
+import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
@@ -143,7 +143,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Nhận xét học sinh hàng loạt" description="Tải CSV, xem trước dữ liệu và tạo nhận xét hàng loạt bằng AI mô phỏng." />
         <div className="grid gap-6 xl:grid-cols-[520px_1fr]">
-          <section className="card space-y-5 p-5">
+          <section className="tool-form-card">
             <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-800">
               CSV cần có cột: Họ tên, Lớp, Mức học tập, Thái độ, Ưu điểm, Hạn chế, Mục đích. Cũng hỗ trợ: ho_ten, lop, muc_hoc_tap, thai_do, uu_diem, han_che, muc_dich.
             </div>

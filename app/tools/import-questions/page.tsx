@@ -3,7 +3,7 @@
 import { Download, FileUp, Save } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
-import { PageHeader } from "@/components/PageHeader";
+import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { createDocument } from "@/lib/history";
 import { addQuestions, createQuestion, questionsToDocument } from "@/lib/question-bank";
@@ -107,7 +107,7 @@ export default function ImportQuestionsPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Nhập câu hỏi từ văn bản" description="Dán câu hỏi hoặc nhập file CSV để lưu vào ngân hàng câu hỏi cục bộ." />
-        <section className="card space-y-4 p-5">
+        <section className="tool-form-card">
           <div className="grid gap-3 md:grid-cols-3">
             <div><label className="label">Môn học</label><input className="form-field mt-1" value={subject} onChange={(e) => setSubject(e.target.value)} /></div>
             <div><label className="label">Lớp</label><input className="form-field mt-1" value={grade} onChange={(e) => setGrade(e.target.value)} /></div>

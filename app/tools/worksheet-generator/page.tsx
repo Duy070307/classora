@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
-import { PageHeader } from "@/components/PageHeader";
+import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
@@ -77,7 +77,7 @@ export default function WorksheetGeneratorPage() {
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Tạo phiếu học tập" description="Tạo nhanh phiếu học tập có mục tiêu, tóm tắt kiến thức, bài tập và đáp án." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
-          <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+          <form onSubmit={handleSubmit} className="tool-form-card">
             <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleWorksheetInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <PresetSelect presets={worksheetPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />

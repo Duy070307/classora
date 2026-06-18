@@ -70,7 +70,7 @@ textarea {
 }
 
 .form-section {
-  @apply rounded-2xl border border-slate-100 bg-slate-50/70 p-4;
+  @apply rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/90 to-white p-4 shadow-sm;
 }
 
 .form-section-title {
@@ -79,6 +79,10 @@ textarea {
 
 .empty-state {
   @apply rounded-2xl border border-dashed border-blue-200 bg-gradient-to-br from-white to-blue-50/50 p-7 text-center text-sm leading-6 text-muted shadow-sm sm:p-9;
+}
+
+.tool-form-card {
+  @apply card h-fit space-y-5 p-5 shadow-[0_16px_45px_rgba(35,50,85,0.08)] sm:p-6;
 }
 
 main {

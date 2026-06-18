@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
-import { PageHeader } from "@/components/PageHeader";
+import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
@@ -131,7 +131,7 @@ export default function ExamGeneratorPage() {
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Tạo đề kiểm tra" description="Nhập yêu cầu, Soạn Lab sẽ tạo bản nháp đề kiểm tra kèm đáp án, thang điểm và ma trận." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
-          <form onSubmit={handleSubmit} className="card space-y-5 p-5">
+          <form onSubmit={handleSubmit} className="tool-form-card">
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />

@@ -3,7 +3,7 @@
 import { Copy } from "lucide-react";
 import { useMemo, useState } from "react";
 import katex from "katex";
-import { PageHeader } from "@/components/PageHeader";
+import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { Sidebar } from "@/components/Sidebar";
 
 const examples = [
@@ -48,7 +48,7 @@ export default function LatexPreviewPage() {
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Preview LaTeX" description="Nhập LaTeX để xem công thức. Nếu công thức lỗi, Soạn Lab sẽ hiển thị ghi chú thay vì làm hỏng trang." />
         <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-          <section className="card space-y-4 p-5">
+          <section className="tool-form-card">
             <div>
               <label className="label">Textarea for LaTeX</label>
               <textarea className="form-field mt-1 min-h-40 font-mono" value={latex} onChange={(event) => setLatex(event.target.value)} />
