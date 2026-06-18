@@ -12,6 +12,7 @@ import { BugReportLink } from "@/components/BugReportLink";
 import { getAllFormDrafts, type FormDraft } from "@/lib/form-drafts";
 import { getHistory } from "@/lib/history";
 import { getRecentTools, type RecentTool } from "@/lib/recent-tools";
+import { getFavoriteTools } from "@/lib/favorites";
 import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 import type { GeneratedDocument } from "@/lib/types";
 import { draftToolNames } from "@/lib/draft-tool-names";
@@ -29,6 +30,7 @@ const highlightedHrefs = [
 export default function DashboardPage() {
   const [history, setHistory] = useState<GeneratedDocument[]>([]);
   const [recentTools, setRecentTools] = useState<RecentTool[]>([]);
+  const [favoriteHrefs, setFavoriteHrefs] = useState<string[]>([]);
   const [drafts, setDrafts] = useState<FormDraft[]>([]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Tất cả");
@@ -37,6 +39,7 @@ export default function DashboardPage() {
     queueMicrotask(() => {
       setHistory(getHistory().slice(0, 5));
       setRecentTools(getRecentTools());
+      setFavoriteHrefs(getFavoriteTools());
       setDrafts(getAllFormDrafts().slice(0, 3));
     });
   }, []);
@@ -100,6 +103,14 @@ export default function DashboardPage() {
             {highlightedTools.slice(0, 6).map((tool) => (
               <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} categoryLabel="Phổ biến" />
             ))}
+          </div>
+        </section>
+
+        <section className="mb-8 card p-5">
+          <div className="flex items-center justify-between gap-3"><h2 className="text-lg font-bold text-ink">Công cụ yêu thích</h2><Link href="/tools" className="text-sm font-semibold text-brand">Quản lý</Link></div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {toolRegistry.filter((tool) => favoriteHrefs.includes(tool.href)).slice(0, 6).map((tool) => <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} categoryLabel={categoryLabels[tool.category]} />)}
+            {!favoriteHrefs.length ? <p className="text-sm leading-6 text-muted md:col-span-3">Chưa có công cụ yêu thích. Nhấn biểu tượng ngôi sao trên thẻ công cụ để thêm.</p> : null}
           </div>
         </section>
 

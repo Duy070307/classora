@@ -40,6 +40,7 @@ export function HistoryList() {
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("Tất cả");
   const [folderFilter, setFolderFilter] = useState("Tất cả thư mục");
+  const [selected, setSelected] = useState<string[]>([]);
 
   function refresh() {
     setItems(getHistory());
@@ -54,6 +55,32 @@ export function HistoryList() {
     refresh();
     setMessage("Đã xóa tài liệu khỏi lịch sử.");
     setTimeout(() => setMessage(""), 2200);
+  }
+
+  function downloadBundle(extension: "md" | "txt") {
+    const chosen = items.filter((item) => selected.includes(item.id));
+    if (!chosen.length) return;
+    const content = chosen.map((item) => `${extension === "md" ? "# " : ""}${item.title}\n\n${item.content}\n\n${extension === "md" ? "---" : "========================================"}`).join("\n\n");
+    const url = URL.createObjectURL(new Blob(["\uFEFF", content], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `classora-history-bundle.${extension}`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function deleteSelected() {
+    if (!selected.length || !window.confirm(`Xóa ${selected.length} tài liệu đã chọn?`)) return;
+    selected.forEach(deleteDocument);
+    setSelected([]);
+    refresh();
+    setMessage("Đã xóa các tài liệu đã chọn.");
+  }
+
+  function moveSelected(folder: DocumentFolder) {
+    selected.forEach((id) => updateDocumentFolder(id, folder));
+    refresh();
+    setMessage(`Đã chuyển ${selected.length} tài liệu vào thư mục ${folder}.`);
   }
 
   function clearAll() {
@@ -99,10 +126,20 @@ export function HistoryList() {
           <button type="button" onClick={clearAll} className="btn-secondary text-red-600">Xóa tất cả</button>
         </div>
       </div>
+      <div className="card flex flex-wrap items-center gap-2 p-3">
+        <label className="flex items-center gap-2 text-sm font-semibold text-ink"><input type="checkbox" checked={filteredItems.length > 0 && filteredItems.every((item) => selected.includes(item.id))} onChange={(event) => setSelected(event.target.checked ? Array.from(new Set([...selected, ...filteredItems.map((item) => item.id)])) : selected.filter((id) => !filteredItems.some((item) => item.id === id)))} />Chọn tất cả đang hiển thị</label>
+        <span className="text-sm text-muted">Đã chọn {selected.length}</span>
+        <button type="button" className="btn-secondary" disabled={!selected.length} onClick={() => downloadBundle("md")}>Xuất Markdown</button>
+        <button type="button" className="btn-secondary" disabled={!selected.length} onClick={() => downloadBundle("txt")}>Xuất TXT</button>
+        <select className="form-field max-w-56" disabled={!selected.length} defaultValue="" onChange={(event) => { if (event.target.value) moveSelected(event.target.value as DocumentFolder); event.target.value = ""; }}><option value="">Chuyển thư mục...</option>{folders.map((folder) => <option key={folder}>{folder}</option>)}</select>
+        <button type="button" className="btn-secondary text-red-600" disabled={!selected.length} onClick={deleteSelected}>Xóa đã chọn</button>
+        <button type="button" className="btn-secondary" disabled={!selected.length} onClick={() => setSelected([])}>Bỏ chọn</button>
+      </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredItems.length ? filteredItems.map((item) => (
             <article key={item.id} className="card p-4">
               <div className="flex items-start justify-between gap-3">
+                <input type="checkbox" checked={selected.includes(item.id)} onChange={(event) => setSelected(event.target.checked ? [...selected, item.id] : selected.filter((id) => id !== item.id))} aria-label={`Chọn ${item.title}`} />
                 <div>
                   <span className="inline-flex rounded-md bg-blue-50 px-2 py-1 text-xs font-bold uppercase tracking-wide text-brand">{labels[item.type]}</span>
                   <span className="ml-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{item.folder || "Khác"}</span>

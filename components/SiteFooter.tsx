@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   ["Dashboard", "/dashboard"], ["Tất cả công cụ", "/tools"], ["Bản nháp", "/drafts"], ["Quản lý dữ liệu", "/data"], ["Góp ý", "/feedback"],
-  ["Private Beta", "/private-beta"], ["Quyền riêng tư", "/privacy"], ["Điều khoản", "/terms"],
+  ["Private Beta", "/private-beta"], ["Phím tắt", "/shortcuts"], ["Quyền riêng tư", "/privacy"], ["Điều khoản", "/terms"],
   ["Nhật ký phát triển", "/changelog"]
 ];
 

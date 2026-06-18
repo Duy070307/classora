@@ -6,6 +6,8 @@
 - Các workflow mock dành cho giáo viên.
 - Lưu lịch sử, mẫu, cài đặt và ngân hàng câu hỏi bằng localStorage.
 - Tự lưu bản nháp form và khôi phục tại `/drafts` bằng localStorage.
+- Tìm nhanh bằng Ctrl/Cmd + K, công cụ yêu thích và danh sách dùng gần đây bằng localStorage.
+- Chọn nhiều tài liệu lịch sử để xuất Markdown/TXT, đổi thư mục hoặc xóa.
 - Xuất Word cơ bản.
 - Demo data, diagnostics, feedback copy-only và tester guide.
 

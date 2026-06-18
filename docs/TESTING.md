@@ -15,6 +15,10 @@
 - Quản lý dữ liệu: xuất backup trước khi kiểm thử lớn; nhập lại file để khôi phục dữ liệu demo.
 - Bản nháp biểu mẫu: nhập một form, refresh trang, xác nhận bản nháp có thể khôi phục, xóa bản nháp và kiểm tra bản nháp xuất hiện tại `/drafts`.
 - Backup bản nháp: xuất backup tại `/data`, xóa bản nháp, nhập lại backup và kiểm tra bản nháp được khôi phục nếu dữ liệu backup có drafts.
+- Tìm nhanh: mở bằng nút “Tìm nhanh” và Ctrl/Cmd + K; thử tìm tool, trang, dùng Enter và Esc.
+- Yêu thích/gần đây: thêm/bỏ ngôi sao, kiểm tra dashboard và bộ lọc `/tools`.
+- Lịch sử hàng loạt: chọn nhiều tài liệu, xuất Markdown/TXT, đổi thư mục và xóa có xác nhận.
+- Backup: xác nhận favorites và recent tools được xuất/khôi phục.
 - Reset dữ liệu: kiểm tra riêng từng nút xóa, hộp xác nhận và nút xóa toàn bộ.
 - Mobile: kiểm tra landing, dashboard, form, preview, bảng và sidebar.
 - Vercel: build thành công, route không 404 và app chạy không cần env.

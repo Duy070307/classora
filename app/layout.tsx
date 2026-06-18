@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { UsageLimitNotice } from "@/components/UsageLimitNotice";
+import { CommandPalette } from "@/components/CommandPalette";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://classora.local"),
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
-      <body>{children}<UsageLimitNotice /></body>
+      <body>{children}<CommandPalette /><UsageLimitNotice /></body>
     </html>
   );
 }

@@ -7,7 +7,8 @@ export const STORAGE_KEYS = {
   questions: "classora_question_bank",
   usage: "classora_usage",
   plan: "classora_mock_plan",
-  recentTools: "classora_recent_tools"
+  recentTools: "classora_recent_tools",
+  favoriteTools: "classora_favorite_tools"
 } as const;
 
 export { readJson, readText, removeStored, writeJson, writeText } from "@/lib/safe-storage";

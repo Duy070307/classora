@@ -63,7 +63,7 @@ export function exportAllLocalData(): ClassoraBackup {
       questionBank: readValue(STORAGE_KEYS.questions),
       usage: readValue(STORAGE_KEYS.usage),
       demoData: readValue(STORAGE_KEYS.plan),
-      other: { recentTools: readValue(STORAGE_KEYS.recentTools), formDrafts: getAllFormDrafts() }
+      other: { recentTools: readValue(STORAGE_KEYS.recentTools), favoriteTools: readValue(STORAGE_KEYS.favoriteTools), formDrafts: getAllFormDrafts() }
     }
   };
 }
@@ -100,6 +100,7 @@ export function importLocalDataBackup(backup: ClassoraBackup): void {
   writeValue(STORAGE_KEYS.usage, backup.data.usage);
   writeValue(STORAGE_KEYS.plan, backup.data.demoData);
   writeValue(STORAGE_KEYS.recentTools, backup.data.other?.recentTools);
+  writeValue(STORAGE_KEYS.favoriteTools, backup.data.other?.favoriteTools);
   const drafts = backup.data.other?.formDrafts;
   if (Array.isArray(drafts)) drafts.forEach((draft) => {
     if (draft && typeof draft === "object" && typeof (draft as { toolKey?: unknown }).toolKey === "string") {
@@ -122,6 +123,8 @@ export function clearUsage(): void {
   remove(STORAGE_KEYS.usage);
   window.dispatchEvent(new Event("classora-usage-change"));
 }
+export function clearFavorites(): void { remove(STORAGE_KEYS.favoriteTools); window.dispatchEvent(new Event("classora-favorites-change")); }
+export function clearRecent(): void { remove(STORAGE_KEYS.recentTools); window.dispatchEvent(new Event("classora-recent-tools-change")); }
 export function clearAllClassoraData(): void {
   Object.values(STORAGE_KEYS).forEach(remove);
   clearAllFormDrafts();

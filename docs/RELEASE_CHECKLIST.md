@@ -9,6 +9,10 @@
 - [ ] Test localStorage history
 - [ ] Test tự lưu bản nháp form, khôi phục sau refresh và xóa tại `/drafts`
 - [ ] Test preset “Dùng mẫu nhanh” trên exam, worksheet, student comments và matrix
+- [ ] Test command palette bằng nút, Ctrl/Cmd + K, Enter và Esc
+- [ ] Test thêm/bỏ công cụ yêu thích và bộ lọc Gần đây
+- [ ] Test bulk actions lịch sử: chọn, bundle Markdown/TXT, đổi thư mục, xóa
+- [ ] Kiểm tra backup/restore favorites và recent tools
 - [ ] Test feedback copy
 - [ ] Test demo data
 - [ ] Xuất backup JSON trước khi kiểm thử reset

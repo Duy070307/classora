@@ -16,6 +16,7 @@ Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
 - `localStorage` cho lịch sử tài liệu và số lượt sử dụng
 - Mock AI, không cần API key
 - Built-in Vietnamese teacher document templates and placeholder-based personal templates
+- Global command palette (`Ctrl/Cmd + K`), favorite tools and recently used tools
 
 ## Install
 
@@ -60,6 +61,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/history`
 - `/history/[id]`
 - `/drafts`
+- `/shortcuts`
 - `/print`
 - `/tools`
 - `/settings`
@@ -106,6 +108,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - Form công cụ có tự lưu bản nháp vào `localStorage`, có thể xem và khôi phục tại `/drafts`.
 - Một số công cụ có preset “Dùng mẫu nhanh” để điền nhanh workflow giáo viên Việt Nam.
 - Có mẫu tài liệu tiếng Việt dựng sẵn cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh.
+- Có tìm nhanh toàn app, công cụ yêu thích, công cụ dùng gần đây và bulk actions trong lịch sử.
 - Chưa có real OCR hoặc image recognition.
 - Chưa có đăng nhập.
 - Chưa có database.

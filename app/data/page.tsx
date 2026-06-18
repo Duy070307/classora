@@ -8,16 +8,18 @@ import { Sidebar } from "@/components/Sidebar";
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getHistory } from "@/lib/history";
 import {
-  clearAllClassoraData, clearHistory, clearQuestionBank, clearSettings, clearTemplates, clearUsage,
+  clearAllClassoraData, clearFavorites, clearHistory, clearQuestionBank, clearRecent, clearSettings, clearTemplates, clearUsage,
   downloadLocalDataBackup, importLocalDataBackup, validateBackupJson
 } from "@/lib/local-data-manager";
 import { getQuestions } from "@/lib/question-bank";
 import { getTemplates } from "@/lib/templates";
 import { getMockPlan, getUsageCount } from "@/lib/usage";
 import { clearAllFormDrafts, getAllFormDrafts } from "@/lib/form-drafts";
+import { getFavoriteTools } from "@/lib/favorites";
+import { getRecentTools } from "@/lib/recent-tools";
 
-type Summary = { history: number; templates: number; questions: number; drafts: number; settings: boolean; plan: string; usage: number };
-const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, settings: false, plan: "Free demo", usage: 0 };
+type Summary = { history: number; templates: number; questions: number; drafts: number; favorites: number; recent: number; settings: boolean; plan: string; usage: number };
+const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, favorites: 0, recent: 0, settings: false, plan: "Free demo", usage: 0 };
 
 function readSummary(): Summary {
   const settings = getDocumentSettings();
@@ -26,6 +28,8 @@ function readSummary(): Summary {
     templates: getTemplates().length,
     questions: getQuestions().length,
     drafts: getAllFormDrafts().length,
+    favorites: getFavoriteTools().length,
+    recent: getRecentTools().length,
     settings: Boolean(settings.schoolName || settings.teacherName || settings.department || settings.schoolYear),
     plan: getMockPlan() === "pro" ? "Pro demo" : "Free demo",
     usage: getUsageCount()
@@ -77,6 +81,8 @@ export default function DataManagementPage() {
     ["Số mẫu cá nhân", summary.templates],
     ["Số câu hỏi trong ngân hàng", summary.questions],
     ["Số bản nháp biểu mẫu", summary.drafts],
+    ["Số công cụ yêu thích", summary.favorites],
+    ["Số công cụ dùng gần đây", summary.recent],
     ["Cài đặt tài liệu", summary.settings ? "Có" : "Chưa có"],
     ["Gói demo hiện tại", summary.plan],
     ["Lượt dùng demo", summary.usage]
@@ -102,6 +108,8 @@ export default function DataManagementPage() {
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa cài đặt tài liệu", clearSettings)}>Xóa cài đặt tài liệu</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa lượt dùng demo", clearUsage)}>Xóa lượt dùng demo</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa bản nháp biểu mẫu", clearAllFormDrafts)}>Xóa bản nháp biểu mẫu</button>
+      <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ yêu thích", clearFavorites)}>Xóa công cụ yêu thích</button>
+      <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ dùng gần đây", clearRecent)}>Xóa công cụ dùng gần đây</button>
       <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onClick={() => confirmClear("xóa toàn bộ dữ liệu Classora", clearAllClassoraData)}><Trash2 size={16} />Xóa toàn bộ dữ liệu Classora</button>
     </div></section>
   </main></div>;
