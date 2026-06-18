@@ -22,6 +22,9 @@
 - Reset dữ liệu: kiểm tra riêng từng nút xóa, hộp xác nhận và nút xóa toàn bộ.
 - Mobile: kiểm tra landing, dashboard, form, preview, bảng và sidebar.
 - Vercel: build thành công, route không 404 và app chạy không cần env.
+- Production shell: kiểm tra favicon, manifest, metadata, trang 404 và error boundary có thông báo tiếng Việt.
+- Chia sẻ: mở `/share`, sao chép đúng tin nhắn demo và URL hiện tại.
+- Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile.
 
 ## Lệnh kiểm tra
 

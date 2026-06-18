@@ -54,6 +54,15 @@ npm run start
 
 Không cần cấu hình database hoặc biến môi trường cho bản demo hiện tại.
 
+### Trạng thái triển khai
+
+- Bản hiện tại sẵn sàng để deploy private demo trên Vercel.
+- Không có biến môi trường bắt buộc. `.env.example` chỉ là khung cho tích hợp AI phía máy chủ trong tương lai.
+- Khi có domain thật, có thể đặt `NEXT_PUBLIC_APP_URL` để sitemap và metadata dùng URL production; nếu không đặt, app vẫn build và chạy bình thường.
+- Không bật analytics, tracking, dịch vụ trả phí hoặc service worker.
+
+Sau khi deploy, hãy thử dashboard, thư mục công cụ, xuất Word, in/lưu PDF, backup localStorage, command palette và giao diện mobile.
+
 ## Main Routes
 
 - `/`
@@ -74,6 +83,7 @@ Không cần cấu hình database hoặc biến môi trường cho bản demo hi
 - `/diagnostics`
 - `/data`
 - `/private-beta`
+- `/share`
 - `/tester-guide`
 - `/privacy`
 - `/terms`

@@ -1,0 +1,13 @@
+{
+  "name": "Classora",
+  "short_name": "Classora",
+  "description": "Classora giúp giáo viên soạn đề, tạo tài liệu và xuất Word nhanh hơn.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/apple-touch-icon.svg", "sizes": "180x180", "type": "image/svg+xml" }
+  ]
+}

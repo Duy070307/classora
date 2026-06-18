@@ -52,4 +52,8 @@
 
 ## Tin nhắn mời tester
 
-> Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh và xuất Word. Bản này đang là demo, chưa dùng AI thật. Em muốn nhờ cô/thầy test thử giao diện và quy trình sử dụng, đặc biệt là phần xuất Word và các công cụ có thực sự hữu ích không.
+Có thể mở `/share` để sao chép lời mời và liên kết demo.
+
+> Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh, ma trận đề và xuất Word. Bản hiện tại là demo/MVP, chưa dùng AI thật. Em muốn nhờ cô/thầy dùng thử quy trình và góp ý xem công cụ nào hữu ích nhất.
+
+Sau khi deploy Vercel, tester nên kiểm tra dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile. Bản demo hiện không yêu cầu biến môi trường.

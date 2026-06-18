@@ -22,3 +22,7 @@
 - [ ] Kiểm tra founder section
 - [ ] Kiểm tra privacy/terms links
 - [ ] Kiểm tra Vercel deployment
+- [ ] Kiểm tra `/share`, sao chép tin nhắn và liên kết demo
+- [ ] Kiểm tra manifest, favicon, `robots.txt` và `sitemap.xml`
+- [ ] Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile
+- [ ] Xác nhận app chạy không cần env; `.env.example` chỉ dành cho AI tương lai
