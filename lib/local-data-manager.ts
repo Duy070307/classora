@@ -6,7 +6,7 @@ import { clearAllFormDrafts, FORM_DRAFT_PREFIX, getAllFormDrafts, saveFormDraft 
 export type ClassoraBackup = {
   version: string;
   exportedAt: string;
-  app: "Classora";
+  app: "Soạn Lab" | "Classora";
   data: {
     history?: unknown;
     templates?: unknown;
@@ -55,7 +55,7 @@ export function exportAllLocalData(): ClassoraBackup {
   return {
     version: CLASSORA_BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
-    app: "Classora",
+    app: "Soạn Lab",
     data: {
       history: readValue(STORAGE_KEYS.history),
       templates: readValue(STORAGE_KEYS.templates),
@@ -74,7 +74,7 @@ export function downloadLocalDataBackup(): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `classora-backup-${backup.exportedAt.slice(0, 10)}.json`;
+  link.download = `soan-lab-backup-${backup.exportedAt.slice(0, 10)}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -83,7 +83,7 @@ export function validateBackupJson(data: unknown): data is ClassoraBackup {
   if (!data || typeof data !== "object") return false;
   const backup = data as Partial<ClassoraBackup>;
   return (
-    backup.app === "Classora" &&
+    (backup.app === "Soạn Lab" || backup.app === "Classora") &&
     typeof backup.version === "string" &&
     typeof backup.exportedAt === "string" &&
     Boolean(backup.data && typeof backup.data === "object" && !Array.isArray(backup.data))
@@ -91,7 +91,7 @@ export function validateBackupJson(data: unknown): data is ClassoraBackup {
 }
 
 export function importLocalDataBackup(backup: ClassoraBackup): void {
-  if (!validateBackupJson(backup)) throw new Error("File không phải bản sao lưu Classora hợp lệ.");
+  if (!validateBackupJson(backup)) throw new Error("File không phải bản sao lưu Soạn Lab hợp lệ.");
   Object.values(STORAGE_KEYS).forEach(remove);
   writeValue(STORAGE_KEYS.history, backup.data.history);
   writeValue(STORAGE_KEYS.templates, backup.data.templates);

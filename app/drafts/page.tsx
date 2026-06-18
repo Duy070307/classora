@@ -32,7 +32,7 @@ export default function DraftsPage() {
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Bản nháp biểu mẫu" description="Các thông tin đang nhập được Classora tự lưu tạm trên trình duyệt này." />
+        <PageHeader title="Bản nháp biểu mẫu" description="Các thông tin đang nhập được Soạn Lab tự lưu tạm trên trình duyệt này." />
         {drafts.length ? (
           <>
             <div className="card mb-5 flex flex-col gap-3 p-4 sm:flex-row">
@@ -83,7 +83,7 @@ export default function DraftsPage() {
           <div className="empty-state">
             <FileClock className="mx-auto mb-3 text-slate-400" size={34} />
             <p className="font-semibold text-ink">Chưa có bản nháp nào.</p>
-            <p className="mt-1">Khi bạn nhập thông tin trong các công cụ, Classora sẽ tự lưu tạm trên trình duyệt.</p>
+            <p className="mt-1">Khi bạn nhập thông tin trong các công cụ, Soạn Lab sẽ tự lưu tạm trên trình duyệt.</p>
           </div>
         )}
       </main>

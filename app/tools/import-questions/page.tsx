@@ -90,7 +90,7 @@ export default function ImportQuestionsPage() {
     const csv = "\uFEFFMôn học,Lớp,Chủ đề,Loại câu hỏi,Mức độ,Nội dung câu hỏi,Đáp án,Lời giải\nToán,8,Phương trình,Trắc nghiệm,Nhận biết,Phương trình nào là phương trình bậc nhất?,A,Lời giải mẫu";
     const link = document.createElement("a");
     link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    link.download = "mau-cau-hoi-classora.csv";
+    link.download = "mau-cau-hoi-soan-lab.csv";
     link.click();
   }
 

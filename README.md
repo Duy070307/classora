@@ -1,6 +1,10 @@
-# Classora
+# Soạn Lab
 
-Classora là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
+> Dự án trước đây có tên Classora, hiện được đổi tên thành Soạn Lab.
+
+Logo được thiết kế để đặt tại `public/brand/soan-lab-logo.png`. URL logo được cung cấp trả về HTTP 403 trong lúc rebrand, vì vậy giao diện hiện tự động dùng biểu tượng chữ/ống nghiệm dự phòng cho đến khi file PNG được đặt vào đúng đường dẫn.
+
+Soạn Lab là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
 
 Trạng thái hiện tại: zero-cost MVP/demo dành cho private beta, không cần API key.
 
@@ -46,7 +50,7 @@ npm run build
 
 ## Deploy
 
-Classora là ứng dụng Next.js không cần API key. Có thể deploy lên Vercel hoặc dịch vụ hỗ trợ Next.js:
+Soạn Lab là ứng dụng Next.js không cần API key. Có thể deploy lên Vercel hoặc dịch vụ hỗ trợ Next.js:
 
 ```bash
 npm install
@@ -146,7 +150,7 @@ Sau khi deploy, hãy thử dashboard, thư mục công cụ, xuất Word, in/lư
 - Tài liệu nội bộ: `docs/PRIVATE_BETA.md`
 - Checklist phát hành: `docs/RELEASE_CHECKLIST.md`
 
-Classora không lưu feedback lên server. Form feedback chỉ tạo nội dung có định dạng và sao chép vào clipboard để tester gửi thủ công.
+Soạn Lab không lưu feedback lên server. Form feedback chỉ tạo nội dung có định dạng và sao chép vào clipboard để tester gửi thủ công.
 
 ## Privacy & Demo Disclaimer
 
@@ -166,7 +170,7 @@ Mở `/demo-checklist` và kiểm tra:
 
 - Mặc định là `Free demo` với 10 lượt tạo mỗi tháng.
 - Bộ đếm được lưu theo tháng trong `localStorage`.
-- Khi hết lượt, Classora chỉ hiển thị nhắc nhẹ và vẫn cho tiếp tục dùng demo.
+- Khi hết lượt, Soạn Lab chỉ hiển thị nhắc nhẹ và vẫn cho tiếp tục dùng demo.
 - Có thể chuyển sang `Pro demo` tại `/pricing` hoặc `/settings`; chế độ này không giới hạn lượt mô phỏng.
 
 ## Demo Data
@@ -175,7 +179,7 @@ Mở `/demo-data` để nạp ngân hàng câu hỏi, mẫu tài liệu và cài
 
 ## Sao lưu và khôi phục dữ liệu cục bộ
 
-Mở `/data` để xuất toàn bộ dữ liệu Classora thành file JSON, nhập lại bản sao lưu hoặc xóa từng nhóm dữ liệu. Nên xuất backup trước khi thử reset, đổi dữ liệu demo hoặc kiểm thử lớn.
+Mở `/data` để xuất toàn bộ dữ liệu Soạn Lab thành file JSON, nhập lại bản sao lưu hoặc xóa từng nhóm dữ liệu. Nên xuất backup trước khi thử reset, đổi dữ liệu demo hoặc kiểm thử lớn.
 
 Bản demo chưa có backend/database và không tự đồng bộ dữ liệu. `localStorage` gắn với trình duyệt và thiết bị hiện tại; dữ liệu có thể mất khi xóa dữ liệu trình duyệt, dùng chế độ riêng tư hoặc chuyển thiết bị.
 
@@ -205,7 +209,7 @@ Tài liệu có thể được sao chép, lưu lịch sử, xuất Word, Markdow
 
 ## Mock AI & Future Architecture
 
-- Classora hiện gọi các hàm trong `lib/mock-ai.ts`.
+- Soạn Lab hiện gọi các hàm trong `lib/mock-ai.ts`.
 - Provider layer tương lai nằm trong `lib/ai`.
 - Prompt builders tiếng Việt nằm tại `lib/ai/prompts.ts`.
 - Provider mặc định luôn là `mock`; không có SDK hoặc API call trả phí.

@@ -46,7 +46,7 @@ export default function LatexPreviewPage() {
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Preview LaTeX" description="Nhập LaTeX để xem công thức. Nếu công thức lỗi, Classora sẽ hiển thị ghi chú thay vì làm hỏng trang." />
+        <PageHeader title="Preview LaTeX" description="Nhập LaTeX để xem công thức. Nếu công thức lỗi, Soạn Lab sẽ hiển thị ghi chú thay vì làm hỏng trang." />
         <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
           <section className="card space-y-4 p-5">
             <div>

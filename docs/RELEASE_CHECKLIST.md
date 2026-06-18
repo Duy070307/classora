@@ -1,5 +1,7 @@
 # Release Checklist
 
+Tên sản phẩm hiện tại là **Soạn Lab**; dự án trước đây có tên Classora. Giữ nguyên các key localStorage cũ khi kiểm thử để bảo toàn dữ liệu người dùng.
+
 Phiên bản: **v0.5 RC**. Checklist tương tác nằm tại `/release-candidate`; giới hạn công khai nằm tại `/known-issues`.
 
 - [ ] `npm run lint`

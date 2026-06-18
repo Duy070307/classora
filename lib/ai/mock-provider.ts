@@ -29,7 +29,7 @@ export const mockProvider: AIProvider = {
       ? refineOutput(request.currentContent, request.action)
       : await generate!();
     return {
-      title: `Classora mock - ${request.tool}`,
+      title: `Soạn Lab mock - ${request.tool}`,
       content,
       warnings: [AI_DEMO_WARNING],
       provider: "mock"

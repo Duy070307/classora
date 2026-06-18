@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, Sparkles, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isFavoriteTool, toggleFavoriteTool } from "@/lib/favorites";
 import { saveRecentTool } from "@/lib/recent-tools";
@@ -15,13 +15,15 @@ export function ToolCard({ title, description, href, badge, categoryLabel }: { t
     return () => window.removeEventListener("classora-favorites-change", refresh);
   }, [href]);
 
-  return <article className="card group relative p-5 transition hover:-translate-y-0.5 hover:border-brand hover:shadow-lg">
+  return <article className="card group relative flex min-h-56 flex-col overflow-hidden p-5 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl">
+    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 to-violet-500 opacity-0 transition group-hover:opacity-100" />
     <button type="button" className={`absolute right-3 top-3 rounded-md p-2 ${favorite ? "bg-amber-50 text-amber-500" : "text-slate-400 hover:bg-slate-100"}`} aria-label={favorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"} title={favorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"} onClick={() => { toggleFavoriteTool(href); setFavorite(isFavoriteTool(href)); }}><Star size={18} fill={favorite ? "currentColor" : "none"} /></button>
-    <div className="pr-10">
+    <div className="flex h-full flex-col pr-10">
+      <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 text-brand"><Sparkles size={18} /></span>
       <div className="flex flex-wrap gap-2">{categoryLabel ? <span className="text-xs font-bold uppercase text-brand">{categoryLabel}</span> : null}{badge ? <span className="rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">{badge}</span> : null}</div>
       <h3 className="mt-1 text-lg font-bold text-ink">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-muted">{description}</p>
-      <Link href={href} onClick={() => saveRecentTool({ href, title })} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand">Mở công cụ <ArrowRight size={14} /></Link>
+      <Link href={href} onClick={() => saveRecentTool({ href, title })} className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-semibold text-brand">Mở công cụ <ArrowRight size={14} /></Link>
     </div>
   </article>;
 }

@@ -1,6 +1,6 @@
-# Xuất tài liệu trong Classora
+# Xuất tài liệu trong Soạn Lab
 
-Classora hỗ trợ nhiều định dạng xuất mà không cần dịch vụ trả phí:
+Soạn Lab hỗ trợ nhiều định dạng xuất mà không cần dịch vụ trả phí:
 
 - **Word (`.docx`)**: dùng cài đặt tên trường, giáo viên, tổ/bộ môn, năm học, font và cỡ chữ.
 - **In / Lưu PDF**: mở route `/print`, sau đó dùng hộp thoại in của trình duyệt và chọn “Save as PDF”.

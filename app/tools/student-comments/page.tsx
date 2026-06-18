@@ -119,7 +119,7 @@ export default function StudentCommentsPage() {
                 <div>
                   <Loader2 className="mx-auto animate-spin text-brand" size={34} />
                   <p className="mt-4 font-semibold text-ink">Đang tạo nhận xét...</p>
-                  <p className="mt-1 text-sm text-muted">Classora đang viết 3 phiên bản nhận xét phù hợp.</p>
+                  <p className="mt-1 text-sm text-muted">Soạn Lab đang viết 3 phiên bản nhận xét phù hợp.</p>
                 </div>
               </div>
             ) : document ? (

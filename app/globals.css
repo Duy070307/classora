@@ -13,8 +13,9 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 30rem),
-    #f7f9fc;
+    radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12), transparent 32rem),
+    radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.08), transparent 28rem),
+    #f8fafc;
   color: #18212f;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -33,7 +34,7 @@ textarea {
 }
 
 .form-field {
-  @apply w-full rounded-md border border-line bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-blue-100;
+  @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-brand focus:ring-4 focus:ring-blue-100/70;
 }
 
 .label {
@@ -41,19 +42,19 @@ textarea {
 }
 
 .btn-primary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-secondary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:text-brand hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .card {
-  @apply rounded-lg border border-line bg-white shadow-soft;
+  @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft;
 }
 
 .form-section {
-  @apply rounded-lg border border-slate-100 bg-slate-50/70 p-4;
+  @apply rounded-2xl border border-slate-100 bg-slate-50/70 p-4;
 }
 
 .form-section-title {

@@ -60,5 +60,5 @@ export const toolRegistry: ToolMeta[] = [
   { title: "Preview LaTeX", description: "Nhập LaTeX và xem preview công thức bằng KaTeX.", href: "/tools/latex-preview", category: "formula-latex" },
 
   { title: "Mẫu cá nhân", description: "Tạo, sửa, xóa và copy mẫu tài liệu cá nhân.", href: "/templates", category: "personalization" },
-  { title: "Góp ý", description: "Gửi góp ý beta cho Classora.", href: "/feedback", category: "personalization" }
+  { title: "Góp ý", description: "Gửi góp ý beta cho Soạn Lab.", href: "/feedback", category: "personalization" }
 ];

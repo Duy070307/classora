@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolCard } from "@/components/ToolCard";
 import { getFavoriteTools } from "@/lib/favorites";
@@ -43,8 +42,8 @@ export default function ToolsPage() {
   function clearFilters() { setQuery(""); setCategory("Tất cả"); setMode("Tất cả"); }
 
   return <div className="min-h-screen md:flex"><Sidebar /><main className="flex-1 p-5 md:p-8">
-    <PageHeader title="Tất cả công cụ Classora" description="Tìm kiếm, lọc và đánh dấu yêu thích để mở workflow nhanh hơn." />
-    <section className="card mb-6 p-5">
+    <section className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-200 sm:p-8"><p className="text-xs font-bold uppercase tracking-wider text-blue-200">Thư viện workflow</p><h1 className="mt-2 text-3xl font-bold sm:text-4xl">Tất cả công cụ Soạn Lab</h1><p className="mt-3 max-w-2xl text-blue-100">Tìm kiếm, lọc và đánh dấu yêu thích để mở workflow nhanh hơn.</p></section>
+    <section className="card mb-6 p-5 sm:p-6">
       <div className="grid gap-3 lg:grid-cols-[1fr_240px]">
         <label className="relative block"><Search className="absolute left-3 top-3 text-slate-400" size={17} /><input className="form-field pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tên hoặc mô tả công cụ..." /></label>
         <select className="form-field" value={category} onChange={(event) => setCategory(event.target.value)}><option>Tất cả</option>{categoryOrder.map((item) => <option key={item}>{categoryLabels[item]}</option>)}</select>

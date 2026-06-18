@@ -184,7 +184,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
                 <div>
                   <Loader2 className="mx-auto animate-spin text-brand" size={34} />
                   <p className="mt-4 font-semibold text-ink">Đang tạo tài liệu...</p>
-                  <p className="mt-1 text-sm text-muted">Classora đang dùng AI mô phỏng để soạn bản nháp.</p>
+                  <p className="mt-1 text-sm text-muted">Soạn Lab đang dùng AI mô phỏng để soạn bản nháp.</p>
                 </div>
               </div>
             ) : document ? (

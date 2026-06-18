@@ -67,7 +67,7 @@ export default function DataManagementPage() {
     if (!window.confirm("Dữ liệu hiện tại có thể bị ghi đè. Bạn có chắc muốn tiếp tục nhập?")) return;
     try {
       const parsed: unknown = JSON.parse(await file.text());
-      if (!validateBackupJson(parsed)) throw new Error("File không phải bản sao lưu Classora hợp lệ.");
+      if (!validateBackupJson(parsed)) throw new Error("File không phải bản sao lưu Soạn Lab hợp lệ.");
       importLocalDataBackup(parsed);
       success("Đã khôi phục dữ liệu từ file JSON.");
     } catch (importError) {
@@ -89,15 +89,15 @@ export default function DataManagementPage() {
   ];
 
   return <div className="min-h-screen md:flex"><Sidebar /><main className="min-w-0 flex-1 p-5 md:p-8">
-    <PageHeader title="Quản lý dữ liệu" description="Sao lưu, khôi phục hoặc xóa dữ liệu Classora đang lưu cục bộ trên trình duyệt này." />
-    <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">Classora hiện dùng localStorage. Nếu bạn xóa dữ liệu trình duyệt, dữ liệu có thể mất.</div>
+    <PageHeader title="Quản lý dữ liệu" description="Sao lưu, khôi phục hoặc xóa dữ liệu Soạn Lab đang lưu cục bộ trên trình duyệt này." />
+    <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">Soạn Lab hiện dùng localStorage. Nếu bạn xóa dữ liệu trình duyệt, dữ liệu có thể mất.</div>
     {message ? <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700">{message}</div> : null}
     {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div> : null}
     <Link href="/drafts" className="btn-secondary mb-6 inline-flex">Mở bản nháp biểu mẫu</Link>
     <div className="grid gap-6 xl:grid-cols-2">
       <section className="card overflow-hidden"><h2 className="border-b border-line p-5 text-lg font-bold text-ink">Dữ liệu đang lưu trên trình duyệt</h2><dl>{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-5 py-3 last:border-0"><dt className="text-sm text-muted">{label}</dt><dd className="text-sm font-bold text-ink">{value}</dd></div>)}</dl></section>
       <div className="space-y-6">
-        <section className="card p-5"><h2 className="text-lg font-bold text-ink">Sao lưu dữ liệu</h2><p className="mt-2 text-sm leading-6 text-muted">Tải xuống toàn bộ dữ liệu Classora đang lưu trên trình duyệt này.</p><button type="button" className="btn-primary mt-4" onClick={() => { downloadLocalDataBackup(); success("Đã tạo file sao lưu JSON."); }}><Download size={16} />Xuất bản sao lưu JSON</button></section>
+        <section className="card p-5"><h2 className="text-lg font-bold text-ink">Sao lưu dữ liệu</h2><p className="mt-2 text-sm leading-6 text-muted">Tải xuống toàn bộ dữ liệu Soạn Lab đang lưu trên trình duyệt này.</p><button type="button" className="btn-primary mt-4" onClick={() => { downloadLocalDataBackup(); success("Đã tạo file sao lưu JSON."); }}><Download size={16} />Xuất bản sao lưu JSON</button></section>
         <section className="card p-5"><h2 className="text-lg font-bold text-ink">Khôi phục dữ liệu</h2><p className="mt-2 text-sm font-medium leading-6 text-amber-700">Dữ liệu hiện tại có thể bị ghi đè. Hãy xuất bản sao lưu trước khi nhập.</p><input type="file" accept=".json,application/json" className="form-field mt-4" onChange={selectFile} /><button type="button" className="btn-secondary mt-3" onClick={importBackup}><Upload size={16} />Nhập dữ liệu từ file JSON</button></section>
       </div>
     </div>
@@ -110,7 +110,7 @@ export default function DataManagementPage() {
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa bản nháp biểu mẫu", clearAllFormDrafts)}>Xóa bản nháp biểu mẫu</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ yêu thích", clearFavorites)}>Xóa công cụ yêu thích</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ dùng gần đây", clearRecent)}>Xóa công cụ dùng gần đây</button>
-      <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onClick={() => confirmClear("xóa toàn bộ dữ liệu Classora", clearAllClassoraData)}><Trash2 size={16} />Xóa toàn bộ dữ liệu Classora</button>
+      <button className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700" onClick={() => confirmClear("xóa toàn bộ dữ liệu Soạn Lab", clearAllClassoraData)}><Trash2 size={16} />Xóa toàn bộ dữ liệu Soạn Lab</button>
     </div></section>
   </main></div>;
 }

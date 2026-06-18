@@ -64,7 +64,7 @@ export function HistoryList() {
     const url = URL.createObjectURL(new Blob(["\uFEFF", content], { type: "text/plain;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `classora-history-bundle.${extension}`;
+    link.download = `soan-lab-history-bundle.${extension}`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }

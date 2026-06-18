@@ -95,7 +95,7 @@ export default function TemplatesPage() {
 
         <section className="card mb-6 p-5">
           <h2 className="text-lg font-bold text-ink">Cách dùng mẫu tài liệu</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">Classora có sẵn các mẫu tiếng Việt cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh. Bạn cũng có thể tạo mẫu cá nhân bằng placeholder; khi chọn mẫu trong tool, Classora thay placeholder bằng dữ liệu từ cài đặt, form và nội dung đã tạo.</p>
+          <p className="mt-2 text-sm leading-6 text-muted">Soạn Lab có sẵn các mẫu tiếng Việt cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh. Bạn cũng có thể tạo mẫu cá nhân bằng placeholder; khi chọn mẫu trong tool, Soạn Lab thay placeholder bằng dữ liệu từ cài đặt, form và nội dung đã tạo.</p>
           <div className="mt-4 rounded-md bg-slate-50 p-4">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <h3 className="font-semibold text-ink">Placeholder guide</h3>

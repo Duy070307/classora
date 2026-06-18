@@ -1,4 +1,4 @@
-# Classora v0.5 Release Candidate
+# Soạn Lab v0.5 Release Candidate
 
 ## Đã sẵn sàng
 
@@ -26,7 +26,7 @@
 
 ## Nội dung gửi tester
 
-> Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, ma trận đề, phiếu học tập, nhận xét học sinh và xuất Word. Bản hiện tại là MVP/demo, chưa dùng AI thật và chưa thu phí. Em muốn nhờ cô/thầy test thử quy trình sử dụng, đặc biệt là giao diện, xuất Word và các công cụ nào thực sự hữu ích.
+> Em đang phát triển Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề, ma trận đề, phiếu học tập, nhận xét học sinh và xuất Word. Bản hiện tại là MVP/demo, chưa dùng AI thật và chưa thu phí. Em muốn nhờ cô/thầy test thử quy trình sử dụng, đặc biệt là giao diện, xuất Word và các công cụ nào thực sự hữu ích.
 
 Có thể sao chép tin nhắn và link trực tiếp tại `/share`.
 

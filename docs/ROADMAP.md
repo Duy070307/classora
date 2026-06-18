@@ -1,4 +1,4 @@
-# Roadmap Classora
+# Roadmap Soạn Lab
 
 1. **Zero-cost MVP**: mock AI, localStorage, Word export và các workflow giáo viên.
 2. **Private beta**: thử nghiệm với giáo viên, thu thập phản hồi và đo workflow hữu ích.

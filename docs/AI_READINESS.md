@@ -1,6 +1,6 @@
 # AI Readiness
 
-Classora hiện chỉ dùng AI mô phỏng và chạy không cần API key.
+Soạn Lab hiện chỉ dùng AI mô phỏng và chạy không cần API key.
 
 ## Kiến trúc
 

@@ -67,7 +67,7 @@ export async function exportDocx(document: GeneratedDocument) {
   const url = URL.createObjectURL(blob);
   const link = window.document.createElement("a");
   link.href = url;
-  link.download = `${safeFileName(document.title) || "classora"}.docx`;
+  link.download = `${safeFileName(document.title) || "soan-lab"}.docx`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

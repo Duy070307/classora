@@ -129,7 +129,7 @@ export default function ExamGeneratorPage() {
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Tạo đề kiểm tra" description="Nhập yêu cầu, Classora sẽ tạo bản nháp đề kiểm tra kèm đáp án, thang điểm và ma trận." />
+        <PageHeader title="Tạo đề kiểm tra" description="Nhập yêu cầu, Soạn Lab sẽ tạo bản nháp đề kiểm tra kèm đáp án, thang điểm và ma trận." />
         <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
           <form onSubmit={handleSubmit} className="card space-y-5 p-5">
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
@@ -201,7 +201,7 @@ export default function ExamGeneratorPage() {
                 <div>
                   <Loader2 className="mx-auto animate-spin text-brand" size={34} />
                   <p className="mt-4 font-semibold text-ink">Đang tạo đề kiểm tra...</p>
-                  <p className="mt-1 text-sm text-muted">Classora đang soạn bản nháp có đáp án, thang điểm và ma trận.</p>
+                  <p className="mt-1 text-sm text-muted">Soạn Lab đang soạn bản nháp có đáp án, thang điểm và ma trận.</p>
                 </div>
               </div>
             ) : document ? (

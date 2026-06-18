@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, BookOpenCheck, Clock3, Database, FileClock, MessageCircle, Search, Settings, Sparkles, Wrench } from "lucide-react";
 import { Sidebar } from "@/components/Sidebar";
-import { PageHeader } from "@/components/PageHeader";
 import { ToolCategorySection } from "@/components/ToolCategorySection";
 import { ToolCard } from "@/components/ToolCard";
 import { UsageBadge } from "@/components/UsageBadge";
@@ -16,6 +15,7 @@ import { getFavoriteTools } from "@/lib/favorites";
 import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
 import type { GeneratedDocument } from "@/lib/types";
 import { draftToolNames } from "@/lib/draft-tool-names";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const highlightedHrefs = [
   "/question-bank",
@@ -69,12 +69,12 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <PageHeader title="Chào mừng đến với Classora" description="Tìm công cụ, tạo tài liệu dạy học nhanh, lưu lịch sử và xuất Word." />
+          <div><BrandLogo /><h1 className="mt-4 text-3xl font-bold tracking-tight text-ink">Chào mừng đến với Soạn Lab</h1><p className="mt-2 max-w-2xl text-muted">Tìm công cụ, tạo tài liệu dạy học nhanh, lưu lịch sử và xuất Word.</p></div>
           <UsageBadge />
         </div>
 
         <section className="mb-6 grid gap-4 md:grid-cols-3">
-          <div className="card p-5 md:col-span-2">
+          <div className="card overflow-hidden bg-gradient-to-br from-white via-blue-50/50 to-indigo-50 p-6 md:col-span-2">
             <p className="text-sm font-bold uppercase tracking-wide text-brand">MVP cho giáo viên</p>
             <h2 className="mt-2 text-2xl font-bold text-ink">Soạn đề, tạo tài liệu, xuất Word trong vài phút.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">Dữ liệu hiện được lưu trên trình duyệt của bạn. Chưa có đăng nhập, thanh toán hay AI thật trong bản MVP này.</p>
@@ -82,7 +82,7 @@ export default function DashboardPage() {
               Xem hướng dẫn bắt đầu <ArrowRight size={15} />
             </Link>
           </div>
-          <div className="card p-5">
+          <div className="card bg-gradient-to-br from-white to-slate-50 p-5">
             <div className="flex items-center gap-2 text-sm font-semibold text-muted">
               <Clock3 size={16} />
               Lịch sử gần đây
@@ -169,7 +169,7 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <p className="text-sm leading-6 text-muted md:col-span-3">Chưa có bản nháp nào. Khi bạn nhập form trong công cụ, Classora sẽ tự lưu tạm trên trình duyệt.</p>
+              <p className="text-sm leading-6 text-muted md:col-span-3">Chưa có bản nháp nào. Khi bạn nhập form trong công cụ, Soạn Lab sẽ tự lưu tạm trên trình duyệt.</p>
             )}
           </div>
         </section>

@@ -1,4 +1,4 @@
-# Classora Private Beta
+# Soạn Lab Private Beta
 
 Phiên bản hiện tại là **v0.5 RC**. Trước khi gửi tester, hoàn thành checklist tại `/release-candidate` và đọc `/known-issues`.
 
@@ -50,13 +50,13 @@ Phiên bản hiện tại là **v0.5 RC**. Trước khi gửi tester, hoàn thà
 - Nội dung dùng AI mô phỏng và phải được giáo viên kiểm tra.
 - Dữ liệu chỉ nằm trong localStorage.
 - Xóa dữ liệu trình duyệt có thể làm mất dữ liệu.
-- Backup JSON chỉ khôi phục dữ liệu Classora trên trình duyệt được nhập file; chưa có đồng bộ cloud.
+- Backup JSON chỉ khôi phục dữ liệu Soạn Lab trên trình duyệt được nhập file; chưa có đồng bộ cloud.
 
 ## Tin nhắn mời tester
 
 Có thể mở `/share` để sao chép lời mời và liên kết demo.
 
-> Em đang phát triển Classora, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh, ma trận đề và xuất Word. Bản hiện tại là demo/MVP, chưa dùng AI thật. Em muốn nhờ cô/thầy dùng thử quy trình và góp ý xem công cụ nào hữu ích nhất.
+> Em đang phát triển Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề, phiếu học tập, nhận xét học sinh, ma trận đề và xuất Word. Bản hiện tại là demo/MVP, chưa dùng AI thật. Em muốn nhờ cô/thầy dùng thử quy trình và góp ý xem công cụ nào hữu ích nhất.
 
 Sau khi deploy Vercel, tester nên kiểm tra dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile. Bản demo hiện không yêu cầu biến môi trường.
 

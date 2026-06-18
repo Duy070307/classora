@@ -95,7 +95,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
   }).join("\n\n"), [rows]);
 
   function downloadSample() {
-    downloadText("classora-mau-nhan-xet-hang-loat.csv", sampleBulkCommentsCsv, "text/csv;charset=utf-8");
+    downloadText("soan-lab-mau-nhan-xet-hang-loat.csv", sampleBulkCommentsCsv, "text/csv;charset=utf-8");
   }
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
@@ -134,7 +134,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       const comments = makeComments(row);
       return [row.name, row.className, comments.short, comments.formal, comments.parent].map((cell) => `"${cell.replace(/"/g, "\"\"")}"`).join(",");
     }).join("\n");
-    downloadText("classora-nhan-xet-hang-loat.csv", `${header}\n${body}`, "text/csv;charset=utf-8");
+    downloadText("soan-lab-nhan-xet-hang-loat.csv", `${header}\n${body}`, "text/csv;charset=utf-8");
   }
 
   return (

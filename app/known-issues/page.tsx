@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
 const issues = [
-  "Classora hiện dùng AI mô phỏng, chưa có AI thật.",
+  "Soạn Lab hiện dùng AI mô phỏng, chưa có AI thật.",
   "Dữ liệu lưu trên trình duyệt bằng localStorage và chưa đồng bộ giữa thiết bị.",
   "Chưa có tài khoản đăng nhập, database hoặc thanh toán thật.",
   "Chưa có OCR, đọc PDF hoặc nhận dạng hình ảnh.",
@@ -14,7 +14,7 @@ const issues = [
 ];
 
 export default function KnownIssuesPage() {
-  return <main className="min-h-screen"><Navbar /><section className="mx-auto max-w-4xl px-4 py-10 sm:py-14"><div className="flex items-center gap-3"><AlertCircle className="text-coral" /><p className="text-sm font-bold uppercase tracking-wide text-coral">Minh bạch bản demo</p></div><h1 className="mt-3 text-3xl font-bold text-ink sm:text-4xl">Giới hạn hiện tại</h1><p className="mt-4 max-w-3xl leading-7 text-muted">Classora v0.5 RC là bản private beta zero-cost để kiểm thử workflow, chưa phải sản phẩm AI hoàn chỉnh.</p><section className="card mt-8 p-5 sm:p-6"><ul className="space-y-4">{issues.map((issue) => <li key={issue} className="flex gap-3 text-sm leading-6 text-muted"><CheckMark />{issue}</li>)}</ul></section><div className="mt-7 flex flex-wrap gap-3"><Link href="/feedback" className="btn-primary">Gửi góp ý</Link><Link href="/changelog" className="btn-secondary">Xem lộ trình</Link><Link href="/release-candidate" className="btn-secondary">Checklist release</Link></div></section><SiteFooter /></main>;
+  return <main className="min-h-screen"><Navbar /><section className="mx-auto max-w-4xl px-4 py-10 sm:py-14"><div className="flex items-center gap-3"><AlertCircle className="text-coral" /><p className="text-sm font-bold uppercase tracking-wide text-coral">Minh bạch bản demo</p></div><h1 className="mt-3 text-3xl font-bold text-ink sm:text-4xl">Giới hạn hiện tại</h1><p className="mt-4 max-w-3xl leading-7 text-muted">Soạn Lab v0.5 RC là bản private beta zero-cost để kiểm thử workflow, chưa phải sản phẩm AI hoàn chỉnh.</p><section className="card mt-8 p-5 sm:p-6"><ul className="space-y-4">{issues.map((issue) => <li key={issue} className="flex gap-3 text-sm leading-6 text-muted"><CheckMark />{issue}</li>)}</ul></section><div className="mt-7 flex flex-wrap gap-3"><Link href="/feedback" className="btn-primary">Gửi góp ý</Link><Link href="/changelog" className="btn-secondary">Xem lộ trình</Link><Link href="/release-candidate" className="btn-secondary">Checklist release</Link></div></section><SiteFooter /></main>;
 }
 
 function CheckMark() {

@@ -385,7 +385,7 @@ export const allToolLinks = [
   {
     category: "Cá nhân hóa",
     title: "Góp ý",
-    description: "Gửi góp ý beta cho Classora bằng cách sao chép nội dung phản hồi.",
+    description: "Gửi góp ý beta cho Soạn Lab bằng cách sao chép nội dung phản hồi.",
     href: "/feedback"
   }
 ];

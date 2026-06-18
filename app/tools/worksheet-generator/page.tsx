@@ -110,7 +110,7 @@ export default function WorksheetGeneratorPage() {
                 <div>
                   <Loader2 className="mx-auto animate-spin text-brand" size={34} />
                   <p className="mt-4 font-semibold text-ink">Đang tạo phiếu học tập...</p>
-                  <p className="mt-1 text-sm text-muted">Classora đang chuẩn bị mục tiêu, kiến thức cần nhớ và bài tập.</p>
+                  <p className="mt-1 text-sm text-muted">Soạn Lab đang chuẩn bị mục tiêu, kiến thức cần nhớ và bài tập.</p>
                 </div>
               </div>
             ) : document ? (

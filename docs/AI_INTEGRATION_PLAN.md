@@ -2,7 +2,7 @@
 
 ## Trạng thái hiện tại
 
-Classora hiện chỉ dùng Mock AI và dữ liệu localStorage. Ứng dụng chạy cục bộ không cần biến môi trường, API key, database hay tài khoản đăng nhập.
+Soạn Lab hiện chỉ dùng Mock AI và dữ liệu localStorage. Ứng dụng chạy cục bộ không cần biến môi trường, API key, database hay tài khoản đăng nhập.
 
 Route `POST /api/ai/generate` tạo nội dung mô phỏng phía server và hỗ trợ các hành động tinh chỉnh đầu ra. Route này chưa gọi dịch vụ AI trả phí.
 

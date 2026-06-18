@@ -1,6 +1,6 @@
-# Classora Templates
+# Soạn Lab Templates
 
-Classora hiện hỗ trợ hai nhóm mẫu tài liệu:
+Soạn Lab hiện hỗ trợ hai nhóm mẫu tài liệu:
 
 - Mẫu có sẵn: đi kèm ứng dụng, tự xuất hiện trong các công cụ phù hợp.
 - Mẫu cá nhân: giáo viên tự tạo tại `/templates`, lưu trong `localStorage`.
@@ -20,7 +20,7 @@ Mẫu có sẵn được dùng trong selector “Mẫu tài liệu” của các
 
 ## Mẫu cá nhân
 
-Mẫu cá nhân có thể dùng placeholder để Classora thay nội dung tự động khi tạo tài liệu. Dữ liệu chỉ lưu trên trình duyệt hiện tại.
+Mẫu cá nhân có thể dùng placeholder để Soạn Lab thay nội dung tự động khi tạo tài liệu. Dữ liệu chỉ lưu trên trình duyệt hiện tại.
 
 Placeholder hỗ trợ:
 

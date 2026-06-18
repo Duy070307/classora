@@ -1,4 +1,4 @@
-# Testing Classora
+# Testing Soạn Lab
 
 Release candidate hiện tại: **v0.5 RC**. Dùng `/release-candidate` để lưu trạng thái QA thủ công và `/known-issues` để đối chiếu giới hạn đã công bố.
 

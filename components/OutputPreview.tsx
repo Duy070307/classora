@@ -9,7 +9,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
   const header = getDocumentHeaderLines();
 
   return (
-    <section className="card min-w-0 overflow-hidden bg-slate-100">
+    <section className="card min-w-0 overflow-hidden bg-slate-100/80 shadow-xl">
       <div className="flex flex-col gap-3 border-b border-line bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-brand">Bản xem trước tài liệu</p>
@@ -18,8 +18,8 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
         </div>
         <span className="rounded-md bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">Cần giáo viên rà soát</span>
       </div>
-      <div className="max-h-[72vh] overflow-auto bg-slate-200/60 p-2 sm:max-h-[720px] sm:p-8">
-        <article className="mx-auto min-w-0 max-w-3xl rounded-sm bg-white px-4 py-6 shadow-md ring-1 ring-slate-200 sm:min-h-[900px] sm:px-12 sm:py-10">
+      <div className="max-h-[72vh] overflow-auto bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.08),transparent_35%),#e9eef5] p-2 sm:max-h-[720px] sm:p-8">
+        <article className="mx-auto min-w-0 max-w-3xl rounded-md bg-white px-4 py-6 shadow-xl ring-1 ring-slate-200 sm:min-h-[900px] sm:px-12 sm:py-10">
           {header.length ? <header className="mb-6 border-b border-slate-200 pb-3 text-sm leading-6 text-slate-700">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
           {lines.map((line, index) => {
             const trimmed = line.trim().replace(/^#{1,3}\s+/, "");

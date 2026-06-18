@@ -6,7 +6,7 @@ import type { DocumentSettings } from "@/lib/document-settings";
 import { STORAGE_KEYS, clearClassoraStorage, writeJson } from "@/lib/storage";
 
 export const sampleExamInput: ExamInput = {
-  schoolName: "Trường THCS Classora",
+  schoolName: "Trường THCS Soạn Lab",
   teacherName: "Nguyễn Thị Lan",
   subject: "Toán",
   grade: "8",
@@ -123,7 +123,7 @@ export const sampleTemplates: TemplateItem[] = [
 ];
 
 export const sampleSettings: DocumentSettings = {
-  schoolName: "Trường THCS Classora",
+  schoolName: "Trường THCS Soạn Lab",
   teacherName: "Nguyễn Thị Lan",
   department: "Tổ Toán - Tin",
   schoolYear: "2026-2027",

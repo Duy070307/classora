@@ -268,7 +268,7 @@ export async function generateAnswerKey(input: GenericToolInput): Promise<string
   const mcMatches = [...examContent.matchAll(/Câu\s+(\d+)[\s\S]*?(?:Đáp án|Đáp\s*án)\s*:\s*([A-D])/gi)];
   const mcTable = mcMatches.length
     ? mcMatches.map((match) => `| ${match[1]} | ${match[2].toUpperCase()} | Cần đối chiếu lại với đề gốc trước khi in |`).join("\n")
-    : "| Chưa phát hiện | - | Nếu đề có trắc nghiệm, hãy ghi rõ “Đáp án: A/B/C/D” dưới mỗi câu để Classora mô phỏng bảng đáp án tốt hơn. |";
+    : "| Chưa phát hiện | - | Nếu đề có trắc nghiệm, hãy ghi rõ “Đáp án: A/B/C/D” dưới mỗi câu để Soạn Lab mô phỏng bảng đáp án tốt hơn. |";
   return `ĐÁP ÁN VÀ THANG ĐIỂM
 Môn học: ${textValue(input, "subject", "Toán")}
 Lớp: ${textValue(input, "grade", "8")}

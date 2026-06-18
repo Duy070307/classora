@@ -56,7 +56,7 @@ export default function SettingsPage() {
         </section>
         <section className="card mt-6 max-w-3xl p-5">
           <h2 className="text-lg font-bold text-ink">Dữ liệu cá nhân trên trình duyệt</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">Bạn có thể sao lưu hoặc xóa dữ liệu Classora đang lưu trên trình duyệt này.</p>
+          <p className="mt-2 text-sm leading-6 text-muted">Bạn có thể sao lưu hoặc xóa dữ liệu Soạn Lab đang lưu trên trình duyệt này.</p>
           <Link href="/data" className="btn-secondary mt-4">Quản lý dữ liệu</Link>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
@@ -65,7 +65,7 @@ export default function SettingsPage() {
             <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Nhà cung cấp hiện tại</dt><dd className="mt-1 font-semibold text-ink">Mock AI</dd></div>
             <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">AI thật</dt><dd className="mt-1 font-semibold text-ink">Chưa được bật</dd></div>
           </dl>
-          <p className="mt-4 text-sm text-muted">Classora không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
+          <p className="mt-4 text-sm text-muted">Soạn Lab không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
           <Link href="/ai-lab" className="btn-secondary mt-4">Mở AI Lab</Link>
         </section>
       </main>

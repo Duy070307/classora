@@ -1,7 +1,7 @@
 {
-  "name": "Classora",
-  "short_name": "Classora",
-  "description": "Classora giúp giáo viên soạn đề, tạo tài liệu và xuất Word nhanh hơn.",
+  "name": "Soạn Lab",
+  "short_name": "Soạn Lab",
+  "description": "Soạn Lab giúp giáo viên soạn đề, tạo tài liệu và xuất Word nhanh hơn.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f7f9fc",
