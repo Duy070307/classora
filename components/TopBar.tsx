@@ -5,7 +5,7 @@ import { Menu, Plus } from "lucide-react";
 import { CommandPaletteButton } from "@/components/CommandPalette";
 
 export function TopBar({ title, onOpenMenu }: { title?: string; onOpenMenu: () => void }) {
-  return <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-xl sm:px-6">
+  return <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between gap-3 border-b border-slate-200/70 bg-white/80 px-4 shadow-[0_4px_20px_rgba(15,23,42,0.03)] backdrop-blur-xl sm:px-6">
     <div className="flex min-w-0 items-center gap-3">
       <button type="button" className="btn-secondary min-h-10 px-3 md:hidden" onClick={onOpenMenu} aria-label="Mở menu"><Menu size={19} /></button>
       <div className="min-w-0"><p className="truncate text-sm font-bold text-ink">{title || "Không gian làm việc"}</p><p className="hidden text-xs text-muted sm:block">Soạn Lab · MVP/demo</p></div>

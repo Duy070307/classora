@@ -53,7 +53,7 @@ export function CommandPalette() {
   if (!open) return null;
 
   return <div className="fixed inset-0 z-50 bg-slate-950/40 p-3 backdrop-blur-sm" role="dialog" aria-modal="true">
-    <div className="mx-auto mt-16 max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-slate-200">
+    <div className="mx-auto mt-16 max-w-2xl overflow-hidden rounded-3xl bg-white shadow-[0_32px_90px_rgba(15,23,42,0.28)] ring-1 ring-slate-200">
       <div className="flex items-center gap-3 border-b border-line px-4 py-3"><Search className="text-slate-400" size={18} /><input autoFocus className="min-w-0 flex-1 border-0 bg-transparent text-sm outline-none" placeholder="Tìm công cụ, trang, dữ liệu..." value={query} onChange={(event) => { setQuery(event.target.value); setActive(0); }} /><button type="button" className="rounded-md p-2 text-muted hover:bg-slate-100" onClick={() => setOpen(false)} aria-label="Đóng"><X size={18} /></button></div>
       <div className="max-h-[65vh] overflow-auto p-2">{results.length ? (["Công cụ", "Trang", "Dữ liệu cá nhân"] as const).map((group) => {
         const grouped = results.filter((item) => item.group === group);

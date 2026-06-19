@@ -4,10 +4,12 @@
 
 :root {
   color-scheme: light;
-  --page-bg: #f6f8fc;
-  --card-border: #e6eaf2;
-  --ink: #172033;
-  --muted: #667085;
+  --page-bg: #f4f7fc;
+  --card-border: rgba(203, 213, 225, 0.72);
+  --ink: #15213a;
+  --muted: #64748b;
+  --surface-shadow: 0 12px 40px rgba(30, 64, 175, 0.07), 0 2px 8px rgba(15, 23, 42, 0.035);
+  --surface-shadow-hover: 0 22px 56px rgba(30, 64, 175, 0.12), 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
 * {
@@ -17,12 +19,14 @@
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12), transparent 32rem),
-    radial-gradient(circle at 90% 10%, rgba(37, 99, 235, 0.08), transparent 28rem),
+    radial-gradient(circle at 8% -5%, rgba(99, 102, 241, 0.14), transparent 34rem),
+    radial-gradient(circle at 94% 6%, rgba(59, 130, 246, 0.11), transparent 30rem),
+    linear-gradient(180deg, rgba(255,255,255,0.72), transparent 24rem),
     var(--page-bg);
   color: var(--ink);
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -33,32 +37,33 @@ textarea {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.35);
-  outline-offset: 2px;
+  outline: 3px solid rgba(79, 70, 229, 0.3);
+  outline-offset: 3px;
 }
 
 .form-field {
-  @apply min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-brand focus:ring-4 focus:ring-blue-100/70;
+  @apply min-h-11 w-full rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] outline-none transition duration-200 placeholder:text-slate-400 hover:border-indigo-200 hover:shadow-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100/80;
 }
 
 .label {
-  @apply text-sm font-bold text-slate-700;
+  @apply mb-1 block text-sm font-bold leading-5 text-slate-700;
 }
 
 .btn-primary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-blue-200/70 transition hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-4 py-2 text-sm font-bold text-white shadow-[0_8px_22px_rgba(79,70,229,0.24)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_12px_28px_rgba(79,70,229,0.32)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none;
 }
 
 .btn-secondary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/40 hover:text-brand hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200/90 bg-white px-4 py-2 text-sm font-bold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-700 hover:shadow-md active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none;
 }
 
 .btn-ghost {
-  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-muted transition hover:bg-blue-50 hover:text-brand;
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-muted transition duration-200 hover:bg-indigo-50 hover:text-indigo-700;
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200/70 bg-white shadow-[0_10px_35px_rgba(35,50,85,0.07)];
+  @apply rounded-3xl border border-slate-200/70 bg-white/95;
+  box-shadow: var(--surface-shadow);
 }
 
 .section-card {
@@ -66,7 +71,7 @@ textarea {
 }
 
 .soft-badge {
-  @apply inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700;
+  @apply inline-flex items-center rounded-full border border-indigo-100 bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 shadow-sm;
 }
 
 .form-section {
@@ -82,7 +87,21 @@ textarea {
 }
 
 .tool-form-card {
-  @apply card h-fit space-y-5 p-5 shadow-[0_16px_45px_rgba(35,50,85,0.08)] sm:p-6;
+  @apply card h-fit space-y-5 p-5 sm:p-6;
+}
+
+.app-surface { @apply rounded-3xl border border-slate-200/70 bg-white/95; box-shadow: var(--surface-shadow); }
+.app-card-hover { @apply transition duration-300 hover:-translate-y-1 hover:border-indigo-200; }
+.app-card-hover:hover { box-shadow: var(--surface-shadow-hover); }
+.app-gradient-hero { @apply relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white; box-shadow: 0 28px 70px rgba(67,56,202,.22); }
+.app-badge { @apply inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700; }
+.document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-lg bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(15,23,42,.14), 0 2px 8px rgba(15,23,42,.05); }
+.soft-grid-bg { background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px); background-size: 24px 24px; }
+
+::selection { background: rgba(99,102,241,.18); color: #1e1b4b; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; }
 }
 
 main {
