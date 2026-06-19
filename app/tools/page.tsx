@@ -1,75 +1,23 @@
 "use client";
-
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Database, FileDown, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
 import { getFavoriteTools } from "@/lib/favorites";
 import { getRecentTools } from "@/lib/recent-tools";
 import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
-
 type Mode = "Tất cả" | "Phổ biến" | "Yêu thích" | "Gần đây";
-
-export default function ToolsPage() {
-  return <Suspense fallback={null}><ToolsContent /></Suspense>;
-}
-
-function ToolsContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const categoryParam = searchParams.get("category");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Tất cả");
-  const [mode, setMode] = useState<Mode>("Tất cả");
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [recent, setRecent] = useState<string[]>([]);
-
-  useEffect(() => {
-    const refresh = () => { setFavorites(getFavoriteTools()); setRecent(getRecentTools().map((item) => item.href)); };
-    queueMicrotask(() => {
-      setCategory(categoryParam && categoryParam in categoryLabels ? categoryLabels[categoryParam as keyof typeof categoryLabels] : "Tất cả");
-      refresh();
-    });
-    window.addEventListener("classora-favorites-change", refresh);
-    window.addEventListener("classora-recent-tools-change", refresh);
-    return () => { window.removeEventListener("classora-favorites-change", refresh); window.removeEventListener("classora-recent-tools-change", refresh); };
-  }, [categoryParam]);
-
-  const filteredTools = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return toolRegistry.filter((tool) => {
-      const matchCategory = category === "Tất cả" || categoryLabels[tool.category] === category;
-      const matchQuery = !normalized || `${tool.title} ${tool.description}`.toLowerCase().includes(normalized);
-      const matchMode = mode === "Tất cả" || (mode === "Phổ biến" && tool.popular) || (mode === "Yêu thích" && favorites.includes(tool.href)) || (mode === "Gần đây" && recent.includes(tool.href));
-      return matchCategory && matchQuery && matchMode;
-    }).sort((a, b) => mode === "Gần đây" ? recent.indexOf(a.href) - recent.indexOf(b.href) : 0);
-  }, [category, favorites, mode, query, recent]);
-
-  function changeCategory(value: string) {
-    setCategory(value);
-    const slug = categoryOrder.find((item) => categoryLabels[item] === value);
-    router.replace(slug ? `/tools?category=${slug}` : "/tools", { scroll: false });
-  }
-
-  function clearFilters() {
-    setQuery("");
-    setCategory("Tất cả");
-    setMode("Tất cả");
-    router.replace("/tools", { scroll: false });
-  }
-
-  return <AppShell title="Công cụ Soạn Lab">
-    <section className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-200 sm:p-8"><p className="text-xs font-bold uppercase tracking-wider text-blue-200">Thư viện workflow</p><h1 className="mt-2 text-3xl font-bold sm:text-4xl">Tất cả công cụ Soạn Lab</h1><p className="mt-3 max-w-2xl text-blue-100">Tìm kiếm, lọc và đánh dấu yêu thích để mở workflow nhanh hơn.</p></section>
-    <section className="card mb-6 p-5 sm:p-6">
-      <div className="grid gap-3 lg:grid-cols-[1fr_240px]">
-        <label className="relative block"><Search className="absolute left-3 top-3 text-slate-400" size={17} /><input className="form-field pl-9" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tên hoặc mô tả công cụ..." /></label>
-        <select className="form-field" value={category} onChange={(event) => changeCategory(event.target.value)}><option>Tất cả</option>{categoryOrder.map((item) => <option key={item}>{categoryLabels[item]}</option>)}</select>
-      </div>
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">{["Tất cả", ...categoryOrder.map((item) => categoryLabels[item])].map((item) => <button key={item} type="button" className={category === item ? "btn-primary shrink-0" : "btn-secondary shrink-0"} onClick={() => changeCategory(item)}>{item}</button>)}</div>
-      <div className="mt-3 flex flex-wrap gap-2">{(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map((item) => <button key={item} type="button" className={mode === item ? "rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white" : "rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-muted hover:border-brand hover:text-brand"} onClick={() => setMode(item)}>{item}</button>)}<button type="button" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-muted hover:text-brand" onClick={clearFilters}>Xóa bộ lọc</button></div>
-      <p className="mt-3 text-sm font-medium text-muted">Hiển thị {filteredTools.length} công cụ</p>
-    </section>
-    {filteredTools.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{filteredTools.map((tool) => <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge || (tool.popular ? "Phổ biến" : undefined)} categoryLabel={categoryLabels[tool.category]} />)}</div> : <div className="empty-state"><p className="font-semibold text-ink">Không tìm thấy công cụ phù hợp.</p><button className="btn-secondary mt-4" onClick={clearFilters}>Xóa bộ lọc</button></div>}
-  </AppShell>;
+export default function ToolsPage(){return <Suspense fallback={null}><ToolsContent/></Suspense>}
+function ToolsContent(){
+  const router=useRouter(); const params=useSearchParams(); const categoryParam=params.get("category");
+  const [query,setQuery]=useState(""); const [category,setCategory]=useState("Tất cả"); const [mode,setMode]=useState<Mode>("Tất cả"); const [favorites,setFavorites]=useState<string[]>([]); const [recent,setRecent]=useState<string[]>([]);
+  useEffect(()=>{const refresh=()=>{setFavorites(getFavoriteTools());setRecent(getRecentTools().map(x=>x.href))};queueMicrotask(()=>{setCategory(categoryParam&&categoryParam in categoryLabels?categoryLabels[categoryParam as keyof typeof categoryLabels]:"Tất cả");refresh()});window.addEventListener("classora-favorites-change",refresh);window.addEventListener("classora-recent-tools-change",refresh);return()=>{window.removeEventListener("classora-favorites-change",refresh);window.removeEventListener("classora-recent-tools-change",refresh)}},[categoryParam]);
+  const tools=useMemo(()=>{const q=query.trim().toLowerCase();return toolRegistry.filter(t=>(category==="Tất cả"||categoryLabels[t.category]===category)&&(!q||`${t.title} ${t.description}`.toLowerCase().includes(q))&&(mode==="Tất cả"||(mode==="Phổ biến"&&t.popular)||(mode==="Yêu thích"&&favorites.includes(t.href))||(mode==="Gần đây"&&recent.includes(t.href)))).sort((a,b)=>mode==="Gần đây"?recent.indexOf(a.href)-recent.indexOf(b.href):0)},[category,favorites,mode,query,recent]);
+  function change(value:string){setCategory(value);const slug=categoryOrder.find(x=>categoryLabels[x]===value);router.replace(slug?`/tools?category=${slug}`:"/tools",{scroll:false})}
+  function clear(){setQuery("");setCategory("Tất cả");setMode("Tất cả");router.replace("/tools",{scroll:false})}
+  return <AppShell title="Công cụ"><section className="hero-gradient relative mb-6 overflow-hidden rounded-[30px] p-6 text-white shadow-[0_20px_50px_rgba(37,99,235,.2)] sm:p-9"><div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[36px] border-white/10"/><div className="relative max-w-3xl"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-blue-200">Thư viện workflow</p><h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Công cụ Soạn Lab</h1><p className="mt-3 text-blue-100">Chọn công cụ phù hợp để tạo tài liệu giảng dạy nhanh hơn.</p><label className="relative mt-6 block max-w-2xl"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={19}/><input className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm font-medium text-slate-800 shadow-xl outline-none ring-1 ring-white/30 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-300/40" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Tìm công cụ theo tên hoặc mô tả..."/></label><div className="mt-4 flex flex-wrap gap-2"><span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline"/>AI mô phỏng</span><span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Database size={13} className="mr-1 inline"/>LocalStorage</span><span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline"/>Xuất Word</span></div></div></section>
+    <section className="premium-card mb-7 p-4 sm:p-5"><div className="flex gap-2 overflow-x-auto pb-2">{["Tất cả",...categoryOrder.map(x=>categoryLabels[x])].map(x=><button key={x} type="button" onClick={()=>change(x)} className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-bold transition ${category===x?"bg-blue-600 text-white shadow-md shadow-blue-200":"bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}>{x}</button>)}</div><div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">{(["Tất cả","Phổ biến","Yêu thích","Gần đây"] as Mode[]).map(x=><button key={x} onClick={()=>setMode(x)} className={`rounded-xl px-3 py-2 text-xs font-bold ${mode===x?"bg-slate-900 text-white":"text-slate-500 hover:bg-slate-100"}`}>{x}</button>)}<button onClick={clear} className="rounded-xl px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50">Xóa bộ lọc</button><span className="ml-auto text-sm font-semibold text-slate-400">{tools.length} công cụ</span></div></section>
+    {tools.length?<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{tools.map(t=><ToolCard key={t.href} {...t} badge={t.badge||(t.popular?"Phổ biến":undefined)} categoryLabel={categoryLabels[t.category]}/>)}</div>:<div className="empty-state"><Search className="mx-auto mb-4 text-indigo-400" size={28}/><h2 className="font-extrabold text-slate-900">Không tìm thấy công cụ phù hợp</h2><p className="mt-2">Thử từ khóa khác hoặc xóa các bộ lọc hiện tại.</p><button className="btn-secondary mt-5" onClick={clear}>Xóa bộ lọc</button></div>}
+  </AppShell>
 }

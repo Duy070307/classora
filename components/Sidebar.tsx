@@ -1,44 +1,19 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { BookOpenCheck, CircleHelp, ClipboardList, Database, FileClock, History, Home, Keyboard, MessageCircle, Settings, Tags, Wrench, X } from "lucide-react";
-import { UsageBadge } from "@/components/UsageBadge";
+import { BookOpenCheck, Calculator, ClipboardList, Database, FileClock, FileText, History, Home, MessageCircle, Settings, Sparkles, Wrench, X } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 const groups = [
-  { title: "Tổng quan", links: [["Dashboard", "/dashboard", Home], ["Tất cả công cụ", "/tools", Wrench], ["Bắt đầu", "/getting-started", CircleHelp]] },
-  { title: "Công cụ", links: [["Soạn đề & kiểm tra", "/tools?category=exam-assessment", ClipboardList], ["Soạn bài & tài liệu", "/tools?category=lesson-materials", BookOpenCheck], ["Chủ nhiệm & phụ huynh", "/tools?category=homeroom-parent", MessageCircle], ["Công thức & LaTeX", "/tools?category=formula-latex", Tags]] },
-  { title: "Dữ liệu cá nhân", links: [["Lịch sử", "/history", History], ["Bản nháp biểu mẫu", "/drafts", FileClock], ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck], ["Mẫu cá nhân", "/templates", FileClock], ["Cài đặt tài liệu", "/settings", Settings], ["Quản lý dữ liệu", "/data", Database]] },
-  { title: "Kiểm thử demo", links: [["Private Beta", "/private-beta", CircleHelp], ["Hướng dẫn tester", "/tester-guide", ClipboardList], ["Release Candidate", "/release-candidate", ClipboardList], ["Diagnostics", "/diagnostics", Wrench]] },
-  { title: "Khác", links: [["Phím tắt", "/shortcuts", Keyboard], ["Bảng giá", "/pricing", Tags], ["Góp ý", "/feedback", MessageCircle], ["Nhật ký phát triển", "/changelog", FileClock]] }
+  { title: "Tổng quan", links: [["Dashboard", "/dashboard", Home]] },
+  { title: "Công cụ", links: [["Tất cả công cụ", "/tools", Wrench], ["Soạn đề", "/tools?category=exam-assessment", ClipboardList], ["Phiếu học tập", "/tools/worksheet-generator", FileText], ["Nhận xét", "/tools/student-comments", MessageCircle], ["LaTeX", "/tools?category=formula-latex", Calculator]] },
+  { title: "Tài liệu", links: [["Lịch sử", "/history", History], ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck], ["Mẫu cá nhân", "/templates", FileClock]] },
+  { title: "Hệ thống", links: [["Dữ liệu", "/data", Database], ["Cài đặt", "/settings", Settings], ["Góp ý", "/feedback", MessageCircle]] }
 ];
-
-export function Sidebar({ mobileOpen = false, onClose }: { mobileOpen?: boolean; onClose?: () => void }) {
-  return <Suspense fallback={null}><SidebarContent mobileOpen={mobileOpen} onClose={onClose} /></Suspense>;
-}
-
-function SidebarContent({ mobileOpen, onClose }: { mobileOpen: boolean; onClose?: () => void }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentCategory = searchParams.get("category");
-
-  function isActive(href: string) {
-    const [linkPath, query] = href.split("?");
-    if (pathname !== linkPath) return false;
-    const linkCategory = query ? new URLSearchParams(query).get("category") : null;
-    return linkCategory ? currentCategory === linkCategory : !currentCategory;
-  }
-
-  return <><button type="button" aria-label="Đóng lớp phủ menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} /><aside className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200/70 bg-white/95 shadow-2xl backdrop-blur-xl transition-transform md:sticky md:top-0 md:z-auto md:h-screen md:shrink-0 md:translate-x-0 md:shadow-[8px_0_32px_rgba(30,64,175,0.04)] ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-    <div className="flex items-start justify-between gap-3 border-b border-slate-100 p-5">
-      <div><Link href="/"><BrandLogo compact /></Link><p className="mt-2 hidden text-xs font-medium text-muted sm:block">Bộ công cụ cho giáo viên Việt Nam</p></div>
-      <button type="button" className="rounded-lg p-2 text-muted hover:bg-slate-100 md:hidden" onClick={onClose} aria-label="Đóng menu"><X size={19} /></button>
-    </div>
-    <nav className="max-h-[calc(100vh-150px)] overflow-y-auto px-3 py-5">
-      <div className="space-y-5">{groups.map((group) => <section key={group.title}><p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">{group.title}</p><div className="mt-2 space-y-1">{group.links.map(([label, href, Icon]) => { const NavIcon = Icon as typeof Home; const active = isActive(href as string); return <Link key={href as string} href={href as string} aria-current={active ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${active ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-brand" : "text-muted hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-brand"}`}><NavIcon size={17} />{label as string}</Link>; })}</div></section>)}</div>
-    </nav>
-    <div className="absolute inset-x-0 bottom-0 border-t border-slate-100 bg-white p-4"><div className="mb-3 flex items-center justify-between"><UsageBadge compact /><span className="text-xs font-bold text-slate-400">v0.5 RC</span></div><div className="flex gap-3 text-xs font-semibold"><Link href="/feedback" className="text-brand">Góp ý</Link><Link href="/settings" className="text-muted hover:text-brand">Cài đặt</Link></div></div>
-  </aside></>;
+export function Sidebar({ mobileOpen = false, onClose }: { mobileOpen?: boolean; onClose?: () => void }) { return <Suspense fallback={null}><Content mobileOpen={mobileOpen} onClose={onClose} /></Suspense>; }
+function Content({ mobileOpen, onClose }: { mobileOpen: boolean; onClose?: () => void }) {
+  const pathname = usePathname(); const currentCategory = useSearchParams().get("category");
+  const active = (href: string) => { const [path, query] = href.split("?"); if (pathname !== path) return false; const category = query ? new URLSearchParams(query).get("category") : null; return category ? category === currentCategory : !currentCategory; };
+  return <><button type="button" aria-label="Đóng lớp phủ menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} /><aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200/70 bg-white shadow-2xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-[8px_0_30px_rgba(30,64,175,0.035)] ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}><div className="flex items-center border-b border-slate-100 px-5 py-5"><Link href="/" className="min-w-0"><BrandLogo compact /></Link><span className="ml-auto rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-indigo-700">Demo</span><button type="button" className="ml-2 rounded-xl p-2 text-muted md:hidden" onClick={onClose} aria-label="Đóng menu"><X size={18} /></button></div><nav className="min-h-0 flex-1 overflow-y-auto px-3 py-5">{groups.map((group) => <section key={group.title} className="mb-6"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">{group.title}</p><div className="space-y-1">{group.links.map(([label, href, Icon]) => { const I = Icon as typeof Home; const selected = active(href as string); return <Link key={href as string} href={href as string} onClick={onClose} aria-current={selected ? "page" : undefined} className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${selected ? "bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}><I size={17} className={selected ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />{label as string}</Link>; })}</div></section>)}</nav><div className="border-t border-slate-100 bg-slate-50/70 p-4"><p className="flex items-center gap-2 text-xs font-bold text-slate-500"><Sparkles size={14} className="text-indigo-600" />Soạn Lab v0.5 RC</p><div className="mt-3 flex gap-4 text-xs font-semibold"><Link href="/feedback" className="text-blue-700">Góp ý</Link><Link href="/settings" className="text-slate-500">Cài đặt</Link></div></div></aside></>;
 }
