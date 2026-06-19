@@ -1,54 +1,340 @@
-import Link from "next/link";
-import { ArrowRight, CheckCircle2, ClipboardCheck, FileCheck2, FileText, FolderClock, GraduationCap, Library, MessageSquareText, MousePointerClick, PenLine, Sparkles } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+﻿import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpenCheck,
+  Check,
+  ClipboardList,
+  Download,
+  FileText,
+  LayoutGrid,
+  MessageSquareText,
+  PenTool,
+  Sparkles,
+} from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ToolCard } from "@/components/ToolCard";
-import { toolRegistry } from "@/lib/tool-registry";
+import { BrandLogo } from "@/components/BrandLogo";
 
-const painPoints = ["Soạn đề kiểm tra", "Làm đáp án và thang điểm", "Tạo ma trận đề", "Viết nhận xét học sinh", "Chuẩn bị phiếu học tập", "Chỉnh file Word"];
-const benefits = [
-  ["Không cần viết prompt dài", "Chọn công cụ và điền form theo đúng nghiệp vụ.", Sparkles],
-  ["Form rõ ràng", "Các trường nhập quen thuộc với giáo viên Việt Nam.", PenLine],
-  ["Xuất Word nhanh", "Tải bản nháp để kiểm tra, chỉnh sửa và sử dụng.", FileText],
-  ["Lưu lịch sử", "Mở lại tài liệu đã tạo ngay trên trình duyệt.", FolderClock],
-  ["Mẫu cá nhân", "Dùng lại cấu trúc tài liệu quen thuộc.", FileCheck2],
-  ["Ngân hàng câu hỏi local", "Lưu và tái sử dụng theo môn, lớp, chủ đề.", Library]
+const stats = [
+  ["20+", "công cụ", "Cho soạn đề và tài liệu"],
+  ["4", "kiểu xuất", "Word, PDF, Markdown, TXT"],
+  ["Local", "dữ liệu", "Lưu trên trình duyệt"],
+  ["MVP/demo", "hiện tại", "Đang nhận góp ý"],
 ];
-const steps = [["01", "Chọn công cụ"], ["02", "Nhập thông tin"], ["03", "Xem kết quả"], ["04", "Sao chép, lưu hoặc xuất Word"]];
-const coreHrefs = ["/tools/exam-generator", "/tools/matrix-generator", "/tools/answer-key-generator", "/tools/worksheet-generator", "/tools/student-comments", "/tools/bulk-student-comments", "/tools/lesson-plan-generator", "/question-bank"];
-const dailyWork = [
-  ["Soạn đề kiểm tra", "Tạo cấu trúc đề, câu hỏi và nội dung kiểm tra.", PenLine],
-  ["Tạo ma trận đề", "Phân bổ câu hỏi theo chủ đề và mức độ.", ClipboardCheck],
-  ["Tạo phiếu học tập", "Chuẩn bị hoạt động và bài tập cho tiết học.", FileText],
-  ["Viết nhận xét học sinh", "Tạo bản nháp nhận xét để giáo viên chỉnh sửa.", MessageSquareText],
-  ["Tạo giáo án", "Sắp xếp mục tiêu, chuẩn bị và tiến trình dạy học.", GraduationCap],
-  ["Xuất Word/PDF", "Chuyển tài liệu sang định dạng quen thuộc để sử dụng.", FileCheck2]
+const tools = [
+  ["Tạo đề kiểm tra", "Đề, đáp án và ma trận.", PenTool, "Phổ biến"],
+  ["Tạo ma trận đề", "Phân bổ câu hỏi rõ ràng.", LayoutGrid, "Hữu ích"],
+  ["Đáp án & thang điểm", "Hỗ trợ chấm bài.", ClipboardList, ""],
+  ["Phiếu học tập", "Bài tập theo chủ đề.", BookOpenCheck, ""],
+  ["Giáo án", "Tiến trình dạy học.", FileText, ""],
+  ["Nhận xét học sinh", "Bản nháp dễ chỉnh sửa.", MessageSquareText, ""],
+  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", Sparkles, "Demo"],
+  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ClipboardList, ""],
+  ["Mẫu tài liệu", "Dùng lại format quen thuộc.", FileText, ""],
+];
+const feedback = [
+  "File Word có dùng được không?",
+  "Form nhập có dễ hiểu không?",
+  "Công cụ nào hữu ích nhất?",
+  "Nên tích hợp AI thật vào đâu trước?",
 ];
 
 export default function HomePage() {
-  const coreTools = toolRegistry.filter((tool) => coreHrefs.includes(tool.href));
-  return <main><Navbar />
-    <section className="relative overflow-hidden border-b border-slate-200 bg-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(79,70,229,0.13),transparent_32%),radial-gradient(circle_at_85%_25%,rgba(37,99,235,0.10),transparent_28%)]" />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-[1.15fr_0.85fr]">
-        <div><div className="flex flex-wrap gap-2">{["MVP/demo", "AI mô phỏng", "Xuất Word", "Dành cho giáo viên Việt Nam"].map((badge) => <span key={badge} className="soft-badge">{badge}</span>)}</div><div className="mt-6"><BrandLogo /></div><h1 className="mt-7 max-w-3xl text-4xl font-extrabold tracking-tight text-ink sm:text-5xl md:text-6xl">Bộ công cụ AI cho giáo viên Việt Nam</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-muted">Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word nhanh hơn.</p><p className="mt-4 font-bold text-brand">Soạn đề, tạo tài liệu, xuất Word trong vài phút.</p><div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"><Link href="/dashboard" className="btn-primary">Dùng thử demo<ArrowRight size={17} /></Link><Link href="/tools" className="btn-secondary">Khám phá công cụ</Link><Link href="/feedback" className="btn-ghost">Góp ý cho Soạn Lab</Link></div></div>
-        <div className="relative"><div className="absolute -inset-5 rounded-[2rem] bg-gradient-to-br from-blue-200/60 to-violet-200/60 blur-2xl" /><div className="card relative overflow-hidden p-3 shadow-2xl"><div className="flex min-h-[390px] overflow-hidden rounded-2xl bg-slate-50"><div className="hidden w-24 bg-slate-900 p-3 sm:block"><div className="h-8 w-8 rounded-lg bg-blue-500" /><div className="mt-8 space-y-3">{[1,2,3,4,5].map((item) => <div key={item} className="h-2 rounded bg-white/20" />)}</div></div><div className="min-w-0 flex-1 p-4"><div className="flex items-center justify-between"><div><p className="text-xs font-bold text-muted">Dashboard</p><p className="mt-1 font-bold text-ink">Gặp Soạn Lab</p></div><span className="soft-badge">AI demo</span></div><div className="mt-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-5 text-white"><p className="font-bold">Tạo tài liệu nhanh hơn</p><p className="mt-2 text-xs text-blue-100">Form rõ ràng · Lưu lịch sử · Xuất Word</p></div><div className="mt-4 grid grid-cols-2 gap-3">{["Tạo đề", "Ma trận", "Phiếu học tập", "Nhận xét"].map((item) => <div key={item} className="rounded-xl border border-slate-200 bg-white p-3"><div className="h-8 w-8 rounded-lg bg-blue-50" /><p className="mt-3 text-xs font-bold text-ink">{item}</p></div>)}</div><div className="mt-4 flex items-center justify-between rounded-xl border border-emerald-100 bg-emerald-50 p-3"><span className="text-xs font-bold text-emerald-700">Tài liệu sẵn sàng</span><span className="rounded-lg bg-white px-2 py-1 text-xs font-bold text-emerald-700">Xuất Word</span></div></div></div></div></div>
-      </div>
-    </section>
-    <section className="mx-auto max-w-6xl px-4 py-16"><p className="text-sm font-bold uppercase tracking-wide text-brand">Thiết kế theo công việc thực tế</p><h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-ink">Được thiết kế cho những việc giáo viên làm mỗi ngày</h2><div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{dailyWork.map(([title, description, Icon]) => { const WorkIcon = Icon as typeof PenLine; return <article key={title as string} className="card p-6 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-brand"><WorkIcon size={21} /></span><h3 className="mt-4 font-bold text-ink">{title as string}</h3><p className="mt-2 text-sm leading-6 text-muted">{description as string}</p></article>; })}</div></section>
-    <section className="mx-auto max-w-6xl px-4 py-16"><p className="text-sm font-bold uppercase tracking-wide text-brand">Vấn đề thực tế</p><h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-ink">Những việc lặp lại đang lấy quá nhiều thời gian của giáo viên</h2><div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{painPoints.map((item) => <div key={item} className="card flex items-center gap-4 p-5"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-brand"><CheckCircle2 size={19} /></span><span className="font-semibold text-ink">{item}</span></div>)}</div></section>
-    <section className="border-y border-slate-200 bg-white"><div className="mx-auto max-w-6xl px-4 py-16"><p className="text-sm font-bold uppercase tracking-wide text-brand">Giải pháp</p><h2 className="mt-2 text-3xl font-bold tracking-tight text-ink">Soạn Lab gom các công cụ đó vào một nơi</h2><div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{benefits.map(([title, text, Icon]) => { const BenefitIcon = Icon as typeof Sparkles; return <article key={title as string} className="card p-6 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 text-brand"><BenefitIcon size={21} /></span><h3 className="mt-5 font-bold text-ink">{title as string}</h3><p className="mt-2 text-sm leading-6 text-muted">{text as string}</p></article>; })}</div></div></section>
-    <section className="mx-auto max-w-6xl px-4 py-16"><div className="flex items-end justify-between gap-4"><div><p className="text-sm font-bold uppercase tracking-wide text-brand">Công cụ nổi bật</p><h2 className="mt-2 text-3xl font-bold tracking-tight text-ink">Bắt đầu từ workflow quen thuộc</h2></div><Link href="/tools" className="hidden font-semibold text-brand sm:block">Xem tất cả</Link></div><div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{coreTools.map((tool) => <ToolCard key={tool.href} {...tool} categoryLabel="Soạn Lab" />)}</div></section>
-    <section className="border-y border-slate-200 bg-white"><div className="mx-auto max-w-6xl px-4 py-16"><p className="text-sm font-bold uppercase tracking-wide text-brand">Product preview</p><h2 className="mt-2 text-3xl font-bold text-ink">Một không gian làm việc gọn hơn cho giáo viên</h2><div className="mt-8 grid gap-5 lg:grid-cols-3">{[["Dashboard", "Tìm công cụ, tài liệu gần đây và workflow gợi ý.", GridPreview], ["Tool form", "Nhập môn, lớp, chủ đề bằng form rõ ràng.", FormPreview], ["Xuất tài liệu", "Sao chép, lưu lịch sử, xuất Word hoặc PDF.", ExportPreview]].map(([title, text, Preview]) => { const PreviewComponent = Preview as () => React.ReactNode; return <article key={title as string} className="card overflow-hidden"><div className="h-48 bg-gradient-to-br from-slate-100 to-blue-50 p-5"><PreviewComponent /></div><div className="p-5"><h3 className="font-bold text-ink">{title as string}</h3><p className="mt-2 text-sm leading-6 text-muted">{text as string}</p></div></article>; })}</div></div></section>
-    <section className="border-y border-slate-200 bg-gradient-to-br from-slate-900 to-indigo-950 text-white"><div className="mx-auto max-w-6xl px-4 py-16"><p className="text-sm font-bold uppercase tracking-wide text-blue-300">Cách hoạt động</p><h2 className="mt-2 text-3xl font-bold">Từ ý tưởng đến tài liệu trong bốn bước</h2><div className="mt-8 grid gap-4 md:grid-cols-4">{steps.map(([number, text]) => <div key={number} className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur"><span className="text-sm font-bold text-blue-300">{number}</span><MousePointerClick className="mt-5 text-white" size={22} /><p className="mt-3 font-semibold">{text}</p></div>)}</div></div></section>
-    <section className="mx-auto max-w-6xl px-4 py-16"><div className="grid gap-8 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 sm:p-9 lg:grid-cols-[1fr_auto] lg:items-center"><div><span className="soft-badge">Minh bạch bản demo</span><h2 className="mt-4 text-3xl font-bold text-ink">Hiện tại là bản MVP/demo</h2><p className="mt-3 max-w-3xl leading-7 text-muted">Soạn Lab hiện dùng AI mô phỏng để kiểm thử giao diện, quy trình và định dạng tài liệu. Nội dung thật sẽ được kích hoạt ở bản beta khi hệ thống AI được tích hợp.</p><div className="mt-5 flex flex-wrap gap-2">{["Chưa cần đăng nhập", "Chưa thu phí", "Dữ liệu lưu trên trình duyệt", "Giáo viên cần kiểm tra nội dung"].map((item) => <span key={item} className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm">{item}</span>)}</div></div><Link href="/known-issues" className="btn-secondary">Xem giới hạn hiện tại</Link></div></section>
-    <section className="mx-auto grid max-w-6xl gap-8 px-4 py-16 md:grid-cols-[0.75fr_1.25fr]"><div><p className="text-sm font-bold uppercase tracking-wide text-brand">Founder</p><h2 className="mt-2 text-3xl font-bold text-ink">Về người tạo ra Soạn Lab</h2><p className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">Soạn Lab hiện đang ở giai đoạn MVP/demo và sẽ tiếp tục được cải thiện dựa trên góp ý thực tế từ giáo viên.</p></div><div className="space-y-4 text-lg leading-8 text-slate-700"><p>Soạn Lab được tạo ra bởi Trần Đức Duy, sinh viên của TUM và HCMUT, với mong muốn giúp giáo viên tiết kiệm thời gian trong những công việc đơn giản nhưng lặp lại hằng ngày như soạn đề, tạo phiếu học tập, viết nhận xét học sinh và chuẩn bị tài liệu giảng dạy.</p><p>Mục tiêu của Soạn Lab không phải là thay thế giáo viên, mà là giúp giáo viên có thêm thời gian cho những việc quan trọng hơn: giảng dạy, hỗ trợ học sinh và cải thiện chất lượng bài học.</p></div></section>
-    <section className="mx-auto max-w-6xl px-4 pb-16"><div className="overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-10 text-white shadow-2xl shadow-blue-200 md:px-10"><h2 className="text-3xl font-bold">Sẵn sàng thử Soạn Lab?</h2><p className="mt-3 max-w-2xl leading-7 text-blue-100">Dùng thử bản demo, tạo một tài liệu đầu tiên và gửi góp ý để Soạn Lab được cải thiện đúng nhu cầu thực tế của giáo viên.</p><div className="mt-6 flex flex-wrap gap-3"><Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-700">Mở dashboard</Link><Link href="/feedback" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 px-4 py-2 text-sm font-bold text-white">Gửi góp ý</Link></div></div></section>
-    <SiteFooter />
-  </main>;
+  return (
+    <main className="warm-page">
+      <Navbar />
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 sm:py-20 lg:grid-cols-[1.02fr_.98fr] lg:py-24">
+        <div>
+          <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
+            MVP/demo cho giáo viên Việt Nam
+          </span>
+          <div className="mt-6">
+            <BrandLogo variant="full" />
+          </div>
+          <h1 className="mt-7 text-5xl font-black leading-[.98] tracking-[-.045em] text-slate-950 sm:text-6xl lg:text-7xl">
+            Soạn đề <span className="text-blue-600">nhanh.</span>
+            <br />
+            Tạo tài liệu <span className="text-cyan-500">gọn.</span>
+            <br />
+            Xuất Word <span className="text-indigo-600">dễ dàng.</span>
+          </h1>
+          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600">
+            Soạn Lab giúp giáo viên tạo đề kiểm tra, phiếu học tập, ma trận đề,
+            nhận xét học sinh và xuất Word trong vài phút.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/dashboard" className="btn-primary min-h-13 px-6">
+              Bắt đầu dùng thử
+              <ArrowRight size={18} />
+            </Link>
+            <Link href="#how-it-works" className="btn-secondary min-h-13 px-6">
+              Xem cách hoạt động
+            </Link>
+          </div>
+          <p className="mt-5 text-sm font-semibold text-slate-500">
+            Không cần đăng nhập · Chưa thu phí · Dữ liệu lưu trên trình duyệt
+          </p>
+        </div>
+    <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
+          <div className="absolute -inset-7 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
+          <div className="play-card relative overflow-hidden p-4 sm:p-6">
+            <div className="rounded-[24px] bg-gradient-to-br from-blue-600 to-indigo-700 p-5 text-white">
+              <div className="flex items-center justify-between">
+                <p className="font-extrabold">Không gian làm việc</p>
+                <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold">
+                  Hôm nay
+                </span>
+              </div>
+              <div className="mt-5 rounded-2xl bg-white/10 p-4">
+                <p className="text-xs text-blue-100">
+                  Tiến độ bản nháp đầu tiên
+                </p>
+                <div className="mt-3 h-2 rounded-full bg-white/15">
+                  <div className="h-full w-1/3 rounded-full bg-cyan-300" />
+                </div>
+                <p className="mt-2 text-xs font-bold">1/3 bước</p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[
+                ["Tạo đề kiểm tra", "5 phút", PenTool],
+                ["Tạo ma trận", "Demo", LayoutGrid],
+                ["Xuất Word", "Word", Download],
+              ].map(([t, b, I]) => {
+                const Icon = I as typeof PenTool;
+                return (
+                  <div key={t as string} className="task-row">
+                    <span className="icon-tile">
+                      <Icon size={20} />
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-extrabold text-slate-900">
+                        {t as string}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Sẵn sàng để bắt đầu
+                      </p>
+                    </div>
+                    <span className="soft-badge">{b as string}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {["AI mô phỏng", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
+            <span
+              key={x}
+              className={`absolute hidden rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 shadow-xl sm:inline-flex ${i === 0 ? "-right-4 top-16" : i === 1 ? "-left-3 bottom-24" : "right-4 -bottom-3"}`}
+            >
+              {x}
+            </span>
+          ))}
+        </div>
+      </section>
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-20 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map(([n, t, s]) => (
+          <div key={t} className="play-card border-b-4 border-b-blue-500 p-6">
+            <p className="text-3xl font-black text-blue-600">{n}</p>
+            <p className="mt-1 font-extrabold text-slate-900">{t}</p>
+            <p className="mt-2 text-sm text-slate-500">{s}</p>
+          </div>
+        ))}
+      </section>
+      <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-20">
+        <div className="text-center">
+          <span className="soft-badge">Quy trình đơn giản</span>
+          <h2 className="mt-4 text-4xl font-black tracking-tight text-slate-950">
+            Ba bước để có bản nháp đầu tiên.
+          </h2>
+          <p className="mt-3 text-slate-600">
+            Chọn công cụ, nhập thông tin, rồi xuất Word hoặc lưu lịch sử.
+          </p>
+        </div>
+        <div className="mt-12 space-y-8">
+          {[
+            [
+              "Chọn đúng công cụ",
+              ["Tạo đề", "Phiếu học tập", "Nhận xét học sinh"],
+              "tiles",
+            ],
+            [
+              "Nhập thông tin bằng form rõ ràng",
+              ["Không cần viết prompt dài", "Có mẫu nhanh", "Có lưu nháp"],
+              "form",
+            ],
+            [
+              "Xuất tài liệu để chỉnh sửa",
+              ["Word", "Print/PDF", "Lưu lịch sử"],
+              "document",
+            ],
+          ].map(([title, bullets, type], i) => (
+            <div
+              key={title as string}
+              className={`grid items-center gap-8 lg:grid-cols-2 ${i % 2 ? "lg:[&>*:first-child]:order-2" : ""}`}
+            >
+              <Visual type={type as string} />
+              <div className="px-2 sm:px-8">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 font-black text-white">
+                  {i + 1}
+                </span>
+                <h3 className="mt-5 text-3xl font-black text-slate-950">
+                  {title as string}
+                </h3>
+                <ul className="mt-5 space-y-3">
+                  {(bullets as string[]).map((x) => (
+                    <li
+                      key={x}
+                      className="flex items-center gap-3 font-semibold text-slate-600"
+                    >
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                        <Check size={14} />
+                      </span>
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section id="tools" className="bg-blue-50/60 py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <span className="soft-badge">Một không gian làm việc</span>
+          <h2 className="mt-4 text-4xl font-black text-slate-950">
+            Nhiều công cụ, một nơi.
+          </h2>
+          <p className="mt-3 text-slate-600">
+            Từ soạn đề đến nhận xét học sinh, mọi thứ nằm trong cùng một app.
+          </p>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {tools.map(([t, d, I, b]) => {
+              const Icon = I as typeof PenTool;
+              return (
+                <article
+                  key={t as string}
+                  className="play-card group p-6 transition hover:-translate-y-1"
+                >
+                  <div className="flex justify-between">
+                    <span className="icon-tile">
+                      <Icon size={22} />
+                    </span>
+                    {b ? (
+                      <span className="soft-badge">{b as string}</span>
+                    ) : null}
+                  </div>
+                  <h3 className="mt-5 text-lg font-extrabold text-slate-900">
+                    {t as string}
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-500">{d as string}</p>
+                  <ArrowRight
+                    className="mt-5 text-blue-600 transition group-hover:translate-x-1"
+                    size={18}
+                  />
+                </article>
+              );
+            })}
+          </div>
+          <Link href="/tools" className="btn-primary mt-8">
+            Xem tất cả công cụ
+            <ArrowRight size={17} />
+          </Link>
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-4 py-20">
+        <h2 className="text-center text-4xl font-black text-slate-950">
+          Nhờ giáo viên góp ý ở đúng chỗ.
+        </h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {feedback.map((x) => (
+            <div key={x} className="play-card p-6">
+              <MessageSquareText className="text-cyan-600" />
+              <p className="mt-5 text-lg font-extrabold leading-7 text-slate-900">
+                {x}
+              </p>
+              <Link
+                href="/feedback"
+                className="mt-5 inline-flex text-sm font-bold text-blue-700"
+              >
+                Gửi ý kiến →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-4 pb-20">
+        <div className="play-card relative overflow-hidden p-8 sm:p-12">
+          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-cyan-100" />
+          <div className="relative max-w-3xl">
+            <BrandLogo variant="mark" />
+            <h2 className="mt-6 text-4xl font-black text-slate-950">
+              Bắt đầu với Soạn Lab hôm nay.
+            </h2>
+            <p className="mt-4 leading-7 text-slate-600">
+              Tạo thử một tài liệu đầu tiên và gửi góp ý để Soạn Lab được cải
+              thiện đúng nhu cầu thực tế.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/dashboard" className="btn-primary">
+                Mở dashboard
+              </Link>
+              <Link href="/feedback" className="btn-secondary">
+                Gửi góp ý
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+      <SiteFooter />
+    </main>
+  );
 }
 
-function GridPreview() { return <div className="grid h-full grid-cols-[45px_1fr] gap-3 rounded-xl bg-white p-3 shadow-lg"><div className="rounded-lg bg-slate-900" /><div><div className="h-9 rounded-lg bg-blue-600" /><div className="mt-3 grid grid-cols-2 gap-2"><div className="h-12 rounded-lg bg-blue-50" /><div className="h-12 rounded-lg bg-indigo-50" /></div></div></div>; }
-function FormPreview() { return <div className="mx-auto h-full max-w-xs rounded-xl bg-white p-4 shadow-lg"><div className="h-3 w-24 rounded bg-slate-200" /><div className="mt-4 h-9 rounded-lg border border-slate-200" /><div className="mt-3 h-9 rounded-lg border border-slate-200" /><div className="mt-3 h-8 rounded-lg bg-blue-600" /></div>; }
-function ExportPreview() { return <div className="mx-auto h-full max-w-xs rounded-xl bg-white p-4 shadow-lg"><div className="h-3 w-28 rounded bg-slate-300" /><div className="mt-4 space-y-2"><div className="h-2 rounded bg-slate-100" /><div className="h-2 rounded bg-slate-100" /><div className="h-2 w-4/5 rounded bg-slate-100" /></div><div className="mt-6 flex gap-2"><span className="rounded-lg bg-blue-600 px-3 py-2 text-[10px] font-bold text-white">Word</span><span className="rounded-lg bg-slate-100 px-3 py-2 text-[10px] font-bold text-slate-600">PDF</span></div></div>; }
+function Visual({ type }: { type: string }) {
+  return (
+    <div className="rounded-[32px] bg-gradient-to-br from-sky-100 to-indigo-100 p-6 sm:p-10">
+      <div className="play-card mx-auto max-w-md p-5">
+        {type === "form" ? (
+          <div className="space-y-3">
+            {["Môn học", "Lớp", "Chủ đề"].map((x) => (
+              <div key={x}>
+                <p className="mb-1 text-xs font-bold text-slate-500">{x}</p>
+                <div className="h-10 rounded-xl border border-slate-200 bg-slate-50" />
+              </div>
+            ))}
+            <div className="h-11 rounded-xl bg-blue-600" />
+          </div>
+        ) : type === "document" ? (
+          <div>
+            <div className="mx-auto h-48 max-w-xs rounded-lg border border-slate-100 bg-white p-5 shadow-lg">
+              <div className="h-3 w-1/2 rounded bg-blue-100" />
+              <div className="mt-5 space-y-3">
+                {[1, 2, 3, 4].map((x) => (
+                  <div key={x} className="h-2 rounded bg-slate-100" />
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 flex justify-center gap-2">
+              {["Word", "PDF", "Lịch sử"].map((x) => (
+                <span key={x} className="soft-badge">
+                  {x}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {["Tạo đề", "Phiếu học tập", "Nhận xét", "Ma trận"].map((x) => (
+              <div key={x} className="rounded-2xl bg-blue-50 p-4">
+                <span className="icon-tile">
+                  <FileText size={19} />
+                </span>
+                <p className="mt-3 text-sm font-extrabold">{x}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,36 +1,254 @@
 "use client";
 import Link from "next/link";
-import { ArrowRight, BookOpenCheck, Calculator, ClipboardList, FileClock, FileText, Grid2X2, History, MessageSquareText, PenTool, Sparkles, Star, Upload } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenCheck,
+  ClipboardList,
+  FileText,
+  Grid2X2,
+  History,
+  MessageSquareText,
+  PenTool,
+  Search,
+  Settings,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { getFavoriteTools } from "@/lib/favorites";
 import { getHistory } from "@/lib/history";
-import { getRecentTools, type RecentTool } from "@/lib/recent-tools";
-import { toolRegistry } from "@/lib/tool-registry";
-import type { GeneratedDocument } from "@/lib/types";
+import { getQuestions } from "@/lib/question-bank";
+import { getTemplates } from "@/lib/templates";
 import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 
-const quick = [
-  ["Tạo đề", "Đề kiểm tra có đáp án và ma trận.", "/tools/exam-generator", PenTool, "Phổ biến"],
-  ["Tạo ma trận", "Phân bổ câu hỏi theo mức độ.", "/tools/matrix-generator", Grid2X2, "Phổ biến"],
-  ["Phiếu học tập", "Bài tập theo chủ đề và lớp.", "/tools/worksheet-generator", BookOpenCheck, ""],
-  ["Nhận xét học sinh", "Bản nháp nhận xét dễ chỉnh sửa.", "/tools/student-comments", MessageSquareText, ""],
-  ["Nhận xét hàng loạt", "Tạo nhận xét nhanh từ CSV.", "/tools/bulk-student-comments", Upload, "CSV"],
-  ["LaTeX", "Chuyển đổi và xem công thức.", "/tools/latex-preview", Calculator, ""],
-  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi.", "/question-bank", ClipboardList, ""],
-  ["Mẫu cá nhân", "Dùng lại format quen thuộc.", "/templates", FileText, ""]
+const tasks = [
+  [
+    "Tạo một đề kiểm tra",
+    "Có đáp án và ma trận",
+    "5 phút",
+    "/tools/exam-generator",
+    PenTool,
+    "bg-blue-50 text-blue-700",
+  ],
+  [
+    "Tạo phiếu học tập",
+    "Bài tập theo chủ đề",
+    "Demo",
+    "/tools/worksheet-generator",
+    BookOpenCheck,
+    "bg-cyan-50 text-cyan-700",
+  ],
+  [
+    "Viết nhận xét học sinh",
+    "Ba phiên bản dễ chỉnh sửa",
+    "5 phút",
+    "/tools/student-comments",
+    MessageSquareText,
+    "bg-violet-50 text-violet-700",
+  ],
+  [
+    "Xuất Word từ lịch sử",
+    "Mở lại tài liệu đã lưu",
+    "Word",
+    "/history",
+    History,
+    "bg-emerald-50 text-emerald-700",
+  ],
+] as const;
+const explore = [
+  ["Tạo đề", "/tools/exam-generator", PenTool, "bg-blue-50 text-blue-700"],
+  ["Ma trận", "/tools/matrix-generator", Grid2X2, "bg-cyan-50 text-cyan-700"],
+  [
+    "Phiếu học tập",
+    "/tools/worksheet-generator",
+    BookOpenCheck,
+    "bg-indigo-50 text-indigo-700",
+  ],
+  [
+    "Nhận xét",
+    "/tools/student-comments",
+    MessageSquareText,
+    "bg-violet-50 text-violet-700",
+  ],
+  [
+    "Giáo án",
+    "/tools/lesson-plan-generator",
+    FileText,
+    "bg-emerald-50 text-emerald-700",
+  ],
+  ["Ngân hàng", "/question-bank", ClipboardList, "bg-sky-50 text-sky-700"],
+  ["Mẫu cá nhân", "/templates", Star, "bg-amber-50 text-amber-700"],
+  ["Lịch sử", "/history", History, "bg-rose-50 text-rose-700"],
+  ["Cài đặt", "/settings", Settings, "bg-slate-100 text-slate-700"],
 ] as const;
 
 export default function DashboardPage() {
-  const [history, setHistory] = useState<GeneratedDocument[]>([]); const [recent, setRecent] = useState<RecentTool[]>([]); const [favorites, setFavorites] = useState<string[]>([]);
-  useEffect(() => queueMicrotask(() => { setHistory(getHistory().slice(0, 4)); setRecent(getRecentTools().slice(0, 4)); setFavorites(getFavoriteTools()); }), []);
-  const favoriteTools = toolRegistry.filter((tool) => favorites.includes(tool.href)).slice(0, 4);
-  return <AppShell title="Dashboard"><DashboardOnboarding />
-    <section className="hero-gradient relative mb-10 grid overflow-hidden rounded-[30px] px-6 py-9 text-white shadow-[0_24px_60px_rgba(37,99,235,.24)] sm:px-9 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:px-12 lg:py-12"><div className="absolute -left-20 -top-24 h-72 w-72 rounded-full bg-cyan-300/10 blur-2xl" /><div className="relative z-10"><span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={14} />MVP/demo</span><h1 className="mt-5 text-4xl font-black tracking-[-.035em] sm:text-5xl">Gặp Soạn Lab</h1><p className="mt-3 text-xl font-bold text-blue-100">Trợ lý soạn tài liệu cho giáo viên Việt Nam.</p><p className="mt-3 max-w-xl leading-7 text-blue-100">Tạo đề, phiếu học tập, nhận xét học sinh và xuất Word trong vài phút.</p><div className="mt-7 flex flex-col gap-3 sm:flex-row"><Link href="/tools/exam-generator" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-5 text-sm font-extrabold text-blue-700 shadow-lg">Tạo đề kiểm tra<ArrowRight size={17} className="ml-2" /></Link><Link href="/tools" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white/10 px-5 text-sm font-bold text-white ring-1 ring-white/25">Xem công cụ</Link></div></div><div className="relative mt-9 hidden min-h-[280px] lg:block"><div className="absolute right-7 top-2 w-72 rotate-2 rounded-2xl bg-white p-5 text-slate-800 shadow-2xl"><div className="flex items-center justify-between"><span className="text-xs font-extrabold text-blue-700">ĐỀ KIỂM TRA</span><span className="rounded bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-700">Lớp 7</span></div><div className="mt-5 space-y-3">{[80,100,92,70].map((w,i)=><div key={i} className="h-2 rounded bg-slate-100" style={{width:`${w}%`}} />)}</div><div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-xl bg-blue-50 p-3"><p className="text-[10px] font-bold text-blue-700">10 câu hỏi</p></div><div className="rounded-xl bg-emerald-50 p-3"><p className="text-[10px] font-bold text-emerald-700">Có đáp án</p></div></div></div>{["Xuất Word","AI mô phỏng","Lưu lịch sử"].map((x,i)=><span key={x} className={`absolute rounded-full bg-white px-3 py-2 text-xs font-extrabold text-indigo-700 shadow-xl ${i===0?"left-4 top-10":i===1?"right-0 bottom-8":"left-14 bottom-3"}`}>{x}</span>)}</div></section>
-    <Heading title="Tạo nhanh" text="Những công cụ bạn có thể bắt đầu ngay." /><section className="mb-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{quick.map(([title,text,href,Icon,badge])=><Link href={href} key={href} className="premium-card premium-card-hover group min-h-[190px] p-5"><div className="flex items-start justify-between"><span className="icon-tile"><Icon size={22} /></span>{badge?<span className="soft-badge">{badge}</span>:null}</div><h2 className="mt-5 font-extrabold text-slate-900">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-500">{text}</p><ArrowRight size={17} className="mt-4 text-blue-600 transition group-hover:translate-x-1" /></Link>)}</section>
-    <section className="mb-12 grid gap-5 xl:grid-cols-3"><ContinueCard title="Công cụ dùng gần đây" icon={FileClock} empty="Chưa có công cụ gần đây." href="/tools" items={recent.map(x=>[x.title,x.href,`Đã mở ${x.useCount} lần`])} /><ContinueCard title="Tài liệu gần đây" icon={History} empty="Chưa lưu tài liệu nào." href="/tools/exam-generator" items={history.map(x=>[x.title,`/history/${x.id}`,new Date(x.createdAt).toLocaleDateString("vi-VN")])} /><ContinueCard title="Công cụ yêu thích" icon={Star} empty="Chưa đánh dấu yêu thích." href="/tools" items={favoriteTools.map(x=>[x.title,x.href,"Mở nhanh"])} /></section>
-    <Heading title="Quy trình gợi ý" text="Bốn bước đơn giản từ ý tưởng đến tài liệu." /><section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{["Chọn công cụ","Nhập thông tin","Tạo bản nháp","Xuất Word"].map((x,i)=><div key={x} className="premium-card p-5"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">{i+1}</span><h3 className="mt-4 font-extrabold text-slate-900">{x}</h3><p className="mt-2 text-sm text-slate-500">{["Chọn workflow đúng công việc.","Điền môn, lớp và chủ đề.","Kiểm tra nội dung được tạo.","Tải file hoặc lưu lịch sử."][i]}</p></div>)}</section>
-  </AppShell>;
+  const [stats, setStats] = useState({
+    history: 0,
+    templates: 0,
+    questions: 0,
+  });
+  useEffect(
+    () =>
+      queueMicrotask(() =>
+        setStats({
+          history: getHistory().length,
+          templates: getTemplates().length,
+          questions: getQuestions().length,
+        }),
+      ),
+    [],
+  );
+  return (
+    <AppShell title="Dashboard">
+      <DashboardOnboarding />
+      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_330px]">
+        <div className="min-w-0">
+          <section className="hero-gradient relative overflow-hidden rounded-[30px] p-7 text-white shadow-[0_22px_55px_rgba(37,99,235,.2)] sm:p-10">
+            <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[38px] border-white/10" />
+            <div className="relative max-w-2xl">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
+                <Sparkles size={14} />
+                Không gian làm việc hôm nay
+              </span>
+              <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+                Chào mừng quay lại với Soạn Lab
+              </h1>
+              <p className="mt-3 text-lg font-semibold text-blue-100">
+                Hôm nay bạn muốn tạo tài liệu nào?
+              </p>
+              <div className="mt-6 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15">
+                <div className="flex justify-between text-xs font-bold">
+                  <span>Tạo bản nháp đầu tiên</span>
+                  <span>0/3 bước</span>
+                </div>
+                <div className="mt-3 h-2 rounded-full bg-white/15">
+                  <div className="h-full w-[8%] rounded-full bg-cyan-300" />
+                </div>
+              </div>
+              <Link
+                href="/tools/exam-generator"
+                className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-white px-5 text-sm font-extrabold text-blue-700 shadow-lg"
+              >
+                Tạo đề ngay
+                <ArrowRight size={17} className="ml-2" />
+              </Link>
+            </div>
+          </section>
+          <section className="mt-8">
+            <Heading
+              title="Tạo nhanh hôm nay"
+              text="Những tác vụ quen thuộc, chỉ mất vài phút."
+            />
+            <div className="play-card overflow-hidden p-2 sm:p-3">
+              {tasks.map(([title, desc, badge, href, Icon, color]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="task-row group border-0 shadow-none hover:bg-blue-50/50"
+                >
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${color}`}
+                  >
+                    <Icon size={21} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-extrabold text-slate-900">{title}</p>
+                    <p className="mt-1 text-sm text-slate-500">{desc}</p>
+                  </div>
+                  <span className="soft-badge hidden sm:inline-flex">
+                    {badge}
+                  </span>
+                  <ArrowRight
+                    size={17}
+                    className="shrink-0 text-blue-600 transition group-hover:translate-x-1"
+                  />
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className="mt-9">
+            <Heading
+              title="Khám phá"
+              text="Mọi công cụ trong một không gian làm việc."
+            />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              {explore.map(([title, href, Icon, color]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="play-card group flex min-h-32 flex-col items-center justify-center p-4 text-center transition hover:-translate-y-1"
+                >
+                  <span
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${color}`}
+                  >
+                    <Icon size={21} />
+                  </span>
+                  <p className="mt-3 text-sm font-extrabold text-slate-800">
+                    {title}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+        <aside className="space-y-5">
+          <section className="play-card p-5">
+            <h2 className="font-extrabold text-slate-900">Tìm nhanh</h2>
+            <button
+              onClick={() =>
+                window.dispatchEvent(new Event("classora-open-command-palette"))
+              }
+              className="mt-4 flex min-h-12 w-full items-center gap-3 rounded-2xl bg-slate-50 px-4 text-left text-sm text-slate-500"
+            >
+              <Search size={18} />
+              Công cụ, tài liệu...
+            </button>
+          </section>
+          <section className="play-card p-5">
+            <h2 className="font-extrabold text-slate-900">Dữ liệu của bạn</h2>
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                [stats.history, "Lịch sử"],
+                [stats.templates, "Mẫu"],
+                [stats.questions, "Câu hỏi"],
+              ].map(([n, l]) => (
+                <div key={l} className="rounded-2xl bg-blue-50 p-3 text-center">
+                  <p className="text-xl font-black text-blue-700">{n}</p>
+                  <p className="mt-1 text-[11px] font-bold text-slate-500">
+                    {l}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="play-card overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-50 p-5">
+            <MessageSquareText className="text-cyan-600" />
+            <h2 className="mt-4 text-xl font-black text-slate-900">
+              Cùng cải thiện Soạn Lab
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Gửi góp ý về form, file Word và công cụ hữu ích nhất.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link href="/feedback" className="btn-primary">
+                Gửi góp ý
+              </Link>
+              <Link href="/share" className="btn-secondary">
+                Chia sẻ demo
+              </Link>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </AppShell>
+  );
 }
-function Heading({title,text}:{title:string;text:string}){return <div className="mb-5"><h2 className="section-title">{title}</h2><p className="mt-1 text-sm text-slate-500">{text}</p></div>}
-function ContinueCard({title,icon:Icon,empty,href,items}:{title:string;icon:typeof History;empty:string;href:string;items:string[][]}){return <section className="premium-card overflow-hidden"><div className="flex items-center gap-3 border-b border-slate-100 p-5"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-blue-700"><Icon size={19}/></span><h2 className="font-extrabold text-slate-900">{title}</h2></div>{items.length?<div>{items.map(([label,url,meta])=><Link key={url} href={url} className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 last:border-0 hover:bg-blue-50/50"><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-800">{label}</p><p className="mt-1 text-xs text-slate-400">{meta}</p></div><ArrowRight size={15} className="shrink-0 text-blue-600"/></Link>)}</div>:<div className="p-7 text-center"><p className="text-sm text-slate-500">{empty}</p><Link href={href} className="mt-3 inline-flex text-sm font-bold text-blue-700">Khám phá ngay</Link></div>}</section>}
+function Heading({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="mb-4">
+      <h2 className="section-title">{title}</h2>
+      <p className="mt-1 text-sm text-slate-500">{text}</p>
+    </div>
+  );
+}
