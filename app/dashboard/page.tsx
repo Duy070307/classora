@@ -10,6 +10,7 @@ import { getHistory } from "@/lib/history";
 import { getRecentTools, type RecentTool } from "@/lib/recent-tools";
 import { categoryLabels, toolRegistry } from "@/lib/tool-registry";
 import type { GeneratedDocument } from "@/lib/types";
+import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 
 const quickTools = [
   ["Tạo đề", "Đề kiểm tra có đáp án và ma trận.", "/tools/exam-generator", PenTool, "Phổ biến"],
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   }, []);
 
   return <AppShell title="Dashboard">
+    <DashboardOnboarding />
     <section className="relative mb-8 overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 px-6 py-9 text-white shadow-2xl shadow-blue-200 sm:px-9 lg:px-12 lg:py-12">
       <div className="absolute -right-16 -top-20 h-72 w-72 rounded-full border-[40px] border-white/10" /><div className="absolute bottom-[-80px] right-28 h-56 w-56 rotate-12 rounded-[2rem] bg-white/10" />
       <div className="relative max-w-2xl"><span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold backdrop-blur"><Sparkles size={14} />MVP/demo · AI mô phỏng</span><h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-5xl">Gặp Soạn Lab</h1><p className="mt-3 text-xl font-semibold text-blue-100">Trợ lý soạn tài liệu cho giáo viên Việt Nam.</p><p className="mt-3 max-w-xl leading-7 text-blue-100">Tạo đề, phiếu học tập, nhận xét học sinh và xuất Word trong vài phút.</p><div className="mt-7 flex flex-wrap gap-3"><Link href="/tools/exam-generator" className="inline-flex min-h-11 items-center rounded-xl bg-white px-5 py-2 text-sm font-bold text-blue-700 shadow-lg">Thử tạo đề<ArrowRight size={16} className="ml-2" /></Link><Link href="/tools" className="inline-flex min-h-11 items-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white backdrop-blur">Xem tất cả công cụ</Link></div></div>

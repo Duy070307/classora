@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Save } from "lucide-react";
+import { Compass, RotateCcw, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
@@ -67,6 +67,11 @@ export default function SettingsPage() {
           </dl>
           <p className="mt-4 text-sm text-muted">Soạn Lab không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
           <Link href="/ai-lab" className="btn-secondary mt-4">Mở AI Lab</Link>
+        </section>
+        <section className="card mt-6 max-w-3xl p-5">
+          <h2 className="text-lg font-bold text-ink">Hướng dẫn bắt đầu</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Hiển thị lại thẻ hướng dẫn nhanh trên dashboard nếu bạn muốn xem lại quy trình bốn bước.</p>
+          <button type="button" className="btn-secondary mt-4" onClick={() => { localStorage.removeItem("soan_lab_onboarding_dismissed"); window.location.assign("/dashboard"); }}><Compass size={16} />Mở lại hướng dẫn</button>
         </section>
       </main>
     </div>

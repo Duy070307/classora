@@ -97,11 +97,15 @@ textarea {
 .app-badge { @apply inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700; }
 .document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-lg bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(15,23,42,.14), 0 2px 8px rgba(15,23,42,.05); }
 .soft-grid-bg { background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px); background-size: 24px 24px; }
+.loading-dot { @apply h-1.5 w-1.5 rounded-full bg-indigo-600; animation: loading-bounce 900ms ease-in-out infinite; }
+.motion-enter { animation: motion-enter 420ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes loading-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes motion-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 ::selection { background: rgba(99,102,241,.18); color: #1e1b4b; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: .01ms !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
 main {
