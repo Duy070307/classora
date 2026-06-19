@@ -107,12 +107,15 @@ function ToolsContent() {
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
+              20+ công cụ
+            </span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
               <Sparkles size={13} className="mr-1 inline" />
               AI mô phỏng
             </span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
               <Database size={13} className="mr-1 inline" />
-              LocalStorage
+              Lưu local
             </span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
               <FileDown size={13} className="mr-1 inline" />
@@ -160,15 +163,17 @@ function ToolsContent() {
         </div>
       </section>
       {tools.length ? (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {tools.map((t) => (
-            <ToolCard
-              key={t.href}
-              {...t}
-              badge={t.badge || (t.popular ? "Phổ biến" : undefined)}
-              categoryLabel={categoryLabels[t.category]}
-            />
-          ))}
+        <div className="rounded-[32px] bg-gradient-to-b from-blue-50/60 to-transparent p-1 sm:p-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {tools.map((t) => (
+              <ToolCard
+                key={t.href}
+                {...t}
+                badge={t.badge || (t.popular ? "Phổ biến" : undefined)}
+                categoryLabel={categoryLabels[t.category]}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <div className="empty-state">

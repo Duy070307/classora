@@ -6,9 +6,11 @@ import {
   ClipboardList,
   Download,
   FileText,
+  GraduationCap,
   LayoutGrid,
   MessageSquareText,
   PenTool,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -75,7 +77,7 @@ export default function HomePage() {
             Không cần đăng nhập · Chưa thu phí · Dữ liệu lưu trên trình duyệt
           </p>
         </div>
-    <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
+        <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
           <div className="absolute -inset-7 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
           <div className="play-card relative overflow-hidden p-4 sm:p-6">
             <div className="rounded-[24px] bg-gradient-to-br from-blue-600 to-indigo-700 p-5 text-white">
@@ -239,6 +241,90 @@ export default function HomePage() {
             Xem tất cả công cụ
             <ArrowRight size={17} />
           </Link>
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-4 py-20">
+        <div className="grid items-center gap-10 rounded-[36px] bg-gradient-to-br from-blue-600 to-indigo-700 p-7 text-white shadow-[0_24px_65px_rgba(37,99,235,.2)] sm:p-12 lg:grid-cols-[.9fr_1.1fr]">
+          <div>
+            <span className="inline-flex rounded-full bg-white/10 px-3 py-1.5 text-xs font-extrabold ring-1 ring-white/20">
+              Quy trình giáo viên
+            </span>
+            <h2 className="mt-5 text-4xl font-black tracking-tight">
+              Tập trung vào bài dạy, không phải thao tác lặp lại.
+            </h2>
+            <p className="mt-4 leading-7 text-blue-100">
+              Soạn Lab gom các bước chuẩn bị tài liệu vào một luồng rõ ràng để
+              giáo viên luôn biết nên làm gì tiếp theo.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              ["Chuẩn bị", "Chọn môn, lớp và chủ đề.", GraduationCap],
+              ["Tạo nháp", "Dùng form thay cho prompt dài.", Sparkles],
+              ["Rà soát", "Xuất Word và chỉnh sửa.", ShieldCheck],
+            ].map(([title, text, Icon]) => {
+              const StepIcon = Icon as typeof GraduationCap;
+              return (
+                <div
+                  key={title as string}
+                  className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15"
+                >
+                  <StepIcon size={22} className="text-cyan-200" />
+                  <h3 className="mt-4 font-extrabold">{title as string}</h3>
+                  <p className="mt-2 text-sm leading-6 text-blue-100">
+                    {text as string}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+      <section className="border-y border-blue-100 bg-white/70 py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-2">
+          <div className="play-card p-7 sm:p-9">
+            <span className="soft-badge">Minh bạch bản demo</span>
+            <h2 className="mt-5 text-3xl font-black text-slate-950">
+              Đang thử workflow, chưa phải AI hoàn chỉnh.
+            </h2>
+            <p className="mt-4 leading-7 text-slate-600">
+              Soạn Lab hiện dùng AI mô phỏng và localStorage. Giáo viên cần kiểm
+              tra nội dung trước khi sử dụng trong giảng dạy.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[
+                "Chưa cần đăng nhập",
+                "Chưa thu phí",
+                "Không có database",
+                "Dữ liệu lưu local",
+              ].map((x) => (
+                <span
+                  key={x}
+                  className="rounded-full bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600"
+                >
+                  {x}
+                </span>
+              ))}
+            </div>
+            <Link href="/known-issues" className="btn-secondary mt-7">
+              Xem giới hạn hiện tại
+            </Link>
+          </div>
+          <div className="play-card p-7 sm:p-9">
+            <span className="soft-badge">Người tạo sản phẩm</span>
+            <h2 className="mt-5 text-3xl font-black text-slate-950">
+              Được xây dựng từ những công việc giáo viên làm mỗi ngày.
+            </h2>
+            <p className="mt-4 leading-7 text-slate-600">
+              Soạn Lab được tạo bởi Trần Đức Duy với mong muốn giảm thời gian
+              cho những việc lặp lại như soạn đề, chuẩn bị phiếu học tập và viết
+              nhận xét.
+            </p>
+            <p className="mt-4 rounded-2xl bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-900">
+              Mục tiêu không phải thay thế giáo viên, mà giúp giáo viên có thêm
+              thời gian cho học sinh và chất lượng bài dạy.
+            </p>
+          </div>
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 py-20">

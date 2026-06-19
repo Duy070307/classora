@@ -141,11 +141,11 @@ export default function DashboardPage() {
               text="Những tác vụ quen thuộc, chỉ mất vài phút."
             />
             <div className="play-card overflow-hidden p-2 sm:p-3">
-              {tasks.map(([title, desc, badge, href, Icon, color]) => (
+              {tasks.map(([title, desc, badge, href, Icon, color], index) => (
                 <Link
                   key={href}
                   href={href}
-                  className="task-row group border-0 shadow-none hover:bg-blue-50/50"
+                  className={`task-row group border-0 shadow-none ${["bg-blue-50/35", "bg-cyan-50/35", "bg-violet-50/35", "bg-emerald-50/35"][index]} hover:brightness-[.98]`}
                 >
                   <span
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${color}`}
@@ -186,6 +186,21 @@ export default function DashboardPage() {
                   </span>
                   <p className="mt-3 text-sm font-extrabold text-slate-800">
                     {title}
+                  </p>
+                  <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                    {
+                      [
+                        "Tạo nhanh",
+                        "Theo chủ đề",
+                        "Ba phiên bản",
+                        "Mở lại",
+                        "Soạn bài",
+                        "Lưu local",
+                        "Dùng lại",
+                        "Đã lưu",
+                        "Cấu hình",
+                      ][explore.findIndex((item) => item[0] === title)]
+                    }
                   </p>
                 </Link>
               ))}
@@ -238,6 +253,12 @@ export default function DashboardPage() {
                 Chia sẻ demo
               </Link>
             </div>
+            <Link
+              href="/known-issues"
+              className="mt-4 inline-flex text-sm font-bold text-blue-700"
+            >
+              Xem giới hạn hiện tại →
+            </Link>
           </section>
         </aside>
       </div>
