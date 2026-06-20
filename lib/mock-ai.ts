@@ -1,4 +1,5 @@
 import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput } from "@/lib/types";
+import { createStructuredExam, structuredExamToText } from "@/lib/mock-exam-generator";
 
 const warning = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
 
@@ -10,6 +11,11 @@ function limitedCount(value: number, fallback: number, max: number) {
 }
 
 export async function generateExam(input: ExamInput): Promise<string> {
+  await wait();
+  return structuredExamToText(createStructuredExam(input), input);
+}
+
+async function generateLegacyExam(input: ExamInput): Promise<string> {
   await wait();
   const mcCount = limitedCount(input.multipleChoiceCount, 6, 12);
   const essayCount = limitedCount(input.essayCount, 2, 5);
@@ -96,6 +102,8 @@ ${input.extraRequirements || "Không có yêu cầu thêm."}
 
 Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
 }
+
+void generateLegacyExam;
 
 export async function generateWorksheet(input: WorksheetInput): Promise<string> {
   await wait();

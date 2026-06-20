@@ -1,0 +1,41 @@
+import type { QuestionDifficulty } from "@/lib/types";
+
+export type ExamPartType = "multiple_choice" | "true_false" | "short_answer";
+
+export type ExamQuestion = {
+  id: string;
+  part: ExamPartType;
+  number: number;
+  stem: string;
+  options?: Record<"A" | "B" | "C" | "D", string>;
+  trueFalseItems?: { label: "a" | "b" | "c" | "d"; text: string; answer: boolean }[];
+  answer: string;
+  explanation: string;
+  score: number;
+  difficulty: QuestionDifficulty;
+  topic: string;
+};
+
+export type StructuredExam = {
+  metadata: {
+    title: string;
+    examStyle: string;
+    subject: string;
+    grade: string;
+    duration: string;
+    examCode: string;
+    schoolName?: string;
+  };
+  parts: {
+    type: ExamPartType;
+    title: string;
+    instruction: string;
+    questions: ExamQuestion[];
+  }[];
+  teacherOnly: {
+    scoringGuide: string;
+    matrix: string;
+    specification: string;
+    notes: string;
+  };
+};

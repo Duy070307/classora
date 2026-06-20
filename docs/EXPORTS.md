@@ -35,6 +35,18 @@ Khi tài liệu có loại `exam`, route `/print` tự động dùng renderer đ
 
 Để tạo PDF, chọn **In / Lưu PDF**, sau đó dùng hộp thoại in của trình duyệt và chọn **Save as PDF**. Footer có mã đề và dòng `Trang ...`; số trang chính xác phụ thuộc khả năng CSS in của từng trình duyệt nên giáo viên cần xem Print Preview trước khi lưu.
 
+## Cấu trúc nội dung đề THPTQG
+
+Mock generator hỗ trợ ba phần rõ ràng:
+
+- PHẦN I: câu trắc nghiệm A/B/C/D.
+- PHẦN II: câu đúng/sai với bốn ý a), b), c), d).
+- PHẦN III: câu trả lời ngắn.
+
+Đáp án, gợi ý chấm, ma trận và bản đặc tả nằm trong phần dành cho giáo viên. Dữ liệu cấu trúc và metadata đề được lưu cùng lịch sử; đề cũ không có dữ liệu này vẫn dùng parser dự phòng.
+
+Nội dung được sinh bằng mẫu mô phỏng theo môn học, không phải AI thật và không bảo đảm chính xác chuyên môn. Giáo viên bắt buộc rà soát trước khi sử dụng.
+
 ## Giới hạn hiện tại
 
 - PDF được tạo qua chức năng in của trình duyệt, không phải bộ dựng PDF phía server.

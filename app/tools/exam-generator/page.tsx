@@ -21,6 +21,7 @@ import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
+import { createStructuredExam } from "@/lib/mock-exam-generator";
 
 const initialInput: ExamInput = {
   schoolName: "",
@@ -30,8 +31,12 @@ const initialInput: ExamInput = {
   topic: "Tỉ lệ thức và dãy tỉ số bằng nhau",
   duration: "45 phút",
   examType: "Kết hợp",
+  examStyle: "Kiểm tra thường",
   multipleChoiceCount: 8,
   essayCount: 3,
+  trueFalseCount: 2,
+  shortAnswerCount: 3,
+  examCode: "0101",
   totalScore: 10,
   level: "Trung bình",
   recognitionRate: 30,
@@ -77,7 +82,7 @@ export default function ExamGeneratorPage() {
   async function generate() {
     if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");
     if (!input.grade.trim()) return setMessage("Vui lòng nhập lớp.");
-    if (input.multipleChoiceCount + input.essayCount <= 0) return setMessage("Tổng số câu phải lớn hơn 0.");
+    if (input.multipleChoiceCount + input.trueFalseCount + input.shortAnswerCount <= 0) return setMessage("Tổng số câu phải lớn hơn 0.");
     if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
     setLoading(true);
     setMessage("");
@@ -102,6 +107,7 @@ export default function ExamGeneratorPage() {
       extraRequirements: input.extraRequirements
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
+    next.structuredExam = createStructuredExam(input);
     next.examMeta = {
       schoolName: input.schoolName,
       teacherName: input.teacherName,
@@ -109,7 +115,8 @@ export default function ExamGeneratorPage() {
       grade: input.grade,
       duration: input.duration,
       topic: input.topic,
-      examCode: "0101"
+      examCode: input.examCode.padStart(4, "0"),
+      examStyle: input.examStyle
     };
     setDocument(next);
     incrementUsage();
@@ -163,14 +170,16 @@ export default function ExamGeneratorPage() {
             <div className="form-section">
               <p className="form-section-title">Cấu trúc đề</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div><label className="label">Hình thức đề</label><select className="form-field mt-1" value={input.examType} onChange={(e) => setInput({ ...input, examType: e.target.value as ExamInput["examType"] })}><option>Trắc nghiệm</option><option>Tự luận</option><option>Kết hợp</option></select></div>
+                <div><label className="label">Kiểu đề</label><select className="form-field mt-1" value={input.examStyle} onChange={(e) => setInput({ ...input, examStyle: e.target.value as ExamInput["examStyle"] })}><option>Kiểm tra thường</option><option>THPTQG / tốt nghiệp</option><option>Giữa kỳ</option><option>Cuối kỳ</option></select></div>
                 <div><label className="label">Mức độ chung</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
               </div>
-              <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                <div><label className="label">Số câu trắc nghiệm</label><input type="number" className="form-field mt-1" value={input.multipleChoiceCount} onChange={(e) => setInput({ ...input, multipleChoiceCount: Number(e.target.value) })} /></div>
-                <div><label className="label">Số câu tự luận</label><input type="number" className="form-field mt-1" value={input.essayCount} onChange={(e) => setInput({ ...input, essayCount: Number(e.target.value) })} /></div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div><label className="label">Số câu PHẦN I</label><input type="number" min="0" className="form-field mt-1" value={input.multipleChoiceCount} onChange={(e) => setInput({ ...input, multipleChoiceCount: Number(e.target.value) })} /></div>
+                <div><label className="label">Số câu PHẦN II</label><input type="number" min="0" className="form-field mt-1" value={input.trueFalseCount} onChange={(e) => setInput({ ...input, trueFalseCount: Number(e.target.value) })} /></div>
+                <div><label className="label">Số câu PHẦN III</label><input type="number" min="0" className="form-field mt-1" value={input.shortAnswerCount} onChange={(e) => setInput({ ...input, shortAnswerCount: Number(e.target.value) })} /></div>
                 <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
               </div>
+              <div className="mt-3"><label className="label">Mã đề</label><input className="form-field mt-1 max-w-48" value={input.examCode} onChange={(e) => setInput({ ...input, examCode: e.target.value.replace(/\D/g, "").slice(0, 4) })} /></div>
               <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mức độ nhận thức</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>

@@ -4,6 +4,7 @@
 
 - Các workflow chính dành cho giáo viên dùng AI mô phỏng.
 - Xuất Word, Markdown, TXT và in/lưu PDF.
+- Đề kiểm tra mock hỗ trợ cấu trúc THPTQG gồm PHẦN I trắc nghiệm, PHẦN II đúng/sai, PHẦN III trả lời ngắn và đáp án giáo viên tách riêng.
 - Lịch sử, bản nháp, mẫu, ngân hàng câu hỏi và dữ liệu demo bằng localStorage.
 - Backup/restore JSON, diagnostics, command palette, favorites và recent tools.
 - Trang private beta, tester guide, feedback copy-only, share và checklist release.

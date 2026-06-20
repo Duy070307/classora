@@ -36,7 +36,9 @@ export type GeneratedDocument = {
     duration?: string;
     topic?: string;
     examCode?: string;
+    examStyle?: string;
   };
+  structuredExam?: import("@/lib/exam-types").StructuredExam;
 };
 
 export type DocumentFolder = "Đề kiểm tra" | "Giáo án" | "Phiếu học tập" | "Nhận xét học sinh" | "Khác";
@@ -65,6 +67,10 @@ export type ExamInput = {
   topic: string;
   duration: string;
   examType: "Trắc nghiệm" | "Tự luận" | "Kết hợp";
+  examStyle: "Kiểm tra thường" | "THPTQG / tốt nghiệp" | "Giữa kỳ" | "Cuối kỳ";
+  trueFalseCount: number;
+  shortAnswerCount: number;
+  examCode: string;
   multipleChoiceCount: number;
   essayCount: number;
   totalScore: number;
