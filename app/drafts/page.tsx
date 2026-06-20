@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { clearAllFormDrafts, clearFormDraft, getAllFormDrafts, type FormDraft } from "@/lib/form-drafts";
 import { draftToolNames } from "@/lib/draft-tool-names";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 function preview(data: unknown) {
   try {
@@ -80,11 +81,7 @@ export default function DraftsPage() {
             </div>
           </>
         ) : (
-          <div className="empty-state">
-            <FileClock className="mx-auto mb-3 text-slate-400" size={34} />
-            <p className="font-semibold text-ink">Chưa có bản nháp nào.</p>
-            <p className="mt-1">Khi bạn nhập thông tin trong các công cụ, Soạn Lab sẽ tự lưu tạm trên trình duyệt.</p>
-          </div>
+          <SoanLabEmptyState title="Chưa có bản nháp nào" description="Khi bạn nhập thông tin trong các công cụ, Soạn Lab sẽ tự lưu tạm trên trình duyệt." />
         )}
       </main>
     </div>

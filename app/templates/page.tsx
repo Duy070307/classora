@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 import { getTemplates, saveTemplates, templateTypes, type TemplateItem } from "@/lib/templates";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 const placeholderGuide = `{{ten_truong}} - Tên trường/trung tâm
 {{ten_giao_vien}} - Tên giáo viên
@@ -156,7 +157,7 @@ export default function TemplatesPage() {
                 {item.notes ? <p className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm text-muted">{item.notes}</p> : null}
               </article>
             )) : (
-              <div className="empty-state"><p className="font-semibold text-ink">Chưa có mẫu cá nhân</p><p className="mt-1">Mẫu có sẵn vẫn dùng được trong các công cụ. Tạo mẫu cá nhân nếu trường/tổ chuyên môn có format riêng.</p><Link href="/getting-started" className="btn-secondary mt-4">Xem cách bắt đầu</Link></div>
+              <SoanLabEmptyState title="Chưa có mẫu cá nhân" description="Mẫu có sẵn vẫn dùng được trong các công cụ. Tạo mẫu cá nhân nếu trường/tổ chuyên môn có format riêng." action={<Link href="/getting-started" className="btn-secondary">Xem cách bắt đầu</Link>} />
             )}
           </section>
         </div>

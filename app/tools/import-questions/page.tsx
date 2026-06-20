@@ -11,6 +11,7 @@ import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types
 import { sampleImportQuestionsText } from "@/lib/sample-data";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { useFormDraft } from "@/hooks/useFormDraft";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 type Draft = Omit<QuestionItem, "id" | "createdAt"> & { selected: boolean };
 
@@ -155,7 +156,7 @@ export default function ImportQuestionsPage() {
               </table>
             </div>
           </section>
-        ) : <div className="empty-state mt-6">Kết quả phân tích sẽ xuất hiện tại đây để bạn kiểm tra và chỉnh sửa.</div>}
+        ) : <div className="mt-6"><SoanLabEmptyState title="Chưa có câu hỏi được phân tích" description="Dán văn bản hoặc nhập CSV; bảng kiểm tra sẽ xuất hiện tại đây trước khi lưu vào ngân hàng câu hỏi." /></div>}
       </main>
     </div>
   );

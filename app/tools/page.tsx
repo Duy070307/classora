@@ -4,6 +4,8 @@ import { Database, FileDown, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
+import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 import { getFavoriteTools } from "@/lib/favorites";
 import { getRecentTools } from "@/lib/recent-tools";
 import {
@@ -83,7 +85,8 @@ function ToolsContent() {
     <AppShell title="Công cụ">
       <section className="hero-gradient relative mb-6 overflow-hidden rounded-[30px] p-6 text-white shadow-[0_20px_50px_rgba(37,99,235,.2)] sm:p-9">
         <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[36px] border-white/10" />
-        <div className="relative max-w-3xl">
+        <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-center">
+        <div className="max-w-3xl">
           <p className="text-xs font-extrabold uppercase tracking-[.16em] text-blue-200">
             Thư viện workflow
           </p>
@@ -106,22 +109,13 @@ function ToolsContent() {
             />
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
-              20+ công cụ
-            </span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
-              <Sparkles size={13} className="mr-1 inline" />
-              AI mô phỏng
-            </span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
-              <Database size={13} className="mr-1 inline" />
-              Lưu local
-            </span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
-              <FileDown size={13} className="mr-1 inline" />
-              Xuất Word
-            </span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">20+ công cụ</span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline" />AI mô phỏng</span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Database size={13} className="mr-1 inline" />Lưu local</span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline" />Xuất Word</span>
           </div>
+        </div>
+        <SoanLabIllustration variant="workspace" className="hidden bg-white/95 lg:block" />
         </div>
       </section>
       <section className="premium-card mb-7 p-4 sm:p-5">
@@ -176,16 +170,13 @@ function ToolsContent() {
           </div>
         </div>
       ) : (
-        <div className="empty-state">
-          <Search className="mx-auto mb-4 text-indigo-400" size={28} />
-          <h2 className="font-extrabold text-slate-900">
-            Không tìm thấy công cụ phù hợp
-          </h2>
-          <p className="mt-2">Thử từ khóa khác hoặc xóa các bộ lọc hiện tại.</p>
-          <button className="btn-secondary mt-5" onClick={clear}>
+        <SoanLabEmptyState
+          title="Không tìm thấy công cụ phù hợp"
+          description="Thử từ khóa khác hoặc xóa các bộ lọc hiện tại để xem lại toàn bộ thư viện."
+          action={<button className="btn-secondary" onClick={clear}>
             Xóa bộ lọc
-          </button>
-        </div>
+          </button>}
+        />
       )}
     </AppShell>
   );

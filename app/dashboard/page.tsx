@@ -20,6 +20,9 @@ import { getHistory } from "@/lib/history";
 import { getQuestions } from "@/lib/question-bank";
 import { getTemplates } from "@/lib/templates";
 import { DashboardOnboarding } from "@/components/DashboardOnboarding";
+import { SoanLabIcon, iconNameFromHref } from "@/components/ui/SoanLabIcon";
+import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
+import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 
 const tasks = [
   [
@@ -106,7 +109,8 @@ export default function DashboardPage() {
         <div className="min-w-0">
           <section className="hero-gradient relative overflow-hidden rounded-[30px] p-7 text-white shadow-[0_22px_55px_rgba(37,99,235,.2)] sm:p-10">
             <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[38px] border-white/10" />
-            <div className="relative max-w-2xl">
+            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_330px] lg:items-center">
+            <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
                 <Sparkles size={14} />
                 Không gian làm việc hôm nay
@@ -134,6 +138,8 @@ export default function DashboardPage() {
                 <ArrowRight size={17} className="ml-2" />
               </Link>
             </div>
+            <SoanLabIllustration variant="workspace" className="hidden bg-white/95 lg:block" />
+            </div>
           </section>
           <section className="mt-8">
             <Heading
@@ -141,24 +147,18 @@ export default function DashboardPage() {
               text="Những tác vụ quen thuộc, chỉ mất vài phút."
             />
             <div className="play-card overflow-hidden p-2 sm:p-3">
-              {tasks.map(([title, desc, badge, href, Icon, color], index) => (
+              {tasks.map(([title, desc, badge, href], index) => (
                 <Link
                   key={href}
                   href={href}
                   className={`task-row group border-0 shadow-none ${["bg-blue-50/35", "bg-cyan-50/35", "bg-violet-50/35", "bg-emerald-50/35"][index]} hover:brightness-[.98]`}
                 >
-                  <span
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${color}`}
-                  >
-                    <Icon size={21} />
-                  </span>
+                  <SoanLabIcon name={iconNameFromHref(href)} />
                   <div className="min-w-0 flex-1">
                     <p className="font-extrabold text-slate-900">{title}</p>
                     <p className="mt-1 text-sm text-slate-500">{desc}</p>
                   </div>
-                  <span className="soft-badge hidden sm:inline-flex">
-                    {badge}
-                  </span>
+                  <span className="hidden sm:inline-flex"><SoanLabBadge tone={badge === "Word" ? "export" : badge === "Demo" ? "demo" : "useful"}>{badge}</SoanLabBadge></span>
                   <ArrowRight
                     size={17}
                     className="shrink-0 text-blue-600 transition group-hover:translate-x-1"
@@ -173,17 +173,13 @@ export default function DashboardPage() {
               text="Mọi công cụ trong một không gian làm việc."
             />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-              {explore.map(([title, href, Icon, color]) => (
+              {explore.map(([title, href]) => (
                 <Link
                   key={href}
                   href={href}
                   className="play-card group flex min-h-32 flex-col items-center justify-center p-4 text-center transition hover:-translate-y-1"
                 >
-                  <span
-                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${color}`}
-                  >
-                    <Icon size={21} />
-                  </span>
+                  <SoanLabIcon name={iconNameFromHref(href)} />
                   <p className="mt-3 text-sm font-extrabold text-slate-800">
                     {title}
                   </p>

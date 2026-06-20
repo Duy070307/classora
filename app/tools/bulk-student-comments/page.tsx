@@ -15,6 +15,7 @@ import { useFormDraft } from "@/hooks/useFormDraft";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 type StudentRow = {
   name: string;
@@ -178,7 +179,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
                   </tbody>
                 </table>
               </div>
-            ) : <div className="empty-state">Chưa có dữ liệu CSV.</div>}
+            ) : <SoanLabEmptyState title="Chưa có dữ liệu CSV" description="Tải file mẫu hoặc chọn file CSV học sinh để xem trước các dòng nhận xét." />}
             <button type="button" onClick={generate} className="btn-primary w-full">Tạo nhận xét hàng loạt</button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </section>

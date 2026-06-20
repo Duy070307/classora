@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Copy, Download, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
@@ -10,6 +10,7 @@ import { createQuestion, getQuestions, questionsToDocument, saveQuestions } from
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
 import Link from "next/link";
 import { BugReportLink } from "@/components/BugReportLink";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 const emptyForm = {
   subject: "Toán",
@@ -136,7 +137,7 @@ export default function QuestionBankPage() {
                   </div>
                 </div>
               </article>
-            )) : <div className="empty-state"><Download className="mx-auto mb-3 text-slate-400" /><p className="font-semibold text-ink">Chưa có câu hỏi phù hợp</p><p className="mt-1">Thêm thủ công hoặc nhập nhanh từ văn bản/CSV.</p><Link href="/tools/import-questions" className="btn-primary mt-4">Nhập câu hỏi</Link></div>}
+            )) : <SoanLabEmptyState title="Chưa có câu hỏi phù hợp" description="Thêm thủ công hoặc nhập nhanh từ văn bản/CSV để xây ngân hàng câu hỏi cục bộ." action={<Link href="/tools/import-questions" className="btn-primary">Nhập câu hỏi</Link>} />}
           </section>
         </div>
       </main>

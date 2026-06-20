@@ -1,21 +1,18 @@
 ﻿import Link from "next/link";
 import {
   ArrowRight,
-  BookOpenCheck,
   Check,
-  ClipboardList,
-  Download,
-  FileText,
   GraduationCap,
-  LayoutGrid,
   MessageSquareText,
-  PenTool,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandLogo } from "@/components/BrandLogo";
+import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
+import { SoanLabIcon, iconNameFromText } from "@/components/ui/SoanLabIcon";
+import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 
 const stats = [
   ["20+", "công cụ", "Cho soạn đề và tài liệu"],
@@ -24,15 +21,15 @@ const stats = [
   ["MVP/demo", "hiện tại", "Đang nhận góp ý"],
 ];
 const tools = [
-  ["Tạo đề kiểm tra", "Đề, đáp án và ma trận.", PenTool, "Phổ biến"],
-  ["Tạo ma trận đề", "Phân bổ câu hỏi rõ ràng.", LayoutGrid, "Hữu ích"],
-  ["Đáp án & thang điểm", "Hỗ trợ chấm bài.", ClipboardList, ""],
-  ["Phiếu học tập", "Bài tập theo chủ đề.", BookOpenCheck, ""],
-  ["Giáo án", "Tiến trình dạy học.", FileText, ""],
-  ["Nhận xét học sinh", "Bản nháp dễ chỉnh sửa.", MessageSquareText, ""],
-  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", Sparkles, "Demo"],
-  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ClipboardList, ""],
-  ["Mẫu tài liệu", "Dùng lại format quen thuộc.", FileText, ""],
+  ["Tạo đề kiểm tra", "Đề, đáp án và ma trận.", "Phổ biến"],
+  ["Tạo ma trận đề", "Phân bổ câu hỏi rõ ràng.", "Hữu ích"],
+  ["Đáp án & thang điểm", "Hỗ trợ chấm bài.", ""],
+  ["Phiếu học tập", "Bài tập theo chủ đề.", ""],
+  ["Giáo án", "Tiến trình dạy học.", ""],
+  ["Nhận xét học sinh", "Bản nháp dễ chỉnh sửa.", ""],
+  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", "Demo"],
+  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ""],
+  ["Mẫu tài liệu", "Dùng lại format quen thuộc.", ""],
 ];
 const feedback = [
   "File Word có dùng được không?",
@@ -79,54 +76,11 @@ export default function HomePage() {
         </div>
         <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
           <div className="absolute -inset-7 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
-          <div className="play-card relative overflow-hidden p-4 sm:p-6">
-            <div className="rounded-[24px] bg-gradient-to-br from-blue-600 to-indigo-700 p-5 text-white">
-              <div className="flex items-center justify-between">
-                <p className="font-extrabold">Không gian làm việc</p>
-                <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold">
-                  Hôm nay
-                </span>
-              </div>
-              <div className="mt-5 rounded-2xl bg-white/10 p-4">
-                <p className="text-xs text-blue-100">
-                  Tiến độ bản nháp đầu tiên
-                </p>
-                <div className="mt-3 h-2 rounded-full bg-white/15">
-                  <div className="h-full w-1/3 rounded-full bg-cyan-300" />
-                </div>
-                <p className="mt-2 text-xs font-bold">1/3 bước</p>
-              </div>
-            </div>
-            <div className="mt-4 space-y-3">
-              {[
-                ["Tạo đề kiểm tra", "5 phút", PenTool],
-                ["Tạo ma trận", "Demo", LayoutGrid],
-                ["Xuất Word", "Word", Download],
-              ].map(([t, b, I]) => {
-                const Icon = I as typeof PenTool;
-                return (
-                  <div key={t as string} className="task-row">
-                    <span className="icon-tile">
-                      <Icon size={20} />
-                    </span>
-                    <div className="flex-1">
-                      <p className="font-extrabold text-slate-900">
-                        {t as string}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Sẵn sàng để bắt đầu
-                      </p>
-                    </div>
-                    <span className="soft-badge">{b as string}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          {["AI mô phỏng", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
+          <SoanLabIllustration variant="workspace" className="relative max-w-xl p-5 sm:p-6" />
+          {["Xuất Word", "AI mô phỏng", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
             <span
               key={x}
-              className={`absolute hidden rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 shadow-xl sm:inline-flex ${i === 0 ? "-right-4 top-16" : i === 1 ? "-left-3 bottom-24" : "right-4 -bottom-3"}`}
+              className={`absolute hidden rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 shadow-xl sm:inline-flex ${i === 0 ? "-right-4 top-16" : i === 1 ? "-left-3 bottom-24" : i === 2 ? "right-4 -bottom-3" : "left-8 top-2"}`}
             >
               {x}
             </span>
@@ -210,19 +164,16 @@ export default function HomePage() {
             Từ soạn đề đến nhận xét học sinh, mọi thứ nằm trong cùng một app.
           </p>
           <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {tools.map(([t, d, I, b]) => {
-              const Icon = I as typeof PenTool;
+            {tools.map(([t, d, b]) => {
               return (
                 <article
                   key={t as string}
                   className="play-card group p-6 transition hover:-translate-y-1"
                 >
                   <div className="flex justify-between">
-                    <span className="icon-tile">
-                      <Icon size={22} />
-                    </span>
+                    <SoanLabIcon name={iconNameFromText(t as string)} />
                     {b ? (
-                      <span className="soft-badge">{b as string}</span>
+                      <SoanLabBadge tone={(b as string) === "Demo" ? "demo" : (b as string) === "Hữu ích" ? "useful" : "popular"}>{b as string}</SoanLabBadge>
                     ) : null}
                   </div>
                   <h3 className="mt-5 text-lg font-extrabold text-slate-900">
@@ -298,12 +249,7 @@ export default function HomePage() {
                 "Không có database",
                 "Dữ liệu lưu local",
               ].map((x) => (
-                <span
-                  key={x}
-                  className="rounded-full bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600"
-                >
-                  {x}
-                </span>
+                <SoanLabBadge key={x} tone={x.includes("local") ? "local" : x.includes("đăng nhập") ? "mvp" : "demo"}>{x}</SoanLabBadge>
               ))}
             </div>
             <Link href="/known-issues" className="btn-secondary mt-7">
@@ -369,6 +315,7 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+          <SoanLabIllustration variant="export" className="relative mt-8 max-w-sm lg:absolute lg:bottom-8 lg:right-10 lg:mt-0" />
         </div>
       </section>
       <SiteFooter />
@@ -412,9 +359,7 @@ function Visual({ type }: { type: string }) {
           <div className="grid grid-cols-2 gap-3">
             {["Tạo đề", "Phiếu học tập", "Nhận xét", "Ma trận"].map((x) => (
               <div key={x} className="rounded-2xl bg-blue-50 p-4">
-                <span className="icon-tile">
-                  <FileText size={19} />
-                </span>
+                <SoanLabIcon name={iconNameFromText(x)} size="sm" />
                 <p className="mt-3 text-sm font-extrabold">{x}</p>
               </div>
             ))}

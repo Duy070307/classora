@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays, Eye, FileText, Trash2 } from "lucide-react";
+import { CalendarDays, Eye, Trash2 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
 import Link from "next/link";
 import { removeStored, STORAGE_KEYS } from "@/lib/storage";
+import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
@@ -99,14 +100,7 @@ export function HistoryList() {
   });
 
   if (items.length === 0) {
-    return (
-      <div className="empty-state">
-        <FileText className="mx-auto mb-3 text-slate-400" size={34} />
-        <p className="font-semibold text-ink">Chưa có tài liệu nào được lưu</p>
-        <p className="mt-1">Hãy thử tạo một đề kiểm tra hoặc phiếu học tập đầu tiên rồi lưu lại tại đây.</p>
-        <Link href="/tools" className="btn-primary mt-4">Khám phá công cụ</Link>
-      </div>
-    );
+    return <SoanLabEmptyState title="Chưa có tài liệu nào được lưu" description="Hãy thử tạo một đề kiểm tra hoặc phiếu học tập đầu tiên rồi lưu lại tại đây." action={<Link href="/tools" className="btn-primary">Khám phá công cụ</Link>} />;
   }
 
   return (
@@ -162,7 +156,7 @@ export function HistoryList() {
                 <DocumentExportMenu document={item} compact />
               </div>
             </article>
-          )) : <div className="empty-state">Không tìm thấy tài liệu phù hợp.</div>}
+          )) : <SoanLabEmptyState title="Không tìm thấy tài liệu phù hợp" description="Thử đổi từ khóa, loại tài liệu hoặc thư mục để xem lại lịch sử." />}
       </div>
     </div>
   );
