@@ -3,22 +3,23 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { clearFormDraft, loadFormDraft, saveFormDraft } from "@/lib/form-drafts";
 
-export function useFormDraft<T>(toolKey: string, data: T, setData: Dispatch<SetStateAction<T>>) {
+export function useFormDraft<T>(toolKey: string, data: T, setData: Dispatch<SetStateAction<T>>, normalizeDraft?: (draft: T) => T) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const savedDraft = useRef<T | null>(null);
   const hydrated = useRef(false);
 
   useEffect(() => {
     const draft = loadFormDraft<T>(toolKey);
-    savedDraft.current = draft?.data ?? null;
+    const normalized = draft ? (normalizeDraft ? normalizeDraft(draft.data) : draft.data) : null;
+    savedDraft.current = normalized;
     if (draft) {
       queueMicrotask(() => {
-        setData(draft.data);
+        setData(normalized as T);
         setUpdatedAt(draft.updatedAt);
       });
     }
     hydrated.current = true;
-  }, [setData, toolKey]);
+  }, [normalizeDraft, setData, toolKey]);
 
   useEffect(() => {
     if (!hydrated.current) return;

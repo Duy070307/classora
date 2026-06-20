@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
@@ -60,7 +60,8 @@ export default function ExamGeneratorPage() {
   const [bankQuestions, setBankQuestions] = useState<QuestionItem[]>([]);
   const [bankDifficulty, setBankDifficulty] = useState("");
   const [bankCount, setBankCount] = useState(5);
-  const draft = useFormDraft("/tools/exam-generator", input, setInput);
+  const normalizeExamDraft = useCallback((saved: ExamInput) => ({ ...initialInput, ...saved }), []);
+  const draft = useFormDraft("/tools/exam-generator", input, setInput, normalizeExamDraft);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -162,7 +163,7 @@ export default function ExamGeneratorPage() {
                 <div><label className="label">Môn học</label><input className="form-field mt-1" value={input.subject} onChange={(e) => setInput({ ...input, subject: e.target.value })} /></div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Lớp</label><input className="form-field mt-1" value={input.grade} onChange={(e) => setInput({ ...input, grade: e.target.value })} /></div>
-                  <div><label className="label">Thời gian làm bài</label><input className="form-field mt-1" value={input.duration} onChange={(e) => setInput({ ...input, duration: e.target.value })} /></div>
+                  <div><label className="label">Thời gian làm bài</label><input className="form-field mt-1" value={input.duration ?? ""} onChange={(e) => setInput({ ...input, duration: e.target.value })} /></div>
                 </div>
                 <div><label className="label">Chủ đề/chương</label><input className="form-field mt-1" value={input.topic} onChange={(e) => setInput({ ...input, topic: e.target.value })} /></div>
               </div>
@@ -174,18 +175,18 @@ export default function ExamGeneratorPage() {
                 <div><label className="label">Mức độ chung</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div><label className="label">Số câu PHẦN I</label><input type="number" min="0" className="form-field mt-1" value={input.multipleChoiceCount} onChange={(e) => setInput({ ...input, multipleChoiceCount: Number(e.target.value) })} /></div>
-                <div><label className="label">Số câu PHẦN II</label><input type="number" min="0" className="form-field mt-1" value={input.trueFalseCount} onChange={(e) => setInput({ ...input, trueFalseCount: Number(e.target.value) })} /></div>
-                <div><label className="label">Số câu PHẦN III</label><input type="number" min="0" className="form-field mt-1" value={input.shortAnswerCount} onChange={(e) => setInput({ ...input, shortAnswerCount: Number(e.target.value) })} /></div>
-                <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
+                <div><label className="label">Số câu PHẦN I</label><input type="number" min="0" className="form-field mt-1" value={input.multipleChoiceCount ?? 0} onChange={(e) => setInput({ ...input, multipleChoiceCount: Number(e.target.value) })} /></div>
+                <div><label className="label">Số câu PHẦN II</label><input type="number" min="0" className="form-field mt-1" value={input.trueFalseCount ?? 0} onChange={(e) => setInput({ ...input, trueFalseCount: Number(e.target.value) })} /></div>
+                <div><label className="label">Số câu PHẦN III</label><input type="number" min="0" className="form-field mt-1" value={input.shortAnswerCount ?? 0} onChange={(e) => setInput({ ...input, shortAnswerCount: Number(e.target.value) })} /></div>
+                <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore ?? 0} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
               </div>
-              <div className="mt-3"><label className="label">Mã đề</label><input className="form-field mt-1 max-w-48" value={input.examCode} onChange={(e) => setInput({ ...input, examCode: e.target.value.replace(/\D/g, "").slice(0, 4) })} /></div>
+              <div className="mt-3"><label className="label">Mã đề</label><input className="form-field mt-1 max-w-48" value={input.examCode ?? ""} onChange={(e) => setInput({ ...input, examCode: e.target.value.replace(/\D/g, "").slice(0, 4) })} /></div>
               <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mức độ nhận thức</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>
-                <div><label className="label">Tỉ lệ thông hiểu</label><input type="number" className="form-field mt-1" value={input.understandingRate} onChange={(e) => setInput({ ...input, understandingRate: Number(e.target.value) })} /></div>
-                <div><label className="label">Tỉ lệ vận dụng</label><input type="number" className="form-field mt-1" value={input.applicationRate} onChange={(e) => setInput({ ...input, applicationRate: Number(e.target.value) })} /></div>
-                <div><label className="label">Tỉ lệ vận dụng cao</label><input type="number" className="form-field mt-1" value={input.advancedRate} onChange={(e) => setInput({ ...input, advancedRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate ?? 0} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ thông hiểu</label><input type="number" className="form-field mt-1" value={input.understandingRate ?? 0} onChange={(e) => setInput({ ...input, understandingRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ vận dụng</label><input type="number" className="form-field mt-1" value={input.applicationRate ?? 0} onChange={(e) => setInput({ ...input, applicationRate: Number(e.target.value) })} /></div>
+                <div><label className="label">Tỉ lệ vận dụng cao</label><input type="number" className="form-field mt-1" value={input.advancedRate ?? 0} onChange={(e) => setInput({ ...input, advancedRate: Number(e.target.value) })} /></div>
               </div>
             </div>
             <div className="form-section space-y-3">
