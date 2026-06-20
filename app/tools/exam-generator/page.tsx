@@ -102,6 +102,15 @@ export default function ExamGeneratorPage() {
       extraRequirements: input.extraRequirements
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
+    next.examMeta = {
+      schoolName: input.schoolName,
+      teacherName: input.teacherName,
+      subject: input.subject,
+      grade: input.grade,
+      duration: input.duration,
+      topic: input.topic,
+      examCode: "101"
+    };
     setDocument(next);
     incrementUsage();
     setMessage("Đã tạo đề kiểm tra thành công.");

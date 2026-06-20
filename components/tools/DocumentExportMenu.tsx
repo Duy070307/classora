@@ -19,7 +19,7 @@ export function DocumentExportMenu({ document, onSave, compact = false }: { docu
   return <div className="document-actions flex flex-wrap gap-2">
     <button type="button" className={buttonClass} onClick={copy}><Copy size={16} />{message || "Sao chép"}</button>
     {onSave ? <button type="button" className={buttonClass} onClick={onSave}><Save size={16} />Lưu lịch sử</button> : null}
-    <button type="button" className={buttonClass} onClick={() => exportDocx(document)}><Download size={16} />Xuất Word</button>
+    <button type="button" className={buttonClass} onClick={() => exportDocx(document)}><Download size={16} />{document.type === "exam" ? "Xuất Word dạng đề thi" : "Xuất Word"}</button>
     <button type="button" className={buttonClass} onClick={() => printGeneratedDocument(document)}><Printer size={16} />In / Lưu PDF</button>
     <button type="button" className={buttonClass} onClick={() => downloadMarkdown(document)}><FileText size={16} />Tải Markdown</button>
     <button type="button" className={buttonClass} onClick={() => downloadTxt(document)}><FileText size={16} />Tải TXT</button>

@@ -28,6 +28,15 @@ export type GeneratedDocument = {
   content: string;
   createdAt: string;
   folder?: DocumentFolder;
+  examMeta?: {
+    schoolName?: string;
+    teacherName?: string;
+    subject?: string;
+    grade?: string;
+    duration?: string;
+    topic?: string;
+    examCode?: string;
+  };
 };
 
 export type DocumentFolder = "Đề kiểm tra" | "Giáo án" | "Phiếu học tập" | "Nhận xét học sinh" | "Khác";

@@ -4,6 +4,7 @@ import { AlignmentType, Document, HeadingLevel, Packer, Paragraph, TextRun } fro
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
+import { exportOfficialExamDocx } from "@/lib/export-exam-docx";
 
 function safeFileName(value: string) {
   return value
@@ -17,6 +18,10 @@ function safeFileName(value: string) {
 }
 
 export async function exportDocx(document: GeneratedDocument) {
+  if (document.type === "exam") {
+    await exportOfficialExamDocx(document);
+    return;
+  }
   const settings = getDocumentSettings();
   const fontSize = Number(settings.fontSize) * 2;
   const headingPattern = /^(#{1,3}\s+|HEADER|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT|I\.|II\.|III\.|IV\.|V\.|VI\.|PHẦN|ĐÁP ÁN|THANG ĐIỂM|MA TRẬN|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|LƯU Ý|KẾ HOẠCH|BIÊN BẢN|TRỘN MÃ ĐỀ|DÀN Ý|TÓM TẮT|SƠ ĐỒ)/i;
