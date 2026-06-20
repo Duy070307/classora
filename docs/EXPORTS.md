@@ -24,6 +24,17 @@ Tài liệu tạo từ công cụ **Tạo đề kiểm tra** tự động dùng 
 
 Giáo viên cần mở file bằng Microsoft Word hoặc phần mềm tương thích, rà soát nội dung, số trang, mã đề và ngắt trang trước khi in chính thức.
 
+## PDF/Print dạng đề thi THPTQG
+
+Khi tài liệu có loại `exam`, route `/print` tự động dùng renderer đề thi riêng:
+
+- A4 dọc, Times New Roman 12pt, header hai cột, dòng thí sinh và hộp mã đề.
+- PHẦN I/II/III được tách và định dạng gọn; câu hỏi cố gắng tránh bị ngắt giữa trang.
+- Đáp án và hướng dẫn chấm bắt đầu ở trang giáo viên riêng.
+- Giao diện ứng dụng, nút bấm, bóng đổ và màu thương hiệu không xuất hiện trong bản in.
+
+Để tạo PDF, chọn **In / Lưu PDF**, sau đó dùng hộp thoại in của trình duyệt và chọn **Save as PDF**. Footer có mã đề và dòng `Trang ...`; số trang chính xác phụ thuộc khả năng CSS in của từng trình duyệt nên giáo viên cần xem Print Preview trước khi lưu.
+
 ## Giới hạn hiện tại
 
 - PDF được tạo qua chức năng in của trình duyệt, không phải bộ dựng PDF phía server.
