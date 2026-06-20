@@ -1,6 +1,6 @@
 ﻿"use client";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Database, FileDown, Search } from "lucide-react";
+import { Database, FileDown, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
@@ -110,6 +110,7 @@ function ToolsContent() {
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">20+ công cụ</span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline" />AI mô phỏng</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Database size={13} className="mr-1 inline" />Lưu local</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline" />Xuất Word</span>
           </div>

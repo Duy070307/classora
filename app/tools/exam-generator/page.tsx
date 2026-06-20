@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
-import { Sidebar } from "@/components/Sidebar";
+import { AppShell } from "@/components/AppShell";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
@@ -127,9 +127,7 @@ export default function ExamGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen md:flex">
-      <Sidebar />
-      <main className="flex-1 p-5 md:p-8">
+    <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
         <ToolWorkspaceLayout
           form={
@@ -139,7 +137,7 @@ export default function ExamGeneratorPage() {
             <PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
-              <p className="form-section-title">Thông tin đề</p>
+              <p className="form-section-title">Thông tin chung</p>
               <div className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Tên trường/trung tâm</label><input className="form-field mt-1" value={input.schoolName} onChange={(e) => setInput({ ...input, schoolName: e.target.value })} /></div>
@@ -154,7 +152,7 @@ export default function ExamGeneratorPage() {
               </div>
             </div>
             <div className="form-section">
-              <p className="form-section-title">Cấu trúc</p>
+              <p className="form-section-title">Cấu trúc đề</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div><label className="label">Hình thức đề</label><select className="form-field mt-1" value={input.examType} onChange={(e) => setInput({ ...input, examType: e.target.value as ExamInput["examType"] })}><option>Trắc nghiệm</option><option>Tự luận</option><option>Kết hợp</option></select></div>
                 <div><label className="label">Mức độ chung</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
@@ -164,7 +162,8 @@ export default function ExamGeneratorPage() {
                 <div><label className="label">Số câu tự luận</label><input type="number" className="form-field mt-1" value={input.essayCount} onChange={(e) => setInput({ ...input, essayCount: Number(e.target.value) })} /></div>
                 <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
               </div>
-              <div className="mt-3 grid gap-3 sm:grid-cols-4">
+              <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mức độ nhận thức</p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>
                 <div><label className="label">Tỉ lệ thông hiểu</label><input type="number" className="form-field mt-1" value={input.understandingRate} onChange={(e) => setInput({ ...input, understandingRate: Number(e.target.value) })} /></div>
                 <div><label className="label">Tỉ lệ vận dụng</label><input type="number" className="form-field mt-1" value={input.applicationRate} onChange={(e) => setInput({ ...input, applicationRate: Number(e.target.value) })} /></div>
@@ -172,14 +171,14 @@ export default function ExamGeneratorPage() {
               </div>
             </div>
             <div className="form-section space-y-3">
-              <p className="form-section-title">Nội dung kèm theo</p>
+              <p className="form-section-title">Tùy chọn tài liệu</p>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeAnswers} onChange={(e) => setInput({ ...input, includeAnswers: e.target.checked })} /> Có tạo đáp án không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeRubric} onChange={(e) => setInput({ ...input, includeRubric: e.target.checked })} /> Có tạo thang điểm không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeMatrix} onChange={(e) => setInput({ ...input, includeMatrix: e.target.checked })} /> Có tạo ma trận đề không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeSpecification} onChange={(e) => setInput({ ...input, includeSpecification: e.target.checked })} /> Có bản đặc tả đề không</label>
             </div>
             <div className="form-section space-y-3">
-              <p className="form-section-title">Dùng câu hỏi từ ngân hàng</p>
+              <p className="form-section-title">Mẫu tài liệu / ngân hàng câu hỏi</p>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={useBank} onChange={(e) => setUseBank(e.target.checked)} /> Lấy câu hỏi từ ngân hàng câu hỏi</label>
               {useBank ? <>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -211,7 +210,6 @@ export default function ExamGeneratorPage() {
             </ToolOutputPanel>
           }
         />
-      </main>
-    </div>
+    </AppShell>
   );
 }

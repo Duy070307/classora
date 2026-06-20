@@ -23,6 +23,7 @@ import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 import { SoanLabIcon, iconNameFromHref } from "@/components/ui/SoanLabIcon";
 import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const tasks = [
   [
@@ -107,10 +108,13 @@ export default function DashboardPage() {
       <DashboardOnboarding />
       <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_330px]">
         <div className="min-w-0">
-          <section className="hero-gradient relative overflow-hidden rounded-[30px] p-7 text-white shadow-[0_22px_55px_rgba(37,99,235,.2)] sm:p-10">
+          <section className="hero-gradient relative overflow-hidden rounded-[30px] p-6 text-white shadow-[0_22px_55px_rgba(37,99,235,.2)] sm:p-9">
             <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[38px] border-white/10" />
             <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_330px] lg:items-center">
             <div className="max-w-2xl">
+              <div className="mb-5 inline-flex rounded-2xl bg-white/95 px-3 py-2 shadow-lg">
+                <BrandLogo variant="mark" compact />
+              </div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">
                 <Sparkles size={14} />
                 Không gian làm việc hôm nay
@@ -121,10 +125,10 @@ export default function DashboardPage() {
               <p className="mt-3 text-lg font-semibold text-blue-100">
                 Hôm nay bạn muốn tạo tài liệu nào?
               </p>
-              <div className="mt-6 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15">
+              <div className="mt-6 max-w-xl rounded-2xl bg-white/10 p-4 ring-1 ring-white/15">
                 <div className="flex justify-between text-xs font-bold">
-                  <span>Tạo bản nháp đầu tiên</span>
-                  <span>0/3 bước</span>
+                  <span>0/3 bước · Tạo bản nháp đầu tiên</span>
+                  <span className="text-cyan-200">Bắt đầu</span>
                 </div>
                 <div className="mt-3 h-2 rounded-full bg-white/15">
                   <div className="h-full w-[8%] rounded-full bg-cyan-300" />
@@ -151,7 +155,7 @@ export default function DashboardPage() {
                 <Link
                   key={href}
                   href={href}
-                  className={`task-row group border-0 shadow-none ${["bg-blue-50/35", "bg-cyan-50/35", "bg-violet-50/35", "bg-emerald-50/35"][index]} hover:brightness-[.98]`}
+                  className={`task-row group border-0 shadow-none ${["bg-blue-50/55", "bg-cyan-50/55", "bg-violet-50/50", "bg-emerald-50/50"][index]} hover:brightness-[.98]`}
                 >
                   <SoanLabIcon name={iconNameFromHref(href)} />
                   <div className="min-w-0 flex-1">
@@ -177,7 +181,7 @@ export default function DashboardPage() {
                 <Link
                   key={href}
                   href={href}
-                  className="play-card group flex min-h-32 flex-col items-center justify-center p-4 text-center transition hover:-translate-y-1"
+                  className="play-card group flex min-h-36 flex-col items-center justify-center p-4 text-center transition hover:-translate-y-1 hover:border-blue-200"
                 >
                   <SoanLabIcon name={iconNameFromHref(href)} />
                   <p className="mt-3 text-sm font-extrabold text-slate-800">
