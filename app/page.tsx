@@ -42,7 +42,7 @@ export default function HomePage() {
   return (
     <main className="warm-page">
       <Navbar />
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-14 sm:py-20 lg:grid-cols-[1.02fr_.98fr] lg:py-24">
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:py-18 lg:grid-cols-[1.05fr_.95fr] lg:py-20">
         <div>
           <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
             MVP/demo cho giáo viên Việt Nam
@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="mt-6">
             <BrandLogo variant="full" />
           </div>
-          <h1 className="mt-7 text-5xl font-black leading-[.98] tracking-[-.045em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 className="mt-6 text-4xl font-black leading-[1.02] tracking-[-.04em] text-slate-950 sm:text-6xl lg:text-7xl">
             Soạn đề <span className="text-blue-600">nhanh.</span>
             <br />
             Tạo tài liệu <span className="text-cyan-500">gọn.</span>
@@ -87,7 +87,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-20 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-16 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(([n, t, s]) => (
           <div key={t} className="play-card border-b-4 border-b-blue-500 p-6">
             <p className="text-3xl font-black text-blue-600">{n}</p>

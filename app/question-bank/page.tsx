@@ -4,7 +4,7 @@ import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
-import { Sidebar } from "@/components/Sidebar";
+import { AppShell } from "@/components/AppShell";
 import { createDocument } from "@/lib/history";
 import { createQuestion, getQuestions, questionsToDocument, saveQuestions } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
@@ -81,9 +81,7 @@ export default function QuestionBankPage() {
   const unique = (key: "subject" | "grade" | "topic") => [...new Set(items.map((item) => item[key]).filter(Boolean))];
 
   return (
-    <div className="min-h-screen md:flex">
-      <Sidebar />
-      <main className="flex-1 p-5 md:p-8">
+    <AppShell title="Ngân hàng câu hỏi">
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
         <BugReportLink source="question-bank" className="mb-4" />
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
@@ -140,7 +138,6 @@ export default function QuestionBankPage() {
             )) : <SoanLabEmptyState title="Chưa có câu hỏi phù hợp" description="Thêm thủ công hoặc nhập nhanh từ văn bản/CSV để xây ngân hàng câu hỏi cục bộ." action={<Link href="/tools/import-questions" className="btn-primary">Nhập câu hỏi</Link>} />}
           </section>
         </div>
-      </main>
-    </div>
+    </AppShell>
   );
 }

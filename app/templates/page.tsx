@@ -4,7 +4,7 @@ import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
-import { Sidebar } from "@/components/Sidebar";
+import { AppShell } from "@/components/AppShell";
 import { getTemplates, saveTemplates, templateTypes, type TemplateItem } from "@/lib/templates";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
@@ -89,9 +89,7 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen md:flex">
-      <Sidebar />
-      <main className="flex-1 p-5 md:p-8">
+    <AppShell title="Mẫu cá nhân">
         <PageHeader title="Mẫu cá nhân" description="Tạo, sửa, xóa và copy các mẫu tài liệu cá nhân. Mẫu có sẵn luôn tự xuất hiện trong các công cụ phù hợp." />
 
         <section className="card mb-6 p-5">
@@ -161,7 +159,6 @@ export default function TemplatesPage() {
             )}
           </section>
         </div>
-      </main>
-    </div>
+    </AppShell>
   );
 }

@@ -1,6 +1,6 @@
 ﻿"use client";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Database, FileDown, Search, Sparkles } from "lucide-react";
+import { Database, FileDown, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
@@ -83,9 +83,9 @@ function ToolsContent() {
   }
   return (
     <AppShell title="Công cụ">
-      <section className="hero-gradient relative mb-6 overflow-hidden rounded-[30px] p-6 text-white shadow-[0_20px_50px_rgba(37,99,235,.2)] sm:p-9">
+      <section className="hero-gradient relative mb-6 overflow-hidden rounded-[28px] p-5 text-white shadow-[0_18px_44px_rgba(37,99,235,.18)] sm:p-8">
         <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[36px] border-white/10" />
-        <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-center">
+        <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-center">
         <div className="max-w-3xl">
           <p className="text-xs font-extrabold uppercase tracking-[.16em] text-blue-200">
             Thư viện workflow
@@ -110,7 +110,6 @@ function ToolsContent() {
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">20+ công cụ</span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline" />AI mô phỏng</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Database size={13} className="mr-1 inline" />Lưu local</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline" />Xuất Word</span>
           </div>
@@ -118,8 +117,8 @@ function ToolsContent() {
         <SoanLabIllustration variant="workspace" className="hidden bg-white/95 lg:block" />
         </div>
       </section>
-      <section className="premium-card mb-7 p-4 sm:p-5">
-        <div className="flex gap-2 overflow-x-auto pb-2">
+      <section className="premium-card mb-7 p-3 sm:p-4">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
           {["Tất cả", ...categoryOrder.map((x) => categoryLabels[x])].map(
             (x) => (
               <button
@@ -133,7 +132,7 @@ function ToolsContent() {
             ),
           )}
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
+        <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-3">
           {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map(
             (x) => (
               <button
@@ -157,8 +156,8 @@ function ToolsContent() {
         </div>
       </section>
       {tools.length ? (
-        <div className="rounded-[32px] bg-gradient-to-b from-blue-50/60 to-transparent p-1 sm:p-3">
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="rounded-[28px] bg-gradient-to-b from-blue-50/60 to-transparent p-1 sm:p-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {tools.map((t) => (
               <ToolCard
                 key={t.href}
