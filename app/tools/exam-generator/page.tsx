@@ -109,7 +109,7 @@ export default function ExamGeneratorPage() {
       grade: input.grade,
       duration: input.duration,
       topic: input.topic,
-      examCode: "101"
+      examCode: "0101"
     };
     setDocument(next);
     incrementUsage();

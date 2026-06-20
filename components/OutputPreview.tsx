@@ -23,11 +23,10 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
         <article className="document-paper px-4 py-6 sm:min-h-[900px] sm:px-12 sm:py-10">
           {document.type === "exam" ? <div className="mb-6 font-serif text-[13px] leading-5 text-slate-950">
             <div className="grid grid-cols-2 gap-4 text-center">
-              <div><p className="font-bold">{(examMeta?.schoolName || "TRƯỜNG THPT ...").toUpperCase()}</p><p className="text-xs italic">(Đề thi có .... trang)</p></div>
-              <div><p className="font-bold">KỲ KIỂM TRA</p><p className="font-bold">MÔN THI: {(examMeta?.subject || "...").toUpperCase()} - LỚP {examMeta?.grade || "..."}</p><p className="text-xs italic">Thời gian: {examMeta?.duration || "... phút"}, không kể thời gian phát đề</p></div>
+              <div><p className="font-bold">SỞ GIÁO DỤC VÀ ĐÀO TẠO</p><p className="font-bold">{(examMeta?.schoolName || "TRƯỜNG THPT ...").toUpperCase()}</p><p className="text-xs italic">(Đề có .... trang)</p></div>
+              <div><p className="font-bold">ĐỀ THI THỬ</p><p className="font-bold">KỲ THI TỐT NGHIỆP THPT</p><p className="font-bold">MÔN: {(examMeta?.subject || "...").toUpperCase()} {examMeta?.grade || "..."}</p><p className="text-xs italic">Thời gian: {examMeta?.duration || "... phút"}, không kể thời gian phát đề</p></div>
             </div>
-            <h2 className="mt-5 text-center text-lg font-bold uppercase">{document.title}</h2>
-            <div className="mt-5 flex items-end justify-between gap-4"><div><p>Họ và tên thí sinh: ........................................................</p><p>Số báo danh: ..............................................................</p></div><p className="shrink-0 border border-slate-900 px-3 py-2 font-bold">Mã đề: {examMeta?.examCode || "101"}</p></div>
+            <div className="mt-5 flex items-end justify-between gap-3 border-b border-slate-900 pb-2"><p>Họ và tên thí sinh: .................................... Số báo danh: ...................</p><p className="shrink-0 border border-slate-900 px-3 py-2 font-bold">Mã đề: {(examMeta?.examCode || "0101").padStart(4, "0")}</p></div>
           </div> : null}
           {header.length ? <header className="mb-6 border-b border-slate-200 pb-3 text-sm leading-6 text-slate-700">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
           {lines.map((line, index) => {
