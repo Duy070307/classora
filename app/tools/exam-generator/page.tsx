@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -10,6 +9,8 @@ import { TemplateSelect } from "@/components/TemplateSelect";
 import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { PresetSelect } from "@/components/tools/PresetSelect";
+import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
+import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { examPresets } from "@/lib/presets";
 import { createDocument, saveDocument } from "@/lib/history";
@@ -129,8 +130,9 @@ export default function ExamGeneratorPage() {
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Tạo đề kiểm tra" description="Nhập yêu cầu, Soạn Lab sẽ tạo bản nháp đề kiểm tra kèm đáp án, thang điểm và ma trận." />
-        <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
+        <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
+        <ToolWorkspaceLayout
+          form={
           <form onSubmit={handleSubmit} className="tool-form-card">
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
@@ -192,27 +194,23 @@ export default function ExamGeneratorPage() {
               </> : null}
             </div>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
+            <div className="tool-tip-card"><p className="font-bold text-blue-800">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </form>
-          <div className="space-y-4">
-            {loading ? (
-              <div className="card flex min-h-80 items-center justify-center p-8 text-center">
-                <div>
-                  <Loader2 className="mx-auto animate-spin text-brand" size={34} />
-                  <p className="mt-4 font-semibold text-ink">Đang tạo đề kiểm tra...</p>
-                  <p className="mt-1 text-sm text-muted">Soạn Lab đang soạn bản nháp có đáp án, thang điểm và ma trận.</p>
-                </div>
-              </div>
-            ) : document ? (
+          }
+          output={
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo đề kiểm tra..." loadingDescription="Soạn Lab đang soạn bản nháp có đáp án, thang điểm và ma trận." hasOutput={Boolean(document)} showWarning={false}>
+              {document ? (
               <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
-            ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}
-          </div>
-        </div>
+              ) : null}
+            </ToolOutputPanel>
+          }
+        />
       </main>
     </div>
   );

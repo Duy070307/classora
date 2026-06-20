@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { InputField } from "@/components/fields/InputField";
 import { SelectField } from "@/components/fields/SelectField";
 import { TextAreaField } from "@/components/fields/TextAreaField";
@@ -20,6 +19,8 @@ import type { GeneratedDocument, GenericToolInput, ToolConfig, ToolField } from 
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { genericPresets } from "@/lib/presets";
 import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
+import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
+import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -108,7 +109,8 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   return (
     <AppShell title={config.title}>
         <ToolPageHeader title={config.title} description={config.description} />
-        <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
+        <ToolWorkspaceLayout
+          form={
           <form onSubmit={handleSubmit} className="tool-form-card">
             {config.sampleInput ? (
               <button type="button" onClick={() => setInput(config.sampleInput ?? initialInput)} className="btn-secondary w-full">
@@ -176,26 +178,17 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
             </button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </form>
-          <div className="space-y-4">
-            {loading ? (
-              <div className="card flex min-h-80 items-center justify-center p-8 text-center">
-                <div>
-                  <Loader2 className="mx-auto animate-spin text-brand" size={34} />
-                  <p className="mt-4 font-semibold text-ink">Đang tạo tài liệu...</p>
-                  <p className="mt-1 text-sm text-muted">Soạn Lab đang dùng AI mô phỏng để soạn bản nháp.</p>
-                </div>
-              </div>
-            ) : document ? (
-              <>
+          }
+          output={
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo tài liệu..." loadingDescription="Soạn Lab đang dùng AI mô phỏng để soạn bản nháp." hasOutput={Boolean(document)} showWarning={false}>
+              {document ? <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool={config.type} input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
-              </>
-            ) : (
-              <div className="empty-state">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>
-            )}
-          </div>
-        </div>
+              </> : null}
+            </ToolOutputPanel>
+          }
+        />
     </AppShell>
   );
 }

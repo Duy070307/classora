@@ -108,19 +108,29 @@ export default function ImportQuestionsPage() {
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Nhập câu hỏi từ văn bản" description="Dán câu hỏi hoặc nhập file CSV để lưu vào ngân hàng câu hỏi cục bộ." />
         <section className="tool-form-card">
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="form-section">
+            <p className="form-section-title">Thông tin áp dụng cho câu hỏi</p>
+            <div className="grid gap-3 md:grid-cols-3">
             <div><label className="label">Môn học</label><input className="form-field mt-1" value={subject} onChange={(e) => setSubject(e.target.value)} /></div>
             <div><label className="label">Lớp</label><input className="form-field mt-1" value={grade} onChange={(e) => setGrade(e.target.value)} /></div>
             <div><label className="label">Chủ đề</label><input className="form-field mt-1" value={topic} onChange={(e) => setTopic(e.target.value)} /></div>
+            </div>
           </div>
-          <div><label className="label">Nội dung câu hỏi</label><textarea className="form-field mt-1 min-h-56 font-mono text-sm" value={text} onChange={(e) => setText(e.target.value)} /></div>
+          <div className="form-section">
+            <p className="form-section-title">Dán văn bản câu hỏi</p>
+            <p className="mb-3 text-sm leading-6 text-muted">Hỗ trợ các khối bắt đầu bằng “Câu 1”, “Câu 2” và dòng “Đáp án: ...”.</p>
+            <textarea className="form-field mt-1 min-h-56 font-mono text-sm" value={text} onChange={(e) => setText(e.target.value)} />
+          </div>
           <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
-          <div className="flex flex-wrap gap-2">
+          <div className="rounded-[1.35rem] border border-blue-100 bg-gradient-to-br from-blue-50/70 to-white p-4">
+            <p className="mb-3 text-sm font-extrabold uppercase tracking-wide text-blue-700">Thao tác nhập liệu</p>
+            <div className="flex flex-wrap gap-2">
             <button className="btn-secondary" type="button" onClick={() => { setSubject("Toán"); setGrade("8"); setTopic("Phương trình"); setText(sampleImportQuestionsText); setRows([]); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <button className="btn-primary" type="button" onClick={parseInput}>Phân tích văn bản</button>
             <label className="btn-secondary cursor-pointer"><FileUp size={16} />Nhập CSV<input className="hidden" type="file" accept=".csv,text/csv" onChange={uploadCsv} /></label>
             <button className="btn-secondary" type="button" onClick={downloadSample}><Download size={16} />Tải file mẫu CSV</button>
             <button className="btn-secondary" type="button" onClick={() => navigator.clipboard.writeText("Môn học,Lớp,Chủ đề,Loại câu hỏi,Mức độ,Nội dung câu hỏi,Đáp án,Lời giải")}><Download size={16} />Copy tiêu đề CSV</button>
+            </div>
           </div>
           {message ? <p className="text-sm font-medium text-brand">{message}</p> : null}
         </section>
@@ -131,9 +141,9 @@ export default function ImportQuestionsPage() {
               <button className="btn-primary" type="button" disabled={!selected.length} onClick={() => { addQuestions(selected.map((row) => createQuestion({ subject: row.subject, grade: row.grade, topic: row.topic, question: row.question, type: row.type, difficulty: row.difficulty, answer: row.answer, explanation: row.explanation }))); setMessage(`Đã lưu ${selected.length} câu vào ngân hàng.`); }}><Save size={16} />Lưu câu đã chọn</button>
               <DocumentExportMenu document={exportDocument} />
             </div>
-            <div className="overflow-x-auto rounded-md border border-line bg-white">
+            <div className="overflow-x-auto rounded-[1.35rem] border border-blue-100 bg-white shadow-sm">
               <table className="min-w-[1100px] w-full text-left text-sm">
-                <thead className="bg-slate-50 text-xs uppercase text-muted"><tr><th className="p-3">Chọn</th><th className="p-3">Môn/Lớp/Chủ đề</th><th className="p-3">Câu hỏi</th><th className="p-3">Loại/Mức độ</th><th className="p-3">Đáp án</th><th className="p-3">Lời giải</th></tr></thead>
+                <thead className="bg-blue-50 text-xs uppercase text-blue-700"><tr><th className="p-3">Chọn</th><th className="p-3">Môn/Lớp/Chủ đề</th><th className="p-3">Câu hỏi</th><th className="p-3">Loại/Mức độ</th><th className="p-3">Đáp án</th><th className="p-3">Lời giải</th></tr></thead>
                 <tbody>{rows.map((row, index) => <tr key={index} className="border-t border-line align-top">
                   <td className="p-3"><input type="checkbox" checked={row.selected} onChange={(e) => update(index, "selected", e.target.checked)} /></td>
                   <td className="w-48 p-3 space-y-2"><input className="form-field" value={row.subject} onChange={(e) => update(index, "subject", e.target.value)} /><input className="form-field" value={row.grade} onChange={(e) => update(index, "grade", e.target.value)} /><input className="form-field" value={row.topic} onChange={(e) => update(index, "topic", e.target.value)} /></td>

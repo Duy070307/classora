@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
@@ -19,6 +18,8 @@ import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { PresetSelect } from "@/components/tools/PresetSelect";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { studentCommentPresets } from "@/lib/presets";
+import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
+import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -85,7 +86,8 @@ export default function StudentCommentsPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Tạo nhận xét học sinh" description="Soạn nhận xét phù hợp học bạ, tin nhắn phụ huynh hoặc tổng kết cuối kỳ." />
-        <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
+        <ToolWorkspaceLayout
+          form={
           <form onSubmit={handleSubmit} className="tool-form-card">
             <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleStudentCommentInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
@@ -110,21 +112,16 @@ export default function StudentCommentsPage() {
             <div><label className="label">Hạn chế</label><textarea className="form-field mt-1 min-h-20" value={input.limitations} onChange={(e) => setInput({ ...input, limitations: e.target.value })} /></div>
             <div><label className="label">Mục đích</label><select className="form-field mt-1" value={input.purpose} onChange={(e) => setInput({ ...input, purpose: e.target.value as StudentCommentInput["purpose"] })}><option>Nhận xét học bạ</option><option>Tin nhắn phụ huynh</option><option>Nhận xét cuối kỳ</option></select></div>
             </div>
+            <div className="tool-tip-card"><p className="font-bold text-blue-800">Mẹo nhận xét</p><p className="mt-1">Viết ưu điểm và điểm cần cải thiện bằng ngôn ngữ cụ thể để bản nháp dễ dùng hơn.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo nhận xét"}</button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </form>
-          <div className="space-y-4">
-            {loading ? (
-              <div className="card flex min-h-80 items-center justify-center p-8 text-center">
-                <div>
-                  <Loader2 className="mx-auto animate-spin text-brand" size={34} />
-                  <p className="mt-4 font-semibold text-ink">Đang tạo nhận xét...</p>
-                  <p className="mt-1 text-sm text-muted">Soạn Lab đang viết 3 phiên bản nhận xét phù hợp.</p>
-                </div>
-              </div>
-            ) : document ? (
+          }
+          output={
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo nhận xét..." loadingDescription="Soạn Lab đang viết 3 phiên bản nhận xét phù hợp." hasOutput={Boolean(document)} showWarning={false}>
+              {document ? (
               <>
-                <div className="flex flex-wrap gap-2">
+                <div className="document-actions sticky top-20 z-10 flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-lg shadow-slate-200/60 backdrop-blur-xl">
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN NGẮN GỌN")} label="Copy ngắn gọn" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN TRANG TRỌNG")} label="Copy trang trọng" />
                   <CopyButton text={extractSection(document.content, "PHIÊN BẢN THÂN THIỆN GỬI PHỤ HUYNH")} label="Copy phụ huynh" />
@@ -133,9 +130,10 @@ export default function StudentCommentsPage() {
                 <OutputRefinementBar tool="student-comments" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
-            ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}
-          </div>
-        </div>
+              ) : null}
+            </ToolOutputPanel>
+          }
+        />
       </main>
     </div>
   );

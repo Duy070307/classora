@@ -51,7 +51,7 @@ textarea {
 }
 
 .form-field {
-  @apply min-h-11 w-full rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] outline-none transition duration-200 placeholder:text-slate-400 hover:border-indigo-200 hover:shadow-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100/80;
+  @apply min-h-11 w-full rounded-2xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-[0_1px_2px_rgba(15,23,42,0.03)] outline-none transition duration-200 placeholder:text-slate-400 hover:border-blue-200 hover:shadow-sm focus:border-blue-400 focus:ring-4 focus:ring-blue-100/80;
 }
 
 .label {
@@ -84,11 +84,11 @@ textarea {
 }
 
 .form-section {
-  @apply rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/90 to-white p-4 shadow-sm;
+  @apply rounded-[1.35rem] border border-blue-100/80 bg-gradient-to-br from-blue-50/55 via-white to-white p-4 shadow-sm;
 }
 
 .form-section-title {
-  @apply mb-3 text-sm font-bold uppercase tracking-wide text-slate-500;
+  @apply mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wide text-blue-700;
 }
 
 .empty-state {
@@ -96,7 +96,7 @@ textarea {
 }
 
 .tool-form-card {
-  @apply card h-fit space-y-5 p-5 sm:p-6;
+  @apply h-fit space-y-5 rounded-[2rem] border border-blue-100/80 bg-white/95 p-5 shadow-[0_18px_50px_rgba(30,64,175,0.09)] sm:p-6;
 }
 
 .app-surface { @apply rounded-3xl border border-slate-200/70 bg-white/95; box-shadow: var(--surface-shadow); }
@@ -104,7 +104,9 @@ textarea {
 .app-card-hover:hover { box-shadow: var(--surface-shadow-hover); }
 .app-gradient-hero { @apply relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white; box-shadow: 0 28px 70px rgba(67,56,202,.22); }
 .app-badge { @apply inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700; }
-.document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-lg bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(15,23,42,.14), 0 2px 8px rgba(15,23,42,.05); }
+.document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-2xl bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(30,64,175,.13), 0 2px 8px rgba(15,23,42,.05); }
+.tool-form-card input[type="checkbox"] { @apply h-4 w-4 rounded border-slate-300 accent-blue-600; }
+.tool-tip-card { @apply rounded-[1.35rem] border border-cyan-100 bg-gradient-to-br from-cyan-50 to-white p-4 text-sm leading-6 text-slate-600 shadow-sm; }
 .soft-grid-bg { background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px); background-size: 24px 24px; }
 .loading-dot { @apply h-1.5 w-1.5 rounded-full bg-indigo-600; animation: loading-bounce 900ms ease-in-out infinite; }
 .motion-enter { animation: motion-enter 420ms cubic-bezier(.2,.8,.2,1) both; }

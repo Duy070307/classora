@@ -13,6 +13,8 @@ import { sampleBulkCommentsCsv } from "@/lib/sample-data";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
+import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
+import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 
 type StudentRow = {
   name: string;
@@ -142,17 +144,26 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Nhận xét học sinh hàng loạt" description="Tải CSV, xem trước dữ liệu và tạo nhận xét hàng loạt bằng AI mô phỏng." />
-        <div className="grid gap-6 xl:grid-cols-[520px_1fr]">
+        <ToolWorkspaceLayout
+          wideForm
+          form={
           <section className="tool-form-card">
-            <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-800">
+            <div className="tool-tip-card">
               CSV cần có cột: Họ tên, Lớp, Mức học tập, Thái độ, Ưu điểm, Hạn chế, Mục đích. Cũng hỗ trợ: ho_ten, lop, muc_hoc_tap, thai_do, uu_diem, han_che, muc_dich.
             </div>
-            <button type="button" onClick={downloadSample} className="btn-secondary"><FileDown size={16} />Tải file mẫu CSV</button>
-            <button type="button" onClick={() => navigator.clipboard.writeText(sampleBulkCommentsCsv)} className="btn-secondary"><Copy size={16} />Copy mẫu CSV</button>
-            <button type="button" onClick={() => { const parsed = parseCsv(sampleBulkCommentsCsv); setRows(parsed); setDocument(null); setMessage(`Đã điền ${parsed.length} học sinh mẫu.`); }} className="btn-secondary">Dùng dữ liệu mẫu</button>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={downloadSample} className="btn-secondary"><FileDown size={16} />Tải file mẫu CSV</button>
+              <button type="button" onClick={() => navigator.clipboard.writeText(sampleBulkCommentsCsv)} className="btn-secondary"><Copy size={16} />Copy mẫu CSV</button>
+              <button type="button" onClick={() => { const parsed = parseCsv(sampleBulkCommentsCsv); setRows(parsed); setDocument(null); setMessage(`Đã điền ${parsed.length} học sinh mẫu.`); }} className="btn-secondary">Dùng dữ liệu mẫu</button>
+            </div>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />
-            <input type="file" accept=".csv,text/csv" onChange={handleFile} className="form-field" />
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.35rem] border-2 border-dashed border-blue-200 bg-blue-50/60 p-6 text-center text-sm text-muted transition hover:border-blue-300 hover:bg-blue-50">
+              <FileDown className="mb-3 text-blue-600" size={28} />
+              <span className="font-bold text-ink">Thả/chọn file CSV học sinh</span>
+              <span className="mt-1">Dữ liệu chỉ xử lý trên trình duyệt.</span>
+              <input type="file" accept=".csv,text/csv" onChange={handleFile} className="sr-only" />
+            </label>
             {rows.length ? (
               <div className="overflow-auto rounded-md border border-line">
                 <table className="min-w-full text-left text-sm">
@@ -171,18 +182,21 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
             <button type="button" onClick={generate} className="btn-primary w-full">Tạo nhận xét hàng loạt</button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </section>
-          <section className="space-y-4">
-            {document ? (
+          }
+          output={
+            <ToolOutputPanel hasOutput={Boolean(document)} showWarning={false} emptyDescription="Sau khi tải CSV và tạo nhận xét, danh sách nhận xét sẽ hiển thị ở đây để xuất Word hoặc CSV.">
+              {document ? (
               <>
-                <div className="flex flex-wrap gap-2">
+                <div className="document-actions sticky top-20 z-10 flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-lg shadow-slate-200/60 backdrop-blur-xl">
                   <DocumentExportMenu document={document} onSave={save} />
                   <button type="button" onClick={exportCsv} className="btn-secondary"><Download size={16} />Xuất CSV</button>
                 </div>
                 <OutputPreview document={document} />
               </>
-            ) : <div className="empty-state">Kết quả nhận xét sẽ hiển thị tại đây.</div>}
-          </section>
-        </div>
+              ) : null}
+            </ToolOutputPanel>
+          }
+        />
       </main>
     </div>
   );

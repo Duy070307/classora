@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -18,6 +17,8 @@ import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { PresetSelect } from "@/components/tools/PresetSelect";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { worksheetPresets } from "@/lib/presets";
+import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
+import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -76,7 +77,8 @@ export default function WorksheetGeneratorPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader title="Tạo phiếu học tập" description="Tạo nhanh phiếu học tập có mục tiêu, tóm tắt kiến thức, bài tập và đáp án." />
-        <div className="grid gap-6 xl:grid-cols-[430px_1fr]">
+        <ToolWorkspaceLayout
+          form={
           <form onSubmit={handleSubmit} className="tool-form-card">
             <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleWorksheetInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
@@ -101,27 +103,23 @@ export default function WorksheetGeneratorPage() {
             <label className="mt-3 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeAnswers} onChange={(e) => setInput({ ...input, includeAnswers: e.target.checked })} /> Có đáp án không</label>
             </div>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
+            <div className="tool-tip-card"><p className="font-bold text-blue-800">Mẹo phiếu học tập</p><p className="mt-1">Mục tiêu càng rõ, phần bài tập và đáp án càng dễ kiểm tra sau khi xuất Word.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo phiếu học tập"}</button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </form>
-          <div className="space-y-4">
-            {loading ? (
-              <div className="card flex min-h-80 items-center justify-center p-8 text-center">
-                <div>
-                  <Loader2 className="mx-auto animate-spin text-brand" size={34} />
-                  <p className="mt-4 font-semibold text-ink">Đang tạo phiếu học tập...</p>
-                  <p className="mt-1 text-sm text-muted">Soạn Lab đang chuẩn bị mục tiêu, kiến thức cần nhớ và bài tập.</p>
-                </div>
-              </div>
-            ) : document ? (
+          }
+          output={
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo phiếu học tập..." loadingDescription="Soạn Lab đang chuẩn bị mục tiêu, kiến thức cần nhớ và bài tập." hasOutput={Boolean(document)} showWarning={false}>
+              {document ? (
               <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="worksheet" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </>
-            ) : <div className="card p-8 text-sm text-muted">Kết quả sẽ hiển thị tại đây sau khi tạo.</div>}
-          </div>
-        </div>
+              ) : null}
+            </ToolOutputPanel>
+          }
+        />
       </main>
     </div>
   );
