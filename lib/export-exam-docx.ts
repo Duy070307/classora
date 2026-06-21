@@ -18,6 +18,7 @@ import {
 } from "docx";
 import { getDocumentSettings } from "@/lib/document-settings";
 import type { GeneratedDocument } from "@/lib/types";
+import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 
 const FONT = "Times New Roman";
 const BODY_SIZE = 24;
@@ -128,18 +129,15 @@ function questionBlocks(text: string) {
   });
 }
 
-function markdownTable(text: string) {
-  const rows = text.split(/\r?\n/)
-    .filter((line) => line.trim().startsWith("|") && !/^\|?\s*:?-{3,}/.test(line.trim()))
-    .map((line) => line.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim()));
-  if (!rows.length) return null;
+function docxTable(table: ParsedMarkdownTable) {
+  const rows = [table.headers, ...table.rows];
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: thinBorders,
     rows: rows.map((cells, rowIndex) => new TableRow({
       children: cells.map((cell) => new TableCell({
         width: { size: Math.floor(100 / cells.length), type: WidthType.PERCENTAGE },
-        shading: rowIndex === 0 ? { fill: "EAF2F8" } : undefined,
+        shading: rowIndex === 0 ? { fill: "F1F5F9" } : undefined,
         margins: { top: 70, bottom: 70, left: 90, right: 90 },
         children: [new Paragraph({ alignment: rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT, children: [run(cell, { bold: rowIndex === 0, size: 22 })] })]
       }))
@@ -147,11 +145,19 @@ function markdownTable(text: string) {
   });
 }
 
-function teacherContent(content: string) {
+function teacherBlocks(text: string) {
+  return splitMarkdownTables(text).flatMap((block) => block.type === "table"
+    ? [docxTable(block.table), paragraph("", { after: 70 })]
+    : bodyParagraphs(block.text));
+}
+
+function teacherContent(document: GeneratedDocument) {
+  const content = document.content;
   const answer = section(content, /^III\.\s*ĐÁP ÁN/i, /^IV\./i);
   const scoring = section(content, /^IV\.\s*THANG ĐIỂM/i, /^V\./i);
   const matrix = section(content, /^V\.\s*MA TRẬN/i, /^VI\./i);
-  const specification = section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^YÊU CẦU THÊM/i);
+  const specification = section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^(YÊU CẦU THÊM|GHI CHÚ GIÁO VIÊN)/i);
+  const structuredTrueFalse = document.structuredExam?.parts.find((part) => part.type === "true_false")?.questions ?? [];
   const children: (Paragraph | Table)[] = [
     paragraph("PHẦN DÀNH CHO GIÁO VIÊN", { bold: true, center: true, size: 30, after: 80 }),
     paragraph("ĐÁP ÁN VÀ THANG ĐIỂM", { bold: true, center: true, size: 30, after: 220 })
@@ -170,18 +176,31 @@ function teacherContent(content: string) {
         ]
       }));
     }
-    children.push(...bodyParagraphs(answer.replace(/^Trắc nghiệm:.*$/im, "").trim()));
+    const remainingAnswer = answer
+      .replace(/^Trắc nghiệm:.*$/im, "")
+      .replace(/^PHẦN II:[\s\S]*?(?=^PHẦN III:)/im, "")
+      .trim();
+    if (structuredTrueFalse.length) {
+      children.push(paragraph("PHẦN II", { bold: true, before: 100, after: 60 }));
+      children.push(docxTable({
+        headers: ["Câu", "a", "b", "c", "d"],
+        rows: structuredTrueFalse.map((question) => [
+          String(question.number),
+          ...(question.trueFalseItems ?? []).map((item) => item.answer ? "Đúng" : "Sai")
+        ])
+      }));
+    }
+    children.push(...teacherBlocks(remainingAnswer.replace(/^PHẦN III:\s*/im, "").trim()));
   }
   if (scoring) {
-    children.push(paragraph("II. HƯỚNG DẪN CHẤM", { bold: true, before: 180, after: 90 }), ...bodyParagraphs(scoring));
+    children.push(paragraph("II. HƯỚNG DẪN CHẤM", { bold: true, before: 180, after: 90 }), ...teacherBlocks(scoring));
   }
   if (matrix) {
     children.push(paragraph("III. MA TRẬN ĐỀ", { bold: true, before: 180, after: 90 }));
-    const table = markdownTable(matrix);
-    if (table) children.push(table);
-    else children.push(...bodyParagraphs(matrix));
+    children.push(...teacherBlocks(matrix));
   }
-  if (specification) children.push(paragraph("IV. BẢN ĐẶC TẢ", { bold: true, before: 180, after: 90 }), ...bodyParagraphs(specification));
+  if (specification) children.push(paragraph("IV. BẢN ĐẶC TẢ", { bold: true, before: 180, after: 90 }), ...teacherBlocks(specification));
+  if (document.structuredExam?.teacherOnly.notes) children.push(paragraph("GHI CHÚ GIÁO VIÊN", { bold: true, before: 180, after: 90 }), paragraph(document.structuredExam.teacherOnly.notes));
   return children;
 }
 
@@ -297,7 +316,7 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
             }
           }
         },
-        children: teacherContent(document.content)
+        children: teacherContent(document)
       }
     ]
   });

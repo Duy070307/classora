@@ -60,6 +60,6 @@ export function parseExamForPrint(document: GeneratedDocument) {
     answer: section(content, /^III\.\s*ĐÁP ÁN/i, /^IV\./i),
     scoring: section(content, /^IV\.\s*THANG ĐIỂM/i, /^V\./i),
     matrix: section(content, /^V\.\s*MA TRẬN/i, /^VI\./i),
-    specification: section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^YÊU CẦU THÊM/i)
+    specification: section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^(YÊU CẦU THÊM|GHI CHÚ GIÁO VIÊN)/i)
   };
 }

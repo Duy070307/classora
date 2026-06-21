@@ -1,6 +1,7 @@
 import type { DocumentSettings } from "@/lib/document-settings";
 import { parseExamForPrint, type ExamPrintQuestion } from "@/lib/exam-print-format";
 import type { GeneratedDocument } from "@/lib/types";
+import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 
 function Question({ item }: { item: ExamPrintQuestion }) {
   const compact = item.options.length === 4 && item.options.every((option) => option.text.length <= 55);
@@ -18,18 +19,22 @@ function Question({ item }: { item: ExamPrintQuestion }) {
   </section>;
 }
 
+function PrintTable({ table }: { table: ParsedMarkdownTable }) {
+  return <table className="exam-print-table"><thead><tr>{table.headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{table.rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table>;
+}
+
 function TextSection({ title, text }: { title: string; text: string }) {
   if (!text) return null;
   return <section className="teacher-block">
-    <h3>{title}</h3>
-    {text.split(/\r?\n/).filter(Boolean).map((line, index) => <p key={index}>{line.replace(/^[-*]\s*/, "– ")}</p>)}
+    {title ? <h3>{title}</h3> : null}
+    {splitMarkdownTables(text).map((block, index) => block.type === "table"
+      ? <PrintTable key={index} table={block.table} />
+      : block.text.split(/\r?\n/).filter(Boolean).map((line, lineIndex) => <p key={`${index}-${lineIndex}`}>{line.replace(/^[-*]\s*/, "– ")}</p>))}
   </section>;
 }
 
 function Matrix({ text }: { text: string }) {
-  const rows = text.split(/\r?\n/).filter((line) => line.trim().startsWith("|") && !/^\|?\s*:?-{3,}/.test(line.trim())).map((line) => line.trim().replace(/^\||\|$/g, "").split("|").map((cell) => cell.trim()));
-  if (!rows.length) return <TextSection title="III. MA TRẬN ĐỀ" text={text} />;
-  return <section className="teacher-block"><h3>III. MA TRẬN ĐỀ</h3><table><tbody>{rows.map((row, rowIndex) => <tr key={rowIndex}>{row.map((cell, cellIndex) => rowIndex === 0 ? <th key={cellIndex}>{cell}</th> : <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></section>;
+  return <TextSection title="III. MA TRẬN ĐỀ" text={text} />;
 }
 
 export function OfficialExamPrintView({ document, settings }: { document: GeneratedDocument; settings: DocumentSettings }) {
@@ -37,6 +42,10 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
   const meta = document.examMeta ?? {};
   const code = (meta.examCode || "0101").padStart(4, "0");
   const year = settings.schoolYear.match(/\d{4}/)?.[0] || new Date().getFullYear();
+  const structuredMultipleChoice = document.structuredExam?.parts.find((part) => part.type === "multiple_choice")?.questions ?? [];
+  const structuredTrueFalse = document.structuredExam?.parts.find((part) => part.type === "true_false")?.questions ?? [];
+  const structuredShortAnswer = document.structuredExam?.parts.find((part) => part.type === "short_answer")?.questions ?? [];
+  const hasStructuredAnswers = structuredMultipleChoice.length + structuredTrueFalse.length + structuredShortAnswer.length > 0;
   return <article className="official-exam-print">
     <section className="exam-student-pages">
       <header className="exam-print-header">
@@ -66,10 +75,24 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
     <section className="exam-teacher-pages">
       <h2>PHẦN DÀNH CHO GIÁO VIÊN</h2>
       <h2>ĐÁP ÁN VÀ THANG ĐIỂM</h2>
-      <TextSection title="I. ĐÁP ÁN" text={parsed.answer} />
+      <h3>I. ĐÁP ÁN</h3>
+      {structuredMultipleChoice.length ? <section className="teacher-block"><h3>PHẦN I</h3><PrintTable table={{
+        headers: ["Câu", "Đáp án"],
+        rows: structuredMultipleChoice.map((question) => [String(question.number), question.answer])
+      }} /></section> : null}
+      {structuredTrueFalse.length ? <section className="teacher-block"><h3>PHẦN II</h3><PrintTable table={{
+        headers: ["Câu", "a", "b", "c", "d"],
+        rows: structuredTrueFalse.map((question) => [String(question.number), ...(question.trueFalseItems ?? []).map((item) => item.answer ? "Đúng" : "Sai")])
+      }} /></section> : null}
+      {structuredShortAnswer.length ? <section className="teacher-block"><h3>PHẦN III</h3><PrintTable table={{
+        headers: ["Câu", "Đáp án ngắn", "Gợi ý chấm"],
+        rows: structuredShortAnswer.map((question) => [String(question.number), question.answer, question.explanation])
+      }} /></section> : null}
+      {!hasStructuredAnswers ? <TextSection title="" text={parsed.answer} /> : null}
       <TextSection title="II. HƯỚNG DẪN CHẤM" text={parsed.scoring} />
       <Matrix text={parsed.matrix} />
       <TextSection title="IV. BẢN ĐẶC TẢ" text={parsed.specification} />
+      {document.structuredExam?.teacherOnly.notes ? <TextSection title="GHI CHÚ GIÁO VIÊN" text={document.structuredExam.teacherOnly.notes} /> : null}
     </section>
   </article>;
 }

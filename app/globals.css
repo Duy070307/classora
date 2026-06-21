@@ -180,6 +180,9 @@ main {
 .teacher-block table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
 .teacher-block th, .teacher-block td { border: 1px solid #222; padding: 1.5mm; vertical-align: top; }
 .teacher-block th { background: #eef3f7; font-weight: 700; }
+.exam-print-table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 11pt; break-inside: avoid; page-break-inside: avoid; }
+.exam-print-table th, .exam-print-table td { border: 1px solid #222; padding: 4px 6px; vertical-align: top; }
+.exam-print-table th { background: #f1f5f9; font-weight: 700; text-align: center; }
 
 @media screen and (max-width: 700px) {
   .official-exam-print { padding: 6mm; font-size: 10pt; overflow-x: auto; }
