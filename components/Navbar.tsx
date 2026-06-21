@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { FileDown } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export function Navbar() {
@@ -29,18 +29,18 @@ export function Navbar() {
             Góp ý
           </Link>
           <Link
-            href="/private-beta"
+            href="/getting-started"
             className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700"
           >
-            MVP/demo
+            Hướng dẫn
           </Link>
         </nav>
         <span className="hidden items-center gap-1.5 rounded-full bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700 md:inline-flex">
-          <Sparkles size={14} />
-          AI mô phỏng
+          <FileDown size={14} />
+          Xuất Word/PDF
         </span>
         <Link href="/dashboard" className="btn-primary min-h-10 shrink-0 px-4">
-          Dùng thử
+          Bắt đầu sử dụng
         </Link>
       </div>
     </header>

@@ -28,7 +28,7 @@ export function SoanLabIllustration({ variant = "workspace", className = "" }: {
           </div>
         </div>
       </div>
-      <span className="absolute right-4 top-5 rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-indigo-700 shadow-md"><Sparkles size={12} className="mr-1 inline" />AI mô phỏng</span>
+      <span className="absolute right-4 top-5 rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-indigo-700 shadow-md"><Sparkles size={12} className="mr-1 inline" />Tạo bản nháp</span>
     </div>
   );
 }

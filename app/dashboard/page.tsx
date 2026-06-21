@@ -37,7 +37,7 @@ const tasks = [
   [
     "Tạo phiếu học tập",
     "Bài tập theo chủ đề",
-    "Demo",
+    "Hữu ích",
     "/tools/worksheet-generator",
     BookOpenCheck,
     "bg-cyan-50 text-cyan-700",
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                     <p className="font-extrabold text-slate-900">{title}</p>
                     <p className="mt-1 text-sm text-slate-500">{desc}</p>
                   </div>
-                  <span className="hidden sm:inline-flex"><SoanLabBadge tone={badge === "Word" ? "export" : badge === "Demo" ? "demo" : "useful"}>{badge}</SoanLabBadge></span>
+                  <span className="hidden sm:inline-flex"><SoanLabBadge tone={badge === "Word" ? "export" : "useful"}>{badge}</SoanLabBadge></span>
                   <ArrowRight
                     size={17}
                     className="shrink-0 text-blue-600 transition group-hover:translate-x-1"
@@ -250,14 +250,14 @@ export default function DashboardPage() {
                 Gửi góp ý
               </Link>
               <Link href="/share" className="btn-secondary">
-                Chia sẻ demo
+                Chia sẻ Soạn Lab
               </Link>
             </div>
             <Link
               href="/known-issues"
               className="mt-4 inline-flex text-sm font-bold text-blue-700"
             >
-              Xem giới hạn hiện tại →
+              Xem trạng thái hệ thống →
             </Link>
           </section>
         </aside>

@@ -103,7 +103,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   function handleRefined(content: string) {
     if (!document) return;
     setDocument({ ...document, content });
-    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
+    setMessage("Đã tinh chỉnh nội dung.");
   }
 
   return (
@@ -180,7 +180,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
           </form>
           }
           output={
-            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo tài liệu..." loadingDescription="Soạn Lab đang dùng AI mô phỏng để soạn bản nháp." hasOutput={Boolean(document)} showWarning={false}>
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo tài liệu..." loadingDescription="Soạn Lab đang chuẩn bị bản nháp để bạn rà soát." hasOutput={Boolean(document)} showWarning={false}>
               {document ? <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool={config.type} input={input} currentContent={document.content} onRefined={handleRefined} />

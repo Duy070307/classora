@@ -4,7 +4,7 @@ import { getDocumentSettings } from "@/lib/document-settings";
 import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
 
-const warning = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
+const warning = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
 export function cleanFileName(title: string) {
   return title.replace(/đ/g, "d").replace(/Đ/g, "D").normalize("NFD")

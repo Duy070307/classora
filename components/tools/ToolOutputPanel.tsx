@@ -15,5 +15,5 @@ export function ToolOutputPanel({ loading = false, loadingTitle = "Đang tạo b
       </div>
     </section>
   );
-  return <div className="space-y-4">{children}{showWarning ? <div className="flex gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><AlertTriangle className="mt-0.5 shrink-0 text-blue-600" size={18} /><p>Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.</p></div> : null}</div>;
+  return <div className="space-y-4">{children}{showWarning ? <div className="flex gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><AlertTriangle className="mt-0.5 shrink-0 text-blue-600" size={18} /><p>Nội dung là bản nháp hỗ trợ soạn tài liệu. Giáo viên cần kiểm tra và chỉnh sửa trước khi sử dụng.</p></div> : null}</div>;
 }

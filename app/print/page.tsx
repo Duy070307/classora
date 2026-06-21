@@ -34,7 +34,7 @@ export default function PrintPage() {
       {header.length ? <header className="mb-8 space-y-1 border-b border-slate-300 pb-4">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
       <h1 className="mb-8 text-center text-2xl font-bold">{document.title}</h1>
       <div className="whitespace-pre-wrap break-words leading-7">{document.content || "(Tài liệu chưa có nội dung.)"}</div>
-      <p className="mt-10 border-t border-amber-200 pt-4 text-xs text-amber-700">Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.</p>
+      <p className="mt-10 border-t border-amber-200 pt-4 text-xs text-amber-700">Nội dung là bản nháp hỗ trợ soạn tài liệu. Giáo viên cần kiểm tra và chỉnh sửa trước khi sử dụng.</p>
     </article>}
   </main>;
 }

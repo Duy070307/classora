@@ -22,7 +22,7 @@ export function TopBar({
         <p className="truncate text-sm font-bold text-ink">
           {title || "Không gian làm việc"}
         </p>
-        <p className="mt-0.5 text-xs text-muted">Soạn Lab · MVP/demo</p>
+        <p className="mt-0.5 text-xs text-muted">Không gian giáo viên</p>
       </div>
       <button
         type="button"
@@ -39,7 +39,7 @@ export function TopBar({
         </kbd>
       </button>
       <span className="hidden rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700 lg:inline">
-        Demo
+        Xuất Word/PDF
       </span>
       <Link
         href="/tools/exam-generator"

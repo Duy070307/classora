@@ -134,7 +134,7 @@ export default function ExamGeneratorPage() {
   function handleRefined(content: string) {
     if (!document) return;
     setDocument({ ...document, content });
-    setMessage("Đã tinh chỉnh nội dung bằng Mock AI.");
+    setMessage("Đã tinh chỉnh nội dung.");
   }
 
   function useSampleData() {

@@ -29,7 +29,7 @@ export default function FeedbackPage() {
   async function handleCopy(event: FormEvent) {
     event.preventDefault();
     const browserNote = `${navigator.userAgent} | ${window.innerWidth}x${window.innerHeight}`;
-    const feedback = `GÓP Ý PRIVATE BETA SOẠN LAB
+    const feedback = `GÓP Ý SẢN PHẨM SOẠN LAB
 
 Họ tên: ${name || "Chưa nhập"}
 Vai trò: ${role}
@@ -54,7 +54,7 @@ ${browserNote}`;
     }
   }
 
-  return <main className="warm-page min-h-screen"><Navbar /><section className="mx-auto max-w-5xl px-4 py-10 md:py-14"><div className="hero-gradient mb-8 rounded-[30px] p-6 text-white shadow-[0_18px_44px_rgba(37,99,235,.18)] sm:p-8"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-cyan-200">Private beta feedback</p><h1 className="mt-3 text-3xl font-black md:text-5xl">Góp ý cho Soạn Lab</h1><p className="mt-4 max-w-3xl leading-7 text-blue-100">Thầy cô hãy giúp đánh giá độ dễ dùng, quy trình và chất lượng file xuất. Nội dung hiện vẫn do AI mô phỏng.</p></div>
+  return <main className="warm-page min-h-screen"><Navbar /><section className="mx-auto max-w-5xl px-4 py-10 md:py-14"><div className="hero-gradient mb-8 rounded-[30px] p-6 text-white shadow-[0_18px_44px_rgba(37,99,235,.18)] sm:p-8"><p className="text-xs font-extrabold uppercase tracking-[.16em] text-cyan-200">Góp ý sản phẩm</p><h1 className="mt-3 text-3xl font-black md:text-5xl">Góp ý cho Soạn Lab</h1><p className="mt-4 max-w-3xl leading-7 text-blue-100">Thầy cô hãy giúp đánh giá độ dễ dùng, quy trình và chất lượng file Word/PDF để Soạn Lab ngày càng hữu ích hơn.</p></div>
     <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]"><aside className="play-card h-fit p-5 sm:p-6"><h2 className="text-lg font-extrabold text-ink">Nên góp ý về điều gì?</h2><ol className="mt-4 space-y-2 text-sm leading-6 text-muted"><li>1. Giao diện có dễ dùng không?</li><li>2. Công cụ nào hữu ích nhất?</li><li>3. File Word/PDF có đủ dùng không?</li><li>4. Output có đúng cấu trúc mong muốn không?</li><li>5. Có lỗi nào khi thao tác không?</li></ol><div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900"><div className="flex gap-2"><MessageCircle size={16} className="mt-0.5 shrink-0" /><p>Thông tin chỉ được sao chép, không gửi lên server.</p></div></div></aside>
       <form onSubmit={handleCopy} className="play-card space-y-5 p-5 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2"><div><label className="label">Họ tên</label><input className="form-field mt-1" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ví dụ: Cô Lan" /></div><div><label className="label">Vai trò</label><select className="form-field mt-1" value={role} onChange={(e) => setRole(e.target.value)}><option>Giáo viên</option><option>Gia sư</option><option>Học sinh</option><option>Khác</option></select></div></div>

@@ -91,9 +91,6 @@ function Content({
           <Link href="/" className="min-w-0">
             <BrandLogo compact />
           </Link>
-          <span className="ml-auto rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-extrabold uppercase text-indigo-700">
-            Demo
-          </span>
           <button
             type="button"
             className="ml-2 rounded-xl p-2 text-muted md:hidden"
@@ -143,7 +140,7 @@ function Content({
         <div className="border-t border-slate-100 bg-slate-50/70 p-4">
           <p className="flex items-center gap-2 text-xs font-bold text-slate-500">
             <Sparkles size={14} className="text-indigo-600" />
-            Soạn Lab v0.5 RC
+            Dữ liệu lưu trên trình duyệt
           </p>
           <div className="mt-3 flex gap-4 text-xs font-semibold">
             <Link href="/feedback" className="text-blue-700">

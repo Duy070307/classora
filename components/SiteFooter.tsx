@@ -6,15 +6,13 @@ const columns = [
     "Sản phẩm",
     ["Dashboard", "/dashboard"],
     ["Công cụ", "/tools"],
-    ["Bảng giá", "/pricing"],
-    ["Private Beta", "/private-beta"],
+    ["Gói sử dụng", "/pricing"],
   ],
   [
     "Tài liệu",
     ["Hướng dẫn", "/getting-started"],
-    ["Known Issues", "/known-issues"],
-    ["Release Candidate", "/release-candidate"],
-    ["Changelog", "/changelog"],
+    ["Trạng thái hệ thống", "/known-issues"],
+    ["Nhật ký phát triển", "/changelog"],
   ],
   [
     "Hỗ trợ",
@@ -33,7 +31,7 @@ export function SiteFooter() {
             Soạn đề, tạo tài liệu và xuất Word trong vài phút.
           </p>
           <span className="mt-4 inline-flex rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
-            MVP/demo · AI mô phỏng
+            Dành cho giáo viên Việt Nam
           </span>
         </div>
         {columns.map(([title, ...links]) => (
@@ -55,7 +53,7 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-100 pt-6 text-xs sm:flex-row sm:justify-between">
         <p>© 2026 Soạn Lab · Tạo bởi Trần Đức Duy</p>
-        <p className="font-bold">v0.5 RC</p>
+        <p className="font-bold">Hỗ trợ soạn tài liệu và xuất Word/PDF</p>
       </div>
     </footer>
   );

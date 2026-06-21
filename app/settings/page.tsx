@@ -60,9 +60,9 @@ export default function SettingsPage() {
           <Link href="/data" className="btn-secondary mt-4">Quản lý dữ liệu</Link>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
-          <h2 className="text-lg font-bold text-ink">AI demo</h2>
+          <h2 className="text-lg font-bold text-ink">Công cụ tạo nội dung</h2>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Nhà cung cấp hiện tại</dt><dd className="mt-1 font-semibold text-ink">Mock AI</dd></div>
+            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Chế độ hiện tại</dt><dd className="mt-1 font-semibold text-ink">Tạo bản nháp tự động</dd></div>
             <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">AI thật</dt><dd className="mt-1 font-semibold text-ink">Chưa được bật</dd></div>
           </dl>
           <p className="mt-4 text-sm text-muted">Soạn Lab không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>

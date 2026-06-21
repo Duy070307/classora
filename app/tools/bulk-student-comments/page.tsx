@@ -118,7 +118,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
       setMessage("Vui lòng tải CSV trước khi tạo nhận xét.");
       return;
     }
-    const generated = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
+    const generated = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.`;
     const content = applyTemplate(resolveTemplate(templateId), generated, { className: `${rows.length} học sinh`, ghi_chu: "Giáo viên kiểm tra lại từng nhận xét trước khi gửi." });
     const next = createDocument(`Nhận xét hàng loạt - ${rows.length} học sinh`, "bulk-student-comments", content);
     setDocument(next);
@@ -144,7 +144,7 @@ Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Nhận xét học sinh hàng loạt" description="Tải CSV, xem trước dữ liệu và tạo nhận xét hàng loạt bằng AI mô phỏng." />
+        <PageHeader title="Nhận xét học sinh hàng loạt" description="Tải CSV, xem trước dữ liệu và tạo bản nháp nhận xét hàng loạt." />
         <ToolWorkspaceLayout
           wideForm
           form={

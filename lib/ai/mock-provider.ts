@@ -6,7 +6,7 @@ import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput }
 import type { AIProvider } from "@/lib/ai/types";
 import { refineOutput } from "@/lib/ai/refine-output";
 
-export const AI_DEMO_WARNING = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
+export const AI_DEMO_WARNING = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
 export const mockProvider: AIProvider = {
   name: "mock",

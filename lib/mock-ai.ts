@@ -1,7 +1,7 @@
 import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput } from "@/lib/types";
 import { createStructuredExam, structuredExamToText } from "@/lib/mock-exam-generator";
 
-const warning = "Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.";
+const warning = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
 const wait = (ms = 900) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -100,7 +100,7 @@ ${input.includeSpecification ? `- Nội dung kiểm tra: ${input.topic}.
 YÊU CẦU THÊM
 ${input.extraRequirements || "Không có yêu cầu thêm."}
 
-Nội dung hiện được tạo bằng AI mô phỏng trong bản demo. Giáo viên cần kiểm tra lại trước khi sử dụng.`;
+Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.`;
 }
 
 void generateLegacyExam;
@@ -602,7 +602,7 @@ III. BẢNG ĐÁP ÁN TỪNG MÃ
 ${answerTable.join("\n")}
 
 IV. LƯU Ý
-Bản demo chỉ mô phỏng trộn đề, giáo viên cần kiểm tra lại thứ tự câu, đáp án và định dạng trước khi dùng chính thức.
+Giáo viên cần kiểm tra lại thứ tự câu, đáp án và định dạng sau khi trộn đề trước khi dùng chính thức.
 
 GHI CHÚ
 ${textValue(input, "notes", "Không có ghi chú thêm.")}

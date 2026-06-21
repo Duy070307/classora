@@ -18,7 +18,7 @@ const stats = [
   ["20+", "công cụ", "Cho soạn đề và tài liệu"],
   ["4", "kiểu xuất", "Word, PDF, Markdown, TXT"],
   ["Local", "dữ liệu", "Lưu trên trình duyệt"],
-  ["MVP/demo", "hiện tại", "Đang nhận góp ý"],
+  ["20+", "quy trình", "Hỗ trợ công việc giảng dạy"],
 ];
 const tools = [
   ["Tạo đề kiểm tra", "Đề, đáp án và ma trận.", "Phổ biến"],
@@ -27,7 +27,7 @@ const tools = [
   ["Phiếu học tập", "Bài tập theo chủ đề.", ""],
   ["Giáo án", "Tiến trình dạy học.", ""],
   ["Nhận xét học sinh", "Bản nháp dễ chỉnh sửa.", ""],
-  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", "Demo"],
+  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", "Hữu ích"],
   ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ""],
   ["Mẫu tài liệu", "Dùng lại format quen thuộc.", ""],
 ];
@@ -45,7 +45,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:py-18 lg:grid-cols-[1.05fr_.95fr] lg:py-20">
         <div>
           <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
-            MVP/demo cho giáo viên Việt Nam
+            Dành cho giáo viên Việt Nam
           </span>
           <div className="mt-6">
             <BrandLogo variant="full" />
@@ -63,7 +63,7 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/dashboard" className="btn-primary min-h-13 px-6">
-              Bắt đầu dùng thử
+              Bắt đầu sử dụng
               <ArrowRight size={18} />
             </Link>
             <Link href="#how-it-works" className="btn-secondary min-h-13 px-6">
@@ -71,13 +71,13 @@ export default function HomePage() {
             </Link>
           </div>
           <p className="mt-5 text-sm font-semibold text-slate-500">
-            Không cần đăng nhập · Chưa thu phí · Dữ liệu lưu trên trình duyệt
+            Tạo bản nháp · Lưu lịch sử · Xuất Word/PDF
           </p>
         </div>
         <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
           <div className="absolute -inset-7 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
           <SoanLabIllustration variant="workspace" className="relative max-w-xl p-5 sm:p-6" />
-          {["Xuất Word", "AI mô phỏng", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
+          {["Xuất Word", "Tạo đề kiểm tra", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
             <span
               key={x}
               className={`absolute hidden rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 shadow-xl sm:inline-flex ${i === 0 ? "-right-4 top-16" : i === 1 ? "-left-3 bottom-24" : i === 2 ? "right-4 -bottom-3" : "left-8 top-2"}`}
@@ -234,26 +234,26 @@ export default function HomePage() {
       <section className="border-y border-blue-100 bg-white/70 py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-2">
           <div className="play-card p-7 sm:p-9">
-            <span className="soft-badge">Minh bạch bản demo</span>
+            <span className="soft-badge">Quy trình đáng tin cậy</span>
             <h2 className="mt-5 text-3xl font-black text-slate-950">
-              Đang thử workflow, chưa phải AI hoàn chỉnh.
+              Tạo bản nháp nhanh, luôn có bước rà soát.
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Soạn Lab hiện dùng AI mô phỏng và localStorage. Giáo viên cần kiểm
-              tra nội dung trước khi sử dụng trong giảng dạy.
+              Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa
+              trước khi sử dụng chính thức.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {[
-                "Chưa cần đăng nhập",
-                "Chưa thu phí",
-                "Không có database",
-                "Dữ liệu lưu local",
+                "Tạo bản nháp",
+                "Xuất Word/PDF",
+                "Lưu lịch sử",
+                "Dữ liệu trên trình duyệt",
               ].map((x) => (
-                <SoanLabBadge key={x} tone={x.includes("local") ? "local" : x.includes("đăng nhập") ? "mvp" : "demo"}>{x}</SoanLabBadge>
+                <SoanLabBadge key={x} tone={x.includes("trình duyệt") ? "local" : x.includes("Word") ? "export" : "useful"}>{x}</SoanLabBadge>
               ))}
             </div>
             <Link href="/known-issues" className="btn-secondary mt-7">
-              Xem giới hạn hiện tại
+              Xem trạng thái hệ thống
             </Link>
           </div>
           <div className="play-card p-7 sm:p-9">
@@ -300,10 +300,10 @@ export default function HomePage() {
           <div className="relative max-w-3xl">
             <BrandLogo variant="mark" />
             <h2 className="mt-6 text-4xl font-black text-slate-950">
-              Bắt đầu với Soạn Lab hôm nay.
+              Sẵn sàng tạo tài liệu đầu tiên với Soạn Lab?
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Tạo thử một tài liệu đầu tiên và gửi góp ý để Soạn Lab được cải
+              Tạo tài liệu đầu tiên và gửi góp ý để Soạn Lab được cải
               thiện đúng nhu cầu thực tế.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
