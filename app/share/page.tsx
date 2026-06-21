@@ -15,9 +15,9 @@ export default function SharePage() {
     setCopied(type);
     window.setTimeout(() => setCopied(null), 1800);
   }
-  return <main className="min-h-screen"><Navbar /><section className="mx-auto max-w-4xl px-4 py-10 sm:py-16">
+  return <main className="warm-page min-h-screen"><Navbar /><section className="mx-auto max-w-4xl px-4 py-10 sm:py-16">
     <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-200 sm:p-9"><span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold">Private beta</span><h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">Chia sẻ Soạn Lab</h1><p className="mt-4 max-w-2xl leading-7 text-blue-100">Mời giáo viên dùng thử bản demo và giúp Soạn Lab hiểu rõ hơn nhu cầu thực tế.</p></div>
-    <section className="card mt-8 overflow-hidden shadow-xl"><div className="border-b border-line bg-slate-50 px-5 py-4 text-sm font-bold text-ink">Tin nhắn demo gợi ý</div><p className="break-words p-6 text-lg leading-8 text-slate-700">{demoMessage}</p><div className="flex flex-col gap-3 border-t border-line bg-slate-50/70 p-5 sm:flex-row sm:flex-wrap">
+    <section className="play-card mt-8 overflow-hidden"><div className="border-b border-blue-100 bg-blue-50/60 px-5 py-4 text-sm font-extrabold text-blue-900">Tin nhắn mời giáo viên dùng thử</div><p className="break-words p-6 text-lg leading-8 text-slate-700">{demoMessage}</p><div className="flex flex-col gap-3 border-t border-blue-100 bg-slate-50/70 p-5 sm:flex-row sm:flex-wrap">
       <button type="button" className="btn-primary" onClick={() => copy(demoMessage, "message")}>{copied === "message" ? <Check size={17} /> : <Copy size={17} />}{copied === "message" ? "Đã sao chép" : "Sao chép tin nhắn"}</button>
       <button type="button" className="btn-secondary" onClick={() => copy(window.location.href, "link")}>{copied === "link" ? <Check size={17} /> : <Link2 size={17} />}{copied === "link" ? "Đã sao chép" : "Sao chép liên kết"}</button>
     </div></section>
