@@ -17,7 +17,7 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
   }
 
   return (
-    <button type="button" onClick={handleCopy} className="btn-secondary">
+    <button type="button" aria-label={label} onClick={handleCopy} className="btn-secondary">
       <Copy size={16} />
       {status === "success" ? "Đã copy" : status === "error" ? "Không copy được" : label}
     </button>

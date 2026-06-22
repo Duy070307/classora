@@ -23,7 +23,7 @@ export function ToolCard({ title, description, href, badge, categoryLabel }: { t
     <button
       type="button"
       className={`absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition ${favorite ? "bg-amber-50 text-amber-500 ring-1 ring-amber-100" : "bg-white text-slate-400 ring-1 ring-slate-100 hover:bg-blue-50 hover:text-blue-600"}`}
-      aria-label={favorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}
+      aria-label={favorite ? `Bỏ ${title} khỏi yêu thích` : `Thêm ${title} vào yêu thích`}
       onClick={() => { toggleFavoriteTool(href); setFavorite(isFavoriteTool(href)); }}
     >
       <Star size={18} fill={favorite ? "currentColor" : "none"} />

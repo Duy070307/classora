@@ -1,240 +1,72 @@
 # Soạn Lab
 
-> Dự án trước đây có tên Classora, hiện được đổi tên thành Soạn Lab.
+Soạn Lab là bộ công cụ hỗ trợ giáo viên Việt Nam soạn đề, tạo tài liệu, viết nhận xét học sinh và xuất Word/PDF nhanh hơn.
 
-Logo được thiết kế để đặt tại `public/brand/soan-lab-logo.png`. URL logo được cung cấp trả về HTTP 403 trong lúc rebrand, vì vậy giao diện hiện tự động dùng biểu tượng chữ/ống nghiệm dự phòng cho đến khi file PNG được đặt vào đúng đường dẫn.
+## Tính năng hiện tại
 
-Soạn Lab là bộ công cụ AI dạng MVP dành cho giáo viên Việt Nam, gom các workflow soạn đề, tài liệu dạy học, nhận xét, ngân hàng câu hỏi và xuất Word vào một workspace đơn giản.
+- Tạo đề kiểm tra theo cấu trúc PHẦN I/II/III, đáp án, thang điểm, ma trận và bản đặc tả.
+- Xuất Word và Print/PDF theo bố cục đề thi THPTQG.
+- Tạo phiếu học tập, kế hoạch bài dạy, rubric, nhận xét học sinh và tin nhắn phụ huynh.
+- Lưu lịch sử, mẫu tài liệu, ngân hàng câu hỏi, bản nháp biểu mẫu, công cụ yêu thích và gần đây.
+- Sao lưu và khôi phục dữ liệu cục bộ bằng JSON.
+- Xuất Word, Print/PDF, Markdown và TXT.
 
-Trạng thái hiện tại: zero-cost MVP/demo dành cho private beta, không cần API key.
+## Kiến trúc
 
-Phiên bản hiện tại: **v0.5 Release Candidate**. Dùng `/release-candidate` để theo dõi QA thủ công và `/known-issues` để xem giới hạn trước khi gửi tester.
+- Next.js App Router, React, TypeScript và Tailwind CSS.
+- Thư viện `docx` để tạo file Word.
+- Nội dung được tạo cục bộ từ các bộ mẫu theo môn và loại tài liệu.
+- Dữ liệu cá nhân lưu trong `localStorage` của trình duyệt.
+- Hiện chưa có tài khoản, cơ sở dữ liệu, thanh toán hoặc OCR.
 
-Slogan: “Soạn đề, tạo tài liệu, xuất Word trong vài phút.”
-
-## Tech Stack
-
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- React
-- `docx` để xuất file `.docx`
-- `localStorage` cho lịch sử tài liệu và số lượt sử dụng
-- Mock AI, không cần API key
-- Built-in Vietnamese teacher document templates and placeholder-based personal templates
-- Global command palette (`Ctrl/Cmd + K`), favorite tools and recently used tools
-
-## Install
+## Chạy trên máy
 
 ```bash
 npm install
-```
-
-## Run Locally
-
-```bash
 npm run dev
 ```
 
-Mở trình duyệt tại:
+Mở `http://localhost:3000`.
 
-```text
-http://localhost:3000
-```
-
-## Build
+## Kiểm tra và build
 
 ```bash
+npm run lint
 npm run build
-```
-
-## Deploy
-
-Soạn Lab là ứng dụng Next.js không cần API key. Có thể deploy lên Vercel hoặc dịch vụ hỗ trợ Next.js:
-
-```bash
-npm install
-npm run build
+npm run smoke
 npm run start
 ```
 
-Không cần cấu hình database hoặc biến môi trường cho bản demo hiện tại.
+## Triển khai Vercel
 
-### Trạng thái triển khai
+1. Import repository vào Vercel.
+2. Giữ framework preset là Next.js.
+3. Build command: `npm run build`.
+4. Không cần biến môi trường bắt buộc.
 
-- Bản hiện tại sẵn sàng để deploy private demo trên Vercel.
-- Không có biến môi trường bắt buộc. `.env.example` chỉ là khung cho tích hợp AI phía máy chủ trong tương lai.
-- Khi có domain thật, có thể đặt `NEXT_PUBLIC_APP_URL` để sitemap và metadata dùng URL production; nếu không đặt, app vẫn build và chạy bình thường.
-- Không bật analytics, tracking, dịch vụ trả phí hoặc service worker.
+Có thể đặt `NEXT_PUBLIC_APP_URL` thành domain chính thức để metadata và sitemap sử dụng URL production. Nếu không đặt, ứng dụng vẫn build và hoạt động.
 
-Sau khi deploy, hãy thử dashboard, thư mục công cụ, xuất Word, in/lưu PDF, backup localStorage, command palette và giao diện mobile.
+Ứng dụng không phụ thuộc đường dẫn Windows, dịch vụ trả phí hoặc ảnh hotlink bên ngoài. Logo nằm trong `public/brand`.
 
-## Main Routes
+## Hỗ trợ xuất tài liệu
 
-- `/`
-- `/dashboard`
-- `/history`
-- `/history/[id]`
-- `/drafts`
-- `/shortcuts`
-- `/print`
-- `/tools`
-- `/settings`
-- `/templates`
-- `/pricing`
-- `/getting-started`
-- `/changelog`
-- `/demo-checklist`
-- `/demo-data`
-- `/diagnostics`
-- `/data`
-- `/private-beta`
-- `/release-candidate`
-- `/known-issues`
-- `/share`
-- `/tester-guide`
-- `/privacy`
-- `/terms`
-- `/question-bank`
-- `/tools/import-questions`
-- `/tools/exam-generator`
-- `/tools/worksheet-generator`
-- `/tools/student-comments`
-- `/tools/lesson-plan-generator`
-- `/tools/matrix-generator`
-- `/tools/answer-key-generator`
-- `/tools/rubric-generator`
-- `/tools/parent-message-generator`
-- `/tools/question-bank-generator`
-- `/tools/question-variant-generator`
-- `/tools/exam-checker`
-- `/tools/activity-generator`
-- `/tools/differentiated-exercises`
-- `/tools/exam-shuffler`
-- `/tools/slide-outline-generator`
-- `/tools/lesson-summary`
-- `/tools/mindmap-outline`
-- `/tools/homeroom-plan`
-- `/tools/parent-meeting-minutes`
-- `/tools/latex-converter`
-- `/tools/latex-preview`
-- `/tools/bulk-student-comments`
+- Đề thi: Word và Print/PDF theo bố cục THPTQG, kèm trang giáo viên.
+- Tài liệu giáo viên: Word và Print/PDF với tiêu đề, bullet và bảng thật.
+- Tất cả tài liệu: Markdown và TXT.
+- Tài liệu đã lưu tại `/history` có thể mở và xuất lại.
 
-## Current Limitations
+## Giới hạn hiện tại
 
-- Chưa có AI thật, đang dùng AI mô phỏng.
-- Form công cụ có tự lưu bản nháp vào `localStorage`, có thể xem và khôi phục tại `/drafts`.
-- Một số công cụ có preset “Dùng mẫu nhanh” để điền nhanh workflow giáo viên Việt Nam.
-- Có mẫu tài liệu tiếng Việt dựng sẵn cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh.
-- Có tìm nhanh toàn app, công cụ yêu thích, công cụ dùng gần đây và bulk actions trong lịch sử.
-- Chưa có real OCR hoặc image recognition.
-- Chưa có đăng nhập.
-- Chưa có database.
-- Chưa có thanh toán.
-- Chưa có OCR, upload ảnh hoặc upload PDF.
-- Trộn mã đề đang ở mức demo, giáo viên phải kiểm tra lại thứ tự câu và đáp án trước khi in.
-- Lịch sử chỉ lưu trong `localStorage` của trình duyệt hiện tại.
-- Nội dung do AI mô phỏng tạo ra cần được giáo viên kiểm tra trước khi sử dụng.
-- Ngân hàng câu hỏi, mẫu và thư mục lịch sử chỉ lưu trong `localStorage`.
-- Nhập câu hỏi chỉ hỗ trợ văn bản và CSV; không đọc PDF hoặc hình ảnh.
-- Free/Pro và bảng giá hiện chỉ là mô phỏng bằng `localStorage`, không có giao dịch thật.
-- Giáo viên phải kiểm tra lại mọi output trước khi sử dụng.
+- Nội dung là bản nháp hỗ trợ soạn tài liệu và cần giáo viên rà soát chuyên môn.
+- Dữ liệu chưa đồng bộ giữa thiết bị và có thể mất nếu xóa dữ liệu trình duyệt.
+- Chưa có đăng nhập, cơ sở dữ liệu, thanh toán, OCR ảnh/PDF hoặc tạo hình phức tạp.
+- Bản in có thể khác nhau nhẹ giữa các trình duyệt; cần xem Print Preview trước khi sử dụng.
 
-## Private Beta
+## Tài liệu
 
-- Giới thiệu chương trình: `/private-beta`
-- Hướng dẫn tester: `/tester-guide`
-- Gửi góp ý: `/feedback`
-- Quyền riêng tư: `/privacy`
-- Điều khoản demo: `/terms`
-- Tài liệu nội bộ: `docs/PRIVATE_BETA.md`
-- Checklist phát hành: `docs/RELEASE_CHECKLIST.md`
-
-Soạn Lab không lưu feedback lên server. Form feedback chỉ tạo nội dung có định dạng và sao chép vào clipboard để tester gửi thủ công.
-
-## Privacy & Demo Disclaimer
-
-Dữ liệu người dùng hiện chỉ lưu trong localStorage. Bản demo không đảm bảo độ chính xác tuyệt đối, không nên dùng để xử lý dữ liệu nhạy cảm và mọi output cần được giáo viên xác minh trước khi sử dụng.
-
-## Demo Checklist
-
-Mở `/demo-checklist` và kiểm tra:
-
-- Dashboard và thư mục công cụ.
-- Tạo đề, ma trận, phiếu học tập và nhận xét.
-- Nhập CSV nhận xét hàng loạt.
-- Lưu lịch sử và xuất Word.
-- Gửi góp ý sau khi thử.
-
-## Mock Usage & Plan
-
-- Mặc định là `Free demo` với 10 lượt tạo mỗi tháng.
-- Bộ đếm được lưu theo tháng trong `localStorage`.
-- Khi hết lượt, Soạn Lab chỉ hiển thị nhắc nhẹ và vẫn cho tiếp tục dùng demo.
-- Có thể chuyển sang `Pro demo` tại `/pricing` hoặc `/settings`; chế độ này không giới hạn lượt mô phỏng.
-
-## Demo Data
-
-Mở `/demo-data` để nạp ngân hàng câu hỏi, mẫu tài liệu và cài đặt mẫu. Dữ liệu chỉ được lưu trong `localStorage` của trình duyệt hiện tại.
-
-## Sao lưu và khôi phục dữ liệu cục bộ
-
-Mở `/data` để xuất toàn bộ dữ liệu Soạn Lab thành file JSON, nhập lại bản sao lưu hoặc xóa từng nhóm dữ liệu. Nên xuất backup trước khi thử reset, đổi dữ liệu demo hoặc kiểm thử lớn.
-
-Bản demo chưa có backend/database và không tự đồng bộ dữ liệu. `localStorage` gắn với trình duyệt và thiết bị hiện tại; dữ liệu có thể mất khi xóa dữ liệu trình duyệt, dùng chế độ riêng tư hoặc chuyển thiết bị.
-
-## Bản nháp biểu mẫu và preset
-
-Các form công cụ lõi tự lưu bản nháp sau khi giáo viên nhập dữ liệu. Mở `/drafts` để tìm, khôi phục hoặc xóa bản nháp. Bản nháp chỉ nằm trong `localStorage` của trình duyệt hiện tại và cũng được đưa vào backup JSON tại `/data`.
-
-Một số workflow thường gặp có nút “Dùng mẫu nhanh” để điền nhanh cấu hình như kiểm tra 15 phút, kiểm tra 45 phút, ma trận tỉ lệ phổ biến, phiếu học tập và nhận xét học sinh. Giáo viên vẫn có thể sửa mọi trường sau khi áp dụng preset.
-
-## Mẫu tài liệu tiếng Việt
-
-Các công cụ lõi có selector “Mẫu tài liệu” với lựa chọn “Tự động”, mẫu có sẵn và mẫu cá nhân từ `/templates`. Placeholder như `{{ten_truong}}`, `{{ten_giao_vien}}`, `{{mon_hoc}}`, `{{lop}}`, `{{chu_de}}`, `{{noi_dung}}`, `{{dap_an}}`, `{{thang_diem}}`, `{{ma_tran}}` được thay đơn giản khi tạo output.
-
-Word export, Markdown/TXT export và `/print` dùng header từ `/settings` khi có dữ liệu. Xem thêm `docs/TEMPLATES.md`.
-
-## Smoke Test
-
-```bash
-npm run smoke
-```
-
-Script kiểm tra sự tồn tại của các route/file quan trọng mà không cần khởi động server.
-
-## Xuất tài liệu
-
-Tài liệu có thể được sao chép, lưu lịch sử, xuất Word, Markdown, TXT hoặc mở tại `/print` để in/lưu PDF bằng hộp thoại của trình duyệt. Trang `/history/[id]` hiển thị đầy đủ tài liệu đã lưu cùng các thao tác xuất. Xem thêm `docs/EXPORTS.md`.
-
-## Mock AI & Future Architecture
-
-- Soạn Lab hiện gọi các hàm trong `lib/mock-ai.ts`.
-- Provider layer tương lai nằm trong `lib/ai`.
-- Prompt builders tiếng Việt nằm tại `lib/ai/prompts.ts`.
-- Provider mặc định luôn là `mock`; không có SDK hoặc API call trả phí.
-- Xem thêm `docs/AI_READINESS.md`.
-
-## Batch 5 Improvements
-
-- Ngân hàng câu hỏi cục bộ: thêm, sửa, xóa, lọc, chọn và xuất Word.
-- Nhập câu hỏi từ văn bản hoặc CSV, chỉnh sửa preview trước khi lưu.
-- Dùng lại câu hỏi ngân hàng trong công cụ tạo đề.
-- Áp dụng mẫu cá nhân với placeholder `{{ten_truong}}`, `{{ten_giao_vien}}`, `{{nam_hoc}}`, `{{mon_hoc}}`, `{{lop}}`, `{{chu_de}}`, `{{noi_dung}}`.
-- Tổ chức lịch sử tài liệu theo thư mục.
-
-## Batch 4 Improvements
-
-- Cải thiện công cụ tạo đề kiểm tra với header, tỉ lệ mức độ, ma trận và bản đặc tả đề.
-- Cải thiện ma trận đề theo bảng chủ đề, mức độ, số câu, số điểm và tỉ lệ.
-- Cải thiện đáp án và thang điểm với bảng đáp án trắc nghiệm, lỗi thường gặp và gợi ý chấm linh hoạt.
-- Cải thiện trộn mã đề demo với parser câu hỏi A/B/C/D và bảng đáp án theo mã.
-- Cải thiện export Word với header từ cài đặt, heading, bullet-like paragraphs, font và cỡ chữ theo settings.
-
-## Future Roadmap
-
-- Real AI integration
-- Supabase auth/database
-- Payment
-- OCR/PDF/image import
-- School workspace
+- [Kiểm thử](docs/TESTING.md)
+- [Xuất tài liệu](docs/EXPORTS.md)
+- [Chất lượng đầu ra](docs/OUTPUT_QUALITY.md)
+- [Mẫu tài liệu](docs/DOCUMENT_TEMPLATES.md)
+- [Checklist phát hành](docs/RELEASE_CHECKLIST.md)
+- [Lộ trình](docs/ROADMAP.md)

@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   applicationName: "Soạn Lab",
   manifest: "/manifest.json",
   icons: {
-    icon: [{ url: "/brand/soan-lab-mark.png", type: "image/png", sizes: "120x180" }],
-    apple: [{ url: "/brand/soan-lab-mark.png", type: "image/png", sizes: "120x180" }]
+    icon: [{ url: "/brand/soan-lab-mark.png", type: "image/png" }],
+    apple: [{ url: "/brand/soan-lab-mark.png", type: "image/png" }]
   },
   title: {
     default: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam",

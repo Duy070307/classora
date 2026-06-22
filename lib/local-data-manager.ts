@@ -82,11 +82,18 @@ export function downloadLocalDataBackup(): void {
 export function validateBackupJson(data: unknown): data is ClassoraBackup {
   if (!data || typeof data !== "object") return false;
   const backup = data as Partial<ClassoraBackup>;
+  const backupData = backup.data;
   return (
     (backup.app === "Soạn Lab" || backup.app === "Classora") &&
     typeof backup.version === "string" &&
     typeof backup.exportedAt === "string" &&
-    Boolean(backup.data && typeof backup.data === "object" && !Array.isArray(backup.data))
+    backup.version === CLASSORA_BACKUP_VERSION &&
+    Boolean(backupData && typeof backupData === "object" && !Array.isArray(backupData)) &&
+    (backupData?.history === undefined || Array.isArray(backupData.history)) &&
+    (backupData?.templates === undefined || Array.isArray(backupData.templates)) &&
+    (backupData?.questionBank === undefined || Array.isArray(backupData.questionBank)) &&
+    (backupData?.settings === undefined || Boolean(backupData.settings && typeof backupData.settings === "object" && !Array.isArray(backupData.settings))) &&
+    (backupData?.other === undefined || Boolean(backupData.other && typeof backupData.other === "object" && !Array.isArray(backupData.other)))
   );
 }
 

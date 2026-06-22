@@ -1,12 +1,12 @@
 {
   "name": "Soạn Lab",
   "short_name": "Soạn Lab",
-  "description": "Soạn Lab giúp giáo viên soạn đề, tạo tài liệu và xuất Word nhanh hơn.",
+  "description": "Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word/PDF nhanh hơn.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f7f9fc",
   "theme_color": "#2563eb",
   "icons": [
-    { "src": "/brand/soan-lab-mark.png", "sizes": "120x180", "type": "image/png", "purpose": "any" }
+    { "src": "/brand/soan-lab-mark.png", "sizes": "any", "type": "image/png", "purpose": "any maskable" }
   ]
 }

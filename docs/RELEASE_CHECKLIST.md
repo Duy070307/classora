@@ -1,35 +1,19 @@
-# Release Checklist
+# Checklist phát hành Soạn Lab
 
-Tên sản phẩm hiện tại là **Soạn Lab**; dự án trước đây có tên Classora. Giữ nguyên các key localStorage cũ khi kiểm thử để bảo toàn dữ liệu người dùng.
-
-Phiên bản: **v0.5 RC**. Checklist tương tác nằm tại `/release-candidate`; giới hạn công khai nằm tại `/known-issues`.
-
-- [ ] `npm run lint`
-- [ ] `npm run build`
-- [ ] `npm run smoke`
-- [ ] Test trên desktop
-- [ ] Test trên mobile
-- [ ] Test Word export
-- [ ] Test localStorage history
-- [ ] Test tự lưu bản nháp form, khôi phục sau refresh và xóa tại `/drafts`
-- [ ] Test preset “Dùng mẫu nhanh” trên exam, worksheet, student comments và matrix
-- [ ] Test command palette bằng nút, Ctrl/Cmd + K, Enter và Esc
-- [ ] Test thêm/bỏ công cụ yêu thích và bộ lọc Gần đây
-- [ ] Test bulk actions lịch sử: chọn, bundle Markdown/TXT, đổi thư mục, xóa
-- [ ] Kiểm tra backup/restore favorites và recent tools
-- [ ] Test feedback copy
-- [ ] Test demo data
-- [ ] Xuất backup JSON trước khi kiểm thử reset
-- [ ] Nhập backup và kiểm tra dữ liệu được khôi phục
-- [ ] Kiểm tra backup JSON có thể khôi phục bản nháp biểu mẫu
-- [ ] Test từng nút reset và xác nhận xóa toàn bộ thật cẩn thận
-- [ ] Kiểm tra founder section
-- [ ] Kiểm tra privacy/terms links
-- [ ] Kiểm tra Vercel deployment
-- [ ] Kiểm tra `/share`, sao chép tin nhắn và liên kết demo
-- [ ] Kiểm tra manifest, favicon, `robots.txt` và `sitemap.xml`
-- [ ] Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile
-- [ ] Xác nhận app chạy không cần env; `.env.example` chỉ dành cho AI tương lai
-- [ ] Kiểm tra checklist `/release-candidate` lưu và reset bằng localStorage
-- [ ] Kiểm tra `/known-issues` và các link từ footer, private beta, tester guide
-- [ ] Kiểm tra feedback có loại góp ý, nguồn trang, timestamp và thông tin trình duyệt
+- [ ] `npm run lint` đạt.
+- [ ] `npm run build` đạt.
+- [ ] `npm run smoke` đạt.
+- [ ] Build không cần biến môi trường bắt buộc và sẵn sàng cho Vercel.
+- [ ] Landing, dashboard và thư mục công cụ mở bình thường.
+- [ ] Tìm kiếm và lọc danh mục công cụ hoạt động.
+- [ ] Tạo đề kiểm tra thành công.
+- [ ] Xuất Word đề thi thành công.
+- [ ] Print/PDF đề thi hiển thị đúng.
+- [ ] Lưu lịch sử, mở lại và xuất lại thành công.
+- [ ] Phiếu học tập và kế hoạch bài dạy xuất Word thành công.
+- [ ] Rubric hiển thị bảng thật trong preview, Word và Print.
+- [ ] Trang feedback và share mở bình thường.
+- [ ] Kiểm tra giao diện ở chiều rộng 390px.
+- [ ] Không có lỗi console trên các trang cốt lõi.
+- [ ] Không có chữ thương hiệu cũ hoặc trạng thái phát triển trên giao diện chính.
+- [ ] Giáo viên được nhắc rà soát nội dung trước khi sử dụng.

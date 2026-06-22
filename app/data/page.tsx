@@ -19,7 +19,7 @@ import { getFavoriteTools } from "@/lib/favorites";
 import { getRecentTools } from "@/lib/recent-tools";
 
 type Summary = { history: number; templates: number; questions: number; drafts: number; favorites: number; recent: number; settings: boolean; plan: string; usage: number };
-const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, favorites: 0, recent: 0, settings: false, plan: "Free demo", usage: 0 };
+const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, favorites: 0, recent: 0, settings: false, plan: "Miễn phí", usage: 0 };
 
 function readSummary(): Summary {
   const settings = getDocumentSettings();
@@ -31,7 +31,7 @@ function readSummary(): Summary {
     favorites: getFavoriteTools().length,
     recent: getRecentTools().length,
     settings: Boolean(settings.schoolName || settings.teacherName || settings.department || settings.schoolYear),
-    plan: getMockPlan() === "pro" ? "Pro demo" : "Free demo",
+    plan: getMockPlan() === "pro" ? "Cá nhân" : "Miễn phí",
     usage: getUsageCount()
   };
 }
@@ -84,8 +84,8 @@ export default function DataManagementPage() {
     ["Số công cụ yêu thích", summary.favorites],
     ["Số công cụ dùng gần đây", summary.recent],
     ["Cài đặt tài liệu", summary.settings ? "Có" : "Chưa có"],
-    ["Gói demo hiện tại", summary.plan],
-    ["Lượt dùng demo", summary.usage]
+    ["Chế độ sử dụng hiện tại", summary.plan],
+    ["Số lượt đã sử dụng", summary.usage]
   ];
 
   return <div className="min-h-screen md:flex"><Sidebar /><main className="min-w-0 flex-1 p-5 md:p-8">
@@ -106,7 +106,7 @@ export default function DataManagementPage() {
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa mẫu cá nhân", clearTemplates)}>Xóa mẫu cá nhân</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa ngân hàng câu hỏi", clearQuestionBank)}>Xóa ngân hàng câu hỏi</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa cài đặt tài liệu", clearSettings)}>Xóa cài đặt tài liệu</button>
-      <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa lượt dùng demo", clearUsage)}>Xóa lượt dùng demo</button>
+      <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa bộ đếm lượt sử dụng", clearUsage)}>Xóa bộ đếm lượt sử dụng</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa bản nháp biểu mẫu", clearAllFormDrafts)}>Xóa bản nháp biểu mẫu</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ yêu thích", clearFavorites)}>Xóa công cụ yêu thích</button>
       <button className="btn-secondary text-red-600" onClick={() => confirmClear("xóa công cụ dùng gần đây", clearRecent)}>Xóa công cụ dùng gần đây</button>
