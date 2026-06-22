@@ -16,13 +16,13 @@ Cấu trúc mong muốn: ${structure}
 ${rules}`;
 }
 
-export const buildExamPrompt = (input: unknown) => prompt("Soạn đề kiểm tra", input, "Header, hướng dẫn, trắc nghiệm, tự luận, đáp án, thang điểm, ma trận và bản đặc tả.");
-export const buildWorksheetPrompt = (input: unknown) => prompt("Soạn phiếu học tập", input, "Mục tiêu, kiến thức cần nhớ, bài tập, chỗ làm bài và đáp án.");
+export const buildExamPrompt = (input: unknown) => prompt("Soạn đề kiểm tra theo đặc trưng môn học", input, "PHẦN I trắc nghiệm A/B/C/D; PHẦN II đúng/sai a-b-c-d; PHẦN III trả lời ngắn; đáp án giáo viên, giải thích ngắn, gợi ý chấm, thang điểm, ma trận và bản đặc tả theo chủ đề.");
+export const buildWorksheetPrompt = (input: unknown) => prompt("Soạn phiếu học tập", input, "Thông tin bài học, mục tiêu, nhắc lại kiến thức, bài tập cơ bản, vận dụng, mở rộng, chỗ làm bài và đáp án/gợi ý cho giáo viên.");
 export const buildStudentCommentsPrompt = (input: unknown) => prompt("Viết nhận xét học sinh", input, "Ba phiên bản: ngắn gọn, trang trọng và thân thiện gửi phụ huynh.");
 export const buildMatrixPrompt = (input: unknown) => prompt("Tạo ma trận đề", input, "Bảng chủ đề, mức độ, số câu, số điểm, tỉ lệ và yêu cầu cần đạt.");
 export const buildAnswerKeyPrompt = (input: unknown) => prompt("Tạo đáp án và thang điểm", input, "Đáp án, lời giải, bảng điểm, lỗi thường gặp và lưu ý chấm.");
 export const buildExamCheckerPrompt = (input: unknown) => prompt("Rà soát đề kiểm tra", input, "Vấn đề phát hiện, mức độ ảnh hưởng, gợi ý sửa và các mục cần giáo viên xác minh.");
-export const buildLessonPlanPrompt = (input: unknown) => prompt("Soạn giáo án", input, "Mục tiêu, chuẩn bị, tiến trình hoạt động, đánh giá và nhiệm vụ sau bài.");
+export const buildLessonPlanPrompt = (input: unknown) => prompt("Soạn giáo án", input, "Mục tiêu, chuẩn bị, mở đầu, hình thành kiến thức, luyện tập, vận dụng, đánh giá và điều chỉnh sau tiết dạy.");
 
 const refinementInstructions: Record<AIRefinementAction, string> = {
   regenerate: "Tạo lại một phiên bản khác nhưng giữ nguyên mục tiêu và dữ liệu đầu vào.",

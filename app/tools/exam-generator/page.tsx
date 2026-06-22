@@ -149,9 +149,9 @@ export default function ExamGeneratorPage() {
         <ToolWorkspaceLayout
           form={
           <form onSubmit={handleSubmit} className="tool-form-card">
-            <button type="button" onClick={useSampleData} className="btn-secondary w-full">Dùng dữ liệu mẫu</button>
+            <button type="button" onClick={useSampleData} className="btn-secondary w-full">Điền thử mẫu nhanh</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
-            <PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} />
+            <div><p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mẫu nhanh theo môn</p><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
               <p className="form-section-title">Thông tin chung</p>

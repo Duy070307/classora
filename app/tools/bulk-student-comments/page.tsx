@@ -75,10 +75,11 @@ function parseCsv(text: string): StudentRow[] {
 }
 
 function makeComments(row: StudentRow) {
+  const nextAction = `dành 10-15 phút mỗi ngày để ${row.limitations} và tự đánh dấu phần đã hoàn thành`;
   return {
-    short: `${row.name} có mức học tập ${row.performance.toLowerCase()}, ${row.attitude}. Em phát huy tốt ${row.strengths} và cần chú ý ${row.limitations}.`,
-    formal: `Trong quá trình học tập, ${row.name} thể hiện mức độ ${row.performance.toLowerCase()}. Em có ưu điểm là ${row.strengths}; bên cạnh đó cần tiếp tục rèn luyện ở điểm ${row.limitations} để tiến bộ ổn định hơn.`,
-    parent: `Kính gửi quý phụ huynh, ${row.name} ${row.attitude}. Em có điểm mạnh là ${row.strengths}. Gia đình có thể hỗ trợ thêm bằng cách nhắc em ${row.limitations}.`
+    short: `${row.name} có kết quả học tập ở mức ${row.performance.toLowerCase()} và ${row.attitude}. Em nổi bật ở điểm ${row.strengths}; thời gian tới nên ${nextAction}.`,
+    formal: `Trong quá trình học tập, ${row.name} thể hiện mức độ ${row.performance.toLowerCase()}. Em phát huy tốt ${row.strengths}. Để tiến bộ ổn định hơn, em cần ${row.limitations}; giáo viên đề nghị em ${nextAction}.`,
+    parent: `Kính gửi quý phụ huynh, ${row.name} ${row.attitude} và có điểm mạnh là ${row.strengths}. Gia đình có thể đồng hành bằng cách tạo lịch học ngắn, nhắc em ${row.limitations} và ghi nhận khi em hoàn thành mục tiêu.`
   };
 }
 

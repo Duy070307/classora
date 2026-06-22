@@ -11,6 +11,7 @@ const sections = [
   ["Trạng thái hệ thống", ["Build pass", "Smoke test pass", "localStorage hoạt động", "Không cần API key", "Không cần database", "Không cần đăng nhập", "Không cần thanh toán"]],
   ["Công cụ chính", ["Tạo đề kiểm tra", "Tạo ma trận đề", "Tạo đáp án/thang điểm", "Trộn mã đề", "Tạo phiếu học tập", "Tạo giáo án", "Tạo nhận xét học sinh", "Nhận xét hàng loạt CSV", "Ngân hàng câu hỏi", "Nhập câu hỏi từ văn bản/CSV"]],
   ["Xuất tài liệu", ["Word", "Print/PDF", "Markdown", "TXT", "Lưu lịch sử", "Mở lại từ lịch sử"]],
+  ["Chất lượng nội dung", ["Toán 12 THPTQG", "Lịch sử 12 THPTQG", "PHẦN I/II/III", "Bảng đáp án giáo viên", "Ma trận và bản đặc tả", "Xuất lại từ lịch sử"]],
   ["Dữ liệu trình duyệt", ["Backup JSON", "Restore JSON", "Xóa dữ liệu", "Dữ liệu mẫu", "Diagnostics"]],
   ["Trải nghiệm sản phẩm", ["Feedback page", "Share page", "Privacy", "Terms", "Hướng dẫn sử dụng"]]
 ] as const;

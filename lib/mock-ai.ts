@@ -108,9 +108,17 @@ void generateLegacyExam;
 export async function generateWorksheet(input: WorksheetInput): Promise<string> {
   await wait();
   const count = limitedCount(input.exerciseCount, 5, 8);
+  const groups = ["BÀI TẬP CƠ BẢN", "BÀI TẬP VẬN DỤNG", "BÀI TẬP MỞ RỘNG"];
   const exercises = Array.from({ length: count }, (_, index) => {
     const n = index + 1;
-    return `${n}. Dựa vào kiến thức về "${input.topic}", hoàn thành yêu cầu sau: phân tích dữ kiện, lựa chọn kiến thức phù hợp và trình bày câu trả lời bằng lời văn/bước giải rõ ràng.
+    const mode = index % 3;
+    const request = mode === 0
+      ? `Nêu khái niệm, dấu hiệu hoặc kiến thức cốt lõi của ${input.topic} và minh họa bằng một ví dụ.`
+      : mode === 1
+        ? `Vận dụng kiến thức về ${input.topic} để giải quyết một tình huống quen thuộc; trình bày dữ kiện, cách làm và kết luận.`
+        : `Đề xuất một câu hỏi hoặc tình huống mới liên quan đến ${input.topic}, sau đó giải thích hướng giải quyết.`;
+    return `${groups[mode]} · Câu ${n}
+${request}
 
 Chỗ trống cho học sinh làm:
 ................................................................................
@@ -126,16 +134,19 @@ Phong cách: ${input.style}
 I. MỤC TIÊU
 ${input.objective || `Sau hoạt động này, học sinh nhận biết được kiến thức chính của chủ đề ${input.topic}, biết vận dụng vào bài tập và trình bày câu trả lời rõ ràng.`}
 
-II. KIẾN THỨC CẦN NHỚ
+II. NHẮC LẠI KIẾN THỨC
 - Xác định đúng khái niệm, dữ kiện hoặc ý chính liên quan đến ${input.topic}.
 - Khi làm bài, cần đọc kỹ yêu cầu, gạch chân dữ kiện quan trọng và trình bày theo trình tự hợp lý.
 - Với câu hỏi vận dụng, cần giải thích vì sao chọn cách làm hoặc câu trả lời đó.
 
-III. BÀI TẬP
+III. HỆ THỐNG BÀI TẬP
 ${exercises}
 
-IV. ĐÁP ÁN GỢI Ý
-${input.includeAnswers ? `1-${count}. Câu trả lời cần bám sát kiến thức ${input.topic}, có đủ bước phân tích, vận dụng và kết luận. Giáo viên có thể bổ sung đáp án chi tiết theo nội dung đã dạy trên lớp.` : "Giáo viên chưa chọn tạo đáp án."}
+IV. ĐÁP ÁN/GỢI Ý CHO GIÁO VIÊN
+${input.includeAnswers ? Array.from({ length: count }, (_, index) => {
+  const mode = index % 3;
+  return `${index + 1}. ${mode === 0 ? `Nêu đúng kiến thức trọng tâm của ${input.topic}, có ví dụ phù hợp.` : mode === 1 ? "Xác định đúng dữ kiện, chọn kiến thức phù hợp, trình bày cách làm và kết luận." : "Tình huống mở rộng phải hợp lí; hướng giải quyết có lập luận và bám sát chủ đề."}`;
+}).join("\n") : "Giáo viên chưa chọn tạo đáp án."}
 
 YÊU CẦU THÊM
 ${input.extraRequirements || "Không có yêu cầu thêm."}
@@ -165,6 +176,9 @@ Trong quá trình học tập và rèn luyện, ${name} thể hiện tinh thần
 
 III. THÂN THIỆN GỬI PHỤ HUYNH
 Kính gửi quý phụ huynh, thời gian vừa qua ${name} đã có nhiều cố gắng trong học tập. Em ${attitude} và có điểm mạnh là ${strengths}. Gia đình có thể đồng hành thêm bằng cách nhắc em ${limitations}, giúp em tự tin và tiến bộ bền vững hơn.
+
+IV. HÀNH ĐỘNG GỢI Ý TIẾP THEO
+Trong tuần tới, ${name} nên chọn một mục tiêu nhỏ, cụ thể liên quan đến ${limitations}, thực hiện đều đặn và tự kiểm tra kết quả sau mỗi buổi học.
 
 ${warning}`;
 }
@@ -207,6 +221,11 @@ IV. ĐÁNH GIÁ CUỐI BÀI
 - Kiểm tra nhanh 2 câu hỏi trọng tâm.
 - Nhận xét mức độ tham gia của học sinh.
 - Giao nhiệm vụ ôn tập và chuẩn bị bài tiếp theo.
+
+V. ĐIỀU CHỈNH SAU TIẾT DẠY
+- Nội dung học sinh đã nắm chắc: ........................................................
+- Nội dung cần hỗ trợ thêm: .............................................................
+- Điều chỉnh phương pháp, thời lượng hoặc học liệu cho lần dạy sau: ....................
 
 YÊU CẦU THÊM
 ${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
