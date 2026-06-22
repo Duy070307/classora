@@ -1,5 +1,6 @@
 import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput } from "@/lib/types";
 import { createStructuredExam, structuredExamToText } from "@/lib/mock-exam-generator";
+import { commentTemplate, lessonPlanTemplate, parentMessageTemplate, rubricTemplate, worksheetTemplate } from "@/lib/documents/teacher-document-templates";
 
 const warning = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
@@ -126,32 +127,11 @@ Chỗ trống cho học sinh làm:
 ................................................................................`;
   }).join("\n\n");
 
-  return `PHIẾU HỌC TẬP ${input.subject.toUpperCase()} - LỚP ${input.grade}
-Chủ đề: ${input.topic}
-Mức độ: ${input.level}
-Phong cách: ${input.style}
-
-I. MỤC TIÊU
-${input.objective || `Sau hoạt động này, học sinh nhận biết được kiến thức chính của chủ đề ${input.topic}, biết vận dụng vào bài tập và trình bày câu trả lời rõ ràng.`}
-
-II. NHẮC LẠI KIẾN THỨC
-- Xác định đúng khái niệm, dữ kiện hoặc ý chính liên quan đến ${input.topic}.
-- Khi làm bài, cần đọc kỹ yêu cầu, gạch chân dữ kiện quan trọng và trình bày theo trình tự hợp lý.
-- Với câu hỏi vận dụng, cần giải thích vì sao chọn cách làm hoặc câu trả lời đó.
-
-III. HỆ THỐNG BÀI TẬP
-${exercises}
-
-IV. ĐÁP ÁN/GỢI Ý CHO GIÁO VIÊN
-${input.includeAnswers ? Array.from({ length: count }, (_, index) => {
+  const answers = input.includeAnswers ? Array.from({ length: count }, (_, index) => {
   const mode = index % 3;
   return `${index + 1}. ${mode === 0 ? `Nêu đúng kiến thức trọng tâm của ${input.topic}, có ví dụ phù hợp.` : mode === 1 ? "Xác định đúng dữ kiện, chọn kiến thức phù hợp, trình bày cách làm và kết luận." : "Tình huống mở rộng phải hợp lí; hướng giải quyết có lập luận và bám sát chủ đề."}`;
-}).join("\n") : "Giáo viên chưa chọn tạo đáp án."}
-
-YÊU CẦU THÊM
-${input.extraRequirements || "Không có yêu cầu thêm."}
-
-${warning}`;
+}).join("\n") : "Giáo viên chưa chọn tạo đáp án.";
+  return `${worksheetTemplate(input, exercises, answers)}\n\n${warning}`;
 }
 
 export async function generateStudentComments(input: StudentCommentInput): Promise<string> {
@@ -161,24 +141,16 @@ export async function generateStudentComments(input: StudentCommentInput): Promi
   const strengths = input.strengths || "biết lắng nghe, tiếp thu góp ý và hoàn thành nhiệm vụ được giao";
   const limitations = input.limitations || "cần chủ động ôn tập và mạnh dạn trình bày ý kiến hơn";
 
-  return `NHẬN XÉT HỌC SINH: ${name}
-Lớp: ${input.className || "chưa nhập"}
-Vai trò: ${input.role}
-Mức học tập: ${input.performance}
-Giọng văn mong muốn: ${input.tone}
-Mục đích: ${input.purpose}
+  return `${commentTemplate(input)}
 
-I. NGẮN GỌN
-${name} có kết quả học tập ở mức ${input.performance.toLowerCase()}. Em ${attitude}. Em phát huy tốt điểm mạnh là ${strengths}; trong thời gian tới cần chú ý ${limitations}.
+PHIÊN BẢN NGẮN GỌN
+${name} ${attitude}. Em phát huy tốt ${strengths} và cần ${limitations}.
 
-II. TRANG TRỌNG
-Trong quá trình học tập và rèn luyện, ${name} thể hiện tinh thần học tập ${input.performance.toLowerCase()} so với yêu cầu của lớp. Em có ưu điểm nổi bật là ${strengths}. Bên cạnh đó, em cần tiếp tục rèn luyện ở điểm ${limitations} để kết quả học tập ổn định và tiến bộ hơn trong giai đoạn tiếp theo.
+PHIÊN BẢN TRANG TRỌNG
+Trong quá trình học tập, ${name} thể hiện kết quả ở mức ${input.performance.toLowerCase()}; em có điểm mạnh là ${strengths}. Em cần ${limitations} và thực hiện mục tiêu nhỏ hằng tuần để tiến bộ.
 
-III. THÂN THIỆN GỬI PHỤ HUYNH
-Kính gửi quý phụ huynh, thời gian vừa qua ${name} đã có nhiều cố gắng trong học tập. Em ${attitude} và có điểm mạnh là ${strengths}. Gia đình có thể đồng hành thêm bằng cách nhắc em ${limitations}, giúp em tự tin và tiến bộ bền vững hơn.
-
-IV. HÀNH ĐỘNG GỢI Ý TIẾP THEO
-Trong tuần tới, ${name} nên chọn một mục tiêu nhỏ, cụ thể liên quan đến ${limitations}, thực hiện đều đặn và tự kiểm tra kết quả sau mỗi buổi học.
+PHIÊN BẢN THÂN THIỆN GỬI PHỤ HUYNH
+Kính gửi quý phụ huynh, ${name} ${attitude} và có điểm mạnh là ${strengths}. Gia đình có thể đồng hành bằng cách nhắc em ${limitations}.
 
 ${warning}`;
 }
@@ -190,47 +162,7 @@ const listValue = (input: GenericToolInput, key: string) => Array.isArray(input[
 
 export async function generateLessonPlan(input: GenericToolInput): Promise<string> {
   await wait();
-  const subject = textValue(input, "subject", "Toán");
-  const grade = textValue(input, "grade", "8");
-  const lesson = textValue(input, "lessonName", "Bài học mới");
-  return `GIÁO ÁN ${subject.toUpperCase()} - LỚP ${grade}
-Tên bài học: ${lesson}
-Thời lượng: ${textValue(input, "duration", "45 phút")}
-
-I. MỤC TIÊU
-${textValue(input, "objectives", `Học sinh nắm được kiến thức trọng tâm của bài ${lesson}, biết vận dụng vào tình huống học tập và trình bày được kết quả bằng ngôn ngữ của mình.`)}
-
-II. CHUẨN BỊ
-- Phương pháp dạy học: ${textValue(input, "methods", "gợi mở, thảo luận nhóm, luyện tập cá nhân")}.
-- Thiết bị học liệu: ${textValue(input, "materials", "sách giáo khoa, bảng phụ, phiếu học tập, máy chiếu nếu có")}.
-
-III. TIẾN TRÌNH DẠY HỌC
-1. Hoạt động mở đầu
-Giáo viên nêu tình huống gần gũi liên quan đến ${lesson}, yêu cầu học sinh dự đoán cách giải quyết và chia sẻ nhanh trong 2-3 phút.
-
-2. Hoạt động hình thành kiến thức
-Giáo viên tổ chức cho học sinh đọc thông tin, quan sát ví dụ mẫu, rút ra kiến thức chính. Học sinh ghi vở các khái niệm/công thức/ý chính cần nhớ.
-
-3. Hoạt động luyện tập
-Học sinh làm bài tập ngắn theo cá nhân hoặc cặp đôi. Giáo viên quan sát, hỗ trợ nhóm còn lúng túng và gọi một số em trình bày lời giải.
-
-4. Hoạt động vận dụng
-Học sinh giải quyết một tình huống thực tế hoặc bài tập mở rộng có liên hệ với nội dung ${lesson}. Có thể giao hoàn thiện ở nhà nếu thiếu thời gian.
-
-IV. ĐÁNH GIÁ CUỐI BÀI
-- Kiểm tra nhanh 2 câu hỏi trọng tâm.
-- Nhận xét mức độ tham gia của học sinh.
-- Giao nhiệm vụ ôn tập và chuẩn bị bài tiếp theo.
-
-V. ĐIỀU CHỈNH SAU TIẾT DẠY
-- Nội dung học sinh đã nắm chắc: ........................................................
-- Nội dung cần hỗ trợ thêm: .............................................................
-- Điều chỉnh phương pháp, thời lượng hoặc học liệu cho lần dạy sau: ....................
-
-YÊU CẦU THÊM
-${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
-
-${warning}`;
+  return `${lessonPlanTemplate(input)}\n\nYÊU CẦU THÊM\n${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}\n\n${warning}`;
 }
 
 export async function generateMatrix(input: GenericToolInput): Promise<string> {
@@ -352,54 +284,13 @@ export async function generateRubric(input: GenericToolInput): Promise<string> {
     .filter(Boolean);
   const totalScore = numberValue(input, "totalScore", 10);
   const perCriterion = (totalScore / Math.max(1, criteria.length)).toFixed(1);
-  const rows = criteria.map((criterion) => `| ${criterion} | Xuất sắc: đầy đủ, chính xác, sáng tạo | Tốt: đúng yêu cầu chính | Đạt: hoàn thành cơ bản | Cần cố gắng: thiếu hoặc sai nhiều | ${perCriterion} |`).join("\n");
-
-  return `RUBRIC CHẤM BÀI
-Môn học: ${textValue(input, "subject", "Ngữ văn")}
-Lớp: ${textValue(input, "grade", "7")}
-Loại bài: ${textValue(input, "assignmentType", "Bài viết")}
-Tổng điểm: ${totalScore}
-Số mức đánh giá: ${textValue(input, "levelCount", "4")}
-
-I. BẢNG RUBRIC
-| Tiêu chí | Xuất sắc | Tốt | Đạt | Cần cố gắng | Điểm |
-|---|---|---|---|---|---:|
-${rows}
-
-II. GỢI Ý NHẬN XÉT
-- Nêu rõ điểm mạnh nổi bật của học sinh.
-- Chỉ ra một điểm cần cải thiện cụ thể.
-- Đề xuất hành động tiếp theo để học sinh tiến bộ.
-
-YÊU CẦU THÊM
-${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}
-
-${warning}`;
+  const rows = criteria.map((criterion) => `| ${criterion} | Chưa đáp ứng yêu cầu cốt lõi | Hoàn thành một phần, cần hỗ trợ | Đáp ứng đầy đủ yêu cầu chính | Chính xác, rõ ràng và có điểm nổi bật | ${perCriterion} |`).join("\n");
+  return `${rubricTemplate(input, rows)}\n\nYÊU CẦU THÊM\n${textValue(input, "extraRequirements", "Không có yêu cầu thêm.")}\n\n${warning}`;
 }
 
 export async function generateParentMessage(input: GenericToolInput): Promise<string> {
   await wait();
-  const student = textValue(input, "studentName", "học sinh");
-  const context = textValue(input, "situation", "Báo tiến bộ");
-  const main = textValue(input, "mainContent", "nội dung cần trao đổi với phụ huynh");
-  return `TIN NHẮN GỬI PHỤ HUYNH - ${student}
-Lớp: ${textValue(input, "className", "chưa nhập")}
-Tình huống: ${context}
-Giọng văn: ${textValue(input, "tone", "Nhẹ nhàng")}
-
-I. TIN NHẮN NGẮN
-Kính gửi quý phụ huynh, giáo viên xin trao đổi nhanh về ${student}: ${main}. Mong gia đình phối hợp hỗ trợ em trong thời gian tới. Xin cảm ơn quý phụ huynh.
-
-II. TIN NHẮN TRANG TRỌNG
-Kính gửi quý phụ huynh em ${student}, trong quá trình theo dõi học tập và rèn luyện, giáo viên muốn thông tin tới gia đình nội dung sau: ${main}. Rất mong quý phụ huynh cùng phối hợp để em có sự tiến bộ ổn định hơn.
-
-III. TIN NHẮN THÂN THIỆN
-Chào anh/chị, em xin trao đổi một chút về tình hình của ${student}. Hiện tại ${main}. Nhờ gia đình cùng nhắc nhở và động viên em thêm nhé. Em cảm ơn anh/chị.
-
-IV. LƯU Ý CÁCH GỬI
-Nên gửi vào thời điểm phụ huynh dễ đọc tin, dùng ngôn ngữ tôn trọng, tránh quy kết và luôn kèm hướng phối hợp cụ thể.
-
-${warning}`;
+  return `${parentMessageTemplate(input)}\n\n${warning}`;
 }
 
 export async function generateQuestionBank(input: GenericToolInput): Promise<string> {
@@ -493,18 +384,22 @@ Hình thức: ${textValue(input, "format", "Nhóm")}
 I. MỤC TIÊU
 ${textValue(input, "objective", `Học sinh củng cố kiến thức về ${topic}, hợp tác với bạn và trình bày được kết quả thảo luận.`)}
 
-II. CÁCH TỔ CHỨC
+II. CHUẨN BỊ
+- Phiếu nhiệm vụ hoặc bảng nhóm.
+- Bút viết, giấy ghi chú và học liệu liên quan đến ${topic}.
+
+III. CÁCH TỔ CHỨC
 Giáo viên chia lớp thành các nhóm nhỏ, giao nhiệm vụ rõ ràng và quy định thời gian hoàn thành. Mỗi nhóm ghi kết quả vào phiếu hoặc bảng nhóm.
 
-III. LUẬT CHƠI/NHIỆM VỤ
+IV. NHIỆM VỤ
 - Mỗi nhóm đọc tình huống, thảo luận và thống nhất câu trả lời.
 - Đại diện nhóm trình bày trong 1 phút.
 - Nhóm khác đặt câu hỏi hoặc bổ sung.
 
-IV. SẢN PHẨM HỌC SINH CẦN TẠO
+V. SẢN PHẨM HỌC SINH
 Phiếu trả lời ngắn, sơ đồ ý chính hoặc bảng tổng hợp kết quả.
 
-V. CÁCH ĐÁNH GIÁ
+VI. ĐÁNH GIÁ NHANH
 Đánh giá theo mức độ đúng kiến thức, khả năng hợp tác, cách trình bày và sự tham gia của từng thành viên.
 
 ${warning}`;
@@ -522,16 +417,23 @@ Lớp: ${textValue(input, "grade", "7")}
 Chủ đề: ${topic}
 Số bài mỗi mức: ${count}
 
-I. BÀI TẬP MỨC CƠ BẢN
+I. MỨC CƠ BẢN
 ${block("Cơ bản")}
 
-II. BÀI TẬP MỨC VỪA
+II. MỨC KHÁ
 ${block("Vừa")}
 
-III. BÀI TẬP MỨC NÂNG CAO
+III. MỨC VẬN DỤNG
 ${block("Nâng cao")}
 
-IV. GỢI Ý GIAO BÀI
+IV. MỨC THỬ THÁCH
+${block("Thử thách")}
+
+V. GỢI Ý HỖ TRỢ HỌC SINH CẦN CỦNG CỐ
+- Chia nhiệm vụ thành bước nhỏ, cung cấp từ khóa hoặc ví dụ mẫu.
+- Cho học sinh hoàn thành mức cơ bản trước khi chuyển sang mức khá.
+
+VI. GỢI Ý MỞ RỘNG CHO HỌC SINH KHÁ GIỎI
 - Nhóm cần hỗ trợ: làm mức cơ bản trước, sau đó chọn 1 bài mức vừa.
 - Nhóm đạt yêu cầu: làm mức vừa và thử 1 bài nâng cao.
 - Nhóm khá giỏi: ưu tiên mức nâng cao và giải thích cách làm cho bạn.
@@ -672,16 +574,16 @@ Bài/chủ đề: ${topic}
 Độ dài: ${textValue(input, "length", "Vừa")}
 Đối tượng: ${textValue(input, "audience", "Học sinh trung bình")}
 
-I. TÓM TẮT KIẾN THỨC TRỌNG TÂM
+I. Ý CHÍNH
 ${topic} gồm các ý chính: khái niệm cơ bản, đặc điểm nổi bật, ví dụ minh họa và cách vận dụng vào bài tập hoặc tình huống thực tế.
 
-II. TỪ KHÓA CẦN NHỚ
+II. TỪ KHÓA
 - Khái niệm chính
 - Dấu hiệu nhận biết
 - Ví dụ thực tế
 - Cách trình bày câu trả lời
 
-III. VÍ DỤ MINH HỌA
+III. KIẾN THỨC CẦN NHỚ
 Giáo viên có thể dùng một tình huống gần gũi với học sinh để giải thích ${topic}, sau đó yêu cầu học sinh tự nêu thêm ví dụ.
 
 ${boolValue(input, "includeQuestions") ? `IV. CÂU HỎI ÔN TẬP
@@ -689,8 +591,10 @@ ${boolValue(input, "includeQuestions") ? `IV. CÂU HỎI ÔN TẬP
 2. Cho một ví dụ minh họa.
 3. Giải thích vì sao ví dụ đó phù hợp với kiến thức đã học.` : ""}
 
-V. GỢI Ý CÁCH HỌC
-Đọc lại vở ghi, gạch chân từ khóa, tự đặt 3 câu hỏi ngắn và thử giải thích lại bài bằng lời của mình.
+V. LỖI THƯỜNG GẶP
+- Nhầm khái niệm gần giống nhau hoặc bỏ sót điều kiện áp dụng.
+- Chỉ ghi kết quả mà chưa giải thích hoặc nêu căn cứ.
+- Học thuộc từ khóa nhưng chưa liên hệ được với ví dụ.
 
 NỘI DUNG BÀI HỌC GỐC
 ${textValue(input, "lessonContent", "Chưa nhập nội dung bài học.")}

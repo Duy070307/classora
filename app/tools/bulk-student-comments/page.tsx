@@ -92,10 +92,17 @@ export default function BulkStudentCommentsPage() {
 
   const output = useMemo(() => rows.map((row, index) => {
     const comments = makeComments(row);
-    return `${index + 1}. ${row.name} - Lớp ${row.className}
-Nhận xét ngắn gọn: ${comments.short}
-Nhận xét trang trọng: ${comments.formal}
-Tin nhắn thân thiện gửi phụ huynh: ${comments.parent}`;
+    return `HỌC SINH ${index + 1}: ${row.name}
+- Lớp: ${row.className}
+- Hồ sơ ngắn: Mức học tập ${row.performance.toLowerCase()}; ${row.attitude}.
+- Điểm mạnh: ${row.strengths}
+- Điểm cần cải thiện: ${row.limitations}
+
+NHẬN XÉT HOÀN CHỈNH
+${comments.formal}
+
+GỢI Ý TRAO ĐỔI PHỤ HUYNH
+${comments.parent}`;
   }).join("\n\n"), [rows]);
 
   function downloadSample() {

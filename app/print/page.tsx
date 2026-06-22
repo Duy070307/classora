@@ -8,6 +8,7 @@ import { getDocumentHeaderLines } from "@/lib/document-header";
 import { PRINT_DOCUMENT_KEY } from "@/lib/print-document";
 import type { GeneratedDocument } from "@/lib/types";
 import { OfficialExamPrintView } from "@/components/document/OfficialExamPrintView";
+import { GenericDocumentContent } from "@/components/document/GenericDocumentContent";
 
 export default function PrintPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
@@ -33,7 +34,7 @@ export default function PrintPage() {
     {document.type === "exam" && settings ? <OfficialExamPrintView document={document} settings={settings} /> : <article className="print-document bg-white p-6 text-slate-900 shadow-sm ring-1 ring-slate-200 md:p-12" style={{ fontFamily: settings?.fontFamily, fontSize: `${settings?.fontSize || "13"}pt` }}>
       {header.length ? <header className="mb-8 space-y-1 border-b border-slate-300 pb-4">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
       <h1 className="mb-8 text-center text-2xl font-bold">{document.title}</h1>
-      <div className="whitespace-pre-wrap break-words leading-7">{document.content || "(Tài liệu chưa có nội dung.)"}</div>
+      <GenericDocumentContent content={document.content || "(Tài liệu chưa có nội dung.)"} />
       <p className="mt-10 border-t border-amber-200 pt-4 text-xs text-amber-700">Nội dung là bản nháp hỗ trợ soạn tài liệu. Giáo viên cần kiểm tra và chỉnh sửa trước khi sử dụng.</p>
     </article>}
   </main>;

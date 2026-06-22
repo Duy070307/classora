@@ -19,6 +19,8 @@ Soạn Lab tạo bản nháp theo từng môn để giáo viên có điểm bắ
 - Đáp án giáo viên tách khỏi đề học sinh.
 - Ma trận thể hiện chủ đề, bốn mức độ nhận thức, số câu, điểm và tỉ lệ.
 - Bản đặc tả nêu phần, nội dung, mức độ và hành động mong đợi.
+- Tài liệu ngoài đề thi có cấu trúc chính thức, phân tách nội dung học sinh và ghi chú giáo viên khi phù hợp.
+- Rubric, ma trận và bảng hướng dẫn được hiển thị thành bảng thật trong preview, Word và Print/PDF.
 
 ## Giáo viên cần kiểm tra
 

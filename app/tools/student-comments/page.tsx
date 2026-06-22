@@ -89,7 +89,7 @@ export default function StudentCommentsPage() {
         <ToolWorkspaceLayout
           form={
           <form onSubmit={handleSubmit} className="tool-form-card">
-            <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleStudentCommentInput); setMessage("Đã điền dữ liệu mẫu."); }}>Dùng dữ liệu mẫu</button>
+            <button type="button" className="btn-secondary w-full" onClick={() => { setInput(sampleStudentCommentInput); setMessage("Đã điền mẫu nhanh."); }}>Điền thử mẫu nhanh</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <PresetSelect presets={studentCommentPresets} onApply={(values) => setInput((current) => ({ ...current, ...(values as Partial<StudentCommentInput>) }))} />
             <TemplateSelect type="Nhận xét học sinh" value={templateId} onChange={setTemplateId} />

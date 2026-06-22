@@ -114,7 +114,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
           <form onSubmit={handleSubmit} className="tool-form-card">
             {config.sampleInput ? (
               <button type="button" onClick={() => setInput(config.sampleInput ?? initialInput)} className="btn-secondary w-full">
-                Dùng dữ liệu mẫu
+                Điền thử mẫu nhanh
               </button>
             ) : null}
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />

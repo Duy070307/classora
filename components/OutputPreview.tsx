@@ -1,6 +1,7 @@
 import type { GeneratedDocument } from "@/lib/types";
 import { BugReportLink } from "@/components/BugReportLink";
 import { getDocumentHeaderLines } from "@/lib/document-header";
+import { GenericDocumentContent } from "@/components/document/GenericDocumentContent";
 
 const headingPattern = /^(#{1,3}\s+|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT|MA TRẬN|ĐÁP ÁN|TRỘN MÃ ĐỀ|MÃ ĐỀ|I\.|II\.|III\.|IV\.|V\.|VI\.|VII\.|PHẦN|THANG ĐIỂM|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|CHỖ TRỐNG|NGẮN GỌN|TRANG TRỌNG|THÂN THIỆN|LƯU Ý|HƯỚNG DẪN)/i;
 
@@ -29,7 +30,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
             <div className="mt-5 flex items-end justify-between gap-3 border-b border-slate-900 pb-2"><p>Họ và tên thí sinh: .................................... Số báo danh: ...................</p><p className="shrink-0 border border-slate-900 px-3 py-2 font-bold">Mã đề: {(examMeta?.examCode || "0101").padStart(4, "0")}</p></div>
           </div> : null}
           {header.length ? <header className="mb-6 border-b border-slate-200 pb-3 text-sm leading-6 text-slate-700">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
-          {lines.map((line, index) => {
+          {document.type !== "exam" ? <GenericDocumentContent content={document.content} /> : lines.map((line, index) => {
             const trimmed = line.trim().replace(/^#{1,3}\s+/, "");
             if (!trimmed) return <div key={index} className="h-3" />;
             if (trimmed.startsWith("|")) {
