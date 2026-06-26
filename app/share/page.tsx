@@ -21,6 +21,6 @@ export default function SharePage() {
       <button type="button" className="btn-primary" onClick={() => copy(shareMessage, "message")}>{copied === "message" ? <Check size={17} /> : <Copy size={17} />}{copied === "message" ? "Đã sao chép" : "Sao chép tin nhắn"}</button>
       <button type="button" className="btn-secondary" onClick={() => copy(window.location.href, "link")}>{copied === "link" ? <Check size={17} /> : <Link2 size={17} />}{copied === "link" ? "Đã sao chép" : "Sao chép liên kết"}</button>
     </div></section>
-    <div className="mt-8 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Mở dashboard</Link><Link href="/feedback" className="btn-secondary">Góp ý sản phẩm</Link><Link href="/getting-started" className="btn-secondary">Hướng dẫn sử dụng</Link></div>
+    <div className="mt-8 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Dashboard</Link><Link href="/tools/exam-generator" className="btn-secondary">Tạo đề kiểm tra</Link><Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link><Link href="/feedback" className="btn-secondary">Góp ý</Link></div>
   </section><SiteFooter /></main>;
 }

@@ -5,6 +5,7 @@ const requiredFiles = [
   "app/page.tsx",
   "app/dashboard/page.tsx",
   "app/tools/page.tsx",
+  "app/samples/page.tsx",
   "app/history/page.tsx",
   "app/history/[id]/page.tsx",
   "app/drafts/page.tsx",

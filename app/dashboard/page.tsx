@@ -208,6 +208,16 @@ export default function DashboardPage() {
           </section>
         </div>
         <aside className="space-y-5">
+          <section className="play-card overflow-hidden bg-gradient-to-br from-indigo-50 to-white p-5">
+            <BookOpenCheck className="text-indigo-600" />
+            <h2 className="mt-4 text-xl font-black text-slate-900">Bạn mới dùng Soạn Lab?</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Xem một mẫu hoàn chỉnh hoặc bắt đầu từ quy trình soạn đề quen thuộc.</p>
+            <div className="mt-5 flex flex-col gap-2">
+              <Link href="/samples" className="btn-primary">Xem mẫu sử dụng</Link>
+              <Link href="/tools/exam-generator" className="btn-secondary">Tạo đề kiểm tra</Link>
+              <Link href="/getting-started" className="btn-secondary">Xem hướng dẫn</Link>
+            </div>
+          </section>
           <section className="play-card p-5">
             <h2 className="font-extrabold text-slate-900">Tìm nhanh</h2>
             <button

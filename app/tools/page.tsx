@@ -3,6 +3,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { Database, FileDown, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import Link from "next/link";
 import { ToolCard } from "@/components/ToolCard";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
@@ -156,6 +157,10 @@ function ToolsContent() {
           </span>
         </div>
       </section>
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4">
+        <div><p className="font-extrabold text-slate-900">Chưa biết nên bắt đầu từ đâu?</p><p className="mt-1 text-sm text-slate-600">Xem các ví dụ theo môn học và loại tài liệu.</p></div>
+        <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
+      </div>
       {tools.length ? (
         <div className="rounded-[28px] bg-gradient-to-b from-blue-50/60 to-transparent p-1 sm:p-3">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

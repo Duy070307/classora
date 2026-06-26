@@ -69,6 +69,9 @@ export default function HomePage() {
             <Link href="#how-it-works" className="btn-secondary min-h-13 px-6">
               Xem cách hoạt động
             </Link>
+            <Link href="/samples" className="btn-secondary min-h-13 px-6">
+              Mẫu sử dụng
+            </Link>
           </div>
           <p className="mt-5 text-sm font-semibold text-slate-500">
             Tạo bản nháp · Lưu lịch sử · Xuất Word/PDF
@@ -191,6 +194,9 @@ export default function HomePage() {
           <Link href="/tools" className="btn-primary mt-8">
             Xem tất cả công cụ
             <ArrowRight size={17} />
+          </Link>
+          <Link href="/samples" className="btn-secondary ml-3 mt-8">
+            Mẫu sử dụng
           </Link>
         </div>
       </section>

@@ -1,5 +1,8 @@
 # Checklist phát hành Soạn Lab
 
+- [ ] `/getting-started` mô tả đủ luồng từ chọn công cụ đến xuất hoặc lưu lịch sử.
+- [ ] `/samples` có đủ 6 mẫu, nội dung gợi ý và CTA đúng công cụ.
+- [ ] Liên kết “Mẫu sử dụng” hoạt động tại landing page, dashboard, trang công cụ, hướng dẫn bắt đầu, trang chia sẻ và footer.
 - [ ] `npm run lint` đạt.
 - [ ] `npm run build` đạt.
 - [ ] `npm run smoke` đạt.

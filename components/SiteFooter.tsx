@@ -6,6 +6,7 @@ const columns = [
     "Sản phẩm",
     ["Dashboard", "/dashboard"],
     ["Công cụ", "/tools"],
+    ["Mẫu sử dụng", "/samples"],
     ["Gói sử dụng", "/pricing"],
   ],
   [
