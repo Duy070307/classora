@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
@@ -19,6 +19,7 @@ import { useFormDraft } from "@/hooks/useFormDraft";
 import { worksheetPresets } from "@/lib/presets";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
+import { getCurrentSampleId, getWorksheetSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -39,6 +40,16 @@ export default function WorksheetGeneratorPage() {
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft("/tools/worksheet-generator", input, setInput);
+
+  useEffect(() => {
+    const sampleId = getCurrentSampleId();
+    const sample = getWorksheetSamplePrefill(sampleId);
+    if (!sample) return;
+    queueMicrotask(() => {
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample as Partial<WorksheetInput>));
+      setMessage("Đã điền mẫu phiếu học tập. Có thể chỉnh sửa trước khi tạo.");
+    });
+  }, []);
 
   async function generate() {
     if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");

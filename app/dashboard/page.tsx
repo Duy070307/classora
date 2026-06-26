@@ -24,6 +24,7 @@ import { SoanLabIcon, iconNameFromHref } from "@/components/ui/SoanLabIcon";
 import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 import { BrandLogo } from "@/components/BrandLogo";
+import { sampleLinks } from "@/lib/sample-prefill";
 
 const tasks = [
   [
@@ -213,9 +214,9 @@ export default function DashboardPage() {
             <h2 className="mt-4 text-xl font-black text-slate-900">Bạn mới dùng Soạn Lab?</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">Xem một mẫu hoàn chỉnh hoặc bắt đầu từ quy trình soạn đề quen thuộc.</p>
             <div className="mt-5 flex flex-col gap-2">
-              <Link href="/samples" className="btn-primary">Xem mẫu sử dụng</Link>
+              <Link href={sampleLinks.math12Thptqg} className="btn-primary">Dùng mẫu Toán 12</Link>
+              <Link href="/samples" className="btn-secondary">Xem mẫu sử dụng</Link>
               <Link href="/tools/exam-generator" className="btn-secondary">Tạo đề kiểm tra</Link>
-              <Link href="/getting-started" className="btn-secondary">Xem hướng dẫn</Link>
             </div>
           </section>
           <section className="play-card p-5">

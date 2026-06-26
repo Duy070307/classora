@@ -22,6 +22,7 @@ import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
 import { createStructuredExam } from "@/lib/mock-exam-generator";
+import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 
 const initialInput: ExamInput = {
   schoolName: "",
@@ -72,6 +73,16 @@ export default function ExamGeneratorPage() {
         teacherName: current.teacherName || settings.teacherName
       }));
       setBankQuestions(getQuestions());
+    });
+  }, []);
+
+  useEffect(() => {
+    const sampleId = getCurrentSampleId();
+    const sample = getExamSamplePrefill(sampleId);
+    if (!sample) return;
+    queueMicrotask(() => {
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample as Partial<ExamInput>));
+      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo.");
     });
   }, []);
 

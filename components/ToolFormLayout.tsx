@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { InputField } from "@/components/fields/InputField";
 import { SelectField } from "@/components/fields/SelectField";
 import { TextAreaField } from "@/components/fields/TextAreaField";
@@ -21,6 +21,7 @@ import { genericPresets } from "@/lib/presets";
 import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
+import { getCurrentSampleId, getGenericSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -57,6 +58,16 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft(config.href, input, setInput);
   const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "matrix" ? "Ma trận đề" : config.type === "answer-key" ? "Đáp án và thang điểm" : config.type === "exam-shuffler" ? "Đề kiểm tra" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
+
+  useEffect(() => {
+    const sampleId = getCurrentSampleId();
+    const sample = getGenericSamplePrefill(sampleId, config.href);
+    if (!sample) return;
+    queueMicrotask(() => {
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample));
+      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo.");
+    });
+  }, [config.href, initialInput]);
 
   function update(name: string, value: string | number | boolean | string[]) {
     setInput((current) => ({ ...current, [name]: value }));

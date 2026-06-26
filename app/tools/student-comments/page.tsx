@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -20,6 +20,7 @@ import { useFormDraft } from "@/hooks/useFormDraft";
 import { studentCommentPresets } from "@/lib/presets";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
+import { getCurrentSampleId, getStudentCommentSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 
 const initialInput: StudentCommentInput = {
   studentName: "Minh Anh",
@@ -48,6 +49,16 @@ export default function StudentCommentsPage() {
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft("/tools/student-comments", input, setInput);
+
+  useEffect(() => {
+    const sampleId = getCurrentSampleId();
+    const sample = getStudentCommentSamplePrefill(sampleId);
+    if (!sample) return;
+    queueMicrotask(() => {
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample as Partial<StudentCommentInput>));
+      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo.");
+    });
+  }, []);
 
   async function generate() {
     if (!input.studentName.trim()) return setMessage("Vui lòng nhập tên học sinh.");
