@@ -10,28 +10,16 @@ export function Navbar() {
           <BrandLogo variant="full" compact />
         </Link>
         <nav className="mx-auto hidden items-center gap-1 rounded-full bg-slate-50 p-1 text-sm font-bold text-slate-600 lg:flex">
-          <Link
-            href="/#how-it-works"
-            className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700"
-          >
+          <Link href="/#how-it-works" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Cách hoạt động
           </Link>
-          <Link
-            href="/#tools"
-            className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700"
-          >
+          <Link href="/#tools" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Công cụ
           </Link>
-          <Link
-            href="/feedback"
-            className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700"
-          >
-            Góp ý
+          <Link href="/samples" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
+            Mẫu sử dụng
           </Link>
-          <Link
-            href="/getting-started"
-            className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700"
-          >
+          <Link href="/getting-started" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Hướng dẫn
           </Link>
         </nav>

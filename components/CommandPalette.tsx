@@ -16,7 +16,6 @@ const pages: Item[] = [
   ["Mẫu cá nhân", "Quản lý template và placeholder.", "/templates", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
   ["Cài đặt", "Header, font và chế độ sử dụng.", "/settings", "Cấu hình", "Trang"],
   ["Dữ liệu", "Backup, restore và xóa dữ liệu.", "/data", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
-  ["Góp ý", "Soạn phản hồi sản phẩm.", "/feedback", "Hỗ trợ", "Trang"],
   ["Gói sử dụng", "Thông tin các gói sử dụng.", "/pricing", "Sản phẩm", "Trang"],
   ["Trải nghiệm Soạn Lab", "Thông tin và hướng dẫn sản phẩm.", "/private-beta", "Hướng dẫn", "Trang"],
   ["Phím tắt", "Xem trợ giúp phím tắt.", "/shortcuts", "Trợ giúp", "Trang"]

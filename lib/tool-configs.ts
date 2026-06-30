@@ -356,7 +356,7 @@ export const existingToolLinks = [
   }
 ];
 
-export const allToolLinks = [
+const rawToolLinks = [
   ...existingToolLinks,
   ...expandedToolConfigs.map((tool) => ({
     category: tool.category,
@@ -381,14 +381,10 @@ export const allToolLinks = [
     title: "Mẫu cá nhân",
     description: "Tạo, sửa, xóa, copy các mẫu tài liệu cá nhân lưu bằng localStorage.",
     href: "/templates"
-  },
-  {
-    category: "Cá nhân hóa",
-    title: "Góp ý",
-    description: "Gửi góp ý beta cho Soạn Lab bằng cách sao chép nội dung phản hồi.",
-    href: "/feedback"
   }
 ];
+
+export const allToolLinks = rawToolLinks;
 
 export const toolCategories = ["Soạn đề & kiểm tra", "Soạn bài & tài liệu", "Chủ nhiệm & phụ huynh", "Công thức & LaTeX", "Cá nhân hóa"] as const;
 

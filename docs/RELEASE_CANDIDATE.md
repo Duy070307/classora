@@ -1,43 +1,30 @@
-# Soạn Lab v0.5 Release Candidate
+# Soạn Lab - kiểm tra phát hành
 
 ## Đã sẵn sàng
 
-- Các workflow chính dành cho giáo viên dùng AI mô phỏng.
+- Các workflow chính hỗ trợ giáo viên tạo bản nháp tài liệu.
 - Xuất Word, Markdown, TXT và in/lưu PDF.
-- Đề kiểm tra mock hỗ trợ cấu trúc THPTQG gồm PHẦN I trắc nghiệm, PHẦN II đúng/sai, PHẦN III trả lời ngắn và đáp án giáo viên tách riêng.
-- Lịch sử, bản nháp, mẫu, ngân hàng câu hỏi và dữ liệu demo bằng localStorage.
+- Đề kiểm tra hỗ trợ cấu trúc THPTQG gồm PHẦN I trắc nghiệm, PHẦN II đúng/sai, PHẦN III trả lời ngắn và đáp án giáo viên tách riêng.
+- Lịch sử, bản nháp, mẫu, ngân hàng câu hỏi và dữ liệu cục bộ bằng localStorage.
 - Backup/restore JSON, diagnostics, command palette, favorites và recent tools.
-- Trang private beta, tester guide, feedback copy-only, share và checklist release.
-- Build production không cần API key, database, đăng nhập hoặc thanh toán.
+- Trang chia sẻ, mẫu sử dụng, hướng dẫn và checklist kiểm tra.
 
-## Chưa sẵn sàng
-
-- AI thật, tài khoản, database, thanh toán, OCR và đọc PDF/hình ảnh.
-- Đồng bộ dữ liệu giữa thiết bị.
-- Bảo đảm output chính xác tuyệt đối hoặc Word giống 100% mẫu phức tạp.
-
-## Cách test
+## Cần kiểm tra thủ công
 
 1. Mở `/release-candidate` và đặt lại checklist.
-2. Nạp mẫu tại `/demo-data`, sau đó thử 3-5 công cụ cốt lõi.
-3. Kiểm tra Word, print/PDF, Markdown, TXT và lịch sử.
-4. Xuất backup tại `/data`, thử restore và kiểm tra dữ liệu.
-5. Kiểm tra mobile, command palette và các empty state.
-6. Gửi góp ý tại `/feedback`.
+2. Mở `/samples`, dùng mẫu Toán 12 THPTQG và Phiếu học tập Toán 8.
+3. Tạo bản nháp, xuất Word, in/lưu PDF và lưu lịch sử.
+4. Mở lại tài liệu từ `/history` và xuất lại.
+5. Xuất backup tại `/data`, thử restore và kiểm tra dữ liệu.
+6. Kiểm tra mobile, command palette và các empty state.
 
-## Nội dung gửi tester
+## Nội dung nhắc giáo viên
 
-> Em đang phát triển Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề, ma trận đề, phiếu học tập, nhận xét học sinh và xuất Word. Bản hiện tại là MVP/demo, chưa dùng AI thật và chưa thu phí. Em muốn nhờ cô/thầy test thử quy trình sử dụng, đặc biệt là giao diện, xuất Word và các công cụ nào thực sự hữu ích.
-
-Có thể sao chép tin nhắn và link trực tiếp tại `/share`.
+Nội dung được tạo tự động là bản nháp hỗ trợ giáo viên. Giáo viên cần rà soát chuyên môn, đáp án, thang điểm và định dạng trước khi sử dụng.
 
 ## Checklist phát hành
 
 - Chạy `npm run lint`, `npm run build`, `npm run smoke`.
-- Kiểm tra `/diagnostics`, `/known-issues` và `/release-candidate`.
+- Kiểm tra `/diagnostics`, `/known-issues`, `/samples` và `/release-candidate`.
 - Test dashboard, tools, history, export, backup và mobile trên URL deploy.
-- Xác nhận cảnh báo AI mô phỏng và giới hạn dữ liệu hiển thị rõ.
-
-## Luồng private beta đề xuất
-
-Gửi `/share` → tester đọc `/known-issues` → làm theo `/tester-guide` → thử công cụ → xuất tài liệu → gửi `/feedback`.
+- Xác nhận không có CTA công khai tới `/feedback`.

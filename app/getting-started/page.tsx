@@ -6,9 +6,9 @@ import { sampleLinks } from "@/lib/sample-prefill";
 
 const steps = [
   ["01", "Chọn công cụ", "Chọn đúng công cụ cho đề kiểm tra, phiếu học tập, giáo án hoặc nhận xét.", LayoutDashboard],
-  ["02", "Nhập thông tin bài học", "Điền môn, lớp, chủ đề và yêu cầu cụ thể bằng biểu mẫu rõ ràng.", CheckCircle2],
-  ["03", "Tạo và rà soát bản nháp", "Tạo nội dung, kiểm tra chuyên môn, đáp án và cách diễn đạt.", PenTool],
-  ["04", "Xuất hoặc lưu", "Rà soát nội dung, sau đó sao chép, xuất Word/PDF hoặc lưu vào lịch sử.", FileText]
+  ["02", "Nhập thông tin", "Điền môn, lớp, chủ đề và yêu cầu cụ thể bằng biểu mẫu rõ ràng.", CheckCircle2],
+  ["03", "Tạo bản nháp", "Tạo nội dung và rà soát chuyên môn, đáp án, cách diễn đạt.", PenTool],
+  ["04", "Xuất hoặc lưu", "Xuất Word/PDF hoặc lưu vào lịch sử sau khi giáo viên kiểm tra.", FileText],
 ] as const;
 
 const tools = [
@@ -16,13 +16,13 @@ const tools = [
   ["Phiếu học tập", "Mục tiêu, kiến thức và bài tập.", "/tools/worksheet-generator", FileText],
   ["Kế hoạch bài dạy", "Mục tiêu, học liệu và tiến trình hoạt động.", "/tools/lesson-plan-generator", BookOpenCheck],
   ["Nhận xét học sinh", "Ba phiên bản nhận xét dễ chỉnh sửa.", "/tools/student-comments", MessageSquareText],
-  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi cục bộ.", "/question-bank", CheckCircle2]
+  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi cục bộ.", "/question-bank", CheckCircle2],
 ] as const;
 
 const quickSamples = [
   ["Toán 12 THPTQG", sampleLinks.math12Thptqg, PenTool],
   ["Phiếu học tập Toán 8", sampleLinks.worksheetMath8, FileText],
-  ["Nhận xét học sinh", sampleLinks.studentComment, MessageSquareText]
+  ["Nhận xét học sinh", sampleLinks.studentComment, MessageSquareText],
 ] as const;
 
 export default function GettingStartedPage() {
@@ -79,9 +79,9 @@ export default function GettingStartedPage() {
 
     <div className="mt-8 flex flex-wrap gap-3">
       <Link href="/samples" className="btn-primary">Mẫu sử dụng</Link>
-      <Link href="/tools/exam-generator" className="btn-secondary">Tạo đề đầu tiên</Link>
+      <Link href="/tools/exam-generator" className="btn-secondary">Tạo đề kiểm tra</Link>
       <Link href="/dashboard" className="btn-secondary">Mở dashboard</Link>
-      <Link href="/feedback" className="btn-ghost">Gửi góp ý</Link>
+      <Link href="/tools" className="btn-ghost">Xem tất cả công cụ</Link>
     </div>
   </main></div>;
 }

@@ -7,21 +7,21 @@ const columns = [
     ["Dashboard", "/dashboard"],
     ["Công cụ", "/tools"],
     ["Mẫu sử dụng", "/samples"],
-    ["Gói sử dụng", "/pricing"],
+    ["Hướng dẫn", "/getting-started"],
   ],
   [
     "Tài liệu",
-    ["Hướng dẫn", "/getting-started"],
+    ["Gói sử dụng", "/pricing"],
     ["Trạng thái hệ thống", "/known-issues"],
     ["Nhật ký phát triển", "/changelog"],
   ],
   [
-    "Hỗ trợ",
-    ["Góp ý", "/feedback"],
+    "Pháp lý",
     ["Quyền riêng tư", "/privacy"],
     ["Điều khoản", "/terms"],
   ],
 ];
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-blue-100 bg-white px-4 py-12 text-sm text-slate-500">
@@ -40,11 +40,7 @@ export function SiteFooter() {
             <h3 className="font-extrabold text-slate-900">{title as string}</h3>
             <div className="mt-4 space-y-3">
               {(links as string[][]).map(([label, href]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="block hover:text-blue-700"
-                >
+                <Link key={href} href={href} className="block hover:text-blue-700">
                   {label}
                 </Link>
               ))}

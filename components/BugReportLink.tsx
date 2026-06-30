@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { MessageCircleWarning } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
-export function BugReportLink({ source, className = "" }: { source?: string; className?: string }) {
-  const href = source ? `/feedback?source=${encodeURIComponent(source)}` : "/feedback";
-  return <Link href={href} className={`inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline ${className}`}><MessageCircleWarning size={15} />Báo lỗi/Góp ý</Link>;
+export function BugReportLink({ className = "" }: { source?: string; className?: string }) {
+  return <Link href="/known-issues" className={`inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline ${className}`}><AlertCircle size={15} />Trạng thái hệ thống</Link>;
 }

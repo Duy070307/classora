@@ -17,7 +17,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
       <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
         <button type="button" className="btn-primary" onClick={reset}>Thử lại</button>
         <Link href="/dashboard" className="btn-secondary">Về dashboard</Link>
-        <Link href="/feedback" className="btn-secondary">Gửi góp ý</Link>
+        <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
       </div>
     </section>
   </main>;

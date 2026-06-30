@@ -44,10 +44,10 @@ const groups = [
     links: [
       ["Dữ liệu", "/data", Database],
       ["Cài đặt", "/settings", Settings],
-      ["Góp ý", "/feedback", MessageCircle],
     ],
   },
 ];
+
 export function Sidebar({
   mobileOpen = false,
   onClose,
@@ -61,6 +61,7 @@ export function Sidebar({
     </Suspense>
   );
 }
+
 function Content({
   mobileOpen,
   onClose,
@@ -91,21 +92,14 @@ function Content({
           <Link href="/" className="min-w-0">
             <BrandLogo compact />
           </Link>
-          <button
-            type="button"
-            className="ml-2 rounded-xl p-2 text-muted md:hidden"
-            onClick={onClose}
-            aria-label="Đóng menu"
-          >
+          <button type="button" className="ml-2 rounded-xl p-2 text-muted md:hidden" onClick={onClose} aria-label="Đóng menu">
             <X size={18} />
           </button>
         </div>
         <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-5">
           {groups.map((group) => (
             <section key={group.title} className="mb-6">
-              <p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">
-                {group.title}
-              </p>
+              <p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-slate-400">{group.title}</p>
               <div className="space-y-1">
                 {group.links.map(([label, href, Icon]) => {
                   const I = Icon as typeof Home;
@@ -118,17 +112,8 @@ function Content({
                       aria-current={selected ? "page" : undefined}
                       className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${selected ? "bg-gradient-to-r from-blue-50 to-cyan-50/60 text-blue-700 shadow-sm ring-1 ring-blue-100" : "text-slate-600 hover:bg-blue-50/60 hover:text-blue-800"}`}
                     >
-                      {selected ? (
-                        <span className="absolute -left-1 h-6 w-1 rounded-full bg-blue-600" />
-                      ) : null}
-                      <I
-                        size={17}
-                        className={
-                          selected
-                            ? "text-blue-600"
-                            : "text-slate-400 group-hover:text-blue-600"
-                        }
-                      />
+                      {selected ? <span className="absolute -left-1 h-6 w-1 rounded-full bg-blue-600" /> : null}
+                      <I size={17} className={selected ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
                       {label as string}
                     </Link>
                   );
@@ -143,12 +128,8 @@ function Content({
             Dữ liệu lưu trên trình duyệt
           </p>
           <div className="mt-3 flex gap-4 text-xs font-semibold">
-            <Link href="/feedback" className="text-blue-700">
-              Góp ý
-            </Link>
-            <Link href="/settings" className="text-slate-500">
-              Cài đặt
-            </Link>
+            <Link href="/settings" className="text-slate-500">Cài đặt</Link>
+            <Link href="/data" className="text-slate-500">Dữ liệu</Link>
           </div>
         </div>
       </aside>

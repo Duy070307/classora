@@ -1,12 +1,12 @@
 # Checklist phát hành Soạn Lab
 
-- [ ] `/getting-started` mô tả đủ luồng từ chọn công cụ đến xuất hoặc lưu lịch sử.
-- [ ] `/samples` có đủ 6 mẫu, nội dung gợi ý và CTA đúng công cụ.
-- [ ] Liên kết “Mẫu sử dụng” hoạt động tại landing page, dashboard, trang công cụ, hướng dẫn bắt đầu, trang chia sẻ và footer.
+- [ ] `/getting-started` mô tả đủ luồng: chọn công cụ → nhập thông tin → tạo bản nháp → xuất Word/PDF hoặc lưu lịch sử.
+- [ ] `/samples` có đủ 6 mẫu, nội dung mẫu và CTA đúng công cụ.
+- [ ] Liên kết “Mẫu sử dụng” hoạt động tại landing page, dashboard, trang công cụ, hướng dẫn, trang chia sẻ và footer.
+- [ ] Không có CTA công khai tới `/feedback` trong header, sidebar, footer, dashboard, landing, share, samples, tools, command palette.
 - [ ] `npm run lint` đạt.
 - [ ] `npm run build` đạt.
 - [ ] `npm run smoke` đạt.
-- [ ] Build không cần biến môi trường bắt buộc và sẵn sàng cho Vercel.
 - [ ] Landing, dashboard và thư mục công cụ mở bình thường.
 - [ ] Tìm kiếm và lọc danh mục công cụ hoạt động.
 - [ ] Tạo đề kiểm tra thành công.
@@ -15,7 +15,6 @@
 - [ ] Lưu lịch sử, mở lại và xuất lại thành công.
 - [ ] Phiếu học tập và kế hoạch bài dạy xuất Word thành công.
 - [ ] Rubric hiển thị bảng thật trong preview, Word và Print.
-- [ ] Trang feedback và share mở bình thường.
 - [ ] Kiểm tra giao diện ở chiều rộng 390px.
 - [ ] Không có lỗi console trên các trang cốt lõi.
 - [ ] Không có chữ thương hiệu cũ hoặc trạng thái phát triển trên giao diện chính.

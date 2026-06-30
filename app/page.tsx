@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Check,
   GraduationCap,
-  MessageSquareText,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
@@ -31,13 +30,6 @@ const tools = [
   ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ""],
   ["Mẫu tài liệu", "Dùng lại format quen thuộc.", ""],
 ];
-const feedback = [
-  "File Word có dùng được không?",
-  "Form nhập có dễ hiểu không?",
-  "Công cụ nào hữu ích nhất?",
-  "Nên tích hợp AI thật vào đâu trước?",
-];
-
 export default function HomePage() {
   return (
     <main className="warm-page">
@@ -279,27 +271,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-4 py-20">
-        <h2 className="text-center text-4xl font-black text-slate-950">
-          Nhờ giáo viên góp ý ở đúng chỗ.
-        </h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {feedback.map((x) => (
-            <div key={x} className="play-card p-6">
-              <MessageSquareText className="text-cyan-600" />
-              <p className="mt-5 text-lg font-extrabold leading-7 text-slate-900">
-                {x}
-              </p>
-              <Link
-                href="/feedback"
-                className="mt-5 inline-flex text-sm font-bold text-blue-700"
-              >
-                Gửi ý kiến →
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
       <section className="mx-auto max-w-7xl px-4 pb-20">
         <div className="play-card relative overflow-hidden p-8 sm:p-12">
           <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-cyan-100" />
@@ -309,15 +280,18 @@ export default function HomePage() {
               Sẵn sàng tạo tài liệu đầu tiên với Soạn Lab?
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Tạo tài liệu đầu tiên và gửi góp ý để Soạn Lab được cải
-              thiện đúng nhu cầu thực tế.
+              Mở dashboard, chọn một mẫu nhanh hoặc bắt đầu từ công cụ quen
+              thuộc để tạo bản nháp và xuất Word/PDF.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/dashboard" className="btn-primary">
                 Mở dashboard
               </Link>
-              <Link href="/feedback" className="btn-secondary">
-                Gửi góp ý
+              <Link href="/samples" className="btn-secondary">
+                Mẫu sử dụng
+              </Link>
+              <Link href="/tools" className="btn-secondary">
+                Xem công cụ
               </Link>
             </div>
           </div>

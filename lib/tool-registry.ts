@@ -30,7 +30,7 @@ export const categoryOrder: ToolCategory[] = [
   "personalization"
 ];
 
-export const toolRegistry: ToolMeta[] = [
+const allTools: ToolMeta[] = [
   { title: "Ngân hàng câu hỏi", description: "Lưu, lọc, chỉnh sửa và tái sử dụng câu hỏi trên trình duyệt.", href: "/question-bank", category: "exam-assessment", popular: true, badge: "Mới" },
   { title: "Nhập câu hỏi từ văn bản/CSV", description: "Phân tích câu hỏi đã có và lưu vào ngân hàng cục bộ.", href: "/tools/import-questions", category: "exam-assessment", badge: "Import" },
   { title: "Tạo đề kiểm tra", description: "Tạo đề có đáp án, thang điểm và ma trận.", href: "/tools/exam-generator", category: "exam-assessment", popular: true },
@@ -60,5 +60,6 @@ export const toolRegistry: ToolMeta[] = [
   { title: "Preview LaTeX", description: "Nhập LaTeX và xem preview công thức bằng KaTeX.", href: "/tools/latex-preview", category: "formula-latex" },
 
   { title: "Mẫu cá nhân", description: "Tạo, sửa, xóa và copy mẫu tài liệu cá nhân.", href: "/templates", category: "personalization" },
-  { title: "Góp ý", description: "Gửi góp ý beta cho Soạn Lab.", href: "/feedback", category: "personalization" }
 ];
+
+export const toolRegistry: ToolMeta[] = allTools;

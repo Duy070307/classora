@@ -9,7 +9,7 @@
 ## Hướng phát triển
 
 1. Thử nghiệm công khai có kiểm soát với giáo viên.
-2. Mở rộng bộ mẫu nội dung sau khi có phản hồi chuyên môn.
+2. Mở rộng bộ mẫu nội dung sau các vòng rà soát chuyên môn.
 3. Nghiên cứu tích hợp dịch vụ tạo nội dung phía máy chủ với cơ chế bảo vệ phù hợp.
 4. Tài khoản và đồng bộ dữ liệu khi hạ tầng sẵn sàng.
 5. OCR ảnh/PDF, không gian tổ chuyên môn và thanh toán chỉ được xem xét sau các giai đoạn trên.
