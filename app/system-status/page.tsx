@@ -1,47 +1,61 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { CheckCircle2, Clock3 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const activeItems = [
-  "Tạo đề kiểm tra",
-  "Xuất Word",
-  "Print/PDF",
-  "Mẫu sử dụng",
-  "Lưu lịch sử",
-];
-
-const upcomingItems = [
-  "Tài khoản",
-  "Đồng bộ dữ liệu",
-  "OCR ảnh/PDF",
-];
+const items = [
+  ["Tạo đề kiểm tra", "Hoạt động", "active"],
+  ["Xuất Word", "Hoạt động", "active"],
+  ["Print/PDF", "Hoạt động", "active"],
+  ["Mẫu sử dụng", "Hoạt động", "active"],
+  ["Lưu lịch sử", "Hoạt động", "active"],
+  ["Tài khoản", "Chưa mở", "upcoming"],
+  ["Đồng bộ dữ liệu", "Chưa mở", "upcoming"],
+  ["OCR ảnh/PDF", "Chưa mở", "upcoming"],
+] as const;
 
 export default function SystemStatusPage() {
-  return <main className="min-h-screen"><Navbar /><section className="mx-auto max-w-5xl px-4 py-10 sm:py-16">
-    <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 sm:p-9">
-      <p className="text-sm font-bold uppercase tracking-wide text-blue-700">Trạng thái hệ thống</p>
-      <h1 className="mt-4 text-3xl font-extrabold text-ink sm:text-4xl">Các chức năng chính của Soạn Lab</h1>
-      <p className="mt-4 max-w-3xl leading-7 text-muted">Thông tin tổng quan để giáo viên biết phạm vi hỗ trợ hiện tại. Nội dung tạo ra là bản nháp và cần giáo viên rà soát trước khi sử dụng.</p>
-    </div>
-    <div className="mt-8 grid gap-5 md:grid-cols-2">
-      <section className="card p-5 shadow-lg sm:p-7">
-        <h2 className="text-xl font-extrabold text-ink">Đang hoạt động</h2>
-        <ul className="mt-5 space-y-3">
-          {activeItems.map((item) => <li key={item} className="flex items-center justify-between gap-3 rounded-2xl bg-emerald-50 p-4 text-sm font-bold text-emerald-800"><span className="flex items-center gap-3"><CheckCircle2 size={18} />{item}</span><span>Hoạt động</span></li>)}
-        </ul>
+  return (
+    <main className="warm-page min-h-screen">
+      <Navbar />
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:py-16">
+        <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6 shadow-sm sm:p-9">
+          <p className="text-sm font-bold uppercase tracking-wide text-blue-700">Trạng thái hệ thống</p>
+          <h1 className="mt-4 text-3xl font-extrabold text-ink sm:text-4xl">Các chức năng chính của Soạn Lab</h1>
+          <p className="mt-4 max-w-3xl leading-7 text-muted">
+            Trang này giúp giáo viên biết nhanh chức năng nào đang dùng được và chức năng nào chưa mở. Nội dung tạo ra là bản nháp và cần giáo viên rà soát trước khi sử dụng.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {items.map(([name, status, type]) => {
+            const active = type === "active";
+            return (
+              <article key={name} className="card flex items-center justify-between gap-4 p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${active ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
+                    {active ? <CheckCircle2 size={20} /> : <Clock3 size={20} />}
+                  </span>
+                  <div>
+                    <h2 className="font-extrabold text-ink">{name}</h2>
+                    <p className="text-sm text-muted">{active ? "Có thể sử dụng trong ứng dụng hiện tại." : "Sẽ được mở khi hạ tầng phù hợp hoàn thiện."}</p>
+                  </div>
+                </div>
+                <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-extrabold ${active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                  {status}
+                </span>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Link href="/dashboard" className="btn-primary">Bắt đầu sử dụng</Link>
+          <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
+          <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
+        </div>
       </section>
-      <section className="card p-5 shadow-lg sm:p-7">
-        <h2 className="text-xl font-extrabold text-ink">Chưa mở</h2>
-        <ul className="mt-5 space-y-3">
-          {upcomingItems.map((item) => <li key={item} className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-700"><span className="flex items-center gap-3"><Clock3 size={18} />{item}</span><span>Chưa mở</span></li>)}
-        </ul>
-      </section>
-    </div>
-    <div className="mt-7 flex flex-wrap gap-3">
-      <Link href="/dashboard" className="btn-primary">Mở dashboard</Link>
-      <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
-      <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
-    </div>
-  </section><SiteFooter /></main>;
+      <SiteFooter />
+    </main>
+  );
 }
