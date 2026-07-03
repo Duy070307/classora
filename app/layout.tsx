@@ -6,7 +6,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
   "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.";
-const ogImage = "/brand/soan-lab-logo-full.png";
+const ogImage = "/og-image.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
@@ -25,10 +25,14 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: [
-      { url: "/brand/soan-lab-mark.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    apple: [{ url: "/apple-touch-icon.svg", type: "image/svg+xml" }],
+    apple: [
+      { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
+      { url: "/apple-touch-icon.svg", type: "image/svg+xml" },
+    ],
   },
   title: {
     default: title,
