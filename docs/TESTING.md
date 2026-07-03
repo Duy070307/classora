@@ -1,39 +1,100 @@
 # Testing Soạn Lab
 
-## Kiểm tra thủ công
+## Route QA
 
-- Onboarding: mở `/getting-started`, kiểm tra đủ luồng chọn công cụ → nhập thông tin → tạo và rà soát bản nháp → xuất Word/PDF hoặc lưu lịch sử.
-- Mẫu sử dụng: mở `/samples`, kiểm tra đủ 6 mẫu và mỗi CTA dẫn đến đúng công cụ tương ứng.
-- Điều hướng mẫu: kiểm tra liên kết “Mẫu sử dụng” trên landing page, dashboard, trang công cụ, hướng dẫn bắt đầu, trang chia sẻ và footer.
-- Trạng thái hệ thống: mở `/system-status`, xác nhận các chức năng đang hoạt động và các chức năng chưa mở được trình bày rõ ràng.
-- Tài liệu ngoài đề thi: tạo phiếu học tập, kế hoạch bài dạy, nhận xét học sinh, rubric và tin nhắn phụ huynh; kiểm tra đủ phần và không có bảng Markdown thô.
-- Word tài liệu chung: xác nhận tiêu đề, bullet, khoảng cách và bảng rubric được xuất thành bảng thật.
-- Print/PDF tài liệu chung: xác nhận nền trắng, không có app chrome, bảng rõ ràng và không áp dụng header THPTQG.
-- Lịch sử tài liệu chung: lưu phiếu học tập, mở lại và xuất Word/Print lần nữa.
-- Chất lượng theo môn: tạo Toán 12 THPTQG và Lịch sử 12 THPTQG; kiểm tra câu hỏi, đáp án và giải thích đúng đặc trưng môn.
-- Cấu trúc nội dung: xác nhận PHẦN I/II/III đầy đủ, đáp án PHẦN I không dồn vào một lựa chọn và PHẦN II có Đúng/Sai đan xen.
-- Tài liệu giáo viên: kiểm tra bảng đáp án ba phần, gợi ý chấm PHẦN III, thang điểm, ma trận và bản đặc tả.
-- Hồi quy xuất: xuất Word, Print/PDF, lưu lịch sử, mở lại tài liệu và xuất lần nữa.
-- Dashboard: thẻ hướng dẫn, lối tắt, dữ liệu cá nhân và tài liệu gần đây.
-- Tools directory: tìm kiếm, category và liên kết tool.
-- Exam generator: dữ liệu mẫu, generate, copy, save và generate again.
-- Word đề thi THPTQG: kiểm tra mã đề bốn chữ số, đường phân cách, PHẦN I/II/III và lựa chọn ngắn dạng 2x2.
-- PDF/Print THPTQG: tạo đề, chọn In/Lưu PDF và xác nhận `/print` có header hai cột, candidate row, mã đề, đường phân cách và font Times New Roman.
-- History: tìm kiếm, filter folder, xem, copy, export và delete.
-- Question bank: thêm, sửa, xóa, lọc, chọn và export.
-- Templates: thêm mẫu, placeholder và áp dụng trong tool.
-- Settings: lưu/reset header tài liệu.
-- Quản lý dữ liệu: xuất backup trước khi kiểm thử lớn; nhập lại file để khôi phục dữ liệu.
-- Bản nháp biểu mẫu: nhập một form, refresh trang, xác nhận bản nháp có thể khôi phục, xóa bản nháp và kiểm tra bản nháp xuất hiện tại `/drafts`.
-- Tìm nhanh: mở bằng nút “Tìm nhanh” và Ctrl/Cmd + K; thử tìm tool, trang, dùng Enter và Esc.
-- Yêu thích/gần đây: thêm/bỏ ngôi sao, kiểm tra dashboard và bộ lọc `/tools`.
-- Lịch sử hàng loạt: chọn nhiều tài liệu, xuất Markdown/TXT, đổi thư mục và xóa có xác nhận.
-- Backup: xác nhận favorites và recent tools được xuất/khôi phục.
-- Reset dữ liệu: kiểm tra riêng từng nút xóa, hộp xác nhận và nút xóa toàn bộ.
-- Mobile: kiểm tra landing, dashboard, form, preview, bảng và sidebar.
-- Production shell: kiểm tra favicon, manifest, metadata, trang 404 và error boundary có thông báo tiếng Việt.
-- Chia sẻ: mở `/share`, sao chép đúng tin nhắn giới thiệu và URL hiện tại.
-- Sau deploy: test dashboard, tools, Word export, print/PDF, backup localStorage, command palette và mobile.
+Public routes cần mở không lỗi, không overflow ngang desktop/mobile và không có ảnh/icon hỏng:
+
+- `/`
+- `/tools`
+- `/samples`
+- `/getting-started`
+- `/pricing`
+- `/privacy`
+- `/terms`
+- `/system-status`
+- `/share`
+
+App routes cần kiểm tra:
+
+- `/dashboard`
+- `/history`
+- `/templates`
+- `/question-bank`
+- `/data`
+- `/settings`
+
+Tool routes quan trọng:
+
+- `/tools/exam-generator`
+- `/tools/worksheet-generator`
+- `/tools/lesson-plan-generator`
+- `/tools/student-comments`
+- `/tools/bulk-student-comments`
+- `/tools/rubric-generator`
+- `/tools/parent-message-generator`
+- `/tools/import-questions`
+- `/tools/latex-preview`
+
+## Sample prefill
+
+Mở `/samples` và kiểm tra từng mẫu:
+
+- Toán 12 THPTQG → `/tools/exam-generator?sample=math-12-thptqg`
+- Lịch sử 12 THPTQG → `/tools/exam-generator?sample=history-12-thptqg`
+- Phiếu học tập Toán 8 → `/tools/worksheet-generator?sample=worksheet-math-8`
+- Giáo án Ngữ văn 9 → `/tools/lesson-plan-generator?sample=lesson-literature-9`
+- Nhận xét học sinh → `/tools/student-comments?sample=student-comment`
+- Tin nhắn phụ huynh → `/tools/parent-message-generator?sample=parent-message`
+
+Xác nhận đúng công cụ mở, field được điền, không có warning controlled/uncontrolled input, có thể tạo bản nháp và các nút export xuất hiện sau khi tạo.
+
+## Export regression
+
+### Đề thi
+
+1. Tạo Toán 12 THPTQG từ mẫu.
+2. Xuất Word.
+3. Mở Print/PDF.
+4. Lưu lịch sử.
+5. Mở lại từ `/history`.
+6. Xuất Word và Print/PDF lại.
+
+Cần xác nhận:
+
+- Không có đáp án giáo viên lẫn vào đề học sinh.
+- PHẦN I/II/III hiển thị đúng.
+- Bảng đáp án giáo viên, thang điểm, ma trận và bản đặc tả còn đúng.
+- Không có bảng Markdown thô.
+
+### Tài liệu ngoài đề thi
+
+Kiểm tra Word và Print/PDF nếu có:
+
+- Phiếu học tập.
+- Kế hoạch bài dạy.
+- Nhận xét học sinh.
+- Rubric.
+- Tin nhắn phụ huynh.
+
+## Metadata/assets
+
+Kiểm tra các URL:
+
+- `/favicon.ico`
+- `/icon.png`
+- `/apple-icon.png`
+- `/icon-192.png`
+- `/icon-512.png`
+- `/og-image.png`
+- `/manifest.json`
+- `/sitemap.xml`
+- `/robots.txt`
+
+Kiểm tra browser title, favicon, manifest JSON và OG/Twitter metadata.
+
+## Public wording audit
+
+Giao diện public chính không được hiển thị tên thương hiệu cũ, CTA góp ý công khai hoặc từ ngữ phát triển nội bộ. Các route nội bộ cũ nếu còn tồn tại không được xuất hiện trong public nav, footer, sitemap hoặc command palette.
 
 ## Lệnh kiểm tra
 
