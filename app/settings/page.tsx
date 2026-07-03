@@ -66,7 +66,6 @@ export default function SettingsPage() {
             <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">AI thật</dt><dd className="mt-1 font-semibold text-ink">Chưa được bật</dd></div>
           </dl>
           <p className="mt-4 text-sm text-muted">Soạn Lab không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
-          <Link href="/ai-lab" className="btn-secondary mt-4">Mở AI Lab</Link>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
           <h2 className="text-lg font-bold text-ink">Hướng dẫn bắt đầu</h2>

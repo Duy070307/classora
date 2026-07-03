@@ -4,7 +4,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import {
   BookOpenCheck,
-  Calculator,
   ClipboardList,
   Database,
   FileClock,
@@ -25,10 +24,10 @@ const groups = [
     title: "Công cụ",
     links: [
       ["Tất cả công cụ", "/tools", Wrench],
+      ["Mẫu sử dụng", "/samples", BookOpenCheck],
       ["Soạn đề", "/tools?category=exam-assessment", ClipboardList],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Nhận xét", "/tools/student-comments", MessageCircle],
-      ["LaTeX", "/tools?category=formula-latex", Calculator],
     ],
   },
   {
@@ -79,15 +78,8 @@ function Content({
   };
   return (
     <>
-      <button
-        type="button"
-        aria-label="Đóng lớp phủ menu"
-        onClick={onClose}
-        className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`}
-      />
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200/70 bg-white shadow-2xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-[8px_0_30px_rgba(30,64,175,0.035)] ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
+      <button type="button" aria-label="Đóng lớp phủ menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200/70 bg-white shadow-2xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-[8px_0_30px_rgba(30,64,175,0.035)] ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center border-b border-slate-100 px-5 py-5">
           <Link href="/" className="min-w-0">
             <BrandLogo compact />
@@ -105,13 +97,7 @@ function Content({
                   const I = Icon as typeof Home;
                   const selected = active(href as string);
                   return (
-                    <Link
-                      key={href as string}
-                      href={href as string}
-                      onClick={onClose}
-                      aria-current={selected ? "page" : undefined}
-                      className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${selected ? "bg-gradient-to-r from-blue-50 to-cyan-50/60 text-blue-700 shadow-sm ring-1 ring-blue-100" : "text-slate-600 hover:bg-blue-50/60 hover:text-blue-800"}`}
-                    >
+                    <Link key={href as string} href={href as string} onClick={onClose} aria-current={selected ? "page" : undefined} className={`group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition ${selected ? "bg-gradient-to-r from-blue-50 to-cyan-50/60 text-blue-700 shadow-sm ring-1 ring-blue-100" : "text-slate-600 hover:bg-blue-50/60 hover:text-blue-800"}`}>
                       {selected ? <span className="absolute -left-1 h-6 w-1 rounded-full bg-blue-600" /> : null}
                       <I size={17} className={selected ? "text-blue-600" : "text-slate-400 group-hover:text-blue-600"} />
                       {label as string}

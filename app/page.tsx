@@ -14,21 +14,21 @@ import { SoanLabIcon, iconNameFromText } from "@/components/ui/SoanLabIcon";
 import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 
 const stats = [
-  ["20+", "công cụ", "Cho soạn đề và tài liệu"],
-  ["4", "kiểu xuất", "Word, PDF, Markdown, TXT"],
-  ["Local", "dữ liệu", "Lưu trên trình duyệt"],
-  ["20+", "quy trình", "Hỗ trợ công việc giảng dạy"],
+  ["20+", "công c?", "Cho so?n d? và tài li?u"],
+  ["4", "ki?u xu?t", "Word, PDF, Markdown, TXT"],
+  ["Local", "d? li?u", "Luu trên trình duy?t"],
+  ["20+", "quy trình", "H? tr? công vi?c gi?ng d?y"],
 ];
 const tools = [
-  ["Tạo đề kiểm tra", "Đề, đáp án và ma trận.", "Phổ biến"],
-  ["Tạo ma trận đề", "Phân bổ câu hỏi rõ ràng.", "Hữu ích"],
-  ["Đáp án & thang điểm", "Hỗ trợ chấm bài.", ""],
-  ["Phiếu học tập", "Bài tập theo chủ đề.", ""],
-  ["Giáo án", "Tiến trình dạy học.", ""],
-  ["Nhận xét học sinh", "Bản nháp dễ chỉnh sửa.", ""],
-  ["Nhận xét hàng loạt", "Nhập nhanh bằng CSV.", "Hữu ích"],
-  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng.", ""],
-  ["Mẫu tài liệu", "Dùng lại format quen thuộc.", ""],
+  ["T?o d? ki?m tra", "Ð?, dáp án và ma tr?n.", "Ph? bi?n"],
+  ["T?o ma tr?n d?", "Phân b? câu h?i rõ ràng.", "H?u ích"],
+  ["Ðáp án & thang di?m", "H? tr? ch?m bài.", ""],
+  ["Phi?u h?c t?p", "Bài t?p theo ch? d?.", ""],
+  ["Giáo án", "Ti?n trình d?y h?c.", ""],
+  ["Nh?n xét h?c sinh", "B?n nháp d? ch?nh s?a.", ""],
+  ["Nh?n xét hàng lo?t", "Nh?p nhanh b?ng CSV.", "H?u ích"],
+  ["Ngân hàng câu h?i", "Luu và tái s? d?ng.", ""],
+  ["M?u tài li?u", "Dùng l?i format quen thu?c.", ""],
 ];
 export default function HomePage() {
   return (
@@ -37,42 +37,42 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:py-18 lg:grid-cols-[1.05fr_.95fr] lg:py-20">
         <div>
           <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
-            Dành cho giáo viên Việt Nam
+            Dành cho giáo viên Vi?t Nam
           </span>
           <div className="mt-6">
             <BrandLogo variant="full" />
           </div>
           <h1 className="mt-6 text-4xl font-black leading-[1.02] tracking-[-.04em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Soạn đề <span className="text-blue-600">nhanh.</span>
+            So?n d? <span className="text-blue-600">nhanh.</span>
             <br />
-            Tạo tài liệu <span className="text-cyan-500">gọn.</span>
+            T?o tài li?u <span className="text-cyan-500">g?n.</span>
             <br />
-            Xuất Word <span className="text-indigo-600">dễ dàng.</span>
+            Xu?t Word <span className="text-indigo-600">d? dàng.</span>
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600">
-            Soạn Lab giúp giáo viên tạo đề kiểm tra, phiếu học tập, ma trận đề,
-            nhận xét học sinh và xuất Word trong vài phút.
+            So?n Lab giúp giáo viên t?o d? ki?m tra, phi?u h?c t?p, ma tr?n d?,
+            nh?n xét h?c sinh và xu?t Word trong vài phút.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/dashboard" className="btn-primary min-h-13 px-6">
-              Bắt đầu sử dụng
+              B?t d?u s? d?ng
               <ArrowRight size={18} />
             </Link>
             <Link href="#how-it-works" className="btn-secondary min-h-13 px-6">
-              Xem cách hoạt động
+              Xem cách ho?t d?ng
             </Link>
             <Link href="/samples" className="btn-secondary min-h-13 px-6">
-              Mẫu sử dụng
+              M?u s? d?ng
             </Link>
           </div>
           <p className="mt-5 text-sm font-semibold text-slate-500">
-            Tạo bản nháp · Lưu lịch sử · Xuất Word/PDF
+            T?o b?n nháp · Luu l?ch s? · Xu?t Word/PDF
           </p>
         </div>
         <div className="relative mx-auto w-full max-w-xl overflow-hidden rounded-[3rem] sm:overflow-visible">
           <div className="absolute -inset-7 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
           <SoanLabIllustration variant="workspace" className="relative max-w-xl p-5 sm:p-6" />
-          {["Xuất Word", "Tạo đề kiểm tra", "Lưu lịch sử", "Mẫu tài liệu"].map((x, i) => (
+          {["Xu?t Word", "T?o d? ki?m tra", "Luu l?ch s?", "M?u tài li?u"].map((x, i) => (
             <span
               key={x}
               className={`absolute hidden rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 shadow-xl sm:inline-flex ${i === 0 ? "-right-4 top-16" : i === 1 ? "-left-3 bottom-24" : i === 2 ? "right-4 -bottom-3" : "left-8 top-2"}`}
@@ -93,29 +93,29 @@ export default function HomePage() {
       </section>
       <section id="how-it-works" className="mx-auto max-w-7xl px-4 py-20">
         <div className="text-center">
-          <span className="soft-badge">Quy trình đơn giản</span>
+          <span className="soft-badge">Quy trình don gi?n</span>
           <h2 className="mt-4 text-4xl font-black tracking-tight text-slate-950">
-            Ba bước để có bản nháp đầu tiên.
+            Ba bu?c d? có b?n nháp d?u tiên.
           </h2>
           <p className="mt-3 text-slate-600">
-            Chọn công cụ, nhập thông tin, rồi xuất Word hoặc lưu lịch sử.
+            Ch?n công c?, nh?p thông tin, r?i xu?t Word ho?c luu l?ch s?.
           </p>
         </div>
         <div className="mt-12 space-y-8">
           {[
             [
-              "Chọn đúng công cụ",
-              ["Tạo đề", "Phiếu học tập", "Nhận xét học sinh"],
+              "Ch?n dúng công c?",
+              ["T?o d?", "Phi?u h?c t?p", "Nh?n xét h?c sinh"],
               "tiles",
             ],
             [
-              "Nhập thông tin bằng form rõ ràng",
-              ["Không cần viết prompt dài", "Có mẫu nhanh", "Có lưu nháp"],
+              "Nh?p thông tin b?ng form rõ ràng",
+              ["Không c?n vi?t prompt dài", "Có m?u nhanh", "Có luu nháp"],
               "form",
             ],
             [
-              "Xuất tài liệu để chỉnh sửa",
-              ["Word", "Print/PDF", "Lưu lịch sử"],
+              "Xu?t tài li?u d? ch?nh s?a",
+              ["Word", "Print/PDF", "Luu l?ch s?"],
               "document",
             ],
           ].map(([title, bullets, type], i) => (
@@ -151,12 +151,12 @@ export default function HomePage() {
       </section>
       <section id="tools" className="bg-blue-50/60 py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <span className="soft-badge">Một không gian làm việc</span>
+          <span className="soft-badge">M?t không gian làm vi?c</span>
           <h2 className="mt-4 text-4xl font-black text-slate-950">
-            Nhiều công cụ, một nơi.
+            Nhi?u công c?, m?t noi.
           </h2>
           <p className="mt-3 text-slate-600">
-            Từ soạn đề đến nhận xét học sinh, mọi thứ nằm trong cùng một app.
+            T? so?n d? d?n nh?n xét h?c sinh, m?i th? n?m trong cùng m?t app.
           </p>
           <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {tools.map(([t, d, b]) => {
@@ -168,7 +168,7 @@ export default function HomePage() {
                   <div className="flex justify-between">
                     <SoanLabIcon name={iconNameFromText(t as string)} />
                     {b ? (
-                      <SoanLabBadge tone={(b as string) === "Demo" ? "demo" : (b as string) === "Hữu ích" ? "useful" : "popular"}>{b as string}</SoanLabBadge>
+                      <SoanLabBadge tone={(b as string).includes("H") ? "useful" : "popular"}>{b as string}</SoanLabBadge>
                     ) : null}
                   </div>
                   <h3 className="mt-5 text-lg font-extrabold text-slate-900">
@@ -184,11 +184,11 @@ export default function HomePage() {
             })}
           </div>
           <Link href="/tools" className="btn-primary mt-8">
-            Xem tất cả công cụ
+            Xem t?t c? công c?
             <ArrowRight size={17} />
           </Link>
           <Link href="/samples" className="btn-secondary ml-3 mt-8">
-            Mẫu sử dụng
+            M?u s? d?ng
           </Link>
         </div>
       </section>
@@ -199,18 +199,18 @@ export default function HomePage() {
               Quy trình giáo viên
             </span>
             <h2 className="mt-5 text-4xl font-black tracking-tight">
-              Tập trung vào bài dạy, không phải thao tác lặp lại.
+              T?p trung vào bài d?y, không ph?i thao tác l?p l?i.
             </h2>
             <p className="mt-4 leading-7 text-blue-100">
-              Soạn Lab gom các bước chuẩn bị tài liệu vào một luồng rõ ràng để
-              giáo viên luôn biết nên làm gì tiếp theo.
+              So?n Lab gom các bu?c chu?n b? tài li?u vào m?t lu?ng rõ ràng d?
+              giáo viên luôn bi?t nên làm gì ti?p theo.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              ["Chuẩn bị", "Chọn môn, lớp và chủ đề.", GraduationCap],
-              ["Tạo nháp", "Dùng form thay cho prompt dài.", Sparkles],
-              ["Rà soát", "Xuất Word và chỉnh sửa.", ShieldCheck],
+              ["Chu?n b?", "Ch?n môn, l?p và ch? d?.", GraduationCap],
+              ["T?o nháp", "Dùng form thay cho prompt dài.", Sparkles],
+              ["Rà soát", "Xu?t Word và ch?nh s?a.", ShieldCheck],
             ].map(([title, text, Icon]) => {
               const StepIcon = Icon as typeof GraduationCap;
               return (
@@ -232,41 +232,41 @@ export default function HomePage() {
       <section className="border-y border-blue-100 bg-white/70 py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-2">
           <div className="play-card p-7 sm:p-9">
-            <span className="soft-badge">Quy trình đáng tin cậy</span>
+            <span className="soft-badge">Quy trình dáng tin c?y</span>
             <h2 className="mt-5 text-3xl font-black text-slate-950">
-              Tạo bản nháp nhanh, luôn có bước rà soát.
+              T?o b?n nháp nhanh, luôn có bu?c rà soát.
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa
-              trước khi sử dụng chính thức.
+              N?i dung du?c t?o t? d?ng và c?n giáo viên ki?m tra, ch?nh s?a
+              tru?c khi s? d?ng chính th?c.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {[
-                "Tạo bản nháp",
-                "Xuất Word/PDF",
-                "Lưu lịch sử",
-                "Dữ liệu trên trình duyệt",
+                "T?o b?n nháp",
+                "Xu?t Word/PDF",
+                "Luu l?ch s?",
+                "D? li?u trên trình duy?t",
               ].map((x) => (
-                <SoanLabBadge key={x} tone={x.includes("trình duyệt") ? "local" : x.includes("Word") ? "export" : "useful"}>{x}</SoanLabBadge>
+                <SoanLabBadge key={x} tone={x.includes("trình duy?t") ? "local" : x.includes("Word") ? "export" : "useful"}>{x}</SoanLabBadge>
               ))}
             </div>
-            <Link href="/known-issues" className="btn-secondary mt-7">
-              Xem trạng thái hệ thống
+            <Link href="/system-status" className="btn-secondary mt-7">
+              Xem tr?ng thái h? th?ng
             </Link>
           </div>
           <div className="play-card p-7 sm:p-9">
-            <span className="soft-badge">Người tạo sản phẩm</span>
+            <span className="soft-badge">Ngu?i t?o s?n ph?m</span>
             <h2 className="mt-5 text-3xl font-black text-slate-950">
-              Được xây dựng từ những công việc giáo viên làm mỗi ngày.
+              Ðu?c xây d?ng t? nh?ng công vi?c giáo viên làm m?i ngày.
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Soạn Lab được tạo bởi Trần Đức Duy với mong muốn giảm thời gian
-              cho những việc lặp lại như soạn đề, chuẩn bị phiếu học tập và viết
-              nhận xét.
+              So?n Lab du?c t?o b?i Tr?n Ð?c Duy v?i mong mu?n gi?m th?i gian
+              cho nh?ng vi?c l?p l?i nhu so?n d?, chu?n b? phi?u h?c t?p và vi?t
+              nh?n xét.
             </p>
             <p className="mt-4 rounded-2xl bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-900">
-              Mục tiêu không phải thay thế giáo viên, mà giúp giáo viên có thêm
-              thời gian cho học sinh và chất lượng bài dạy.
+              M?c tiêu không ph?i thay th? giáo viên, mà giúp giáo viên có thêm
+              th?i gian cho h?c sinh và ch?t lu?ng bài d?y.
             </p>
           </div>
         </div>
@@ -277,21 +277,21 @@ export default function HomePage() {
           <div className="relative max-w-3xl">
             <BrandLogo variant="mark" />
             <h2 className="mt-6 text-4xl font-black text-slate-950">
-              Sẵn sàng tạo tài liệu đầu tiên với Soạn Lab?
+              S?n sàng t?o tài li?u d?u tiên v?i So?n Lab?
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Mở dashboard, chọn một mẫu nhanh hoặc bắt đầu từ công cụ quen
-              thuộc để tạo bản nháp và xuất Word/PDF.
+              M? dashboard, ch?n m?t m?u nhanh ho?c b?t d?u t? công c? quen
+              thu?c d? t?o b?n nháp và xu?t Word/PDF.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/dashboard" className="btn-primary">
-                Mở dashboard
+                M? dashboard
               </Link>
               <Link href="/samples" className="btn-secondary">
-                Mẫu sử dụng
+                M?u s? d?ng
               </Link>
               <Link href="/tools" className="btn-secondary">
-                Xem công cụ
+                Xem công c?
               </Link>
             </div>
           </div>
@@ -309,7 +309,7 @@ function Visual({ type }: { type: string }) {
       <div className="play-card mx-auto max-w-md p-5">
         {type === "form" ? (
           <div className="space-y-3">
-            {["Môn học", "Lớp", "Chủ đề"].map((x) => (
+            {["Môn h?c", "L?p", "Ch? d?"].map((x) => (
               <div key={x}>
                 <p className="mb-1 text-xs font-bold text-slate-500">{x}</p>
                 <div className="h-10 rounded-xl border border-slate-200 bg-slate-50" />
@@ -328,7 +328,7 @@ function Visual({ type }: { type: string }) {
               </div>
             </div>
             <div className="mt-4 flex justify-center gap-2">
-              {["Word", "PDF", "Lịch sử"].map((x) => (
+              {["Word", "PDF", "L?ch s?"].map((x) => (
                 <span key={x} className="soft-badge">
                   {x}
                 </span>
@@ -337,7 +337,7 @@ function Visual({ type }: { type: string }) {
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">
-            {["Tạo đề", "Phiếu học tập", "Nhận xét", "Ma trận"].map((x) => (
+            {["T?o d?", "Phi?u h?c t?p", "Nh?n xét", "Ma tr?n"].map((x) => (
               <div key={x} className="rounded-2xl bg-blue-50 p-4">
                 <SoanLabIcon name={iconNameFromText(x)} size="sm" />
                 <p className="mt-3 text-sm font-extrabold">{x}</p>

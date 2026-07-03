@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Search, X } from "lucide-react";
@@ -9,16 +9,16 @@ type Item = { title: string; description: string; href: string; category: string
 
 const pages: Item[] = [
   ["Dashboard", "Tổng quan workspace Soạn Lab.", "/dashboard", "Trang chính", "Trang"],
-  ["Tất cả công cụ", "Tìm và mở mọi công cụ.", "/tools", "Điều hướng", "Trang"],
+  ["Công cụ", "Tìm và mở mọi công cụ.", "/tools", "Điều hướng", "Trang"],
   ["Mẫu sử dụng", "Ví dụ nhập liệu và kết quả dự kiến.", "/samples", "Hướng dẫn", "Trang"],
+  ["Hướng dẫn", "Quy trình bắt đầu với Soạn Lab.", "/getting-started", "Hướng dẫn", "Trang"],
+  ["Tạo đề kiểm tra", "Mở nhanh công cụ tạo đề.", "/tools/exam-generator", "Công cụ nổi bật", "Công cụ"],
+  ["Phiếu học tập", "Mở nhanh công cụ tạo phiếu học tập.", "/tools/worksheet-generator", "Công cụ nổi bật", "Công cụ"],
+  ["Giáo án", "Mở nhanh công cụ tạo giáo án.", "/tools/lesson-plan-generator", "Công cụ nổi bật", "Công cụ"],
+  ["Nhận xét học sinh", "Mở nhanh công cụ tạo nhận xét.", "/tools/student-comments", "Công cụ nổi bật", "Công cụ"],
   ["Lịch sử", "Tài liệu đã lưu trên trình duyệt.", "/history", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
-  ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi.", "/question-bank", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
-  ["Mẫu cá nhân", "Quản lý template và placeholder.", "/templates", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
-  ["Cài đặt", "Header, font và chế độ sử dụng.", "/settings", "Cấu hình", "Trang"],
-  ["Dữ liệu", "Backup, restore và xóa dữ liệu.", "/data", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
-  ["Gói sử dụng", "Thông tin các gói sử dụng.", "/pricing", "Sản phẩm", "Trang"],
-  ["Trải nghiệm Soạn Lab", "Thông tin và hướng dẫn sản phẩm.", "/private-beta", "Hướng dẫn", "Trang"],
-  ["Phím tắt", "Xem trợ giúp phím tắt.", "/shortcuts", "Trợ giúp", "Trang"]
+  ["Cài đặt", "Header, font và dữ liệu cục bộ.", "/settings", "Cấu hình", "Trang"],
+  ["Bảng giá", "Thông tin các gói sử dụng.", "/pricing", "Sản phẩm", "Trang"],
 ].map(([title, description, href, category, group]) => ({ title, description, href, category, group: group as Item["group"] }));
 
 export function CommandPaletteButton({ compact = false }: { compact?: boolean }) {
@@ -58,8 +58,7 @@ export function CommandPalette() {
       <div className="max-h-[65vh] overflow-auto p-2">{results.length ? (["Công cụ", "Trang", "Dữ liệu cá nhân"] as const).map((group) => {
         const grouped = results.filter((item) => item.group === group);
         return grouped.length ? <section key={group} className="py-2"><p className="px-3 pb-1 text-xs font-bold uppercase tracking-wide text-slate-400">{group}</p>{grouped.map((item) => { const index = results.indexOf(item); return <Link key={item.href} href={item.href} onClick={() => setOpen(false)} onMouseEnter={() => setActive(index)} className={`block rounded-lg px-3 py-2 ${index === active ? "bg-blue-50" : "hover:bg-slate-50"}`}><div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-ink">{item.title}</p><p className="mt-0.5 text-sm leading-5 text-muted">{item.description}</p></div><span className="shrink-0 rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{item.category}</span></div></Link>; })}</section> : null;
-      }) : <div className="empty-state m-3">Không tìm thấy kết quả phù hợp.</div>}</div>
-      <div className="border-t border-line px-4 py-2 text-xs text-muted">Ctrl/Cmd + K để mở · Esc để đóng · Enter để mở kết quả</div>
+      }) : <p className="px-4 py-8 text-center text-sm text-muted">Không tìm thấy kết quả phù hợp.</p>}</div>
     </div>
   </div>;
 }

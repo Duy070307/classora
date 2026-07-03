@@ -37,7 +37,7 @@ export default function DiagnosticsPage() {
     <div className="mt-5 flex flex-wrap gap-2">
       <button className="btn-primary" onClick={refresh}><RefreshCw size={16} />Kiểm tra lại</button>
       <CommandPaletteButton />
-      <Link href="/known-issues" className="btn-secondary">Trạng thái hệ thống</Link>
+      <Link href="/system-status" className="btn-secondary">Trạng thái hệ thống</Link>
       <Link href="/data" className="btn-secondary">Quản lý dữ liệu</Link>
       <Link href="/tools" className="btn-secondary">Công cụ</Link>
       <button className="btn-secondary" onClick={downloadLocalDataBackup}><Download size={16} />Xuất sao lưu</button>

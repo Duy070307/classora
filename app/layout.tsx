@@ -12,21 +12,21 @@ export const metadata: Metadata = {
     apple: [{ url: "/brand/soan-lab-mark.png", type: "image/png" }]
   },
   title: {
-    default: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam",
+    default: "Soạn Lab - Công cụ hỗ trợ giáo viên tạo tài liệu",
     template: "%s | Soạn Lab"
   },
-  description: "Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word/PDF nhanh hơn.",
+  description: "Soạn Lab hỗ trợ giáo viên tạo bản nháp đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF.",
   openGraph: {
-    title: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam",
-    description: "Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word/PDF nhanh hơn.",
+    title: "Soạn Lab - Công cụ hỗ trợ giáo viên tạo tài liệu",
+    description: "Tạo bản nháp tài liệu dạy học, rà soát và xuất Word/PDF với Soạn Lab.",
     siteName: "Soạn Lab",
     type: "website",
     locale: "vi_VN"
   },
   twitter: {
     card: "summary",
-    title: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam",
-    description: "Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word/PDF nhanh hơn."
+    title: "Soạn Lab - Công cụ hỗ trợ giáo viên tạo tài liệu",
+    description: "Tạo bản nháp tài liệu dạy học, rà soát và xuất Word/PDF với Soạn Lab."
   },
   other: { "theme-color": "#2563eb" }
 };

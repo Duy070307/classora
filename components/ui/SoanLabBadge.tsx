@@ -25,11 +25,11 @@ const icons = {
 } as const;
 
 const labelMap = {
-  demo: "Demo",
-  ai: "AI mô phỏng",
+  demo: "Mẫu nhanh",
+  ai: "Tạo tự động",
   export: "Xuất Word",
   local: "Local",
-  mvp: "MVP",
+  mvp: "Bản nháp",
   popular: "Phổ biến",
   new: "Mới",
   useful: "Hữu ích",

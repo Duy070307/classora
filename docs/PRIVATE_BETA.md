@@ -14,7 +14,7 @@ Tài liệu này lưu lại các bước kiểm tra cũ dưới dạng quy trìn
 
 ## Cách kiểm tra
 
-1. Mở `/tester-guide`.
+1. Mở `/getting-started`.
 2. Mở `/samples` và thử ít nhất 3 mẫu.
 3. Tạo bản nháp từ đề kiểm tra, phiếu học tập và nhận xét học sinh.
 4. Xuất và mở file Word.

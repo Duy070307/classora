@@ -11,14 +11,17 @@ const columns = [
   ],
   [
     "Tài liệu",
-    ["Gói sử dụng", "/pricing"],
-    ["Trạng thái hệ thống", "/known-issues"],
-    ["Nhật ký phát triển", "/changelog"],
+    ["Bảng giá", "/pricing"],
+    ["Bảo mật", "/privacy"],
+    ["Điều khoản", "/terms"],
+    ["Trạng thái hệ thống", "/system-status"],
   ],
   [
-    "Pháp lý",
-    ["Quyền riêng tư", "/privacy"],
-    ["Điều khoản", "/terms"],
+    "Công cụ nổi bật",
+    ["Tạo đề kiểm tra", "/tools/exam-generator"],
+    ["Phiếu học tập", "/tools/worksheet-generator"],
+    ["Giáo án", "/tools/lesson-plan-generator"],
+    ["Nhận xét học sinh", "/tools/student-comments"],
   ],
 ];
 
@@ -29,7 +32,7 @@ export function SiteFooter() {
         <div>
           <BrandLogo variant="full" />
           <p className="mt-4 max-w-xs leading-6">
-            Soạn đề, tạo tài liệu và xuất Word trong vài phút.
+            Hỗ trợ giáo viên tạo bản nháp tài liệu, rà soát và xuất Word/PDF trong một quy trình gọn gàng.
           </p>
           <span className="mt-4 inline-flex rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
             Dành cho giáo viên Việt Nam
@@ -50,7 +53,7 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 border-t border-slate-100 pt-6 text-xs sm:flex-row sm:justify-between">
         <p>© 2026 Soạn Lab · Tạo bởi Trần Đức Duy</p>
-        <p className="font-bold">Hỗ trợ soạn tài liệu và xuất Word/PDF</p>
+        <p className="font-bold">Bản nháp cần giáo viên rà soát trước khi sử dụng</p>
       </div>
     </footer>
   );

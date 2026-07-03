@@ -1,7 +1,7 @@
 {
   "name": "Soạn Lab",
   "short_name": "Soạn Lab",
-  "description": "Soạn Lab giúp giáo viên soạn đề, tạo phiếu học tập, viết nhận xét học sinh, tạo ma trận đề và xuất Word/PDF nhanh hơn.",
+  "description": "Soạn Lab hỗ trợ giáo viên tạo bản nháp tài liệu và xuất Word/PDF.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f7f9fc",

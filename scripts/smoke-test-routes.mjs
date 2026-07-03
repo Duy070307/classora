@@ -20,6 +20,7 @@ const requiredFiles = [
   "app/data/page.tsx",
   "app/ai-lab/page.tsx",
   "app/share/page.tsx",
+  "app/system-status/page.tsx",
   "app/release-candidate/page.tsx",
   "app/known-issues/page.tsx",
   "app/error.tsx",

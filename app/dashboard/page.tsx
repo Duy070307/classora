@@ -161,7 +161,7 @@ export default function DashboardPage() {
             <p className="mt-2 text-sm leading-6 text-slate-600">Gửi đường dẫn cho đồng nghiệp để cùng mở mẫu sử dụng, tạo bản nháp và xuất Word/PDF.</p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link href="/share" className="btn-primary">Chia sẻ Soạn Lab</Link>
-              <Link href="/known-issues" className="btn-secondary">Trạng thái hệ thống</Link>
+              <Link href="/system-status" className="btn-secondary">Trạng thái hệ thống</Link>
             </div>
           </section>
         </aside>

@@ -10,10 +10,10 @@ export function Navbar() {
           <BrandLogo variant="full" compact />
         </Link>
         <nav className="mx-auto hidden items-center gap-1 rounded-full bg-slate-50 p-1 text-sm font-bold text-slate-600 lg:flex">
-          <Link href="/#how-it-works" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
-            Cách hoạt động
+          <Link href="/" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
+            Trang chủ
           </Link>
-          <Link href="/#tools" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
+          <Link href="/tools" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Công cụ
           </Link>
           <Link href="/samples" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
@@ -21,6 +21,9 @@ export function Navbar() {
           </Link>
           <Link href="/getting-started" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Hướng dẫn
+          </Link>
+          <Link href="/pricing" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
+            Bảng giá
           </Link>
         </nav>
         <span className="hidden items-center gap-1.5 rounded-full bg-cyan-50 px-3 py-2 text-xs font-extrabold text-cyan-700 md:inline-flex">
