@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -76,6 +77,11 @@ const samples = [
   },
 ] as const;
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Mẫu sử dụng - Soạn Lab" },
+  description: "Bắt đầu nhanh với các mẫu tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và tin nhắn phụ huynh.",
+};
 export default function SamplesPage() {
   return (
     <main className="warm-page min-h-screen">

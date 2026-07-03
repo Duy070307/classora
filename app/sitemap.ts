@@ -1,6 +1,19 @@
 import type { MetadataRoute } from "next";
 
-const routes = ["", "/dashboard", "/tools", "/samples", "/getting-started", "/pricing", "/privacy", "/terms", "/share", "/system-status"];
+const routes = [
+  "",
+  "/tools",
+  "/samples",
+  "/getting-started",
+  "/pricing",
+  "/privacy",
+  "/terms",
+  "/system-status",
+  "/tools/exam-generator",
+  "/tools/worksheet-generator",
+  "/tools/lesson-plan-generator",
+  "/tools/student-comments",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -8,6 +21,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : 0.7
+    priority: route === "" ? 1 : route.startsWith("/tools/") ? 0.65 : 0.75,
   }));
 }

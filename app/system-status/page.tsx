@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { CheckCircle2, Clock3 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -14,6 +15,11 @@ const items = [
   ["OCR ảnh/PDF", "Chưa mở", "upcoming"],
 ] as const;
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Trạng thái hệ thống - Soạn Lab" },
+  description: "Theo dõi các chức năng đang hoạt động của Soạn Lab như tạo đề kiểm tra, xuất Word, Print/PDF, mẫu sử dụng và lưu lịch sử.",
+};
 export default function SystemStatusPage() {
   return (
     <main className="warm-page min-h-screen">

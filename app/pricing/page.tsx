@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -21,6 +22,11 @@ const plans = [
   },
 ] as const;
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Bảng giá - Soạn Lab" },
+  description: "Xem định hướng các gói sử dụng Soạn Lab cho giáo viên cá nhân, tổ chuyên môn và trường học.",
+};
 export default function PricingPage() {
   return (
     <main className="warm-page min-h-screen">

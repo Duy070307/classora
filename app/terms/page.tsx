@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Điều khoản sử dụng - Soạn Lab" },
+  description: "Điều khoản sử dụng Soạn Lab dành cho giáo viên khi tạo bản nháp tài liệu, rà soát nội dung và xuất Word/PDF.",
+};
 export default function TermsPage() {
   return <main><Navbar /><section className="mx-auto max-w-3xl px-4 py-12 md:py-16">
     <h1 className="text-4xl font-bold text-ink">Điều khoản sử dụng</h1>

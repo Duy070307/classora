@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Bảo mật - Soạn Lab" },
+  description: "Chính sách bảo mật của Soạn Lab, bao gồm cách dữ liệu được lưu trên trình duyệt và lưu ý khi sử dụng tài liệu.",
+};
 export default function PrivacyPage() {
   return (
     <main>

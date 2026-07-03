@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -34,6 +35,11 @@ const quickSamples = [
   ["Phiếu học tập Toán 8", sampleLinks.worksheetMath8, FileText],
 ] as const;
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Hướng dẫn bắt đầu - Soạn Lab" },
+  description: "Hướng dẫn giáo viên chọn công cụ, nhập thông tin bài học, tạo bản nháp, xuất Word/PDF hoặc lưu lịch sử với Soạn Lab.",
+};
 export default function GettingStartedPage() {
   return (
     <div className="min-h-screen md:flex">

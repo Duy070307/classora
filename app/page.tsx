@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -40,6 +41,11 @@ const samples = [
   ["Phiếu học tập Toán 8", "Phiếu bài tập có phần hướng dẫn", sampleLinks.worksheetMath8, FileText],
 ] as const;
 
+
+export const metadata: Metadata = {
+  title: { absolute: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam" },
+  description: "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.",
+};
 export default function HomePage() {
   return (
     <main className="warm-page">

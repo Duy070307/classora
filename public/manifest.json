@@ -1,12 +1,24 @@
 {
   "name": "Soạn Lab",
   "short_name": "Soạn Lab",
-  "description": "Soạn Lab hỗ trợ giáo viên tạo bản nháp tài liệu và xuất Word/PDF.",
-  "start_url": "/dashboard",
+  "description": "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f7f9fc",
   "theme_color": "#2563eb",
   "icons": [
-    { "src": "/brand/soan-lab-mark.png", "sizes": "any", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/brand/soan-lab-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
