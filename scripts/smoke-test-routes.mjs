@@ -18,6 +18,9 @@ const requiredFiles = [
   "app/demo-data/page.tsx",
   "app/diagnostics/page.tsx",
   "app/data/page.tsx",
+  "app/login/page.tsx",
+  "app/register/page.tsx",
+  "app/admin/page.tsx",
   "app/ai-lab/page.tsx",
   "app/share/page.tsx",
   "app/system-status/page.tsx",
@@ -31,6 +34,18 @@ const requiredFiles = [
   "public/manifest.json",
   "public/icon.svg",
   "app/api/ai/generate/route.ts",
+  "app/api/auth/logout/route.ts",
+  "app/api/auth/me/route.ts",
+  "middleware.ts",
+  "supabase/schema.sql",
+  "lib/supabase/client.ts",
+  "lib/supabase/server.ts",
+  "lib/supabase/admin.ts",
+  "lib/auth/user.ts",
+  "lib/data/documents-store.ts",
+  "lib/data/templates-store.ts",
+  "lib/data/question-bank-store.ts",
+  "lib/data/settings-store.ts",
   "lib/ai/index.ts",
   "lib/ai/refine-output.ts",
   "components/tools/OutputRefinementBar.tsx",
@@ -50,7 +65,10 @@ const requiredFiles = [
   "lib/built-in-templates.ts",
   "lib/document-header.ts",
   "docs/TEMPLATES.md",
-  "docs/RELEASE_CANDIDATE.md"
+  "docs/RELEASE_CANDIDATE.md",
+  "docs/SUPABASE_SETUP.md",
+  "docs/AUTH.md",
+  "docs/DATABASE.md"
 ];
 
 const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));

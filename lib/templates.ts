@@ -34,6 +34,9 @@ export function getTemplates(): TemplateItem[] {
 
 export function saveTemplates(items: TemplateItem[]) {
   writeJson(TEMPLATE_KEY, items);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/templates-store").then(({ saveTemplatesToCloud }) => saveTemplatesToCloud(items)).catch(() => undefined);
+  }
 }
 
 export function resolveTemplate(id: string) {

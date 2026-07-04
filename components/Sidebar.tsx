@@ -12,11 +12,11 @@ import {
   Home,
   MessageCircle,
   Settings,
-  Sparkles,
   Wrench,
   X,
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { AccountPanel } from "@/components/AccountPanel";
 
 const groups = [
   { title: "Tổng quan", links: [["Dashboard", "/dashboard", Home]] },
@@ -109,14 +109,7 @@ function Content({
           ))}
         </nav>
         <div className="border-t border-slate-100 bg-slate-50/70 p-4">
-          <p className="flex items-center gap-2 text-xs font-bold text-slate-500">
-            <Sparkles size={14} className="text-indigo-600" />
-            Dữ liệu lưu trên trình duyệt
-          </p>
-          <div className="mt-3 flex gap-4 text-xs font-semibold">
-            <Link href="/settings" className="text-slate-500">Cài đặt</Link>
-            <Link href="/data" className="text-slate-500">Dữ liệu</Link>
-          </div>
+          <AccountPanel />
         </div>
       </aside>
     </>

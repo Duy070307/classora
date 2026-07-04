@@ -4,6 +4,7 @@ import { CheckCircle2, Clock3, ServerCog } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { getProviderStatus } from "@/lib/ai/provider";
+import { isRegistrationEnabled, isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 const items = [
   ["Tạo đề kiểm tra", "Hoạt động", "active"],
@@ -11,8 +12,8 @@ const items = [
   ["Print/PDF", "Hoạt động", "active"],
   ["Mẫu sử dụng", "Hoạt động", "active"],
   ["Lưu lịch sử", "Hoạt động", "active"],
-  ["Tài khoản", "Chưa mở", "upcoming"],
-  ["Đồng bộ dữ liệu", "Chưa mở", "upcoming"],
+  ["Tài khoản", "Hoạt động nếu Supabase được cấu hình", "active"],
+  ["Đồng bộ dữ liệu", "Hoạt động nếu Supabase được cấu hình", "active"],
   ["OCR ảnh/PDF", "Chưa mở", "upcoming"],
 ] as const;
 
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
 
 export default function SystemStatusPage() {
   const ai = getProviderStatus();
+  const supabaseConfigured = isSupabaseConfigured();
+  const registrationEnabled = isRegistrationEnabled();
   return (
     <main className="warm-page min-h-screen">
       <Navbar />
@@ -54,6 +57,26 @@ export default function SystemStatusPage() {
             <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Gemini key</dt><dd className="mt-1 font-extrabold text-ink">{ai.geminiKeyConfigured ? "Đã cấu hình" : "Chưa cấu hình"}</dd></div>
             <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Giới hạn ngày</dt><dd className="mt-1 font-extrabold text-ink">{ai.dailyLimit} lượt/trình duyệt</dd></div>
             <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Giới hạn output</dt><dd className="mt-1 font-extrabold text-ink">{ai.maxOutputTokens} tokens</dd></div>
+          </dl>
+        </section>
+
+        <section className="card mt-8 p-5 shadow-sm sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">
+              <ServerCog size={20} />
+            </span>
+            <div>
+              <h2 className="font-extrabold text-ink">Tài khoản và dữ liệu</h2>
+              <p className="mt-1 text-sm leading-6 text-muted">
+                Khi Supabase được cấu hình, Soạn Lab dùng tài khoản cloud và lưu dữ liệu theo từng giáo viên. Nếu chưa cấu hình, ứng dụng tiếp tục dùng dữ liệu cục bộ trên trình duyệt.
+              </p>
+            </div>
+          </div>
+          <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Supabase</dt><dd className="mt-1 font-extrabold text-ink">{supabaseConfigured ? "Đã cấu hình" : "Chưa cấu hình"}</dd></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Chế độ tài khoản</dt><dd className="mt-1 font-extrabold text-ink">{supabaseConfigured ? "Cloud account" : "Local browser mode"}</dd></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Đăng ký</dt><dd className="mt-1 font-extrabold text-ink">{registrationEnabled ? "Đang mở" : "Đang khóa"}</dd></div>
+            <div className="rounded-2xl bg-slate-50 p-4"><dt className="text-muted">Database</dt><dd className="mt-1 font-extrabold text-ink">{supabaseConfigured ? "Supabase" : "Trình duyệt"}</dd></div>
           </dl>
         </section>
 

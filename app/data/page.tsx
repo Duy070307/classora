@@ -17,6 +17,11 @@ import { getMockPlan, getUsageCount } from "@/lib/usage";
 import { clearAllFormDrafts, getAllFormDrafts } from "@/lib/form-drafts";
 import { getFavoriteTools } from "@/lib/favorites";
 import { getRecentTools } from "@/lib/recent-tools";
+import { migrateDocumentsToCloud } from "@/lib/data/documents-store";
+import { saveQuestionsToCloud } from "@/lib/data/question-bank-store";
+import { saveSettingsToCloud } from "@/lib/data/settings-store";
+import { saveTemplatesToCloud } from "@/lib/data/templates-store";
+import { getStorageMode } from "@/lib/data/storage-mode";
 
 type Summary = { history: number; templates: number; questions: number; drafts: number; favorites: number; recent: number; settings: boolean; plan: string; usage: number };
 const emptySummary: Summary = { history: 0, templates: 0, questions: 0, drafts: 0, favorites: 0, recent: 0, settings: false, plan: "Miễn phí", usage: 0 };
@@ -76,6 +81,25 @@ export default function DataManagementPage() {
     }
   }
 
+  async function migrateLocalDataToCloud() {
+    try {
+      const mode = await getStorageMode();
+      if (mode.mode !== "cloud") {
+        setError("Hãy đăng nhập tài khoản Soạn Lab trước khi chuyển dữ liệu lên cloud.");
+        setMessage("");
+        return;
+      }
+      const historyCount = await migrateDocumentsToCloud(getHistory());
+      await saveTemplatesToCloud(getTemplates());
+      await saveQuestionsToCloud(getQuestions());
+      await saveSettingsToCloud(getDocumentSettings());
+      success(`Đã chuyển dữ liệu local lên tài khoản: ${historyCount} tài liệu, ${getTemplates().length} mẫu, ${getQuestions().length} câu hỏi.`);
+    } catch {
+      setMessage("");
+      setError("Chưa thể chuyển dữ liệu lên cloud. Vui lòng kiểm tra đăng nhập và cấu hình Supabase.");
+    }
+  }
+
   const rows = [
     ["Số tài liệu trong lịch sử", summary.history],
     ["Số mẫu cá nhân", summary.templates],
@@ -90,10 +114,15 @@ export default function DataManagementPage() {
 
   return <div className="min-h-screen md:flex"><Sidebar /><main className="min-w-0 flex-1 p-5 md:p-8">
     <PageHeader title="Quản lý dữ liệu" description="Sao lưu, khôi phục hoặc xóa dữ liệu Soạn Lab đang lưu cục bộ trên trình duyệt này." />
-    <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">Soạn Lab hiện dùng localStorage. Nếu bạn xóa dữ liệu trình duyệt, dữ liệu có thể mất.</div>
+    <div className="mb-6 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">Soạn Lab lưu dữ liệu trên tài khoản cloud khi Supabase được cấu hình và bạn đã đăng nhập. Nếu chưa cấu hình, dữ liệu vẫn lưu cục bộ trên trình duyệt.</div>
     {message ? <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700">{message}</div> : null}
     {error ? <div className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div> : null}
     <Link href="/drafts" className="btn-secondary mb-6 inline-flex">Mở bản nháp biểu mẫu</Link>
+    <section className="card mb-6 p-5">
+      <h2 className="text-lg font-bold text-ink">Chuyển dữ liệu từ trình duyệt lên tài khoản</h2>
+      <p className="mt-2 text-sm leading-6 text-muted">Sau khi đăng nhập, bạn có thể đưa lịch sử, mẫu cá nhân, ngân hàng câu hỏi và cài đặt tài liệu hiện có lên Supabase. Dữ liệu local vẫn được giữ nguyên để an toàn.</p>
+      <button type="button" className="btn-primary mt-4" onClick={migrateLocalDataToCloud}>Chuyển dữ liệu lên tài khoản</button>
+    </section>
     <div className="grid gap-6 xl:grid-cols-2">
       <section className="card overflow-hidden"><h2 className="border-b border-line p-5 text-lg font-bold text-ink">Dữ liệu đang lưu trên trình duyệt</h2><dl>{rows.map(([label, value]) => <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-line px-5 py-3 last:border-0"><dt className="text-sm text-muted">{label}</dt><dd className="text-sm font-bold text-ink">{value}</dd></div>)}</dl></section>
       <div className="space-y-6">

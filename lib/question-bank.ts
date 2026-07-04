@@ -33,6 +33,9 @@ export function getQuestions(): QuestionItem[] {
 
 export function saveQuestions(items: QuestionItem[]) {
   writeJson(QUESTION_BANK_KEY, items);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/question-bank-store").then(({ saveQuestionsToCloud }) => saveQuestionsToCloud(items)).catch(() => undefined);
+  }
 }
 
 export function addQuestions(items: QuestionItem[]) {

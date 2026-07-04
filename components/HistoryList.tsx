@@ -5,6 +5,7 @@ import { CalendarDays, Eye, Trash2 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
+import { deleteCloudDocument, listCloudDocuments, updateCloudDocumentFolder } from "@/lib/data/documents-store";
 import Link from "next/link";
 import { removeStored, STORAGE_KEYS } from "@/lib/storage";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
@@ -43,17 +44,19 @@ export function HistoryList() {
   const [folderFilter, setFolderFilter] = useState("Tất cả thư mục");
   const [selected, setSelected] = useState<string[]>([]);
 
-  function refresh() {
-    setItems(getHistory());
+  async function refresh() {
+    const cloudItems = await listCloudDocuments();
+    setItems(cloudItems ?? getHistory());
   }
 
   useEffect(() => {
-    queueMicrotask(refresh);
+    queueMicrotask(() => void refresh());
   }, []);
 
-  function remove(id: string) {
+  async function remove(id: string) {
     deleteDocument(id);
-    refresh();
+    await deleteCloudDocument(id);
+    await refresh();
     setMessage("Đã xóa tài liệu khỏi lịch sử.");
     setTimeout(() => setMessage(""), 2200);
   }
@@ -73,14 +76,16 @@ export function HistoryList() {
   function deleteSelected() {
     if (!selected.length || !window.confirm(`Xóa ${selected.length} tài liệu đã chọn?`)) return;
     selected.forEach(deleteDocument);
+    selected.forEach((id) => void deleteCloudDocument(id));
     setSelected([]);
-    refresh();
+    void refresh();
     setMessage("Đã xóa các tài liệu đã chọn.");
   }
 
   function moveSelected(folder: DocumentFolder) {
     selected.forEach((id) => updateDocumentFolder(id, folder));
-    refresh();
+    selected.forEach((id) => void updateCloudDocumentFolder(id, folder));
+    void refresh();
     setMessage(`Đã chuyển ${selected.length} tài liệu vào thư mục ${folder}.`);
   }
 
@@ -148,7 +153,7 @@ export function HistoryList() {
                 </button>
               </div>
               <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted">{item.content}</p>
-              <select className="form-field mt-3" value={item.folder || "Khác"} onChange={(event) => { updateDocumentFolder(item.id, event.target.value as DocumentFolder); refresh(); }}>
+              <select className="form-field mt-3" value={item.folder || "Khác"} onChange={(event) => { updateDocumentFolder(item.id, event.target.value as DocumentFolder); void updateCloudDocumentFolder(item.id, event.target.value as DocumentFolder); void refresh(); }}>
                 {folders.map((folder) => <option key={folder}>{folder}</option>)}
               </select>
               <div className="mt-3 flex flex-wrap gap-2">

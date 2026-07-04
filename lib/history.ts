@@ -51,16 +51,25 @@ export function getHistory(): GeneratedDocument[] {
 export function saveDocument(document: GeneratedDocument) {
   const next = [document, ...getHistory().filter((item) => item.id !== document.id)];
   writeJson(HISTORY_KEY, next);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/documents-store").then(({ saveDocumentToCloud }) => saveDocumentToCloud(document)).catch(() => undefined);
+  }
 }
 
 export function deleteDocument(id: string) {
   const next = getHistory().filter((item) => item.id !== id);
   writeJson(HISTORY_KEY, next);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/documents-store").then(({ deleteCloudDocument }) => deleteCloudDocument(id)).catch(() => undefined);
+  }
 }
 
 export function updateDocumentFolder(id: string, folder: DocumentFolder) {
   const next = getHistory().map((item) => item.id === id ? { ...item, folder } : item);
   writeJson(HISTORY_KEY, next);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/documents-store").then(({ updateCloudDocumentFolder }) => updateCloudDocumentFolder(id, folder)).catch(() => undefined);
+  }
 }
 
 function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {

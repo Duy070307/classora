@@ -62,3 +62,10 @@ AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần 
 - [Checklist phát hành](docs/RELEASE_CHECKLIST.md)
 - [Release notes](docs/RELEASE_NOTES.md)
 - [AI integration](docs/AI_INTEGRATION.md)
+- [Supabase setup](docs/SUPABASE_SETUP.md)
+- [Auth](docs/AUTH.md)
+- [Database](docs/DATABASE.md)
+
+## Supabase Auth và cloud data
+
+Soạn Lab hỗ trợ Supabase Auth/Postgres cho tài khoản giáo viên, role admin và lưu cloud cho lịch sử, mẫu cá nhân, ngân hàng câu hỏi, cài đặt tài liệu. Nếu chưa cấu hình Supabase, app vẫn chạy bằng localStorage trên trình duyệt.

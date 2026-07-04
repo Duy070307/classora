@@ -36,6 +36,9 @@ export function getDocumentSettings(): DocumentSettings {
 
 export function saveDocumentSettings(settings: DocumentSettings) {
   writeJson(SETTINGS_KEY, settings);
+  if (typeof window !== "undefined") {
+    import("@/lib/data/settings-store").then(({ saveSettingsToCloud }) => saveSettingsToCloud(settings)).catch(() => undefined);
+  }
 }
 
 export function resetDocumentSettings() {

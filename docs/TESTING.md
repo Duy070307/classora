@@ -124,3 +124,15 @@ npm run lint
 npm run build
 npm run smoke
 ```
+
+## Supabase Auth và cloud data checks
+
+- Không cấu hình Supabase: app build được, public pages mở được, localStorage fallback hoạt động.
+- Có Supabase env: `/login` đăng nhập được bằng tài khoản giáo viên.
+- `/register` hiển thị đăng ký tài khoản hiện chưa mở.
+- Tài khoản giáo viên mở dashboard, samples, tools, history, templates, question bank, data, settings.
+- Lưu lịch sử, mở `/history`, mở chi tiết và export Word/PDF từ lịch sử.
+- Tạo mẫu cá nhân, tạo câu hỏi trong ngân hàng câu hỏi, lưu cài đặt tài liệu.
+- `/data` chuyển dữ liệu từ trình duyệt lên tài khoản và không xóa dữ liệu local.
+- Tài khoản admin mở `/admin`; giáo viên không có quyền admin.
+- `/system-status` hiển thị AI, Supabase, auth mode, registration, database.

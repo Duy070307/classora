@@ -53,3 +53,16 @@
 - [ ] Nội dung là bản nháp và cần giáo viên rà soát.
 - [ ] Chưa có tài khoản, đồng bộ dữ liệu, thanh toán và OCR.
 - [ ] Dữ liệu lưu cục bộ trong trình duyệt/localStorage.
+
+## Supabase Auth và cloud data
+
+- [ ] Supabase env vars are configured in Vercel if cloud mode is enabled.
+- [ ] `supabase/schema.sql` has been run in Supabase SQL Editor.
+- [ ] Teacher test account exists in Supabase Auth.
+- [ ] Admin account exists and has `profiles.role = 'admin'`.
+- [ ] `/login` works.
+- [ ] `/register` remains locked.
+- [ ] Protected routes redirect to login when Supabase is configured and user is not signed in.
+- [ ] History/templates/question bank/settings save to Supabase for logged-in users.
+- [ ] LocalStorage fallback still works when Supabase env is missing.
+- [ ] `/data` migration copies local browser data to cloud without deleting local data.
