@@ -92,6 +92,27 @@ Kiểm tra các URL:
 
 Kiểm tra browser title, favicon, manifest JSON và OG/Twitter metadata.
 
+## AI integration
+
+Không API key:
+
+1. Đặt `AI_PROVIDER=local` hoặc không đặt env.
+2. Tạo đề kiểm tra, phiếu học tập và nhận xét học sinh.
+3. Xác nhận nội dung tạo được, export Word/PDF còn hoạt động.
+
+Provider thiếu key:
+
+1. Đặt `AI_PROVIDER=openai` nhưng không đặt `OPENAI_API_KEY`.
+2. Gọi tạo nội dung.
+3. Xác nhận hệ thống fallback cục bộ hoặc hiển thị thông báo thân thiện, không crash.
+
+Provider thật nếu có key:
+
+1. Tạo `.env.local`.
+2. Đặt `AI_PROVIDER=openai` hoặc `AI_PROVIDER=gemini`.
+3. Tạo đề kiểm tra.
+4. Lưu lịch sử và xuất Word/PDF lại.
+
 ## Public wording audit
 
 Giao diện public chính không được hiển thị tên thương hiệu cũ, CTA góp ý công khai hoặc từ ngữ phát triển nội bộ. Các route nội bộ cũ nếu còn tồn tại không được xuất hiện trong public nav, footer, sitemap hoặc command palette.

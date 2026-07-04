@@ -22,6 +22,7 @@ import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { getCurrentSampleId, getGenericSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
+import { generateToolContent } from "@/lib/ai/client";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -48,6 +49,8 @@ function polishGeneratedContent(type: string, input: GenericToolInput, content: 
   }
   return content;
 }
+
+const serverAIToolTypes = new Set(["lesson-plan", "rubric", "parent-message", "bulk-student-comments"]);
 
 export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const initialInput = useMemo(() => getInitialInput(config.fields), [config.fields]);
@@ -89,14 +92,29 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     }
     setLoading(true);
     setMessage("");
-    const generated = polishGeneratedContent(config.type, input, await config.generate(input));
+    let providerLabel = "";
+    let rawGenerated: string;
+    try {
+      if (serverAIToolTypes.has(config.type)) {
+        const aiResult = await generateToolContent({ tool: config.type, input: input as Record<string, unknown> });
+        rawGenerated = aiResult.content;
+        providerLabel = aiResult.provider === "local" ? " (chế độ cục bộ)" : ` (qua ${aiResult.provider})`;
+      } else {
+        rawGenerated = await config.generate(input);
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Không thể tạo tài liệu lúc này.");
+      setLoading(false);
+      return;
+    }
+    const generated = polishGeneratedContent(config.type, input, rawGenerated);
     const values = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, String(value)]));
     const content = applyTemplate(resolveTemplate(templateId), generated, values);
     const next = createDocument(config.makeTitle(input), config.type, content);
     setDocument(next);
     incrementUsage();
     saveRecentTool({ title: config.title, href: config.href });
-    setMessage("Đã tạo tài liệu thành công.");
+    setMessage(`Đã tạo tài liệu thành công${providerLabel}.`);
     setLoading(false);
   }
 

@@ -12,6 +12,7 @@ Soạn Lab là bộ công cụ hỗ trợ giáo viên Việt Nam soạn đề ki
 - Lưu lịch sử, mẫu cá nhân, ngân hàng câu hỏi, bản nháp biểu mẫu, công cụ yêu thích và công cụ gần đây.
 - Sao lưu và khôi phục dữ liệu cục bộ bằng JSON.
 - Metadata, favicon, app icons, manifest và OG image dùng asset local trong repo.
+- Tích hợp tạo nội dung qua server-side AI provider tùy chọn (`local`, `openai`, `gemini`), luôn có fallback cục bộ khi thiếu API key.
 
 ## Giới hạn hiện tại
 
@@ -48,6 +49,8 @@ npm run smoke
 
 Có thể đặt `NEXT_PUBLIC_APP_URL` thành domain chính thức để metadata và sitemap dùng URL production. Nếu không đặt, ứng dụng vẫn build và hoạt động.
 
+AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần API key. Xem [AI integration](docs/AI_INTEGRATION.md) để cấu hình OpenAI/Gemini trên server hoặc Vercel.
+
 Ứng dụng không phụ thuộc đường dẫn Windows, dịch vụ trả phí hoặc ảnh hotlink bên ngoài. Logo và public assets nằm trong `public/`.
 
 ## Tài liệu
@@ -58,3 +61,4 @@ Có thể đặt `NEXT_PUBLIC_APP_URL` thành domain chính thức để metadat
 - [Mẫu tài liệu](docs/DOCUMENT_TEMPLATES.md)
 - [Checklist phát hành](docs/RELEASE_CHECKLIST.md)
 - [Release notes](docs/RELEASE_NOTES.md)
+- [AI integration](docs/AI_INTEGRATION.md)

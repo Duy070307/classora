@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { AIRefinementAction, AIResponse } from "@/lib/ai";
+import type { AIRefinementAction } from "@/lib/ai";
+import { generateToolContent } from "@/lib/ai/client";
 
 const actions: { action: AIRefinementAction; label: string }[] = [
   { action: "regenerate", label: "Tạo lại" },
@@ -10,14 +11,14 @@ const actions: { action: AIRefinementAction; label: string }[] = [
   { action: "simpler", label: "Dễ hiểu hơn" },
   { action: "more-formal", label: "Trang trọng hơn" },
   { action: "easier", label: "Làm dễ hơn" },
-  { action: "harder", label: "Làm khó hơn" }
+  { action: "harder", label: "Làm khó hơn" },
 ];
 
 export function OutputRefinementBar({
   tool,
   input,
   currentContent,
-  onRefined
+  onRefined,
 }: {
   tool: string;
   input: unknown;
@@ -31,13 +32,13 @@ export function OutputRefinementBar({
     setPending(action);
     setError("");
     try {
-      const response = await fetch("/api/ai/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tool, input, currentContent, action })
+      const data = await generateToolContent({
+        tool,
+        input: input as Record<string, unknown>,
+        mode: "refine",
+        currentContent,
+        action,
       });
-      const data = await response.json() as AIResponse & { error?: string };
-      if (!response.ok) throw new Error(data.error || "Không thể tinh chỉnh nội dung.");
       onRefined(data.content);
     } catch (refinementError) {
       setError(refinementError instanceof Error ? refinementError.message : "Không thể tinh chỉnh nội dung.");

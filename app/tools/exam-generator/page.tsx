@@ -14,7 +14,7 @@ import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { examPresets } from "@/lib/presets";
 import { createDocument, saveDocument } from "@/lib/history";
-import { generateExam } from "@/lib/mock-ai";
+import { generateToolContent } from "@/lib/ai/client";
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getQuestions } from "@/lib/question-bank";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
@@ -98,7 +98,9 @@ export default function ExamGeneratorPage() {
     if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
     setLoading(true);
     setMessage("");
-    const generatedRaw = await generateExam(input);
+    try {
+    const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
+    const generatedRaw = aiResult.content;
     const generated = generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
       .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. ");
@@ -119,7 +121,7 @@ export default function ExamGeneratorPage() {
       extraRequirements: input.extraRequirements
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
-    next.structuredExam = createStructuredExam(input);
+    next.structuredExam = aiResult.structuredExam || createStructuredExam(input);
     next.examMeta = {
       schoolName: input.schoolName,
       teacherName: input.teacherName,
@@ -132,7 +134,10 @@ export default function ExamGeneratorPage() {
     };
     setDocument(next);
     incrementUsage();
-    setMessage("Đã tạo đề kiểm tra thành công.");
+    setMessage(`Đã tạo đề kiểm tra thành công (${aiResult.provider === "local" ? "chế độ cục bộ" : `qua ${aiResult.provider}`}).`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
+    }
     setLoading(false);
   }
 

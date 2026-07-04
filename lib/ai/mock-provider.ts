@@ -1,38 +1,7 @@
-import {
-  checkExam, generateAnswerKey, generateExam, generateLessonPlan, generateMatrix,
-  generateStudentComments, generateWorksheet, shuffleExam
-} from "@/lib/mock-ai";
-import type { ExamInput, GenericToolInput, StudentCommentInput, WorksheetInput } from "@/lib/types";
-import type { AIProvider } from "@/lib/ai/types";
-import { refineOutput } from "@/lib/ai/refine-output";
+import { localProvider } from "@/lib/ai/providers/local-provider";
 
-export const AI_DEMO_WARNING = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
+export const AI_DEMO_WARNING =
+  "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
-export const mockProvider: AIProvider = {
-  name: "mock",
-  async generate(request) {
-    const generators: Record<string, () => Promise<string>> = {
-      exam: () => generateExam(request.input as ExamInput),
-      worksheet: () => generateWorksheet(request.input as WorksheetInput),
-      "student-comments": () => generateStudentComments(request.input as StudentCommentInput),
-      matrix: () => generateMatrix(request.input as GenericToolInput),
-      "answer-key": () => generateAnswerKey(request.input as GenericToolInput),
-      "exam-checker": () => checkExam(request.input as GenericToolInput),
-      "lesson-plan": () => generateLessonPlan(request.input as GenericToolInput),
-      "exam-shuffler": () => shuffleExam(request.input as GenericToolInput)
-    };
-    const generate = generators[request.tool];
-    if (!generate && !(request.action && request.currentContent)) {
-      throw new Error(`Mock provider chưa hỗ trợ tool: ${request.tool}`);
-    }
-    const content = request.action && request.currentContent
-      ? refineOutput(request.currentContent, request.action)
-      : await generate!();
-    return {
-      title: `Soạn Lab mock - ${request.tool}`,
-      content,
-      warnings: [AI_DEMO_WARNING],
-      provider: "mock"
-    };
-  }
-};
+// Giữ export cũ để các import nội bộ trước đây không bị vỡ.
+export const mockProvider = localProvider;

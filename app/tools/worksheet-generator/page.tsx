@@ -7,7 +7,7 @@ import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader"
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
-import { generateWorksheet } from "@/lib/mock-ai";
+import { generateToolContent } from "@/lib/ai/client";
 import type { GeneratedDocument, WorksheetInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
@@ -57,12 +57,17 @@ export default function WorksheetGeneratorPage() {
     if (input.exerciseCount <= 0) return setMessage("Số bài tập phải lớn hơn 0.");
     setLoading(true);
     setMessage("");
-    const generated = await generateWorksheet(input);
+    try {
+    const aiResult = await generateToolContent({ tool: "worksheet", input: input as unknown as Record<string, unknown> });
+    const generated = aiResult.content;
     const content = applyTemplate(resolveTemplate(templateId), generated, { subject: input.subject, grade: input.grade, topic: input.topic, objective: input.objective, extraRequirements: input.extraRequirements });
     const next = createDocument(`Phiếu học tập ${input.subject} lớp ${input.grade}`, "worksheet", content);
     setDocument(next);
     incrementUsage();
-    setMessage("Đã tạo phiếu học tập thành công.");
+    setMessage(`\u0110\u00e3 t\u1ea1o phi\u1ebfu h\u1ecdc t\u1eadp th\u00e0nh c\u00f4ng (${aiResult.provider === "local" ? "ch\u1ebf \u0111\u1ed9 c\u1ee5c b\u1ed9" : `qua ${aiResult.provider}`}).`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kh\u00f4ng th\u1ec3 t\u1ea1o phi\u1ebfu h\u1ecdc t\u1eadp l\u00fac n\u00e0y.");
+    }
     setLoading(false);
   }
 

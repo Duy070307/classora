@@ -25,6 +25,13 @@
 - [ ] Phiếu học tập, giáo án, nhận xét học sinh, rubric và tin nhắn phụ huynh xuất Word được.
 - [ ] Bảng rubric, ma trận và bảng đáp án là bảng thật, không lộ Markdown thô.
 
+## AI provider
+
+- [ ] Không có API key vẫn build và tạo nội dung bằng chế độ cục bộ.
+- [ ] `AI_PROVIDER=openai` hoặc `AI_PROVIDER=gemini` thiếu key sẽ fallback cục bộ, không crash.
+- [ ] `/api/ai/generate` không trả API key.
+- [ ] `/system-status` hiển thị provider, trạng thái key và giới hạn ngày mà không lộ secret.
+
 ## Metadata và assets
 
 - [ ] `/favicon.ico`, `/icon.png`, `/apple-icon.png`, `/icon-192.png`, `/icon-512.png`, `/og-image.png` load được.

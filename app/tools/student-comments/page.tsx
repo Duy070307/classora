@@ -8,7 +8,7 @@ import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader"
 import { Sidebar } from "@/components/Sidebar";
 import { TemplateSelect } from "@/components/TemplateSelect";
 import { createDocument, saveDocument } from "@/lib/history";
-import { generateStudentComments } from "@/lib/mock-ai";
+import { generateToolContent } from "@/lib/ai/client";
 import type { GeneratedDocument, StudentCommentInput } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
@@ -66,12 +66,17 @@ export default function StudentCommentsPage() {
     if (!input.attitude.trim() && !input.strengths.trim() && !input.limitations.trim()) return setMessage("Vui lòng nhập ít nhất một nội dung nhận xét.");
     setLoading(true);
     setMessage("");
-    const generated = await generateStudentComments(input);
+    try {
+    const aiResult = await generateToolContent({ tool: "student-comments", input: input as unknown as Record<string, unknown> });
+    const generated = aiResult.content;
     const content = applyTemplate(resolveTemplate(templateId), generated, { className: input.className, lop: `${input.studentName} - ${input.className}`, ghi_chu: input.limitations });
     const next = createDocument(`Nhận xét học sinh ${input.studentName || input.className}`, "student-comment", content);
     setDocument(next);
     incrementUsage();
-    setMessage("Đã tạo nhận xét thành công.");
+    setMessage(`\u0110\u00e3 t\u1ea1o nh\u1eadn x\u00e9t th\u00e0nh c\u00f4ng (${aiResult.provider === "local" ? "ch\u1ebf \u0111\u1ed9 c\u1ee5c b\u1ed9" : `qua ${aiResult.provider}`}).`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kh\u00f4ng th\u1ec3 t\u1ea1o nh\u1eadn x\u00e9t l\u00fac n\u00e0y.");
+    }
     setLoading(false);
   }
 

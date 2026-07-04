@@ -16,6 +16,7 @@ import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
+import { generateToolContent } from "@/lib/ai/client";
 
 type StudentRow = {
   name: string;
@@ -121,16 +122,25 @@ ${comments.parent}`;
     setMessage(parsed.length ? `Đã đọc ${parsed.length} dòng; ${invalid} dòng thiếu Họ tên.` : "File CSV thiếu dữ liệu hoặc cột Họ tên.");
   }
 
-  function generate() {
+  async function generate() {
     if (!rows.length) {
-      setMessage("Vui lòng tải CSV trước khi tạo nhận xét.");
+      setMessage("Vui l\u00f2ng t\u1ea3i CSV tr\u01b0\u1edbc khi t\u1ea1o nh\u1eadn x\u00e9t.");
       return;
     }
-    const generated = `NHẬN XÉT HỌC SINH HÀNG LOẠT\nSố học sinh: ${rows.length}\n\n${output}\n\nNội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.`;
-    const content = applyTemplate(resolveTemplate(templateId), generated, { className: `${rows.length} học sinh`, ghi_chu: "Giáo viên kiểm tra lại từng nhận xét trước khi gửi." });
-    const next = createDocument(`Nhận xét hàng loạt - ${rows.length} học sinh`, "bulk-student-comments", content);
+    let generated = `NH\u1eacN X\u00c9T H\u1eccC SINH H\u00c0NG LO\u1ea0T\nS\u1ed1 h\u1ecdc sinh: ${rows.length}\n\n${output}\n\nN\u1ed9i dung l\u00e0 b\u1ea3n nh\u00e1p h\u1ed7 tr\u1ee3 gi\u00e1o vi\u00ean. Gi\u00e1o vi\u00ean c\u1ea7n ki\u1ec3m tra, ch\u1ec9nh s\u1eeda tr\u01b0\u1edbc khi s\u1eed d\u1ee5ng ch\u00ednh th\u1ee9c.`;
+    let providerLabel = "";
+    try {
+      const aiResult = await generateToolContent({ tool: "bulk-student-comments", input: { rows } });
+      generated = aiResult.content;
+      providerLabel = aiResult.provider === "local" ? " (ch\u1ebf \u0111\u1ed9 c\u1ee5c b\u1ed9)" : ` (qua ${aiResult.provider})`;
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Kh\u00f4ng th\u1ec3 t\u1ea1o nh\u1eadn x\u00e9t h\u00e0ng lo\u1ea1t l\u00fac n\u00e0y.");
+      return;
+    }
+    const content = applyTemplate(resolveTemplate(templateId), generated, { className: `${rows.length} h\u1ecdc sinh`, ghi_chu: "Gi\u00e1o vi\u00ean ki\u1ec3m tra l\u1ea1i t\u1eebng nh\u1eadn x\u00e9t tr\u01b0\u1edbc khi g\u1eedi." });
+    const next = createDocument(`Nh\u1eadn x\u00e9t h\u00e0ng lo\u1ea1t - ${rows.length} h\u1ecdc sinh`, "bulk-student-comments", content);
     setDocument(next);
-    setMessage("Đã tạo nhận xét hàng loạt.");
+    setMessage(`\u0110\u00e3 t\u1ea1o nh\u1eadn x\u00e9t h\u00e0ng lo\u1ea1t${providerLabel}.`);
   }
 
   function save() {

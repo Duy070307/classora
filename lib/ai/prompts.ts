@@ -1,46 +1,163 @@
 import type { AIRefinementAction } from "@/lib/ai/types";
 
-const rules = `Yêu cầu chung:
-- Trả lời bằng tiếng Việt và dùng Markdown sạch.
-- Chia nội dung thành các phần rõ ràng; dùng bảng khi phù hợp.
-- Không tự khẳng định quy định, chuẩn chính thức hoặc thông tin pháp lý nếu không có nguồn.
-- Không bịa dữ kiện còn thiếu; ghi rõ phần giáo viên cần bổ sung.
-- Cuối tài liệu nhắc giáo viên kiểm tra lại trước khi sử dụng.`;
+const reviewNote =
+  "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
-function prompt(tool: string, input: unknown, structure: string) {
-  return `Bạn là trợ lý soạn tài liệu cho giáo viên Việt Nam.
-Nhiệm vụ: ${tool}.
-Dữ liệu đầu vào: ${JSON.stringify(input, null, 2)}
-Cấu trúc mong muốn: ${structure}
+const baseRules = `Yêu cầu chung:
+- Trả lời bằng tiếng Việt.
+- Viết theo giọng chuyên nghiệp, thân thiện với giáo viên Việt Nam.
+- Tạo nội dung có cấu trúc rõ ràng, dễ copy sang Word.
+- Không yêu cầu nhập dữ liệu cá nhân nhạy cảm của học sinh.
+- Không tạo đoạn văn bản có bản quyền quá dài.
+- Không cam kết độ chính xác tuyệt đối.
+- Cuối nội dung chỉ nhắc ngắn gọn: "${reviewNote}"`;
 
-${rules}`;
+function formatInput(input: unknown) {
+  try {
+    return JSON.stringify(input, null, 2);
+  } catch {
+    return String(input);
+  }
 }
 
-export const buildExamPrompt = (input: unknown) => prompt("Soạn đề kiểm tra theo đặc trưng môn học", input, "PHẦN I trắc nghiệm A/B/C/D; PHẦN II đúng/sai a-b-c-d; PHẦN III trả lời ngắn; đáp án giáo viên, giải thích ngắn, gợi ý chấm, thang điểm, ma trận và bản đặc tả theo chủ đề.");
-export const buildWorksheetPrompt = (input: unknown) => prompt("Soạn phiếu học tập", input, "Thông tin bài học, mục tiêu, nhắc lại kiến thức, bài tập cơ bản, vận dụng, mở rộng, chỗ làm bài và đáp án/gợi ý cho giáo viên.");
-export const buildStudentCommentsPrompt = (input: unknown) => prompt("Viết nhận xét học sinh", input, "Ba phiên bản: ngắn gọn, trang trọng và thân thiện gửi phụ huynh.");
-export const buildMatrixPrompt = (input: unknown) => prompt("Tạo ma trận đề", input, "Bảng chủ đề, mức độ, số câu, số điểm, tỉ lệ và yêu cầu cần đạt.");
-export const buildAnswerKeyPrompt = (input: unknown) => prompt("Tạo đáp án và thang điểm", input, "Đáp án, lời giải, bảng điểm, lỗi thường gặp và lưu ý chấm.");
-export const buildExamCheckerPrompt = (input: unknown) => prompt("Rà soát đề kiểm tra", input, "Vấn đề phát hiện, mức độ ảnh hưởng, gợi ý sửa và các mục cần giáo viên xác minh.");
-export const buildLessonPlanPrompt = (input: unknown) => prompt("Soạn giáo án", input, "Mục tiêu, chuẩn bị, mở đầu, hình thành kiến thức, luyện tập, vận dụng, đánh giá và điều chỉnh sau tiết dạy.");
+function prompt(task: string, input: unknown, structure: string) {
+  return `Bạn là trợ lý soạn tài liệu cho giáo viên Việt Nam.
+Nhiệm vụ: ${task}
+
+Dữ liệu đầu vào:
+${formatInput(input)}
+
+Cấu trúc mong muốn:
+${structure}
+
+${baseRules}`;
+}
+
+export function buildExamPrompt(input: unknown) {
+  return prompt(
+    "Soạn đề kiểm tra theo đặc trưng môn học",
+    input,
+    `Nếu đề theo phong cách THPTQG/tốt nghiệp:
+- PHẦN I: câu trắc nghiệm A/B/C/D.
+- PHẦN II: câu đúng/sai với bốn ý a), b), c), d).
+- PHẦN III: câu trả lời ngắn.
+- Tách rõ BẢN DÀNH CHO HỌC SINH và PHẦN DÀNH CHO GIÁO VIÊN.
+- Phần giáo viên có đáp án, gợi ý chấm, thang điểm, ma trận và bản đặc tả.
+- Không đưa đáp án giáo viên vào đề học sinh.
+
+Ưu tiên trả JSON hợp lệ với dạng:
+{
+  "title": "...",
+  "content": "Markdown đầy đủ để hiển thị",
+  "structuredExam": { "student": { ... }, "teacher": { ... } }
+}
+Nếu không chắc cấu trúc JSON, trả Markdown sạch.`
+  );
+}
+
+export function buildWorksheetPrompt(input: unknown) {
+  return prompt(
+    "Soạn phiếu học tập",
+    input,
+    `PHIẾU HỌC TẬP
+- Thông tin bài học.
+- Mục tiêu.
+- Kiến thức cần nhớ.
+- Bài tập cơ bản.
+- Bài tập vận dụng.
+- Hướng dẫn/đáp án dành cho giáo viên.`
+  );
+}
+
+export function buildLessonPlanPrompt(input: unknown) {
+  return prompt(
+    "Soạn kế hoạch bài dạy",
+    input,
+    `KẾ HOẠCH BÀI DẠY
+- Thông tin bài học.
+- Mục tiêu.
+- Học liệu.
+- Tiến trình hoạt động: mở đầu, hình thành kiến thức, luyện tập, vận dụng.
+- Đánh giá.
+- Điều chỉnh sau bài dạy.`
+  );
+}
+
+export function buildStudentCommentsPrompt(input: unknown) {
+  return prompt(
+    "Viết nhận xét học sinh",
+    input,
+    `- Điểm mạnh.
+- Điểm cần cải thiện.
+- Hành động tiếp theo.
+- Nhận xét hoàn chỉnh.
+- Có thể thêm phiên bản ngắn, trang trọng và thân thiện gửi phụ huynh.`
+  );
+}
+
+export function buildBulkStudentCommentsPrompt(input: unknown) {
+  return prompt(
+    "Viết nhận xét học sinh hàng loạt",
+    input,
+    `- Mỗi học sinh có nhận xét riêng.
+- Ngôn ngữ tự nhiên, tích cực, không phán xét.
+- Có điểm mạnh, điểm cần cải thiện và gợi ý hành động tiếp theo.`
+  );
+}
+
+export function buildParentMessagePrompt(input: unknown) {
+  return prompt(
+    "Soạn tin nhắn gửi phụ huynh",
+    input,
+    `- Phiên bản ngắn.
+- Phiên bản đầy đủ.
+- Giọng văn lịch sự, rõ ràng, tôn trọng.
+- Tránh quy kết hoặc gây áp lực không cần thiết.`
+  );
+}
+
+export function buildRubricPrompt(input: unknown) {
+  return prompt(
+    "Tạo rubric đánh giá",
+    input,
+    `- Thông tin nhiệm vụ.
+- Bảng tiêu chí, mức đánh giá và điểm.
+- Hướng dẫn chấm.
+- Gợi ý nhận xét.
+Hãy dùng bảng Markdown sạch để hệ thống chuyển thành bảng Word/PDF.`
+  );
+}
+
+export function buildGenericPrompt(tool: string, input: unknown) {
+  return prompt(tool, input, "Các phần có tiêu đề rõ ràng, nội dung ngắn gọn, dễ kiểm tra và dễ xuất Word/PDF.");
+}
 
 const refinementInstructions: Record<AIRefinementAction, string> = {
-  regenerate: "Tạo lại một phiên bản khác nhưng giữ nguyên mục tiêu và dữ liệu đầu vào.",
-  shorter: "Rút gọn nội dung, giữ lại ý quan trọng và cấu trúc cần thiết.",
-  "more-detailed": "Bổ sung giải thích, ví dụ và chi tiết hữu ích.",
+  regenerate: "Tạo lại một phiên bản khác nhưng giữ mục tiêu và dữ liệu đầu vào.",
+  shorter: "Rút gọn nội dung, giữ ý chính.",
+  "more-detailed": "Bổ sung chi tiết, ví dụ và hướng dẫn hữu ích.",
   simpler: "Diễn đạt dễ hiểu hơn, dùng câu ngắn và từ ngữ phổ thông.",
   "more-formal": "Điều chỉnh sang văn phong trang trọng, chuẩn mực.",
-  easier: "Giảm độ khó của câu hỏi/nhiệm vụ, phù hợp học sinh cần hỗ trợ.",
-  harder: "Tăng độ khó và mức vận dụng nhưng vẫn bám sát dữ liệu đầu vào."
+  easier: "Giảm độ khó, phù hợp học sinh cần hỗ trợ.",
+  harder: "Tăng độ khó và mức vận dụng nhưng vẫn bám sát dữ liệu đầu vào.",
 };
 
 export function buildPrompt(tool: string, input: unknown, action?: AIRefinementAction, currentContent?: string) {
   const builders: Record<string, (value: unknown) => string> = {
-    exam: buildExamPrompt, worksheet: buildWorksheetPrompt, "student-comments": buildStudentCommentsPrompt,
-    matrix: buildMatrixPrompt, "answer-key": buildAnswerKeyPrompt, "exam-checker": buildExamCheckerPrompt,
-    "lesson-plan": buildLessonPlanPrompt
+    exam: buildExamPrompt,
+    "exam-generator": buildExamPrompt,
+    worksheet: buildWorksheetPrompt,
+    "worksheet-generator": buildWorksheetPrompt,
+    "lesson-plan": buildLessonPlanPrompt,
+    "lesson-plan-generator": buildLessonPlanPrompt,
+    "student-comments": buildStudentCommentsPrompt,
+    "bulk-student-comments": buildBulkStudentCommentsPrompt,
+    rubric: buildRubricPrompt,
+    "rubric-generator": buildRubricPrompt,
+    "parent-message": buildParentMessagePrompt,
+    "parent-message-generator": buildParentMessagePrompt,
   };
-  const base = (builders[tool] ?? ((value) => prompt(tool, value, "Các phần có tiêu đề rõ ràng và nội dung dễ kiểm tra.")))(input);
+  const base = (builders[tool] ?? ((value) => buildGenericPrompt(tool, value)))(input);
   if (!action) return base;
   return `${base}
 
