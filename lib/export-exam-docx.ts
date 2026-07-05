@@ -145,6 +145,16 @@ function docxTable(table: ParsedMarkdownTable) {
   });
 }
 
+function structuredSectionText(document: GeneratedDocument, type: "multiple_choice" | "true_false" | "short_answer") {
+  const questions = document.structuredExam?.parts.find((part) => part.type === type)?.questions ?? [];
+  return questions.map((question) => {
+    const lines = [`Câu ${question.number}. ${question.stem}`];
+    if (question.options) for (const key of ["A", "B", "C", "D"] as const) lines.push(`${key}. ${question.options[key]}`);
+    if (question.trueFalseItems) for (const item of question.trueFalseItems) lines.push(`${item.label}) ${item.text}`);
+    return lines.join("\n");
+  }).join("\n\n");
+}
+
 function teacherBlocks(text: string) {
   return splitMarkdownTables(text).flatMap((block) => block.type === "table"
     ? [docxTable(block.table), paragraph("", { after: 70 })]
@@ -217,9 +227,9 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
   const explicitPart1 = cleanStudentBody(section(document.content, /^PHẦN I\./i, /^PHẦN II\./i));
   const explicitPart2 = cleanStudentBody(section(document.content, /^PHẦN II\./i, /^PHẦN III\./i));
   const explicitPart3 = cleanStudentBody(section(document.content, /^PHẦN III\./i, /^(PHẦN DÀNH CHO GIÁO VIÊN|III\.\s*ĐÁP ÁN)/i));
-  const mc = explicitPart1 || cleanStudentBody(section(document.content, /^I\.\s*TRẮC NGHIỆM/i, /^II\./i));
-  const trueFalse = explicitPart2 && /(^|\n)[a-d]\)/im.test(explicitPart2) ? explicitPart2 : "";
-  const essay = explicitPart3 || (!trueFalse ? cleanStudentBody(section(document.content, /^II\.\s*TỰ LUẬN/i, /^III\./i)) : "");
+  const mc = explicitPart1 || cleanStudentBody(section(document.content, /^I\.\s*TRẮC NGHIỆM/i, /^II\./i)) || structuredSectionText(document, "multiple_choice");
+  const trueFalse = explicitPart2 && /(^|\n)[a-d]\)/im.test(explicitPart2) ? explicitPart2 : structuredSectionText(document, "true_false");
+  const essay = explicitPart3 || (!trueFalse ? cleanStudentBody(section(document.content, /^II\.\s*TỰ LUẬN/i, /^III\./i)) : "") || structuredSectionText(document, "short_answer");
   const mcCount = [...mc.matchAll(/^Câu\s+\d+\./gim)].length;
   const trueFalseCount = [...trueFalse.matchAll(/^Câu\s+\d+\./gim)].length;
   const essayCount = [...essay.matchAll(/^Câu\s+\d+\./gim)].length;

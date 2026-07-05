@@ -1,4 +1,5 @@
 import type { DocumentSettings } from "@/lib/document-settings";
+import type { ExamQuestion } from "@/lib/exam-types";
 import { parseExamForPrint, type ExamPrintQuestion } from "@/lib/exam-print-format";
 import type { GeneratedDocument } from "@/lib/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
@@ -37,6 +38,16 @@ function Matrix({ text }: { text: string }) {
   return <TextSection title="III. MA TRẬN ĐỀ" text={text} />;
 }
 
+function structuredToPrintQuestion(question: ExamQuestion): ExamPrintQuestion {
+  return {
+    number: String(question.number),
+    stem: question.stem,
+    options: question.options ? (["A", "B", "C", "D"] as const).map((label) => ({ label, text: question.options?.[label] ?? "" })) : [],
+    subItems: question.trueFalseItems?.map((item) => ({ label: item.label, text: item.text })) ?? [],
+    extra: []
+  };
+}
+
 export function OfficialExamPrintView({ document, settings }: { document: GeneratedDocument; settings: DocumentSettings }) {
   const parsed = parseExamForPrint(document);
   const meta = document.examMeta ?? {};
@@ -45,6 +56,9 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
   const structuredMultipleChoice = document.structuredExam?.parts.find((part) => part.type === "multiple_choice")?.questions ?? [];
   const structuredTrueFalse = document.structuredExam?.parts.find((part) => part.type === "true_false")?.questions ?? [];
   const structuredShortAnswer = document.structuredExam?.parts.find((part) => part.type === "short_answer")?.questions ?? [];
+  const part1 = parsed.part1.length ? parsed.part1 : structuredMultipleChoice.map(structuredToPrintQuestion);
+  const part2 = parsed.part2.length ? parsed.part2 : structuredTrueFalse.map(structuredToPrintQuestion);
+  const part3 = parsed.part3.length ? parsed.part3 : structuredShortAnswer.map(structuredToPrintQuestion);
   const hasStructuredAnswers = structuredMultipleChoice.length + structuredTrueFalse.length + structuredShortAnswer.length > 0;
   return <article className="official-exam-print">
     <section className="exam-student-pages">
@@ -66,9 +80,9 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
         <p className="exam-code">Mã đề: {code}</p>
       </div>
       <div className="exam-separator" />
-      {parsed.part1.length ? <><h2>PHẦN I. Thí sinh trả lời từ câu 1 đến câu {parsed.part1.length}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</h2>{parsed.part1.map((item) => <Question key={`i-${item.number}`} item={item} />)}</> : null}
-      {parsed.part2.length ? <><h2>PHẦN II. Thí sinh trả lời từ câu 1 đến câu {parsed.part2.length}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</h2>{parsed.part2.map((item) => <Question key={`ii-${item.number}`} item={item} />)}</> : null}
-      {parsed.part3.length ? <><h2>PHẦN III. Thí sinh trả lời từ câu 1 đến câu {parsed.part3.length}.</h2>{parsed.part3.map((item) => <Question key={`iii-${item.number}`} item={item} />)}</> : null}
+      {part1.length ? <><h2>PHẦN I. Thí sinh trả lời từ câu 1 đến câu {part1.length}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</h2>{part1.map((item) => <Question key={`i-${item.number}`} item={item} />)}</> : null}
+      {part2.length ? <><h2>PHẦN II. Thí sinh trả lời từ câu 1 đến câu {part2.length}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</h2>{part2.map((item) => <Question key={`ii-${item.number}`} item={item} />)}</> : null}
+      {part3.length ? <><h2>PHẦN III. Thí sinh trả lời từ câu 1 đến câu {part3.length}.</h2>{part3.map((item) => <Question key={`iii-${item.number}`} item={item} />)}</> : null}
       <p className="exam-end">------ HẾT ------</p>
       <div className="exam-print-footer"><span>Mã đề {code}</span><span>Trang ...</span></div>
     </section>

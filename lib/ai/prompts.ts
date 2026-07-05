@@ -35,23 +35,100 @@ ${baseRules}`;
 
 export function buildExamPrompt(input: unknown) {
   return prompt(
-    "Soạn đề kiểm tra theo đặc trưng môn học",
+    "So?n ?? ki?m tra theo ??c tr?ng m?n h?c",
     input,
-    `Nếu đề theo phong cách THPTQG/tốt nghiệp:
-- PHẦN I: câu trắc nghiệm A/B/C/D.
-- PHẦN II: câu đúng/sai với bốn ý a), b), c), d).
-- PHẦN III: câu trả lời ngắn.
-- Tách rõ BẢN DÀNH CHO HỌC SINH và PHẦN DÀNH CHO GIÁO VIÊN.
-- Phần giáo viên có đáp án, gợi ý chấm, thang điểm, ma trận và bản đặc tả.
-- Không đưa đáp án giáo viên vào đề học sinh.
+    `Ch? tr? v? M?T JSON object h?p l?. Kh?ng b?c trong markdown fence. Kh?ng gi?i th?ch ngo?i JSON. Kh?ng nh?t to?n b? ?? v?o m?t chu?i content duy nh?t.
 
-Ưu tiên trả JSON hợp lệ với dạng:
+Schema b?t bu?c:
 {
-  "title": "...",
-  "content": "Markdown đầy đủ để hiển thị",
-  "structuredExam": { "student": { ... }, "teacher": { ... } }
+  "title": "?? ki?m tra ...",
+  "structuredExam": {
+    "metadata": {
+      "title": "...",
+      "examStyle": "...",
+      "subject": "...",
+      "grade": "...",
+      "duration": "...",
+      "examCode": "0101",
+      "schoolName": "..."
+    },
+    "parts": [
+      {
+        "type": "multiple_choice",
+        "title": "PH?N I",
+        "instruction": "...",
+        "questions": [
+          {
+            "id": "mc-1",
+            "part": "multiple_choice",
+            "number": 1,
+            "stem": "C?u h?i th?c t?, kh?ng ch?a ??p ?n.",
+            "options": { "A": "...", "B": "...", "C": "...", "D": "..." },
+            "answer": "A",
+            "explanation": "Gi?i th?ch ng?n g?n v?i c?u h?i.",
+            "score": 0.25,
+            "difficulty": "Nh?n bi?t",
+            "topic": "..."
+          }
+        ]
+      },
+      {
+        "type": "true_false",
+        "title": "PH?N II",
+        "instruction": "...",
+        "questions": [
+          {
+            "id": "tf-1",
+            "part": "true_false",
+            "number": 1,
+            "stem": "Ng? c?nh c?u h?i.",
+            "trueFalseItems": [
+              { "label": "a", "text": "...", "answer": true },
+              { "label": "b", "text": "...", "answer": false },
+              { "label": "c", "text": "...", "answer": true },
+              { "label": "d", "text": "...", "answer": false }
+            ],
+            "answer": "a ??ng; b Sai; c ??ng; d Sai",
+            "explanation": "Gi?i th?ch ng?n.",
+            "score": 1,
+            "difficulty": "Th?ng hi?u",
+            "topic": "..."
+          }
+        ]
+      },
+      {
+        "type": "short_answer",
+        "title": "PH?N III",
+        "instruction": "...",
+        "questions": [
+          {
+            "id": "sa-1",
+            "part": "short_answer",
+            "number": 1,
+            "stem": "C?u tr? l?i ng?n.",
+            "answer": "??p ?n c? th?",
+            "explanation": "G?i ? ch?m g?n v?i c?u h?i.",
+            "score": 0.5,
+            "difficulty": "V?n d?ng",
+            "topic": "..."
+          }
+        ]
+      }
+    ],
+    "teacherOnly": {
+      "scoringGuide": "...",
+      "matrix": "...",
+      "specification": "...",
+      "notes": "N?i dung l? b?n nh?p h? tr? gi?o vi?n. Gi?o vi?n c?n ki?m tra, ch?nh s?a tr??c khi s? d?ng ch?nh th?c."
+    }
+  }
 }
-Nếu không chắc cấu trúc JSON, trả Markdown sạch.`
+
+Y?u c?u ri?ng:
+- T?ch tuy?t ??i ?? h?c sinh v? ??p ?n gi?o vi?n: kh?ng ??a ??p ?n/thang ?i?m v?o stem/options.
+- N?u l? To?n 12 THPTQG: PH?N I c? 12 c?u A/B/C/D, PH?N II c? 4 nh?m ??ng/sai v?i a,b,c,d, PH?N III c? 6 c?u tr? l?i ng?n, tr? khi input y?u c?u s? kh?c.
+- C?u h?i v? ??p ?n ph?i g?n v?i nhau; kh?ng d?ng ??p ?n placeholder l?p l?i.
+- Kh?ng d?ng markdown table separator trong tr??ng c?u h?i.`
   );
 }
 

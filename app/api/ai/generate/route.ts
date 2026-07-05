@@ -3,6 +3,8 @@ import { buildPrompt } from "@/lib/ai/prompts";
 import { getConfiguredProvider, getProviderStatus } from "@/lib/ai/provider";
 import { localProvider } from "@/lib/ai/providers/local-provider";
 import type { AIRefinementAction, AIGenerateMode } from "@/lib/ai";
+import { validateStructuredExam } from "@/lib/exam/validate-structured-exam";
+import type { ExamInput } from "@/lib/types";
 
 const actions = new Set<AIRefinementAction>([
   "regenerate",
@@ -56,8 +58,24 @@ export async function POST(request: Request) {
 
     const prompt = buildPrompt(validated.tool, validated.input, validated.action, validated.currentContent);
     const provider = getConfiguredProvider();
+    const isExam = validated.tool === "exam" || validated.tool === "exam-generator";
     try {
       const result = await provider.generate({ ...validated, prompt });
+      if (isExam) {
+        const validation = validateStructuredExam(result.structuredExam, validated.input as unknown as Partial<ExamInput>);
+        if (!validation.ok || !result.content.trim()) {
+          const fallback = await localProvider.generate({ ...validated, prompt });
+          return NextResponse.json({
+            ...fallback,
+            fallbackUsed: true,
+            warnings: [
+              ...(fallback.warnings || []),
+              "Soạn Lab đã tự dùng cấu trúc đề cục bộ vì nội dung AI chưa đủ an toàn để xuất Word/PDF.",
+            ],
+            providerFallbackReason: validation.ok ? "empty_exam_content" : validation.reason,
+          });
+        }
+      }
       return NextResponse.json(result);
     } catch {
       const fallback = await localProvider.generate({ ...validated, prompt });

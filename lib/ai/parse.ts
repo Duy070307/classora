@@ -1,23 +1,9 @@
 import type { StructuredExam } from "@/lib/exam-types";
+import { extractJson, looksLikeRawJson, stripCodeFences } from "@/lib/ai/extract-json";
 
 export function extractJsonObject(text: string): unknown | null {
-  const trimmed = text.trim();
-  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const candidate = fenced?.[1]?.trim() || trimmed;
-  try {
-    return JSON.parse(candidate);
-  } catch {
-    const start = candidate.indexOf("{");
-    const end = candidate.lastIndexOf("}");
-    if (start >= 0 && end > start) {
-      try {
-        return JSON.parse(candidate.slice(start, end + 1));
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  }
+  const result = extractJson(text);
+  return result.ok ? result.value : null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -26,8 +12,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function parseAIText(text: string) {
   const parsed = extractJsonObject(text);
-  if (!isRecord(parsed)) return { content: text };
-  const content = typeof parsed.content === "string" ? parsed.content : text;
+  const cleanText = stripCodeFences(text);
+  if (!isRecord(parsed)) return { content: looksLikeRawJson(cleanText) ? "" : cleanText };
+  const content = typeof parsed.content === "string"
+    ? stripCodeFences(parsed.content)
+    : looksLikeRawJson(cleanText) ? "" : cleanText;
   const title = typeof parsed.title === "string" ? parsed.title : undefined;
   const structuredExam = isRecord(parsed.structuredExam)
     ? (parsed.structuredExam as unknown as StructuredExam)
