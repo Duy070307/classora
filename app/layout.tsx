@@ -7,11 +7,12 @@ const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
   "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.";
 const ogImage = "/og-image.png";
+const iconVersion = "soanlab-20260705";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   applicationName: "Soạn Lab",
-  manifest: "/manifest.json",
+  manifest: `/manifest.json?v=${iconVersion}`,
   keywords: [
     "Soạn Lab",
     "công cụ giáo viên",
@@ -25,13 +26,14 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: `/favicon.ico?v=${iconVersion}`, sizes: "any" },
+      { url: `/icon.png?v=${iconVersion}`, type: "image/png", sizes: "512x512" },
+      { url: `/icon.svg?v=${iconVersion}`, type: "image/svg+xml" },
     ],
+    shortcut: [{ url: `/favicon.ico?v=${iconVersion}` }],
     apple: [
-      { url: "/apple-icon.png", type: "image/png", sizes: "180x180" },
-      { url: "/apple-touch-icon.svg", type: "image/svg+xml" },
+      { url: `/apple-icon.png?v=${iconVersion}`, type: "image/png", sizes: "180x180" },
+      { url: `/apple-touch-icon.svg?v=${iconVersion}`, type: "image/svg+xml" },
     ],
   },
   title: {
