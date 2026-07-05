@@ -7,7 +7,7 @@ const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
   "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.";
 const ogImage = "/og-image.png";
-const iconVersion = "soanlab-20260705";
+const iconVersion = "soanlab-transparent-20260705";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
