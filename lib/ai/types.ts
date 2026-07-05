@@ -30,6 +30,9 @@ export type AIResponse = {
   structuredExam?: StructuredExam;
   warnings?: string[];
   fallbackUsed?: boolean;
+  providerRequested?: AIProviderName;
+  retryCount?: number;
+  providerFallbackReason?: string;
 };
 
 export type AIErrorResponse = {

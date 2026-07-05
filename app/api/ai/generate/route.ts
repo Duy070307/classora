@@ -63,20 +63,45 @@ export async function POST(request: Request) {
       const result = await provider.generate({ ...validated, prompt });
       if (isExam) {
         const validation = validateStructuredExam(result.structuredExam, validated.input as unknown as Partial<ExamInput>);
+        const validationReason = validation.ok ? "empty_exam_content" : validation.reason;
         if (!validation.ok || !result.content.trim()) {
+          if (validationReason === "topic_mismatch") {
+            const repairPrompt = `${prompt}
+
+Yêu cầu sửa nghiêm ngặt: lần trả lời trước không bám đúng chủ đề "${String(validated.input.topic || "")}". Hãy tạo lại chỉ với câu hỏi thuộc chủ đề đã chọn, không dùng đạo hàm, tích phân, khảo sát hàm số hoặc nội dung ngoài chủ đề. Trả về đúng JSON schema, không markdown fence.`;
+            try {
+              const repaired = await provider.generate({ ...validated, prompt: repairPrompt });
+              const repairedValidation = validateStructuredExam(repaired.structuredExam, validated.input as unknown as Partial<ExamInput>);
+              if (repairedValidation.ok && repaired.content.trim()) {
+                return NextResponse.json({
+                  ...repaired,
+                  providerRequested: provider.name,
+                  retryCount: 1,
+                  warnings: [
+                    ...(repaired.warnings || []),
+                    "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề.",
+                  ],
+                });
+              }
+            } catch {
+              // Fall through to topic-aware local fallback.
+            }
+          }
           const fallback = await localProvider.generate({ ...validated, prompt });
           return NextResponse.json({
             ...fallback,
+            providerRequested: provider.name,
+            retryCount: validationReason === "topic_mismatch" ? 1 : 0,
             fallbackUsed: true,
             warnings: [
               ...(fallback.warnings || []),
               "Soạn Lab đã tự dùng cấu trúc đề cục bộ vì nội dung AI chưa đủ an toàn để xuất Word/PDF.",
             ],
-            providerFallbackReason: validation.ok ? "empty_exam_content" : validation.reason,
+            providerFallbackReason: validationReason,
           });
         }
       }
-      return NextResponse.json(result);
+      return NextResponse.json({ ...result, providerRequested: provider.name, retryCount: 0 });
     } catch {
       const fallback = await localProvider.generate({ ...validated, prompt });
       return NextResponse.json({

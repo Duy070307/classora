@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const requiredFiles = [
@@ -36,6 +36,7 @@ const requiredFiles = [
   "app/api/ai/generate/route.ts",
   "lib/ai/extract-json.ts",
   "lib/exam/normalize-ai-exam.ts",
+  "lib/exam/topic-generators/math-12-probability.ts",
   "lib/exam/validate-structured-exam.ts",
   "app/api/auth/logout/route.ts",
   "app/api/auth/me/route.ts",
@@ -78,6 +79,18 @@ const missing = requiredFiles.filter((file) => !existsSync(resolve(file)));
 if (missing.length) {
   console.error("Smoke test thất bại. Thiếu file:");
   missing.forEach((file) => console.error(`- ${file}`));
+  process.exit(1);
+}
+
+const probabilityGenerator = readFileSync(resolve("lib/exam/topic-generators/math-12-probability.ts"), "utf8");
+const requiredProbabilityTerms = ["prob-mc-", "prob-tf-", "prob-sa-", "multiple_choice", "true_false", "short_answer", "isMath12Probability"];
+const forbiddenProbabilityTerms = ["dao ham", "tich phan", "dong bien", "nghich bien", "cuc tri"];
+const missingProbabilityTerms = requiredProbabilityTerms.filter((term) => !probabilityGenerator.includes(term));
+const forbiddenProbabilityHits = forbiddenProbabilityTerms.filter((term) => probabilityGenerator.includes(term));
+if (missingProbabilityTerms.length || forbiddenProbabilityHits.length) {
+  console.error("Smoke test th?t b?i. Topic fallback To?n 12 X?c su?t ch?a ??t:");
+  missingProbabilityTerms.forEach((term) => console.error(`- Thi?u term: ${term}`));
+  forbiddenProbabilityHits.forEach((term) => console.error(`- C? forbidden term: ${term}`));
   process.exit(1);
 }
 

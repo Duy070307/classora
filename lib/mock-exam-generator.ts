@@ -1,4 +1,5 @@
 import { getSubjectPack } from "@/lib/exam/subject-packs";
+import { createMath12ProbabilityExam, isMath12Probability } from "@/lib/exam/topic-generators/math-12-probability";
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import type { ExamInput, QuestionDifficulty } from "@/lib/types";
 
@@ -98,6 +99,7 @@ function allocateScores(input: ExamInput, mcCount: number, tfCount: number) {
 }
 
 export function createStructuredExam(input: ExamInput): StructuredExam {
+  if (isMath12Probability(input)) return createMath12ProbabilityExam(input);
   const pack = getSubjectPack(input.subject);
   const mc = makeQuestions(input, "multiple_choice", input.multipleChoiceCount);
   const tf = makeQuestions(input, "true_false", input.trueFalseCount);

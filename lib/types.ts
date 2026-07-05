@@ -39,6 +39,13 @@ export type GeneratedDocument = {
     examStyle?: string;
   };
   structuredExam?: import("@/lib/exam-types").StructuredExam;
+  generationMeta?: {
+    provider?: string;
+    providerRequested?: string;
+    fallbackUsed?: boolean;
+    fallbackReason?: string;
+    retryCount?: number;
+  };
 };
 
 export type DocumentFolder = "Đề kiểm tra" | "Giáo án" | "Phiếu học tập" | "Nhận xét học sinh" | "Khác";

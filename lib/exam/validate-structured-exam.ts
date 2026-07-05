@@ -1,11 +1,14 @@
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import type { ExamInput } from "@/lib/types";
+import { isMath12Probability } from "@/lib/exam/topic-generators/math-12-probability";
 
 export type ExamValidationResult =
   | { ok: true }
   | { ok: false; reason: string };
 
 const fenceOrJsonPattern = /```|^\s*[{}[\]]|\\n|"\s*:\s*"/;
+const probabilityPositive = /xác suất|biến cố|không gian mẫu|chọn|rút|gieo|xúc xắc|đồng xu|thẻ|hộp|viên bi|tổ hợp|chỉnh hợp|hoán vị|độc lập|điều kiện|P\(|C\(|A\(/i;
+const probabilityForbidden = /đạo hàm|tích phân|đồng biến|nghịch biến|cực trị|tiệm cận|nguyên hàm|số phức|mặt phẳng|vector|hàm số|logarit|lượng giác/i;
 
 function hasText(value: unknown) {
   return typeof value === "string" && value.trim().length > 0 && !fenceOrJsonPattern.test(value.trim());
@@ -69,6 +72,23 @@ export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>
 
   if (repeatedAnswers(mc) || repeatedAnswers(short)) return { ok: false, reason: "repeated_placeholder_answers" };
   if (!candidate.teacherOnly || !hasText(candidate.teacherOnly.scoringGuide)) return { ok: false, reason: "missing_teacher_key" };
+
+  if (input && isMath12Probability(input)) {
+    const studentText = candidate.parts.flatMap((part) => part.questions).map((question) => [
+      question.stem,
+      question.options ? Object.values(question.options).join(" ") : "",
+      question.trueFalseItems?.map((item) => item.text).join(" ") ?? "",
+      question.answer,
+      question.explanation
+    ].join(" ")).join("\n");
+    const forbiddenMatches = studentText.match(new RegExp(probabilityForbidden.source, "gi"))?.length ?? 0;
+    const positiveMatches = studentText.match(new RegExp(probabilityPositive.source, "gi"))?.length ?? 0;
+    if (forbiddenMatches > 0) return { ok: false, reason: "topic_mismatch" };
+    if (positiveMatches < Math.max(4, Math.floor((mc.length + tf.length + short.length) / 3))) return { ok: false, reason: "topic_mismatch" };
+    if (mc.length !== Number(input.multipleChoiceCount ?? mc.length)) return { ok: false, reason: "answer_key_invalid" };
+    if (tf.length !== Number(input.trueFalseCount ?? tf.length)) return { ok: false, reason: "answer_key_invalid" };
+    if (short.length !== Number(input.shortAnswerCount ?? short.length)) return { ok: false, reason: "answer_key_invalid" };
+  }
 
   return { ok: true };
 }
