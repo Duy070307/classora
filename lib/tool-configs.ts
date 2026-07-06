@@ -373,7 +373,7 @@ const rawToolLinks = [
   {
     category: "Công thức & LaTeX",
     title: "Ảnh công thức → LaTeX",
-    description: "Chuyển ảnh công thức Toán, biểu thức hoặc hình học đã cắt gọn thành mã LaTeX.",
+    description: "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học đã cắt gọn thành TikZ/LaTeX.",
     href: "/tools/image-to-latex"
   },
   {

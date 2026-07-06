@@ -57,7 +57,7 @@ const allTools: ToolMeta[] = [
   { title: "Tạo biên bản họp phụ huynh", description: "Soạn biên bản họp có nội dung, ý kiến và kết luận.", href: "/tools/parent-meeting-minutes", category: "homeroom-parent" },
 
   { title: "Chuyển công thức sang LaTeX", description: "Chuyển công thức dạng text nhập tay sang LaTeX mô phỏng.", href: "/tools/latex-converter", category: "formula-latex" },
-  { title: "Ảnh công thức → LaTeX", description: "Chuyển ảnh công thức Toán, biểu thức hoặc hình học đã cắt gọn thành mã LaTeX để chèn vào Word, đề kiểm tra hoặc tài liệu.", href: "/tools/image-to-latex", category: "formula-latex", popular: true, badge: "Ảnh" },
+  { title: "Ảnh công thức → LaTeX", description: "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học đã cắt gọn thành mã TikZ/LaTeX để chèn vào tài liệu.", href: "/tools/image-to-latex", category: "formula-latex", popular: true, badge: "Ảnh" },
   { title: "Preview LaTeX", description: "Nhập LaTeX và xem preview công thức bằng KaTeX.", href: "/tools/latex-preview", category: "formula-latex" },
 
   { title: "Mẫu cá nhân", description: "Tạo, sửa, xóa và copy mẫu tài liệu cá nhân.", href: "/templates", category: "personalization" },

@@ -9,12 +9,15 @@ import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader"
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 
-type Mode = "auto" | "formula" | "diagram";
+type Mode = "auto" | "formula" | "geometry";
 
 type ApiResult = {
   ok: true;
+  type?: "latex" | "tikz";
   latex: string;
   displayLatex?: string;
+  tikzCode?: string;
+  standaloneLatex?: string;
   explanation?: string;
   confidence?: "high" | "medium" | "low";
   warnings?: string[];
@@ -27,8 +30,8 @@ type ApiResult = {
 
 const modes: Array<{ value: Mode; label: string }> = [
   { value: "auto", label: "Tự động" },
-  { value: "formula", label: "Công thức Toán" },
-  { value: "diagram", label: "Hình học / sơ đồ" },
+  { value: "formula", label: "Công thức → LaTeX" },
+  { value: "geometry", label: "Hình học → TikZ" },
 ];
 
 const maxSize = 5 * 1024 * 1024;
@@ -39,6 +42,9 @@ export default function ImageToLatexPage() {
   const [mode, setMode] = useState<Mode>("auto");
   const [latex, setLatex] = useState("");
   const [displayLatex, setDisplayLatex] = useState("");
+  const [outputType, setOutputType] = useState<"latex" | "tikz">("latex");
+  const [tikzCode, setTikzCode] = useState("");
+  const [standaloneLatex, setStandaloneLatex] = useState("");
   const [explanation, setExplanation] = useState("");
   const [warnings, setWarnings] = useState<string[]>([]);
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
@@ -46,6 +52,8 @@ export default function ImageToLatexPage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const isGeometryMode = mode === "geometry";
+  const isTikzOutput = outputType === "tikz" || isGeometryMode;
 
   const preview = useMemo(() => {
     const source = displayLatex || latex;
@@ -116,12 +124,15 @@ export default function ImageToLatexPage() {
       }
       setLatex(result.latex);
       setDisplayLatex(result.displayLatex || result.latex);
+      setOutputType(result.type || (mode === "geometry" ? "tikz" : "latex"));
+      setTikzCode(result.tikzCode || "");
+      setStandaloneLatex(result.standaloneLatex || "");
       setExplanation(result.explanation || "");
       setWarnings(result.warnings || []);
       setConfidence(result.confidence || "medium");
       setProvider(`${result.provider}${result.model ? ` · ${result.model}` : ""}`);
       saveRecentTool({ title: "Ảnh công thức → LaTeX", href: "/tools/image-to-latex" });
-      showMessage("Đã chuyển ảnh thành LaTeX.");
+      showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
     } catch {
       setError("Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn và đã cắt gọn.");
     } finally {
@@ -131,7 +142,7 @@ export default function ImageToLatexPage() {
 
   async function copyLatex() {
     await navigator.clipboard.writeText(latex);
-    showMessage("Đã copy LaTeX.");
+    showMessage(isTikzOutput ? "Đã copy TikZ." : "Đã copy LaTeX.");
   }
 
   function reset() {
@@ -140,6 +151,9 @@ export default function ImageToLatexPage() {
     setPreviewUrl("");
     setLatex("");
     setDisplayLatex("");
+    setOutputType("latex");
+    setTikzCode("");
+    setStandaloneLatex("");
     setExplanation("");
     setWarnings([]);
     setConfidence("");
@@ -150,7 +164,7 @@ export default function ImageToLatexPage() {
 
   function download(extension: "txt" | "md") {
     const body = extension === "md"
-      ? `# Ảnh công thức → LaTeX\n\n## LaTeX\n\n\`\`\`latex\n${latex}\n\`\`\`\n\n${explanation ? `## Ghi chú\n\n${explanation}\n` : ""}`
+      ? `# Ảnh công thức → LaTeX\n\n## ${isTikzOutput ? "TikZ/LaTeX" : "LaTeX"}\n\n\`\`\`latex\n${latex}\n\`\`\`\n\n${standaloneLatex ? `## Standalone LaTeX\n\n\`\`\`latex\n${standaloneLatex}\n\`\`\`\n\n` : ""}${explanation ? `## Ghi chú\n\n${explanation}\n` : ""}`
       : latex;
     const blob = new Blob([body], { type: extension === "md" ? "text/markdown;charset=utf-8" : "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -168,6 +182,7 @@ export default function ImageToLatexPage() {
       "```latex",
       latex,
       "```",
+      standaloneLatex ? `\nStandalone LaTeX:\n\n\`\`\`latex\n${standaloneLatex}\n\`\`\`` : "",
       explanation ? `\nGhi chú: ${explanation}` : "",
       provider ? `\nNguồn tạo: ${provider}` : "",
     ].filter(Boolean).join("\n");
@@ -196,6 +211,19 @@ export default function ImageToLatexPage() {
                 Tránh để lẫn chữ thừa, đáp án, phần trang giấy xung quanh hoặc nhiều bài trong cùng một ảnh.
               </p>
             </div>
+
+            {isGeometryMode ? (
+              <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-cyan-950">
+                <p className="font-extrabold">Lưu ý khi vẽ lại hình học</p>
+                <p className="mt-1">
+                  Để vẽ lại hình chính xác hơn, vui lòng cắt ảnh chỉ chứa hình học cần nhận diện.
+                  Tránh để lẫn đề bài, lời giải, đáp án hoặc nhiều hình trong cùng một ảnh.
+                </p>
+                <p className="mt-2 font-semibold">
+                  Mã TikZ được tạo là bản nháp hỗ trợ vẽ lại hình. Giáo viên cần kiểm tra lại vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi sử dụng.
+                </p>
+              </div>
+            ) : null}
 
             <div className="form-section">
               <p className="form-section-title">Ảnh đầu vào</p>
@@ -246,7 +274,7 @@ export default function ImageToLatexPage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={generate} disabled={busy} className="btn-primary flex-1 disabled:opacity-60">
                 <Sparkles size={16} />
-                {busy ? "Đang nhận diện..." : "Chuyển thành LaTeX"}
+                {busy ? "Đang nhận diện..." : isGeometryMode ? "Chuyển thành TikZ" : "Chuyển thành LaTeX"}
               </button>
               <button type="button" onClick={reset} className="btn-secondary">
                 <RotateCcw size={16} />
@@ -260,8 +288,12 @@ export default function ImageToLatexPage() {
 
           <section className="card overflow-hidden">
             <div className="border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 px-5 py-4">
-              <h2 className="text-xl font-extrabold text-ink">Kết quả LaTeX</h2>
-              <p className="mt-1 text-sm text-muted">Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra lại trước khi sử dụng chính thức.</p>
+              <h2 className="text-xl font-extrabold text-ink">{isTikzOutput ? "Mã TikZ/LaTeX" : "Kết quả LaTeX"}</h2>
+              <p className="mt-1 text-sm text-muted">
+                {isTikzOutput
+                  ? "Mã TikZ là bản nháp hỗ trợ giáo viên vẽ lại hình. Cần kiểm tra vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi dùng chính thức."
+                  : "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra lại trước khi sử dụng chính thức."}
+              </p>
             </div>
             <div className="space-y-5 p-5">
               <textarea
@@ -271,13 +303,13 @@ export default function ImageToLatexPage() {
                   setLatex(event.target.value);
                   setDisplayLatex(event.target.value);
                 }}
-                placeholder="LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh."
+                placeholder={isGeometryMode ? "Mã TikZ/LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh." : "LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh."}
               />
 
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={copyLatex} disabled={!latex} className="btn-primary disabled:opacity-50">
                   <Copy size={16} />
-                  Copy LaTeX
+                  {isTikzOutput ? "Copy TikZ" : "Copy LaTeX"}
                 </button>
                 <button type="button" onClick={() => download("txt")} disabled={!latex} className="btn-secondary disabled:opacity-50">
                   <Download size={16} />
@@ -307,10 +339,17 @@ export default function ImageToLatexPage() {
               ) : null}
 
               <div>
-                <p className="label">Preview nếu LaTeX render được</p>
+                <p className="label">{isTikzOutput ? "Bản xem trước hình vẽ" : "Preview nếu LaTeX render được"}</p>
                 <div className="mt-2 min-h-36 overflow-auto rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 p-5 text-center text-xl shadow-inner">
                   {!latex ? (
-                    <p className="text-sm text-muted">Chưa có LaTeX để preview.</p>
+                    <p className="text-sm text-muted">{isGeometryMode ? "Chưa có mã TikZ để xem trước." : "Chưa có LaTeX để preview."}</p>
+                  ) : isTikzOutput ? (
+                    <div className="text-left text-sm leading-6 text-slate-700">
+                      <p className="font-bold text-ink">TikZ cần được biên dịch bằng LaTeX để xem hình hoàn chỉnh.</p>
+                      <p className="mt-1 text-muted">Soạn Lab đã tạo mã TikZ bên trên. Hãy copy vào tài liệu LaTeX có gói TikZ hoặc dùng bản standalone nếu có.</p>
+                      {tikzCode ? <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{tikzCode}</pre> : null}
+                      {standaloneLatex ? <details className="mt-3 rounded-2xl border border-blue-100 bg-white p-3"><summary className="cursor-pointer font-bold text-blue-700">Xem standalone LaTeX</summary><pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{standaloneLatex}</pre></details> : null}
+                    </div>
                   ) : preview.error ? (
                     <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-left text-sm leading-6 text-amber-800">
                       <p className="font-bold">LaTeX cần kiểm tra trước khi render.</p>

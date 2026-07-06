@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 const allowedMimeTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
-const allowedModes = new Set<ImageToLatexMode>(["auto", "formula", "diagram"]);
+const allowedModes = new Set<ImageToLatexMode>(["auto", "formula", "geometry"]);
 const maxSize = 5 * 1024 * 1024;
 
 async function requireUserIfConfigured() {

@@ -15,7 +15,7 @@
 - [ ] Lịch sử lưu, mở lại, xuất lại Word/Print được.
 - [ ] Mẫu cá nhân, ngân hàng câu hỏi, backup/restore local data hoạt động.
 - [ ] Command palette, favorites và recent tools hoạt động.
-- [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX qua Gemini khi được cấu hình, copy/download/lưu lịch sử hoạt động.
+- [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX hoặc TikZ qua Gemini khi được cấu hình, copy/download/lưu lịch sử hoạt động.
 
 ## Export
 

@@ -120,8 +120,9 @@ Provider thật nếu có key:
 2. Mở `/tools/image-to-latex`.
 3. Upload ảnh PNG/JPG/WEBP đã cắt gọn, dưới 5MB.
 4. Xác nhận UI nhắc giáo viên cắt ảnh chỉ chứa công thức hoặc hình cần nhận diện.
-5. Tạo LaTeX, copy, preview KaTeX nếu render được, tải TXT/Markdown và lưu lịch sử.
-6. Với provider không phải Gemini hoặc thiếu key, xác nhận hiển thị lỗi thân thiện, không crash.
+5. Chọn “Công thức → LaTeX”, tạo LaTeX, copy, preview KaTeX nếu render được, tải TXT/Markdown và lưu lịch sử.
+6. Chọn “Hình học → TikZ”, xác nhận nút chuyển thành TikZ, output “Mã TikZ/LaTeX”, ghi chú độ chính xác và khung “Bản xem trước hình vẽ” hiển thị mã TikZ/standalone.
+7. Với provider không phải Gemini hoặc thiếu key, xác nhận hiển thị lỗi thân thiện, không crash.
 
 ## Public wording audit
 
