@@ -1,4 +1,5 @@
 import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
+import { getSchoolDiagramPreset, isKnownSchoolDiagramPattern, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -28,6 +29,37 @@ const modeLabels: Record<ImageToLatexMode, string> = {
   formula: "Công thức → LaTeX",
   geometry: "Hình học → TikZ",
 };
+
+const geometryAccuracyRules = `Quy tắc tăng độ chính xác khi vẽ lại hình học:
+- Redraw the visible figure only. Do not solve the problem.
+- Preserve visual style: solid lines stay solid, dashed lines stay dashed, black lines stay black unless color is clearly meaningful.
+- Do not arbitrarily make main geometry lines blue.
+- Do not arbitrarily make solid slanted lines dashed.
+- Do not invent hidden lines.
+- Use simple, stable TikZ coordinates.
+- If the image shows a baseline/ground, draw it as a horizontal reference line.
+- If there is a gray ground strip or shaded ground/area, approximate it with gray fill below the baseline.
+- If a point lies on the baseline, place it on y=0.
+- If a point is vertically above another point, use the same x-coordinate.
+- If a segment is visibly vertical, draw it vertical.
+- If a segment is visibly slanted and solid, draw it as a solid black segment.
+- Measurements should be placed near the corresponding segment.
+- Labels should stay near their original positions.
+
+Common school diagram pattern:
+- If the image has A above A', B above B', M on A'B', and a broken path A-M-B:
+  - A' and B' are on the ground/baseline.
+  - A is vertically above A'.
+  - B is vertically above B'.
+  - M lies between A' and B'.
+  - Draw AA' and BB' as vertical solid segments.
+  - Draw A-M and M-B as solid black slanted segments.
+  - Draw A'-B' as dashed horizontal baseline.
+  - Draw gray ground strip below A', M, B'.
+  - Put 500(m) beside AA' if shown.
+  - Put 600(m) beside BB' if shown.
+  - Put 2200(m) near segment M-B if shown.
+  - Never draw A-M or M-B as blue dashed lines unless the original image clearly shows that exact style.`;
 
 function extractJson(text: string): Record<string, unknown> | null {
   const cleaned = stripMarkdownFence(text);
@@ -120,6 +152,8 @@ Nhiệm vụ:
 - Không cắt cụt output.
 - Dùng lệnh TikZ đơn giản: \\coordinate, \\draw, \\node, \\fill, \\pic cho góc vuông nếu cần, [dashed] cho nét đứt.
 - Nếu chưa chắc, tạo một hình TikZ xấp xỉ nhưng hợp lệ.
+
+${geometryAccuracyRules}
 
 Chế độ người dùng chọn: ${modeLabels[mode]}.
 
@@ -228,6 +262,87 @@ ${raw.slice(0, 12000)}`;
     if (!extraction.ok) {
       throw new Error(extraction.error);
     }
+
+    const patternText = [
+      raw,
+      extraction.tikzCode,
+      typeof parsed?.explanation === "string" ? parsed.explanation : "",
+    ].join("\n");
+    const isSchoolDiagram = isKnownSchoolDiagramPattern(patternText);
+    if (isSchoolDiagram) {
+      const validation = validateKnownSchoolDiagramTikz(extraction.tikzCode);
+      if (!validation.ok) {
+        const repairPrompt = `Your TikZ output does not match the diagram.
+The image shows A vertically above A', B vertically above B', M on the baseline A'B', solid black segments A-M and M-B, vertical solid segments A-A' and B-B', dashed horizontal baseline A'-B', gray ground strip below the baseline, labels 500(m), 600(m), 2200(m).
+Rewrite the TikZ code only.
+
+Hard rules:
+- Main segments A-M and M-B must be solid black, not blue and not dashed.
+- A-A' and B-B' must be vertical solid segments.
+- A'-B' must be a dashed horizontal baseline.
+- M must lie on the baseline between A' and B'.
+- The gray ground strip must be below the baseline.
+- Labels and measurements must be included near their visible positions.
+- Return JSON only, no markdown fences.
+- tikzCode must contain only \\begin{tikzpicture}...\\end{tikzpicture}.
+
+Current invalid TikZ:
+${extraction.tikzCode.slice(0, 12000)}
+
+Validation issues:
+${validation.reasons.join(", ")}`;
+        const repairResponse = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { text: repairPrompt },
+                  {
+                    inlineData: {
+                      mimeType,
+                      data: imageBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.05,
+              maxOutputTokens: maxTokens,
+              responseMimeType: "application/json",
+            },
+          }),
+        });
+        if (repairResponse.ok) {
+          const repairData = await repairResponse.json() as GeminiImageResponse;
+          const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+          const repaired = extractTikzFromAIOutput(repairRaw);
+          if (repaired.ok && validateKnownSchoolDiagramTikz(repaired.tikzCode).ok) {
+            extraction = repaired;
+          } else {
+            const preset = getSchoolDiagramPreset();
+            extraction = {
+              ok: true,
+              tikzCode: preset.tikzCode,
+              standaloneLatex: preset.standaloneLatex,
+              warnings: [...preset.warnings, "Soạn Lab đã dùng bố cục TikZ chuẩn cho mẫu hình học phổ thông này để tránh sai nét/nhãn."],
+            };
+          }
+        } else {
+          const preset = getSchoolDiagramPreset();
+          extraction = {
+            ok: true,
+            tikzCode: preset.tikzCode,
+            standaloneLatex: preset.standaloneLatex,
+            warnings: [...preset.warnings, "Soạn Lab đã dùng bố cục TikZ chuẩn cho mẫu hình học phổ thông này để tránh sai nét/nhãn."],
+          };
+        }
+      }
+    }
+
     return {
       type: "tikz",
       latex: extraction.tikzCode,

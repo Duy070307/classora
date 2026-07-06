@@ -400,7 +400,7 @@ export default function ImageToLatexPage() {
                   ) : isTikzOutput ? (
                     <div className="text-left text-sm leading-6 text-slate-700">
                       <p className="font-bold text-ink">Bản xem trước TikZ trực tiếp sẽ được hỗ trợ sau.</p>
-                      <p className="mt-1 text-muted">Hiện tại có thể sao chép mã để dùng trong Overleaf hoặc LaTeX editor. Dùng bản standalone `.tex` nếu muốn biên dịch riêng hình vẽ.</p>
+                      <p className="mt-1 text-muted">Hi?n t?i c? th? sao ch?p m? ?? d?ng trong Overleaf ho?c LaTeX editor. G?i ?: d?ng n?t t?i `.tex`, m? trong Overleaf ?? ki?m tra h?nh v? tr??c khi ??a v?o t?i li?u.</p>
                       {tikzCode ? <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{tikzCode}</pre> : null}
                     </div>
                   ) : preview.error ? (
