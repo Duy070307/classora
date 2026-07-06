@@ -372,8 +372,8 @@ const rawToolLinks = [
   })),
   {
     category: "Công thức & LaTeX",
-    title: "Ảnh công thức → LaTeX",
-    description: "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học đã cắt gọn thành TikZ/LaTeX.",
+    title: "Ảnh công thức & hình học → LaTeX/TikZ",
+    description: "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học đã cắt gọn thành mã TikZ.",
     href: "/tools/image-to-latex"
   },
   {

@@ -20,6 +20,7 @@ export type ToolType =
   | "parent-meeting-minutes"
   | "latex-converter"
   | "image-to-latex"
+  | "image-to-tikz"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {
@@ -46,6 +47,11 @@ export type GeneratedDocument = {
     fallbackUsed?: boolean;
     fallbackReason?: string;
     retryCount?: number;
+    mode?: string;
+    model?: string;
+    confidence?: "high" | "medium" | "low";
+    warnings?: string[];
+    hasStandaloneLatex?: boolean;
   };
 };
 

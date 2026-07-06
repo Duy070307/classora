@@ -124,6 +124,19 @@ Provider thật nếu có key:
 6. Chọn “Hình học → TikZ”, xác nhận nút chuyển thành TikZ, output “Mã TikZ/LaTeX”, ghi chú độ chính xác và khung “Bản xem trước hình vẽ” hiển thị mã TikZ/standalone.
 7. Với provider không phải Gemini hoặc thiếu key, xác nhận hiển thị lỗi thân thiện, không crash.
 
+Ảnh hình học cần thử:
+
+- Tam giác ABC đơn giản.
+- Tam giác có đường cao AH vuông góc BC.
+- Đường tròn tâm O có nhãn bán kính.
+- Hình có nét đứt.
+- Hình có ký hiệu góc vuông.
+- Hình có nhãn điểm và số đo.
+- Hình mờ/khó đọc.
+- Ảnh có chữ thừa quanh hình.
+
+Kỳ vọng: geometry mode trả mã TikZ, không hiển thị JSON thô, không giải bài toán, giữ nhãn nhìn thấy được, có nét đứt/ký hiệu góc vuông khi ảnh có, tải TXT/Markdown/TEX hoạt động, lưu lịch sử hoạt động và formula mode vẫn tạo LaTeX như trước.
+
 ## Public wording audit
 
 Giao diện public chính không được hiển thị tên thương hiệu cũ, CTA góp ý công khai hoặc từ ngữ phát triển nội bộ. Các route nội bộ cũ nếu còn tồn tại không được xuất hiện trong public nav, footer, sitemap hoặc command palette.

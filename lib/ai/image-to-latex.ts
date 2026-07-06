@@ -28,7 +28,7 @@ const modeLabels: Record<ImageToLatexMode, string> = {
 };
 
 function extractJson(text: string): Record<string, unknown> | null {
-  const cleaned = text.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+  const cleaned = stripMarkdownFence(text);
   try {
     const parsed = JSON.parse(cleaned);
     return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
@@ -45,6 +45,65 @@ function extractJson(text: string): Record<string, unknown> | null {
     }
     return null;
   }
+}
+
+function stripMarkdownFence(text: string): string {
+  return text
+    .trim()
+    .replace(/^```(?:json|latex|tex|tikz)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+}
+
+function extractEnvironmentBlock(text: string, environment: string): string {
+  const cleaned = stripMarkdownFence(text);
+  const pattern = new RegExp(`\\\\begin\\{${environment}\\}[\\s\\S]*?\\\\end\\{${environment}\\}`, "i");
+  return cleaned.match(pattern)?.[0]?.trim() || "";
+}
+
+function extractStandaloneLatex(text: string): string {
+  const cleaned = stripMarkdownFence(text);
+  return /\\documentclass/i.test(cleaned) ? cleaned : "";
+}
+
+function sanitizeTikzOutput(raw: string, parsed: Record<string, unknown> | null) {
+  const parsedLatex = typeof parsed?.latex === "string" ? stripMarkdownFence(parsed.latex) : "";
+  const parsedTikz = typeof parsed?.tikzCode === "string" ? stripMarkdownFence(parsed.tikzCode) : "";
+  const parsedStandalone = typeof parsed?.standaloneLatex === "string" ? stripMarkdownFence(parsed.standaloneLatex) : "";
+  const rawClean = stripMarkdownFence(raw);
+
+  const standaloneLatex = parsedStandalone || extractStandaloneLatex(parsedLatex) || extractStandaloneLatex(rawClean);
+  const tikzCode =
+    parsedTikz ||
+    extractEnvironmentBlock(parsedLatex, "tikzpicture") ||
+    extractEnvironmentBlock(standaloneLatex, "tikzpicture") ||
+    extractEnvironmentBlock(rawClean, "tikzpicture") ||
+    (/\\draw|\\node|\\coordinate|\\path/i.test(rawClean) ? rawClean : "");
+
+  const standalone = standaloneLatex || (tikzCode
+    ? `\\documentclass[tikz,border=5pt]{standalone}
+\\usepackage{tikz}
+\\begin{document}
+${tikzCode}
+\\end{document}`
+    : "");
+
+  return {
+    tikzCode,
+    standaloneLatex: standalone,
+    latex: tikzCode || parsedLatex || "",
+  };
+}
+
+function sanitizeLatexOutput(raw: string, parsed: Record<string, unknown> | null) {
+  const parsedLatex = typeof parsed?.latex === "string" ? stripMarkdownFence(parsed.latex) : "";
+  const parsedDisplay = typeof parsed?.displayLatex === "string" ? stripMarkdownFence(parsed.displayLatex) : "";
+  const rawClean = stripMarkdownFence(raw);
+  const fallback = extractEnvironmentBlock(rawClean, "tikzpicture") || rawClean;
+  return {
+    latex: parsedLatex || fallback,
+    displayLatex: parsedDisplay || parsedLatex || fallback,
+  };
 }
 
 function normalizeConfidence(value: unknown): "high" | "medium" | "low" {
@@ -77,11 +136,19 @@ export async function generateLatexFromImage({
   const prompt = wantsTikz ? `Bạn là trợ lý vẽ lại hình học bằng TikZ/LaTeX cho giáo viên Việt Nam.
 
 Nhiệm vụ:
-- Phân tích ảnh hình học đã được cắt gọn và tạo mã TikZ để vẽ lại hình.
-- Ưu tiên đúng cấu trúc hình: điểm, đoạn thẳng, đường tròn, cung, góc, nét đứt, ký hiệu vuông góc/song song/bằng nhau và nhãn điểm.
-- Nếu không biết chính xác độ dài hoặc tọa độ, hãy chọn tọa độ tương đối hợp lý để hình rõ và dễ chỉnh sửa.
-- Không bịa thêm điểm/ký hiệu không thấy trong ảnh.
-- Không nhận diện cả đề bài/lời giải; chỉ tập trung vào hình.
+- Phân tích ảnh như một hình vẽ hình học đã được cắt gọn.
+- Nhận diện các yếu tố nhìn thấy được: điểm, đường thẳng, đoạn thẳng, tia, đường tròn, cung tròn, dấu vuông góc, dấu góc vuông, dấu đoạn bằng nhau, dấu góc, nét đứt, nhãn và số đo.
+- Tạo mã TikZ sạch để vẽ lại hình.
+- Dùng hệ tọa độ đơn giản, dễ chỉnh sửa.
+- Giữ nhãn điểm đúng như trong ảnh.
+- Giữ số đo độ dài/góc nếu nhìn thấy trong ảnh.
+- Dùng nét đứt nếu hình gốc có nét đứt.
+- Dùng ký hiệu góc vuông nếu hình gốc có dấu góc vuông.
+- Dùng cung tròn nhỏ cho ký hiệu góc nếu hình gốc có dấu góc.
+- Không bịa giá trị ẩn, không suy luận lời giải, không giải bài toán.
+- Không đưa đề bài, lời giải hoặc chữ ngoài hình vào output.
+- Chỉ vẽ lại hình.
+- Nếu ảnh mờ/khó đọc, đặt confidence là "low", thêm warning và vẫn cố tạo TikZ xấp xỉ đơn giản nếu có thể.
 - Không dùng markdown fence.
 - Mã TikZ cần nằm trong môi trường tikzpicture, dễ copy vào tài liệu LaTeX.
 
@@ -90,12 +157,11 @@ Chế độ người dùng chọn: ${modeLabels[mode]}.
 Trả về đúng JSON:
 {
   "type": "tikz",
-  "latex": "mã TikZ/LaTeX chính",
-  "tikzCode": "\\\\begin{tikzpicture}...\\\\end{tikzpicture}",
-  "standaloneLatex": "\\\\documentclass[tikz,border=2mm]{standalone}...",
-  "explanation": "ghi chú ngắn bằng tiếng Việt về hình đã vẽ lại",
-  "confidence": "high|medium|low",
-  "warnings": ["cảnh báo nếu có"]
+  "tikzCode": "\\\\begin{tikzpicture}[scale=1]\\\\n...\\\\n\\\\end{tikzpicture}",
+  "standaloneLatex": "\\\\documentclass[tikz,border=5pt]{standalone}\\\\n\\\\usepackage{tikz}\\\\n\\\\begin{document}\\\\n...\\\\n\\\\end{document}",
+  "explanation": "Mô tả ngắn các yếu tố đã nhận diện.",
+  "confidence": "high",
+  "warnings": []
 }` : `Bạn là trợ lý chuyển ảnh công thức Toán/hình học sang LaTeX cho giáo viên Việt Nam.
 
 Yêu cầu:
@@ -153,21 +219,17 @@ Trả về đúng JSON:
   if (!raw) throw new Error("Gemini không trả về nội dung LaTeX.");
 
   const parsed = extractJson(raw);
-  const tikzCode = typeof parsed?.tikzCode === "string" && parsed.tikzCode.trim() ? parsed.tikzCode.trim() : "";
-  const latex = typeof parsed?.latex === "string" && parsed.latex.trim()
-    ? parsed.latex.trim()
-    : tikzCode || raw;
-  const displayLatex = typeof parsed?.displayLatex === "string" && parsed.displayLatex.trim()
-    ? parsed.displayLatex.trim()
-    : latex;
-  const type = parsed?.type === "tikz" || wantsTikz || Boolean(tikzCode) ? "tikz" : "latex";
+  const tikz = sanitizeTikzOutput(raw, parsed);
+  const formula = sanitizeLatexOutput(raw, parsed);
+  const type = parsed?.type === "tikz" || wantsTikz || Boolean(tikz.tikzCode) ? "tikz" : "latex";
+  const latex = type === "tikz" ? tikz.latex : formula.latex;
 
   return {
     type,
     latex,
-    displayLatex,
-    tikzCode: tikzCode || (type === "tikz" ? latex : undefined),
-    standaloneLatex: typeof parsed?.standaloneLatex === "string" ? parsed.standaloneLatex.trim() : undefined,
+    displayLatex: type === "tikz" ? undefined : formula.displayLatex,
+    tikzCode: type === "tikz" ? tikz.tikzCode || latex : undefined,
+    standaloneLatex: type === "tikz" ? tikz.standaloneLatex : undefined,
     explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
     confidence: normalizeConfidence(parsed?.confidence),
     warnings: normalizeWarnings(parsed?.warnings),

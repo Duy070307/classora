@@ -34,6 +34,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "parent-meeting-minutes": "Biên bản họp phụ huynh",
   "latex-converter": "Công thức LaTeX",
   "image-to-latex": "Ảnh công thức → LaTeX",
+  "image-to-tikz": "Ảnh hình học → TikZ",
   "bulk-student-comments": "Nhận xét hàng loạt"
 };
 

@@ -49,6 +49,7 @@ export default function ImageToLatexPage() {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
   const [provider, setProvider] = useState("");
+  const [model, setModel] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -130,8 +131,9 @@ export default function ImageToLatexPage() {
       setExplanation(result.explanation || "");
       setWarnings(result.warnings || []);
       setConfidence(result.confidence || "medium");
-      setProvider(`${result.provider}${result.model ? ` · ${result.model}` : ""}`);
-      saveRecentTool({ title: "Ảnh công thức → LaTeX", href: "/tools/image-to-latex" });
+      setProvider(result.provider);
+      setModel(result.model || "");
+      saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
       showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
     } catch {
       setError("Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn và đã cắt gọn.");
@@ -158,35 +160,55 @@ export default function ImageToLatexPage() {
     setWarnings([]);
     setConfidence("");
     setProvider("");
+    setModel("");
     setError("");
     setMessage("");
   }
 
-  function download(extension: "txt" | "md") {
-    const body = extension === "md"
+  async function copyStandaloneLatex() {
+    await navigator.clipboard.writeText(standaloneLatex);
+    showMessage("Đã copy standalone LaTeX.");
+  }
+
+  function download(extension: "txt" | "md" | "tex") {
+    const body = extension === "tex"
+      ? standaloneLatex || latex
+      : extension === "md"
       ? `# Ảnh công thức → LaTeX\n\n## ${isTikzOutput ? "TikZ/LaTeX" : "LaTeX"}\n\n\`\`\`latex\n${latex}\n\`\`\`\n\n${standaloneLatex ? `## Standalone LaTeX\n\n\`\`\`latex\n${standaloneLatex}\n\`\`\`\n\n` : ""}${explanation ? `## Ghi chú\n\n${explanation}\n` : ""}`
       : latex;
     const blob = new Blob([body], { type: extension === "md" ? "text/markdown;charset=utf-8" : "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `soan-lab-image-to-latex.${extension}`;
+    anchor.download = `${isTikzOutput ? "soan-lab-image-to-tikz" : "soan-lab-image-to-latex"}.${extension}`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
 
   function saveToHistory() {
+    const title = isTikzOutput ? "Ảnh hình học → TikZ" : "Ảnh công thức → LaTeX";
     const content = [
-      "# Ảnh công thức → LaTeX",
+      `# ${title}`,
       "",
       "```latex",
       latex,
       "```",
       standaloneLatex ? `\nStandalone LaTeX:\n\n\`\`\`latex\n${standaloneLatex}\n\`\`\`` : "",
       explanation ? `\nGhi chú: ${explanation}` : "",
-      provider ? `\nNguồn tạo: ${provider}` : "",
+      provider ? `\nNguồn tạo: ${provider}${model ? ` · ${model}` : ""}` : "",
     ].filter(Boolean).join("\n");
-    saveDocument(createDocument("Ảnh công thức → LaTeX", "image-to-latex", content));
+    const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content);
+    saveDocument({
+      ...document,
+      generationMeta: {
+        provider,
+        mode: isTikzOutput ? "geometry" : mode,
+        model,
+        confidence: confidence || undefined,
+        warnings,
+        hasStandaloneLatex: Boolean(standaloneLatex),
+      },
+    });
     showMessage("Đã lưu vào lịch sử.");
   }
 
@@ -195,8 +217,8 @@ export default function ImageToLatexPage() {
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
         <PageHeader
-          title="Ảnh công thức → LaTeX"
-          description="Upload ảnh công thức hoặc hình học đã cắt gọn, Soạn Lab sẽ chuyển thành mã LaTeX có thể sao chép."
+          title="Ảnh công thức & hình học → LaTeX/TikZ"
+          description="Upload ảnh công thức hoặc hình học đã cắt gọn, Soạn Lab sẽ chuyển thành mã LaTeX hoặc TikZ có thể sao chép."
           category="Công thức & LaTeX"
           iconName="latex"
           exportable={false}
@@ -222,6 +244,10 @@ export default function ImageToLatexPage() {
                 <p className="mt-2 font-semibold">
                   Mã TikZ được tạo là bản nháp hỗ trợ vẽ lại hình. Giáo viên cần kiểm tra lại vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi sử dụng.
                 </p>
+                <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
+                  <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Phù hợp với:</span> tam giác, đường tròn, hình học tọa độ, hình có điểm A/B/C, đường cao, trung tuyến, tiếp tuyến, góc vuông, nét đứt.</p>
+                  <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Không phù hợp với:</span> ảnh mờ, nhiều hình trong một ảnh, ảnh có cả đề bài dài, hình bị nghiêng mạnh hoặc bị che khuất.</p>
+                </div>
               </div>
             ) : null}
 
@@ -311,13 +337,25 @@ export default function ImageToLatexPage() {
                   <Copy size={16} />
                   {isTikzOutput ? "Copy TikZ" : "Copy LaTeX"}
                 </button>
+                {isTikzOutput ? (
+                  <>
+                    <button type="button" onClick={copyStandaloneLatex} disabled={!standaloneLatex} className="btn-secondary disabled:opacity-50">
+                      <Copy size={16} />
+                      Copy standalone LaTeX
+                    </button>
+                    <button type="button" onClick={() => download("tex")} disabled={!latex} className="btn-secondary disabled:opacity-50">
+                      <Download size={16} />
+                      Tải .tex
+                    </button>
+                  </>
+                ) : null}
                 <button type="button" onClick={() => download("txt")} disabled={!latex} className="btn-secondary disabled:opacity-50">
                   <Download size={16} />
-                  TXT
+                  Tải .txt
                 </button>
                 <button type="button" onClick={() => download("md")} disabled={!latex} className="btn-secondary disabled:opacity-50">
                   <Download size={16} />
-                  Markdown
+                  Tải Markdown
                 </button>
                 <button type="button" onClick={saveToHistory} disabled={!latex} className="btn-secondary disabled:opacity-50">
                   <Save size={16} />
@@ -327,7 +365,7 @@ export default function ImageToLatexPage() {
 
               {provider || confidence || explanation || warnings.length ? (
                 <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm leading-6 text-blue-900">
-                  {provider ? <p><span className="font-bold">Nguồn tạo:</span> {provider}</p> : null}
+                  {provider ? <p><span className="font-bold">Nguồn tạo:</span> {provider}{model ? ` · ${model}` : ""}</p> : null}
                   {confidence ? <p><span className="font-bold">Độ tin cậy:</span> {confidence}</p> : null}
                   {explanation ? <p><span className="font-bold">Ghi chú:</span> {explanation}</p> : null}
                   {warnings.length ? (
@@ -345,8 +383,8 @@ export default function ImageToLatexPage() {
                     <p className="text-sm text-muted">{isGeometryMode ? "Chưa có mã TikZ để xem trước." : "Chưa có LaTeX để preview."}</p>
                   ) : isTikzOutput ? (
                     <div className="text-left text-sm leading-6 text-slate-700">
-                      <p className="font-bold text-ink">TikZ cần được biên dịch bằng LaTeX để xem hình hoàn chỉnh.</p>
-                      <p className="mt-1 text-muted">Soạn Lab đã tạo mã TikZ bên trên. Hãy copy vào tài liệu LaTeX có gói TikZ hoặc dùng bản standalone nếu có.</p>
+                      <p className="font-bold text-ink">Bản xem trước TikZ trực tiếp sẽ được hỗ trợ sau.</p>
+                      <p className="mt-1 text-muted">Hiện tại có thể sao chép mã để dùng trong Overleaf hoặc LaTeX editor. Dùng bản standalone `.tex` nếu muốn biên dịch riêng hình vẽ.</p>
                       {tikzCode ? <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{tikzCode}</pre> : null}
                       {standaloneLatex ? <details className="mt-3 rounded-2xl border border-blue-100 bg-white p-3"><summary className="cursor-pointer font-bold text-blue-700">Xem standalone LaTeX</summary><pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{standaloneLatex}</pre></details> : null}
                     </div>
