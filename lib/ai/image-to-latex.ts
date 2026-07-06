@@ -1,3 +1,5 @@
+import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
+
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
 export type ImageToLatexResult = {
@@ -55,51 +57,11 @@ function stripMarkdownFence(text: string): string {
     .trim();
 }
 
-function extractEnvironmentBlock(text: string, environment: string): string {
-  const cleaned = stripMarkdownFence(text);
-  const pattern = new RegExp(`\\\\begin\\{${environment}\\}[\\s\\S]*?\\\\end\\{${environment}\\}`, "i");
-  return cleaned.match(pattern)?.[0]?.trim() || "";
-}
-
-function extractStandaloneLatex(text: string): string {
-  const cleaned = stripMarkdownFence(text);
-  return /\\documentclass/i.test(cleaned) ? cleaned : "";
-}
-
-function sanitizeTikzOutput(raw: string, parsed: Record<string, unknown> | null) {
-  const parsedLatex = typeof parsed?.latex === "string" ? stripMarkdownFence(parsed.latex) : "";
-  const parsedTikz = typeof parsed?.tikzCode === "string" ? stripMarkdownFence(parsed.tikzCode) : "";
-  const parsedStandalone = typeof parsed?.standaloneLatex === "string" ? stripMarkdownFence(parsed.standaloneLatex) : "";
-  const rawClean = stripMarkdownFence(raw);
-
-  const standaloneLatex = parsedStandalone || extractStandaloneLatex(parsedLatex) || extractStandaloneLatex(rawClean);
-  const tikzCode =
-    parsedTikz ||
-    extractEnvironmentBlock(parsedLatex, "tikzpicture") ||
-    extractEnvironmentBlock(standaloneLatex, "tikzpicture") ||
-    extractEnvironmentBlock(rawClean, "tikzpicture") ||
-    (/\\draw|\\node|\\coordinate|\\path/i.test(rawClean) ? rawClean : "");
-
-  const standalone = standaloneLatex || (tikzCode
-    ? `\\documentclass[tikz,border=5pt]{standalone}
-\\usepackage{tikz}
-\\begin{document}
-${tikzCode}
-\\end{document}`
-    : "");
-
-  return {
-    tikzCode,
-    standaloneLatex: standalone,
-    latex: tikzCode || parsedLatex || "",
-  };
-}
-
 function sanitizeLatexOutput(raw: string, parsed: Record<string, unknown> | null) {
   const parsedLatex = typeof parsed?.latex === "string" ? stripMarkdownFence(parsed.latex) : "";
   const parsedDisplay = typeof parsed?.displayLatex === "string" ? stripMarkdownFence(parsed.displayLatex) : "";
   const rawClean = stripMarkdownFence(raw);
-  const fallback = extractEnvironmentBlock(rawClean, "tikzpicture") || rawClean;
+  const fallback = rawClean;
   return {
     latex: parsedLatex || fallback,
     displayLatex: parsedDisplay || parsedLatex || fallback,
@@ -150,7 +112,14 @@ Nhiệm vụ:
 - Chỉ vẽ lại hình.
 - Nếu ảnh mờ/khó đọc, đặt confidence là "low", thêm warning và vẫn cố tạo TikZ xấp xỉ đơn giản nếu có thể.
 - Không dùng markdown fence.
-- Mã TikZ cần nằm trong môi trường tikzpicture, dễ copy vào tài liệu LaTeX.
+- Return JSON only, không thêm chữ ngoài JSON.
+- tikzCode chỉ được chứa \\begin{tikzpicture}...\\end{tikzpicture}.
+- standaloneLatex là tùy chọn; nếu trả về thì phải là tài liệu .tex hợp lệ, không chứa JSON bên trong.
+- Không đặt JSON bên trong LaTeX.
+- Không escape TikZ hai lần nếu có thể.
+- Không cắt cụt output.
+- Dùng lệnh TikZ đơn giản: \\coordinate, \\draw, \\node, \\fill, \\pic cho góc vuông nếu cần, [dashed] cho nét đứt.
+- Nếu chưa chắc, tạo một hình TikZ xấp xỉ nhưng hợp lệ.
 
 Chế độ người dùng chọn: ${modeLabels[mode]}.
 
@@ -219,17 +188,65 @@ Trả về đúng JSON:
   if (!raw) throw new Error("Gemini không trả về nội dung LaTeX.");
 
   const parsed = extractJson(raw);
-  const tikz = sanitizeTikzOutput(raw, parsed);
+  if (wantsTikz) {
+    let extraction = extractTikzFromAIOutput(raw);
+    if (!extraction.ok) {
+      const repairPrompt = `Convert the following output into valid TikZ only.
+Return JSON only with this shape:
+{
+  "type": "tikz",
+  "tikzCode": "\\\\begin{tikzpicture}[scale=1]\\\\n...\\\\n\\\\end{tikzpicture}",
+  "explanation": "Mô tả ngắn bằng tiếng Việt.",
+  "confidence": "low",
+  "warnings": ["Nếu cần"]
+}
+Do not include markdown fences.
+Do not include explanation outside JSON.
+Do not put JSON inside LaTeX.
+tikzCode must contain only a complete tikzpicture block.
+
+Provider output to repair:
+${raw.slice(0, 12000)}`;
+      const repairResponse = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: repairPrompt }] }],
+          generationConfig: {
+            temperature: 0.05,
+            maxOutputTokens: maxTokens,
+            responseMimeType: "application/json",
+          },
+        }),
+      });
+      if (repairResponse.ok) {
+        const repairData = await repairResponse.json() as GeminiImageResponse;
+        const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+        extraction = extractTikzFromAIOutput(repairRaw);
+      }
+    }
+    if (!extraction.ok) {
+      throw new Error(extraction.error);
+    }
+    return {
+      type: "tikz",
+      latex: extraction.tikzCode,
+      tikzCode: extraction.tikzCode,
+      standaloneLatex: extraction.standaloneLatex,
+      explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
+      confidence: normalizeConfidence(parsed?.confidence),
+      warnings: [...normalizeWarnings(parsed?.warnings), ...extraction.warnings],
+      provider: "gemini",
+      model,
+    };
+  }
+
   const formula = sanitizeLatexOutput(raw, parsed);
-  const type = parsed?.type === "tikz" || wantsTikz || Boolean(tikz.tikzCode) ? "tikz" : "latex";
-  const latex = type === "tikz" ? tikz.latex : formula.latex;
 
   return {
-    type,
-    latex,
-    displayLatex: type === "tikz" ? undefined : formula.displayLatex,
-    tikzCode: type === "tikz" ? tikz.tikzCode || latex : undefined,
-    standaloneLatex: type === "tikz" ? tikz.standaloneLatex : undefined,
+    type: "latex",
+    latex: formula.latex,
+    displayLatex: formula.displayLatex,
     explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
     confidence: normalizeConfidence(parsed?.confidence),
     warnings: normalizeWarnings(parsed?.warnings),

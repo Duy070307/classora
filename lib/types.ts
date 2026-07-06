@@ -52,6 +52,7 @@ export type GeneratedDocument = {
     confidence?: "high" | "medium" | "low";
     warnings?: string[];
     hasStandaloneLatex?: boolean;
+    standaloneLatex?: string;
   };
 };
 

@@ -187,16 +187,17 @@ export default function ImageToLatexPage() {
 
   function saveToHistory() {
     const title = isTikzOutput ? "Ảnh hình học → TikZ" : "Ảnh công thức → LaTeX";
-    const content = [
-      `# ${title}`,
-      "",
-      "```latex",
-      latex,
-      "```",
-      standaloneLatex ? `\nStandalone LaTeX:\n\n\`\`\`latex\n${standaloneLatex}\n\`\`\`` : "",
-      explanation ? `\nGhi chú: ${explanation}` : "",
-      provider ? `\nNguồn tạo: ${provider}${model ? ` · ${model}` : ""}` : "",
-    ].filter(Boolean).join("\n");
+    const content = isTikzOutput
+      ? latex
+      : [
+        `# ${title}`,
+        "",
+        "```latex",
+        latex,
+        "```",
+        explanation ? `\nGhi chú: ${explanation}` : "",
+        provider ? `\nNguồn tạo: ${provider}${model ? ` · ${model}` : ""}` : "",
+      ].filter(Boolean).join("\n");
     const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content);
     saveDocument({
       ...document,
@@ -207,6 +208,7 @@ export default function ImageToLatexPage() {
         confidence: confidence || undefined,
         warnings,
         hasStandaloneLatex: Boolean(standaloneLatex),
+        standaloneLatex: isTikzOutput ? standaloneLatex : undefined,
       },
     });
     showMessage("Đã lưu vào lịch sử.");
@@ -314,7 +316,7 @@ export default function ImageToLatexPage() {
 
           <section className="card overflow-hidden">
             <div className="border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 px-5 py-4">
-              <h2 className="text-xl font-extrabold text-ink">{isTikzOutput ? "Mã TikZ/LaTeX" : "Kết quả LaTeX"}</h2>
+              <h2 className="text-xl font-extrabold text-ink">{isTikzOutput ? "Mã TikZ" : "Kết quả LaTeX"}</h2>
               <p className="mt-1 text-sm text-muted">
                 {isTikzOutput
                   ? "Mã TikZ là bản nháp hỗ trợ giáo viên vẽ lại hình. Cần kiểm tra vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi dùng chính thức."
@@ -322,15 +324,31 @@ export default function ImageToLatexPage() {
               </p>
             </div>
             <div className="space-y-5 p-5">
-              <textarea
-                className="form-field min-h-52 font-mono"
-                value={latex}
-                onChange={(event) => {
-                  setLatex(event.target.value);
-                  setDisplayLatex(event.target.value);
-                }}
-                placeholder={isGeometryMode ? "Mã TikZ/LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh." : "LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh."}
-              />
+              <div>
+                <label className="label">{isTikzOutput ? "Mã TikZ" : "LaTeX"}</label>
+                <textarea
+                  className="form-field mt-1 min-h-52 font-mono"
+                  value={latex}
+                  onChange={(event) => {
+                    setLatex(event.target.value);
+                    setDisplayLatex(event.target.value);
+                    if (isTikzOutput) setTikzCode(event.target.value);
+                  }}
+                  placeholder={isGeometryMode ? "Mã TikZ sẽ hiển thị ở đây sau khi nhận diện ảnh." : "LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh."}
+                />
+              </div>
+
+              {isTikzOutput ? (
+                <div>
+                  <label className="label">LaTeX standalone</label>
+                  <textarea
+                    className="form-field mt-1 min-h-52 font-mono"
+                    value={standaloneLatex}
+                    onChange={(event) => setStandaloneLatex(event.target.value)}
+                    placeholder="Tài liệu .tex standalone hợp lệ sẽ hiển thị ở đây."
+                  />
+                </div>
+              ) : null}
 
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={copyLatex} disabled={!latex} className="btn-primary disabled:opacity-50">
@@ -386,7 +404,6 @@ export default function ImageToLatexPage() {
                       <p className="font-bold text-ink">Bản xem trước TikZ trực tiếp sẽ được hỗ trợ sau.</p>
                       <p className="mt-1 text-muted">Hiện tại có thể sao chép mã để dùng trong Overleaf hoặc LaTeX editor. Dùng bản standalone `.tex` nếu muốn biên dịch riêng hình vẽ.</p>
                       {tikzCode ? <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{tikzCode}</pre> : null}
-                      {standaloneLatex ? <details className="mt-3 rounded-2xl border border-blue-100 bg-white p-3"><summary className="cursor-pointer font-bold text-blue-700">Xem standalone LaTeX</summary><pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 font-mono text-xs text-slate-100">{standaloneLatex}</pre></details> : null}
                     </div>
                   ) : preview.error ? (
                     <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-left text-sm leading-6 text-amber-800">
