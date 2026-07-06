@@ -1,5 +1,5 @@
 import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
-import { getSchoolDiagramPreset, isKnownSchoolDiagramPattern, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
+import { getGeometryPreset, isKnownSchoolDiagramPattern, validateGenericGeometryTikz, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -30,21 +30,25 @@ const modeLabels: Record<ImageToLatexMode, string> = {
   geometry: "Hình học → TikZ",
 };
 
-const geometryAccuracyRules = `Quy tắc tăng độ chính xác khi vẽ lại hình học:
+const geometryAccuracyRules = `General geometry recognition rules:
+- First identify visible geometric primitives: points, labels, line segments, rays, full lines, dashed lines, circles, arcs, angle marks, right-angle marks, equal-length marks, parallel marks, perpendicular marks, shaded regions, coordinate axes, text measurements, and visible numeric labels.
+- Supported school diagrams include triangles, quadrilaterals, circles, coordinate geometry diagrams, perpendicular lines, angle marks, dashed auxiliary lines, parallel lines, intersections, polygons, altitudes, medians, angle bisectors, tangents, and secants.
 - Redraw the visible figure only. Do not solve the problem.
 - Preserve visual style: solid lines stay solid, dashed lines stay dashed, black lines stay black unless color is clearly meaningful.
 - Do not arbitrarily make main geometry lines blue.
 - Do not arbitrarily make solid slanted lines dashed.
-- Do not invent hidden lines.
+- Do not invent hidden lines, hidden points, or hidden values.
 - Use simple, stable TikZ coordinates.
 - If the image shows a baseline/ground, draw it as a horizontal reference line.
-- If there is a gray ground strip or shaded ground/area, approximate it with gray fill below the baseline.
-- If a point lies on the baseline, place it on y=0.
+- If there is a gray ground strip or shaded area, approximate it with gray fill.
+- If a point lies on a baseline, place it on that line.
 - If a point is vertically above another point, use the same x-coordinate.
 - If a segment is visibly vertical, draw it vertical.
 - If a segment is visibly slanted and solid, draw it as a solid black segment.
 - Measurements should be placed near the corresponding segment.
 - Labels should stay near their original positions.
+- Preserve right-angle markers, angle arcs, circles, coordinate axes, and dashed auxiliary lines when visible.
+- Do not include problem statement text.
 
 Common school diagram pattern:
 - If the image has A above A', B above B', M on A'B', and a broken path A-M-B:
@@ -59,7 +63,26 @@ Common school diagram pattern:
   - Put 500(m) beside AA' if shown.
   - Put 600(m) beside BB' if shown.
   - Put 2200(m) near segment M-B if shown.
-  - Never draw A-M or M-B as blue dashed lines unless the original image clearly shows that exact style.`;
+  - Never draw A-M or M-B as blue dashed lines unless the original image clearly shows that exact style.
+
+Return a structured JSON object. The final UI will show only clean TikZ, but your JSON should include:
+{
+  "type": "tikz",
+  "diagramType": "triangle|circle|coordinate|polygon|mixed|unknown",
+  "points": [{ "name": "A", "x": 0, "y": 0, "labelPosition": "below" }],
+  "segments": [{ "from": "A", "to": "B", "style": "solid|dashed", "thick": true }],
+  "circles": [{ "center": "O", "radius": 2, "style": "solid" }],
+  "arcs": [],
+  "angles": [],
+  "rightAngles": [],
+  "measurements": [{ "text": "5 cm", "near": "AB" }],
+  "shadedRegions": [],
+  "tikzCode": "\\begin{tikzpicture}[scale=1]\\n...\\n\\end{tikzpicture}",
+  "standaloneLatex": "\\documentclass[tikz,border=5pt]{standalone}\\n\\usepackage{tikz}\\n\\begin{document}\\n...\\n\\end{document}",
+  "explanation": "Short Vietnamese description of visible primitives.",
+  "confidence": "high|medium|low",
+  "warnings": []
+}`;
 
 function extractJson(text: string): Record<string, unknown> | null {
   const cleaned = stripMarkdownFence(text);
@@ -266,13 +289,79 @@ ${raw.slice(0, 12000)}`;
     const patternText = [
       raw,
       extraction.tikzCode,
+      typeof parsed?.diagramType === "string" ? parsed.diagramType : "",
       typeof parsed?.explanation === "string" ? parsed.explanation : "",
     ].join("\n");
-    const isSchoolDiagram = isKnownSchoolDiagramPattern(patternText);
-    if (isSchoolDiagram) {
-      const validation = validateKnownSchoolDiagramTikz(extraction.tikzCode);
-      if (!validation.ok) {
-        const repairPrompt = `Your TikZ output does not match the diagram.
+
+    const applyPresetIfAvailable = (reason: string) => {
+      const preset = getGeometryPreset(patternText);
+      if (!preset) return false;
+      extraction = {
+        ok: true,
+        tikzCode: preset.tikzCode,
+        standaloneLatex: preset.standaloneLatex,
+        warnings: [...preset.warnings, `So?n Lab ?? d?ng b? c?c TikZ g?i ? (${preset.name}) sau khi ki?m tra ${reason}.`],
+      };
+      return true;
+    };
+
+    const genericValidation = validateGenericGeometryTikz(extraction.tikzCode);
+    if (!genericValidation.ok) {
+      const repairPrompt = `Convert this geometry interpretation into clean valid TikZ only.
+Return JSON only with this shape:
+{
+  "type": "tikz",
+  "diagramType": "triangle|circle|coordinate|polygon|mixed|unknown",
+  "tikzCode": "\\begin{tikzpicture}[scale=1]\\n...\\n\\end{tikzpicture}",
+  "explanation": "M? t? ng?n b?ng ti?ng Vi?t.",
+  "confidence": "low",
+  "warnings": []
+}
+Rules:
+- Use valid TikZ only inside tikzCode.
+- Preserve visible labels, solid/dashed style, measurements, circles, arcs, right-angle marks and shaded regions.
+- Use black lines by default and gray fill only for shaded areas.
+- Do not solve the problem and do not include the problem statement.
+- Do not include markdown fences or raw JSON inside TikZ.
+
+Validation issues:
+${genericValidation.reasons.join(", ")}
+
+Original AI output:
+${raw.slice(0, 12000)}
+
+Extracted TikZ:
+${extraction.tikzCode.slice(0, 12000)}`;
+      const repairResponse = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: repairPrompt }] }],
+          generationConfig: {
+            temperature: 0.05,
+            maxOutputTokens: maxTokens,
+            responseMimeType: "application/json",
+          },
+        }),
+      });
+      if (repairResponse.ok) {
+        const repairData = await repairResponse.json() as GeminiImageResponse;
+        const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+        const repaired = extractTikzFromAIOutput(repairRaw);
+        if (repaired.ok && validateGenericGeometryTikz(repaired.tikzCode).ok) {
+          extraction = repaired;
+        } else {
+          applyPresetIfAvailable("generic TikZ repair");
+        }
+      } else {
+        applyPresetIfAvailable("generic TikZ validation");
+      }
+    }
+
+    if (isKnownSchoolDiagramPattern(patternText)) {
+      const schoolValidation = validateKnownSchoolDiagramTikz(extraction.tikzCode);
+      if (!schoolValidation.ok) {
+        const repairPrompt = `Your TikZ output does not match the school geometry diagram regression case.
 The image shows A vertically above A', B vertically above B', M on the baseline A'B', solid black segments A-M and M-B, vertical solid segments A-A' and B-B', dashed horizontal baseline A'-B', gray ground strip below the baseline, labels 500(m), 600(m), 2200(m).
 Rewrite the TikZ code only.
 
@@ -284,13 +373,13 @@ Hard rules:
 - The gray ground strip must be below the baseline.
 - Labels and measurements must be included near their visible positions.
 - Return JSON only, no markdown fences.
-- tikzCode must contain only \\begin{tikzpicture}...\\end{tikzpicture}.
+- tikzCode must contain only \begin{tikzpicture}...\end{tikzpicture}.
 
 Current invalid TikZ:
 ${extraction.tikzCode.slice(0, 12000)}
 
 Validation issues:
-${validation.reasons.join(", ")}`;
+${schoolValidation.reasons.join(", ")}`;
         const repairResponse = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -300,12 +389,7 @@ ${validation.reasons.join(", ")}`;
                 role: "user",
                 parts: [
                   { text: repairPrompt },
-                  {
-                    inlineData: {
-                      mimeType,
-                      data: imageBase64,
-                    },
-                  },
+                  { inlineData: { mimeType, data: imageBase64 } },
                 ],
               },
             ],
@@ -323,22 +407,10 @@ ${validation.reasons.join(", ")}`;
           if (repaired.ok && validateKnownSchoolDiagramTikz(repaired.tikzCode).ok) {
             extraction = repaired;
           } else {
-            const preset = getSchoolDiagramPreset();
-            extraction = {
-              ok: true,
-              tikzCode: preset.tikzCode,
-              standaloneLatex: preset.standaloneLatex,
-              warnings: [...preset.warnings, "Soạn Lab đã dùng bố cục TikZ chuẩn cho mẫu hình học phổ thông này để tránh sai nét/nhãn."],
-            };
+            applyPresetIfAvailable("school diagram regression validation");
           }
         } else {
-          const preset = getSchoolDiagramPreset();
-          extraction = {
-            ok: true,
-            tikzCode: preset.tikzCode,
-            standaloneLatex: preset.standaloneLatex,
-            warnings: [...preset.warnings, "Soạn Lab đã dùng bố cục TikZ chuẩn cho mẫu hình học phổ thông này để tránh sai nét/nhãn."],
-          };
+          applyPresetIfAvailable("school diagram regression validation");
         }
       }
     }

@@ -245,6 +245,9 @@ export default function ImageToLatexPage() {
                 <p className="mt-2 font-semibold">
                   Mã TikZ được tạo là bản nháp hỗ trợ vẽ lại hình. Giáo viên cần kiểm tra lại vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi sử dụng.
                 </p>
+                <p className="mt-2">
+                  Công cụ phù hợp nhất với hình học phổ thông đã cắt gọn, rõ nét, có ít chữ thừa.
+                </p>
                 <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
                   <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Phù hợp với:</span> tam giác, đường tròn, hình học tọa độ, hình có điểm A/B/C, đường cao, trung tuyến, tiếp tuyến, góc vuông, nét đứt.</p>
                   <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Không phù hợp với:</span> ảnh mờ, nhiều hình trong một ảnh, ảnh có cả đề bài dài, hình bị nghiêng mạnh hoặc bị che khuất.</p>
