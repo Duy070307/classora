@@ -3,25 +3,26 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
-
 export const metadata: Metadata = {
   title: { absolute: "Bảo mật - Soạn Lab" },
-  description: "Chính sách bảo mật của Soạn Lab, bao gồm cách dữ liệu được lưu trên trình duyệt và lưu ý khi sử dụng tài liệu.",
+  description: "Ghi chú bảo mật và quyền riêng tư của Soạn Lab khi giáo viên tạo, lưu và xuất tài liệu.",
 };
+
 export default function PrivacyPage() {
   return (
-    <main>
+    <main className="warm-page">
       <Navbar />
       <section className="mx-auto max-w-3xl px-4 py-12 md:py-16">
-        <h1 className="text-4xl font-bold text-ink">Bảo mật và quyền riêng tư</h1>
-        <div className="mt-6 space-y-4 leading-7 text-slate-700">
-          <p>So?n Lab l?u d? li?u c?n thi?t ?? ph?c v? qu? tr?nh t?o t?i li?u, l?u l?ch s?, m?u c? nh?n, ng?n h?ng c?u h?i v? c?i ??t xu?t file.</p>
-          <p>C?c file Word/PDF ho?c file sao l?u do th?y/c? xu?t ra s? n?m tr?n thi?t b? c?a ng??i d?ng. So?n Lab kh?ng t? g?i c?c file ?? cho b?n th? ba.</p>
-          <p>Th?y/c? c? th? xu?t b?n sao l?u ho?c x?a t?ng nh?m d? li?u t?i <Link href="/data" className="font-semibold text-brand">Qu?n l? d? li?u</Link>.</p>
-          <p>N?u ??i thi?t b? ho?c x?a d? li?u tr?nh duy?t khi ch?a c? b?n sao l?u, m?t s? d? li?u c? nh?n c? th? kh?ng c?n truy c?p ???c.</p>
-          <p>Kh?ng n?n nh?p d? li?u h?c sinh qu? nh?y c?m, th?ng tin s?c kh?e, t?i ch?nh, m?t kh?u ho?c th?ng tin ri?ng t? kh?ng c?n thi?t.</p>
-          <p>N?i dung do So?n Lab t?o l? b?n nh?p h? tr? gi?o vi?n. Gi?o vi?n c?n ki?m tra, ch?nh s?a tr??c khi s? d?ng ch?nh th?c.</p>
-          <p>So?n Lab kh?ng b?n d? li?u c? nh?n c?a ng??i d?ng.</p>
+        <span className="soft-badge">Quyền riêng tư</span>
+        <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950">Bảo mật và dữ liệu cá nhân</h1>
+        <div className="mt-6 space-y-4 rounded-[28px] border border-blue-100 bg-white p-6 leading-7 text-slate-700 shadow-sm">
+          <p>Soạn Lab lưu những dữ liệu cần thiết để phục vụ quá trình tạo tài liệu, lưu lịch sử, mẫu cá nhân, ngân hàng câu hỏi và cài đặt xuất file.</p>
+          <p>Các file Word/PDF hoặc file sao lưu do thầy/cô xuất ra sẽ nằm trên thiết bị của người dùng. Soạn Lab không tự gửi các file đó cho bên thứ ba.</p>
+          <p>Thầy/cô có thể xuất bản sao lưu hoặc xóa từng nhóm dữ liệu tại <Link href="/data" className="font-bold text-blue-700">Quản lý dữ liệu</Link>.</p>
+          <p>Nếu đổi thiết bị hoặc xóa dữ liệu trình duyệt khi chưa có bản sao lưu, một số dữ liệu cá nhân có thể không còn truy cập được.</p>
+          <p>Không nên nhập dữ liệu học sinh quá nhạy cảm, thông tin sức khỏe, tài chính, mật khẩu hoặc thông tin riêng tư không cần thiết.</p>
+          <p>Nội dung do Soạn Lab tạo là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra, chỉnh sửa trước khi sử dụng chính thức.</p>
+          <p>Soạn Lab không bán dữ liệu cá nhân của người dùng.</p>
         </div>
       </section>
       <SiteFooter />
