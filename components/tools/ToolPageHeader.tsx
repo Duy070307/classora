@@ -1,32 +1,33 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 import { SoanLabIcon, iconNameFromText, type SoanLabIconName } from "@/components/ui/SoanLabIcon";
 
-const steps = ["Nhập thông tin", "Tạo bản nháp", "Xuất Word hoặc lưu lịch sử"];
+const steps = ["Nhập thông tin", "Tạo bản nháp", "Xuất Word/PDF hoặc lưu lịch sử"];
 
 export function ToolPageHeader({ title, description, category = "Công cụ giáo viên", iconName, exportable = true }: { title: string; description: string; category?: string; iconName?: SoanLabIconName; exportable?: boolean }) {
   const resolvedIcon = iconName || iconNameFromText(title);
   return (
-    <header className="relative mb-6 overflow-hidden rounded-[1.75rem] border border-blue-100 bg-white p-5 shadow-[0_18px_48px_rgba(30,64,175,0.09)] sm:p-7">
+    <header className="relative mb-6 overflow-hidden rounded-[30px] border border-blue-100 bg-white p-5 shadow-[0_18px_48px_rgba(30,64,175,0.09)] sm:p-7">
       <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-600 to-indigo-600" />
       <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-blue-100/80 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-32 w-32 rounded-tl-[4rem] bg-gradient-to-br from-cyan-50 to-indigo-100/70" />
       <div className="relative">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/tools" className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-blue-100">
-            <ArrowLeft size={14} />Quay lại thư viện công cụ
-          </Link>
-        </div>
+        <Link href="/tools" className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-blue-100">
+          <ArrowLeft size={14} />Quay lại thư viện công cụ
+        </Link>
         <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SoanLabIcon name={resolvedIcon} size="lg" />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="soft-badge">{category}</span>
-              {exportable ? <SoanLabBadge tone="export" /> : null}
+              {exportable ? <SoanLabBadge tone="export">Xuất Word/PDF</SoanLabBadge> : null}
             </div>
-            <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{title}</h1>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-ink sm:text-3xl lg:text-4xl">{title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p>
+            <div className="mt-3 flex gap-2 rounded-2xl bg-blue-50/70 p-3 text-sm leading-6 text-blue-900">
+              <ShieldCheck className="mt-0.5 shrink-0 text-blue-600" size={18} />
+              <p>Nội dung là bản nháp hỗ trợ giáo viên. Vui lòng rà soát trước khi sử dụng.</p>
+            </div>
           </div>
         </div>
         <div className="mt-5 grid min-w-0 gap-2 sm:grid-cols-3">

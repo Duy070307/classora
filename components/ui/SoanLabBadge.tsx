@@ -1,4 +1,4 @@
-import { CheckCircle2, Download, HardDrive, Sparkles, Star, Wand2 } from "lucide-react";
+import { CheckCircle2, Download, Sparkles, Star, Wand2 } from "lucide-react";
 
 const styles = {
   demo: "border-blue-100 bg-blue-50 text-blue-700",
@@ -9,31 +9,31 @@ const styles = {
   popular: "border-amber-100 bg-amber-50 text-amber-700",
   new: "border-sky-100 bg-sky-50 text-sky-700",
   useful: "border-teal-100 bg-teal-50 text-teal-700",
-  review: "border-orange-100 bg-orange-50 text-orange-700"
+  review: "border-orange-100 bg-orange-50 text-orange-700",
 } as const;
 
 const icons = {
   demo: Wand2,
   ai: Sparkles,
   export: Download,
-  local: HardDrive,
+  local: CheckCircle2,
   mvp: CheckCircle2,
   popular: Star,
   new: Sparkles,
   useful: CheckCircle2,
-  review: CheckCircle2
+  review: CheckCircle2,
 } as const;
 
 const labelMap = {
   demo: "Mẫu nhanh",
   ai: "Tạo tự động",
-  export: "Xuất Word",
-  local: "Local",
+  export: "Xuất Word/PDF",
+  local: "Lưu lịch sử",
   mvp: "Bản nháp",
   popular: "Phổ biến",
   new: "Mới",
   useful: "Hữu ích",
-  review: "Cần kiểm tra"
+  review: "Cần rà soát",
 } as const;
 
 export type SoanLabBadgeTone = keyof typeof styles;
