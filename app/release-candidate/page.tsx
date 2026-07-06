@@ -8,7 +8,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 const STORAGE_KEY = "classora_release_candidate_checklist";
 const sections = [
-  ["Trạng thái hệ thống", ["Build pass", "Smoke test pass", "localStorage hoạt động", "Không cần API key", "Không cần database", "Không cần đăng nhập", "Không cần thanh toán"]],
+  ["Kiểm tra phát hành", ["Build pass", "Smoke test pass", "Dữ liệu lưu ổn định", "Không cần thanh toán"]],
   ["Công cụ chính", ["Tạo đề kiểm tra", "Tạo ma trận đề", "Tạo đáp án/thang điểm", "Tạo phiếu học tập", "Tạo giáo án", "Tạo nhận xét học sinh", "Ngân hàng câu hỏi"]],
   ["Xuất tài liệu", ["Word", "Print/PDF", "Markdown", "TXT", "Lưu lịch sử", "Mở lại từ lịch sử"]],
   ["Chất lượng nội dung", ["Toán 12 THPTQG", "Lịch sử 12 THPTQG", "PHẦN I/II/III", "Bảng đáp án giáo viên", "Ma trận và bản đặc tả"]],
@@ -42,6 +42,6 @@ export default function ReleaseCandidatePage() {
     </div>
     <div className="play-card mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-extrabold text-ink">Checklist nhanh · {completed}/{total} mục</p><div className="mt-3 h-2.5 w-full min-w-48 overflow-hidden rounded-full bg-blue-50 sm:w-80"><div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all" style={{ width: `${(completed / total) * 100}%` }} /></div></div><button type="button" className="btn-secondary" onClick={reset}><RotateCcw size={16} />Đặt lại checklist</button></div>
     <div className="mt-6 grid gap-5 lg:grid-cols-2">{sections.map(([title, items]) => <section key={title} className="play-card p-5 sm:p-6"><div className="flex items-center justify-between gap-3"><h2 className="text-lg font-extrabold text-ink">{title}</h2><span className="soft-badge">{items.filter((item) => checked[item]).length}/{items.length}</span></div><div className="mt-4 space-y-1">{items.map((item) => <label key={item} className="flex cursor-pointer items-start gap-3 rounded-xl p-2.5 transition hover:bg-blue-50/60"><input type="checkbox" className="mt-1 h-4 w-4 accent-blue-600" checked={Boolean(checked[item])} onChange={() => toggle(item)} /><span className={checked[item] ? "text-sm text-slate-400 line-through" : "text-sm leading-6 text-slate-600"}>{item}</span></label>)}</div></section>)}</div>
-    <div className="mt-7 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Mở dashboard</Link><Link href="/tools" className="btn-secondary">Mở tất cả công cụ</Link><Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link><Link href="/system-status" className="btn-secondary">Kiểm tra chi tiết</Link><Link href="/system-status" className="btn-secondary">Trạng thái hệ thống</Link></div>
+    <div className="mt-7 flex flex-wrap gap-3"><Link href="/dashboard" className="btn-primary">Mở dashboard</Link><Link href="/tools" className="btn-secondary">Mở tất cả công cụ</Link><Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link></div>
   </section><SiteFooter /></main>;
 }

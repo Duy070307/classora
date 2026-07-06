@@ -52,7 +52,7 @@ function LoginContent() {
 
         {!supabase ? (
           <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">
-            Chưa cấu hình Supabase nên Soạn Lab đang chạy ở chế độ cục bộ trên trình duyệt. Bạn vẫn có thể dùng app và lưu dữ liệu local.
+            T?i kho?n ?ang ???c thi?t l?p cho m?i tr??ng s? d?ng hi?n t?i. B?n v?n c? th? ti?p t?c v?o So?n Lab tr?n thi?t b? n?y.
           </div>
         ) : null}
 
@@ -67,7 +67,7 @@ function LoginContent() {
             Mật khẩu
             <input className="form-field mt-2" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" />
           </label>
-          <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang đăng nhập..." : supabase ? "Đăng nhập" : "Tiếp tục chế độ cục bộ"}</button>
+          <button className="btn-primary w-full" disabled={loading}>{loading ? "?ang ??ng nh?p..." : supabase ? "??ng nh?p" : "Ti?p t?c s? d?ng"}</button>
         </form>
 
         <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">

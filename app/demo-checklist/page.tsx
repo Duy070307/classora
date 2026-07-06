@@ -15,7 +15,7 @@ export default function DemoChecklistPage() {
     <div className="max-w-4xl space-y-6">
       {sections.map((section) => <section key={section.title}><h2 className="mb-3 text-xl font-bold text-ink">{section.title}</h2><div className="card divide-y divide-line">{section.items.map(([label, href]) => <div key={label} className="flex items-center gap-3 p-4"><CheckSquare size={19} className="shrink-0 text-slate-400" /><Link href={href} className="font-semibold text-ink hover:text-brand">{label}</Link></div>)}</div></section>)}
     </div>
-    <div className="mt-6 flex flex-wrap gap-3"><Link href="/getting-started" className="btn-secondary">Xem hướng dẫn sử dụng</Link><Link href="/system-status" className="btn-secondary">Trạng thái hệ thống</Link></div>
+    <div className="mt-6 flex flex-wrap gap-3"><Link href="/getting-started" className="btn-secondary">Xem hướng dẫn sử dụng</Link></div>
     <p className="mt-5 max-w-3xl text-sm leading-6 text-muted">Nội dung là bản nháp hỗ trợ giáo viên và cần được rà soát trước khi sử dụng.</p>
   </main></div>;
 }

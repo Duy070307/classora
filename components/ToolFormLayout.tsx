@@ -92,13 +92,11 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     }
     setLoading(true);
     setMessage("");
-    let providerLabel = "";
     let rawGenerated: string;
     try {
       if (serverAIToolTypes.has(config.type)) {
         const aiResult = await generateToolContent({ tool: config.type, input: input as Record<string, unknown> });
         rawGenerated = aiResult.content;
-        providerLabel = aiResult.provider === "local" ? " (chế độ cục bộ)" : ` (qua ${aiResult.provider})`;
       } else {
         rawGenerated = await config.generate(input);
       }
@@ -114,7 +112,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
     setDocument(next);
     incrementUsage();
     saveRecentTool({ title: config.title, href: config.href });
-    setMessage(`Đã tạo tài liệu thành công${providerLabel}.`);
+    setMessage("Đã tạo tài liệu thành công.");
     setLoading(false);
   }
 

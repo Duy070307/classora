@@ -180,15 +180,12 @@ export default function HomePage() {
               giáo viên cần kiểm tra chuyên môn, đáp án và cách diễn đạt.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              {["Tạo bản nháp", "Xuất Word/PDF", "Lưu lịch sử", "Dữ liệu trên trình duyệt"].map((item) => (
-                <SoanLabBadge key={item} tone={item.includes("trình duyệt") ? "local" : item.includes("Word") ? "export" : "useful"}>
+              {["Tạo bản nháp", "Xuất Word/PDF", "Lưu lịch sử", "Dễ rà soát"].map((item) => (
+                <SoanLabBadge key={item} tone={item.includes("Word") ? "export" : "useful"}>
                   {item}
                 </SoanLabBadge>
               ))}
             </div>
-            <Link href="/system-status" className="btn-secondary mt-7">
-              Xem trạng thái hệ thống
-            </Link>
           </div>
           <div className="play-card p-7 sm:p-9">
             <span className="soft-badge">Tập trung cho giáo viên</span>

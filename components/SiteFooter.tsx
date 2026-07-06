@@ -14,7 +14,6 @@ const columns = [
     ["Bảng giá", "/pricing"],
     ["Bảo mật", "/privacy"],
     ["Điều khoản", "/terms"],
-    ["Trạng thái hệ thống", "/system-status"],
   ],
   [
     "Công cụ nổi bật",

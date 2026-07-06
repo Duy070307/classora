@@ -1,12 +1,12 @@
 "use client";
 
 import { Compass, RotateCcw, Save } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
-import { defaultDocumentSettings, getDocumentSettings, resetDocumentSettings, saveDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
 import { PlanSelector } from "@/components/PlanSelector";
-import Link from "next/link";
+import { defaultDocumentSettings, getDocumentSettings, resetDocumentSettings, saveDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<DocumentSettings>(defaultDocumentSettings);
@@ -28,14 +28,14 @@ export default function SettingsPage() {
   function reset() {
     resetDocumentSettings();
     setSettings(defaultDocumentSettings);
-    setMessage("Đã reset cài đặt.");
+    setMessage("Đã đặt lại cài đặt.");
   }
 
   return (
     <div className="min-h-screen md:flex">
       <Sidebar />
       <main className="flex-1 p-5 md:p-8">
-        <PageHeader title="Cài đặt tài liệu" description="Cài đặt header mặc định khi xuất Word. Dữ liệu chỉ lưu trong localStorage." />
+        <PageHeader title="Cài đặt tài liệu" description="Cài đặt header mặc định khi xuất Word." />
         <section className="tool-form-card max-w-3xl">
           <PlanSelector />
           <hr className="border-line" />
@@ -52,20 +52,12 @@ export default function SettingsPage() {
             <button type="button" onClick={reset} className="btn-secondary"><RotateCcw size={16} />Đặt lại</button>
           </div>
           {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
-          <p className="text-sm text-muted">Dữ liệu chỉ lưu trên trình duyệt. <Link href="/privacy" className="font-semibold text-brand">Xem ghi chú quyền riêng tư</Link>.</p>
+          <p className="text-sm text-muted">Dữ liệu được lưu để phục vụ trải nghiệm sử dụng. <Link href="/privacy" className="font-semibold text-brand">Xem ghi chú quyền riêng tư</Link>.</p>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
-          <h2 className="text-lg font-bold text-ink">Dữ liệu cá nhân trên trình duyệt</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">Bạn có thể sao lưu hoặc xóa dữ liệu Soạn Lab đang lưu trên trình duyệt này.</p>
+          <h2 className="text-lg font-bold text-ink">Dữ liệu cá nhân</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Bạn có thể sao lưu hoặc xóa dữ liệu Soạn Lab khi cần.</p>
           <Link href="/data" className="btn-secondary mt-4">Quản lý dữ liệu</Link>
-        </section>
-        <section className="card mt-6 max-w-3xl p-5">
-          <h2 className="text-lg font-bold text-ink">Công cụ tạo nội dung</h2>
-          <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">Chế độ hiện tại</dt><dd className="mt-1 font-semibold text-ink">Tạo bản nháp tự động</dd></div>
-            <div className="rounded-md bg-slate-50 p-3"><dt className="text-muted">AI thật</dt><dd className="mt-1 font-semibold text-ink">Chưa được bật</dd></div>
-          </dl>
-          <p className="mt-4 text-sm text-muted">Soạn Lab không cho nhập API key ở frontend. Tích hợp AI thật trong tương lai phải chạy phía máy chủ và có bảo vệ phù hợp.</p>
         </section>
         <section className="card mt-6 max-w-3xl p-5">
           <h2 className="text-lg font-bold text-ink">Hướng dẫn bắt đầu</h2>

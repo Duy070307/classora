@@ -6,7 +6,7 @@
 - [ ] `/tools` tìm kiếm, lọc danh mục, yêu thích và gần đây hoạt động.
 - [ ] `/samples` có đủ 6 mẫu sử dụng và mỗi CTA mở đúng công cụ.
 - [ ] `/getting-started` mô tả luồng chọn công cụ → nhập thông tin → tạo bản nháp → xuất Word/PDF hoặc lưu lịch sử.
-- [ ] `/pricing`, `/privacy`, `/terms`, `/system-status`, `/share` dùng wording chính thức.
+- [ ] `/pricing`, `/privacy`, `/terms`, `/share` dùng wording chính thức.
 - [ ] Header, sidebar, footer và command palette không quảng bá route nội bộ.
 
 ## App flows
@@ -26,12 +26,12 @@
 - [ ] Phiếu học tập, giáo án, nhận xét học sinh, rubric và tin nhắn phụ huynh xuất Word được.
 - [ ] Bảng rubric, ma trận và bảng đáp án là bảng thật, không lộ Markdown thô.
 
-## AI provider
+## T?o n?i dung t? ??ng
 
 - [ ] Không có API key vẫn build và tạo nội dung bằng chế độ cục bộ.
 - [ ] `AI_PROVIDER=openai` hoặc `AI_PROVIDER=gemini` thiếu key sẽ fallback cục bộ, không crash.
 - [ ] `/api/ai/generate` không trả API key.
-- [ ] `/system-status` hiển thị provider, trạng thái key và giới hạn ngày mà không lộ secret.
+- [ ] Không hiển thị provider, key, database hoặc trạng thái nội bộ trong giao diện giáo viên.
 
 ## Metadata và assets
 

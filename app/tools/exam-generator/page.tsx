@@ -141,7 +141,7 @@ export default function ExamGeneratorPage() {
     };
     setDocument(next);
     incrementUsage();
-    setMessage(`Đã tạo đề kiểm tra thành công (${aiResult.provider === "local" ? "chế độ cục bộ" : `qua ${aiResult.provider}`}).`);
+    setMessage("Đã tạo đề kiểm tra thành công.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
     }

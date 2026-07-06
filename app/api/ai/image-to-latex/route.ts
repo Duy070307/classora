@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Công cụ nhận diện ảnh cần Gemini multimodal. Vui lòng cấu hình AI_PROVIDER=gemini và GEMINI_API_KEY trên máy chủ.",
+          error: "Công cụ nhận diện ảnh chưa sẵn sàng trong môi trường hiện tại. Vui lòng thử lại sau.",
         },
         { status: 400 },
       );

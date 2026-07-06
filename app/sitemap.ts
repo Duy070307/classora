@@ -8,7 +8,6 @@ const routes = [
   "/pricing",
   "/privacy",
   "/terms",
-  "/system-status",
   "/tools/exam-generator",
   "/tools/worksheet-generator",
   "/tools/lesson-plan-generator",

@@ -11,7 +11,6 @@ Public routes cần mở không lỗi, không overflow ngang desktop/mobile và 
 - `/pricing`
 - `/privacy`
 - `/terms`
-- `/system-status`
 - `/share`
 
 App routes cần kiểm tra:
@@ -159,4 +158,4 @@ npm run smoke
 - Tạo mẫu cá nhân, tạo câu hỏi trong ngân hàng câu hỏi, lưu cài đặt tài liệu.
 - `/data` chuyển dữ liệu từ trình duyệt lên tài khoản và không xóa dữ liệu local.
 - Tài khoản admin mở `/admin`; giáo viên không có quyền admin.
-- `/system-status` hiển thị AI, Supabase, auth mode, registration, database.
+- `/system-status` chuyển về dashboard và không hiển thị thông tin kỹ thuật cho giáo viên.

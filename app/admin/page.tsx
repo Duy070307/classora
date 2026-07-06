@@ -2,18 +2,15 @@ import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { getCurrentUser } from "@/lib/auth/user";
-import { getProviderStatus } from "@/lib/ai/provider";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isRegistrationEnabled, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
-  const ai = getProviderStatus();
-
   if (!isSupabaseConfigured()) {
     return (
       <AppShell title="Quản trị">
-        <PageHeader title="Quản trị hệ thống" description="Supabase chưa được cấu hình. Soạn Lab đang chạy ở chế độ dữ liệu cục bộ trên trình duyệt." />
+        <PageHeader title="Quản trị hệ thống" description="Khu vực quản trị chưa sẵn sàng trong môi trường hiện tại." />
       </AppShell>
     );
   }
@@ -39,21 +36,21 @@ export default async function AdminPage() {
 
   return (
     <AppShell title="Quản trị">
-      <PageHeader title="Quản trị Soạn Lab" description="Theo dõi tài khoản, dữ liệu cloud và cấu hình tạo nội dung." />
+      <PageHeader title="Quản trị Soạn Lab" description="Theo dõi tài khoản, tài liệu đã lưu và một số thiết lập vận hành." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="card p-5"><p className="text-sm text-muted">Supabase</p><p className="mt-1 font-extrabold text-ink">{isSupabaseConfigured() ? "Đã cấu hình" : "Chưa cấu hình"}</p></div>
-        <div className="card p-5"><p className="text-sm text-muted">Service role</p><p className="mt-1 font-extrabold text-ink">{isSupabaseAdminConfigured() ? "Đã cấu hình" : "Chưa cấu hình"}</p></div>
+        <div className="card p-5"><p className="text-sm text-muted">Tài khoản</p><p className="mt-1 font-extrabold text-ink">{isSupabaseConfigured() ? "Đang hoạt động" : "Chưa sẵn sàng"}</p></div>
+        <div className="card p-5"><p className="text-sm text-muted">Quyền quản trị</p><p className="mt-1 font-extrabold text-ink">{isSupabaseAdminConfigured() ? "Đang hoạt động" : "Chưa sẵn sàng"}</p></div>
         <div className="card p-5"><p className="text-sm text-muted">Đăng ký</p><p className="mt-1 font-extrabold text-ink">{isRegistrationEnabled() ? "Đang mở" : "Đang khóa"}</p></div>
-        <div className="card p-5"><p className="text-sm text-muted">AI provider</p><p className="mt-1 font-extrabold text-ink">{ai.active}</p></div>
+        <div className="card p-5"><p className="text-sm text-muted">Tạo nội dung</p><p className="mt-1 font-extrabold text-ink">Đang hoạt động</p></div>
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <section className="card p-5">
-          <h2 className="text-lg font-extrabold text-ink">Dữ liệu cloud</h2>
+          <h2 className="text-lg font-extrabold text-ink">Dữ liệu đã lưu</h2>
           <dl className="mt-4 space-y-3 text-sm">
-            <div className="flex justify-between gap-4"><dt className="text-muted">Tài liệu đã lưu</dt><dd className="font-bold text-ink">{documents?.count ?? "Cần service role"}</dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-muted">Mẫu cá nhân</dt><dd className="font-bold text-ink">{templates?.count ?? "Cần service role"}</dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-muted">Ngân hàng câu hỏi</dt><dd className="font-bold text-ink">{questions?.count ?? "Cần service role"}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-muted">Tài liệu đã lưu</dt><dd className="font-bold text-ink">{documents?.count ?? "Chưa sẵn sàng"}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-muted">Mẫu cá nhân</dt><dd className="font-bold text-ink">{templates?.count ?? "Chưa sẵn sàng"}</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-muted">Ngân hàng câu hỏi</dt><dd className="font-bold text-ink">{questions?.count ?? "Chưa sẵn sàng"}</dd></div>
           </dl>
         </section>
         <section className="card p-5">
@@ -68,7 +65,7 @@ export default async function AdminPage() {
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm leading-6 text-muted">Thêm SUPABASE_SERVICE_ROLE_KEY trong biến môi trường Vercel để quản trị viên xem danh sách tài khoản. Không dùng key này ở frontend.</p>
+            <p className="mt-3 text-sm leading-6 text-muted">Chức năng xem danh sách tài khoản chưa sẵn sàng trong môi trường hiện tại.</p>
           )}
         </section>
       </div>
@@ -76,7 +73,7 @@ export default async function AdminPage() {
       <section className="card mt-6 p-5">
         <h2 className="text-lg font-extrabold text-ink">Ghi chú vận hành</h2>
         <p className="mt-2 text-sm leading-6 text-muted">
-          Tạo tài khoản giáo viên và quản trị viên trong Supabase Auth Dashboard, sau đó đặt role admin trong bảng profiles cho tài khoản quản trị.
+          Tạo tài khoản giáo viên và quản trị viên bằng công cụ quản trị tài khoản, sau đó gán quyền quản trị cho tài khoản phù hợp.
         </p>
       </section>
     </AppShell>

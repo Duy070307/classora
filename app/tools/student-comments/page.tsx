@@ -73,7 +73,7 @@ export default function StudentCommentsPage() {
     const next = createDocument(`Nhận xét học sinh ${input.studentName || input.className}`, "student-comment", content);
     setDocument(next);
     incrementUsage();
-    setMessage(`\u0110\u00e3 t\u1ea1o nh\u1eadn x\u00e9t th\u00e0nh c\u00f4ng (${aiResult.provider === "local" ? "ch\u1ebf \u0111\u1ed9 c\u1ee5c b\u1ed9" : `qua ${aiResult.provider}`}).`);
+    setMessage("Đã tạo nhận xét thành công.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Kh\u00f4ng th\u1ec3 t\u1ea1o nh\u1eadn x\u00e9t l\u00fac n\u00e0y.");
     }

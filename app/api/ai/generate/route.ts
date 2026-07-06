@@ -109,7 +109,7 @@ Yêu cầu sửa nghiêm ngặt: lần trả lời trước không bám đúng c
         fallbackUsed: true,
         warnings: [
           ...(fallback.warnings || []),
-          "Soạn Lab đã dùng chế độ cục bộ vì nhà cung cấp AI qua máy chủ chưa sẵn sàng.",
+          "Soạn Lab đã tạo bản nháp bằng quy trình dự phòng. Vui lòng rà soát trước khi sử dụng.",
         ],
       });
     }

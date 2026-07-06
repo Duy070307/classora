@@ -196,7 +196,6 @@ export default function ImageToLatexPage() {
         latex,
         "```",
         explanation ? `\nGhi chú: ${explanation}` : "",
-        provider ? `\nNguồn tạo: ${provider}${model ? ` · ${model}` : ""}` : "",
       ].filter(Boolean).join("\n");
     const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content);
     saveDocument({
@@ -381,10 +380,9 @@ export default function ImageToLatexPage() {
                 </button>
               </div>
 
-              {provider || confidence || explanation || warnings.length ? (
+              {explanation || warnings.length ? (
                 <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm leading-6 text-blue-900">
-                  {provider ? <p><span className="font-bold">Nguồn tạo:</span> {provider}{model ? ` · ${model}` : ""}</p> : null}
-                  {confidence ? <p><span className="font-bold">Độ tin cậy:</span> {confidence}</p> : null}
+                  <p className="font-bold">Vui lòng rà soát trước khi sử dụng</p>
                   {explanation ? <p><span className="font-bold">Ghi chú:</span> {explanation}</p> : null}
                   {warnings.length ? (
                     <ul className="mt-2 list-disc pl-5">
