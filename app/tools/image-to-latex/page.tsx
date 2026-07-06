@@ -34,12 +34,18 @@ const modes: Array<{ value: Mode; label: string }> = [
   { value: "geometry", label: "Hình học → TikZ" },
 ];
 
+const exampleChips = ["Công thức phân số", "Căn thức", "Ma trận", "Tam giác", "Đường tròn", "Hình tọa độ"];
+
 const maxSize = 5 * 1024 * 1024;
 
 export default function ImageToLatexPage() {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [mode, setMode] = useState<Mode>("auto");
+  const [mode, setMode] = useState<Mode>(() => {
+    if (typeof window === "undefined") return "auto";
+    const nextMode = new URLSearchParams(window.location.search).get("mode");
+    return nextMode === "formula" || nextMode === "geometry" || nextMode === "auto" ? nextMode : "auto";
+  });
   const [latex, setLatex] = useState("");
   const [displayLatex, setDisplayLatex] = useState("");
   const [outputType, setOutputType] = useState<"latex" | "tikz">("latex");
@@ -227,6 +233,22 @@ export default function ImageToLatexPage() {
 
         <div className="grid gap-6 xl:grid-cols-[460px_1fr]">
           <section className="tool-form-card">
+            <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
+              <p className="text-sm font-black text-slate-900">Mẹo để nhận diện tốt hơn</p>
+              <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                <li>• Cắt sát công thức hoặc hình cần nhận diện.</li>
+                <li>• Dùng ảnh rõ nét, không nghiêng mạnh.</li>
+                <li>• Tránh nhiều bài hoặc phần đề dài trong cùng một ảnh.</li>
+              </ul>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {exampleChips.map((chip) => (
+                  <span key={chip} className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-blue-700 ring-1 ring-blue-100">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
               <p className="font-extrabold">Cắt ảnh trước khi upload</p>
               <p className="mt-1">

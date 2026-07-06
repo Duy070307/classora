@@ -51,6 +51,14 @@ const initialInput: ExamInput = {
   extraRequirements: ""
 };
 
+const quickExamPresets: Array<{ label: string; values: Partial<ExamInput> }> = [
+  { label: "Toán 12 THPTQG", values: { subject: "Toán", grade: "12", topic: "Hàm số, mũ - logarit, tích phân, xác suất", duration: "90 phút", examStyle: "THPTQG / tốt nghiệp", multipleChoiceCount: 12, trueFalseCount: 4, shortAnswerCount: 6 } },
+  { label: "Xác suất", values: { subject: "Toán", grade: "12", topic: "Xác suất, biến cố, quy tắc cộng và quy tắc nhân", examStyle: "THPTQG / tốt nghiệp" } },
+  { label: "Lịch sử 12", values: { subject: "Lịch sử", grade: "12", topic: "Việt Nam giai đoạn 1919-1975", duration: "50 phút" } },
+  { label: "Tiếng Anh 9", values: { subject: "Tiếng Anh", grade: "9", topic: "Vocabulary, grammar and reading comprehension", duration: "45 phút" } },
+  { label: "Toán 8", values: { subject: "Toán", grade: "8", topic: "Phương trình bậc nhất một ẩn", duration: "45 phút" } },
+];
+
 export default function ExamGeneratorPage() {
   const [input, setInput] = useState(initialInput);
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
@@ -166,18 +174,39 @@ export default function ExamGeneratorPage() {
     setMessage("Đã điền dữ liệu mẫu.");
   }
 
+  function applyQuickPreset(values: Partial<ExamInput>) {
+    setInput((current) => ({ ...current, ...values }));
+    setMessage("Đã điền mẫu nhanh. Có thể chỉnh sửa nội dung sau khi tạo trước khi xuất file.");
+  }
+
   return (
     <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
         <ToolWorkspaceLayout
           form={
           <form onSubmit={handleSubmit} className="tool-form-card">
+            <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
+              <p className="text-sm font-black text-slate-900">Mẫu nhanh</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Chọn một gợi ý để điền nhanh các trường chính, rồi chỉnh lại theo lớp của thầy/cô.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {quickExamPresets.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => applyQuickPreset(preset.values)}
+                    className="rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 ring-1 ring-blue-100 transition hover:bg-blue-600 hover:text-white"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Điền thử mẫu nhanh</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <div><p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mẫu nhanh theo môn</p><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
-              <p className="form-section-title">Thông tin chung</p>
+              <p className="form-section-title">Thông tin đề</p>
               <div className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Tên trường/trung tâm</label><input className="form-field mt-1" value={input.schoolName} onChange={(e) => setInput({ ...input, schoolName: e.target.value })} /></div>
@@ -192,7 +221,7 @@ export default function ExamGeneratorPage() {
               </div>
             </div>
             <div className="form-section">
-              <p className="form-section-title">Cấu trúc đề</p>
+              <p className="form-section-title">Cấu trúc câu hỏi</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div><label className="label">Kiểu đề</label><select className="form-field mt-1" value={input.examStyle} onChange={(e) => setInput({ ...input, examStyle: e.target.value as ExamInput["examStyle"] })}><option>Kiểm tra thường</option><option>THPTQG / tốt nghiệp</option><option>Giữa kỳ</option><option>Cuối kỳ</option></select></div>
                 <div><label className="label">Mức độ chung</label><select className="form-field mt-1" value={input.level} onChange={(e) => setInput({ ...input, level: e.target.value as ExamInput["level"] })}><option>Dễ</option><option>Trung bình</option><option>Khó</option></select></div>
@@ -204,7 +233,7 @@ export default function ExamGeneratorPage() {
                 <div><label className="label">Tổng điểm</label><input type="number" className="form-field mt-1" value={input.totalScore ?? 0} onChange={(e) => setInput({ ...input, totalScore: Number(e.target.value) })} /></div>
               </div>
               <div className="mt-3"><label className="label">Mã đề</label><input className="form-field mt-1 max-w-48" value={input.examCode ?? ""} onChange={(e) => setInput({ ...input, examCode: e.target.value.replace(/\D/g, "").slice(0, 4) })} /></div>
-              <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mức độ nhận thức</p>
+              <p className="mt-5 text-xs font-extrabold uppercase tracking-wide text-blue-700">Chủ đề & mức độ</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div><label className="label">Tỉ lệ nhận biết</label><input type="number" className="form-field mt-1" value={input.recognitionRate ?? 0} onChange={(e) => setInput({ ...input, recognitionRate: Number(e.target.value) })} /></div>
                 <div><label className="label">Tỉ lệ thông hiểu</label><input type="number" className="form-field mt-1" value={input.understandingRate ?? 0} onChange={(e) => setInput({ ...input, understandingRate: Number(e.target.value) })} /></div>
@@ -213,7 +242,7 @@ export default function ExamGeneratorPage() {
               </div>
             </div>
             <div className="form-section space-y-3">
-              <p className="form-section-title">Tùy chọn tài liệu</p>
+              <p className="form-section-title">Xuất file</p>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeAnswers} onChange={(e) => setInput({ ...input, includeAnswers: e.target.checked })} /> Có tạo đáp án không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeRubric} onChange={(e) => setInput({ ...input, includeRubric: e.target.checked })} /> Có tạo thang điểm không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeMatrix} onChange={(e) => setInput({ ...input, includeMatrix: e.target.checked })} /> Có tạo ma trận đề không</label>

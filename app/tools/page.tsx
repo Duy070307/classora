@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { FileDown, History, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
@@ -9,7 +9,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { getFavoriteTools } from "@/lib/favorites";
 import { getRecentTools } from "@/lib/recent-tools";
-import { categoryLabels, categoryOrder, toolRegistry } from "@/lib/tool-registry";
+import { categoryLabels, categoryOrder, getToolSearchText, toolRegistry } from "@/lib/tool-registry";
 
 type Mode = "Tất cả" | "Phổ biến" | "Yêu thích" | "Gần đây";
 
@@ -68,7 +68,7 @@ function ToolsContent() {
     return toolRegistry
       .filter((tool) =>
         categoryMatches(tool.category, category) &&
-        (!q || `${tool.title} ${tool.description}`.toLowerCase().includes(q)) &&
+        (!q || getToolSearchText(tool).includes(q)) &&
         (mode === "Tất cả" ||
           (mode === "Phổ biến" && tool.popular) ||
           (mode === "Yêu thích" && favorites.includes(tool.href)) ||
@@ -104,11 +104,11 @@ function ToolsContent() {
               className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm font-semibold text-slate-800 shadow-xl outline-none ring-1 ring-white/30 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-300/40"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Tìm công cụ theo tên, ví dụ: đề kiểm tra, phiếu học tập, LaTeX..."
+              placeholder="Tìm: đề, kiểm tra, phụ huynh, latex, hình học, nhận xét..."
             />
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">20+ công cụ</span>
+            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">{toolRegistry.length}+ công cụ</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline" />Tạo bản nháp</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><History size={13} className="mr-1 inline" />Lưu lịch sử</span>
             <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline" />Xuất Word/PDF</span>
@@ -138,9 +138,12 @@ function ToolsContent() {
       <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-indigo-100 bg-indigo-50/70 p-4">
         <div>
           <p className="font-black text-slate-900">Chưa biết nên bắt đầu từ đâu?</p>
-          <p className="mt-1 text-sm text-slate-600">Xem các ví dụ theo môn học và loại tài liệu.</p>
+          <p className="mt-1 text-sm text-slate-600">Mở trung tâm tạo mới hoặc xem các ví dụ theo môn học và loại tài liệu.</p>
         </div>
-        <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/create" className="btn-primary">Tạo mới</Link>
+          <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
+        </div>
       </div>
 
       {tools.length ? (
@@ -156,9 +159,9 @@ function ToolsContent() {
         </div>
       ) : (
         <SoanLabEmptyState
-          title="Không tìm thấy công cụ phù hợp"
+          title="Chưa tìm thấy công cụ phù hợp."
           description="Thử từ khóa khác hoặc xóa bộ lọc hiện tại để xem lại toàn bộ thư viện."
-          action={<button className="btn-secondary" onClick={clear}>Xóa bộ lọc</button>}
+          action={<button className="btn-secondary" onClick={clear}>Xem tất cả công cụ</button>}
         />
       )}
     </AppShell>

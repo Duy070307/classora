@@ -70,8 +70,8 @@ export default function HomePage() {
             nhận xét học sinh và tài liệu giảng dạy trong vài phút.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link href="/dashboard" className="btn-primary min-h-13 px-6">
-              Bắt đầu sử dụng
+            <Link href="/create" className="btn-primary min-h-13 px-6">
+              Dùng thử Soạn Lab
               <ArrowRight size={18} />
             </Link>
             <Link href="/samples" className="btn-secondary min-h-13 px-6">
@@ -215,7 +215,7 @@ export default function HomePage() {
               Mở dashboard, chọn một mẫu nhanh hoặc bắt đầu từ công cụ quen thuộc để tạo bản nháp và xuất Word/PDF.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/dashboard" className="btn-primary">Bắt đầu sử dụng</Link>
+              <Link href="/create" className="btn-primary">Dùng thử Soạn Lab</Link>
               <Link href="/samples" className="btn-secondary">Xem mẫu sử dụng</Link>
               <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
             </div>

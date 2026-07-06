@@ -11,7 +11,7 @@ export function TopBar({
   onOpenMenu: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-blue-100/70 bg-white/88 px-3 py-3 shadow-[0_8px_28px_rgba(37,99,235,.06)] backdrop-blur-xl sm:px-5">
+    <header className="sticky top-0 z-20 border-b border-blue-100/70 bg-white/90 px-3 py-3 shadow-[0_8px_28px_rgba(37,99,235,.06)] backdrop-blur-xl sm:px-5">
       <div className="mx-auto flex w-full max-w-[1440px] items-center gap-3">
         <button
           type="button"
@@ -41,9 +41,9 @@ export function TopBar({
           <FileDown size={16} />
           Xuất lại
         </Link>
-        <Link href="/tools" className="btn-primary min-h-11 shrink-0 px-3 sm:px-4">
+        <Link href="/create" className="btn-primary min-h-11 shrink-0 px-3 sm:px-4">
           <Plus size={17} />
-          <span className="hidden sm:inline">Tạo tài liệu</span>
+          <span className="hidden sm:inline">Tạo mới</span>
         </Link>
       </div>
     </header>

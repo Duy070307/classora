@@ -12,6 +12,7 @@ import {
   History,
   Home,
   MessageCircle,
+  PlusCircle,
   Settings,
   Shield,
   Sigma,
@@ -19,11 +20,17 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
 import { AccountPanel } from "@/components/AccountPanel";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const groups = [
-  { title: "Tổng quan", links: [["Dashboard", "/dashboard", Home]] },
+  {
+    title: "Tổng quan",
+    links: [
+      ["Dashboard", "/dashboard", Home],
+      ["Tạo mới", "/create", PlusCircle],
+    ],
+  },
   {
     title: "Công cụ",
     links: [

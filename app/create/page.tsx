@@ -1,0 +1,131 @@
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpenCheck,
+  ClipboardList,
+  FileText,
+  ImageIcon,
+  MessageSquareText,
+  PenTool,
+  Ruler,
+  Send,
+  Sparkles,
+} from "lucide-react";
+import { AppShell } from "@/components/AppShell";
+
+const tasks = [
+  {
+    title: "Soạn đề kiểm tra",
+    description: "Tạo đề, đáp án, thang điểm và ma trận theo môn, lớp, chủ đề.",
+    examples: ["Toán 12 THPTQG", "Lịch sử 12", "Kiểm tra 45 phút"],
+    href: "/tools/exam-generator",
+    icon: ClipboardList,
+    tone: "from-blue-500 to-cyan-500",
+  },
+  {
+    title: "Tạo phiếu học tập",
+    description: "Chuẩn bị phiếu có mục tiêu, bài tập, nhiệm vụ và đáp án gợi ý.",
+    examples: ["Toán 8", "Hoạt động nhóm", "Ôn tập chương"],
+    href: "/tools/worksheet-generator",
+    icon: BookOpenCheck,
+    tone: "from-emerald-500 to-teal-500",
+  },
+  {
+    title: "Soạn giáo án",
+    description: "Lên kế hoạch bài dạy với mục tiêu, tiến trình và đánh giá.",
+    examples: ["Ngữ văn 9", "Bài 45 phút", "Hoạt động khởi động"],
+    href: "/tools/lesson-plan-generator",
+    icon: FileText,
+    tone: "from-indigo-500 to-violet-500",
+  },
+  {
+    title: "Viết nhận xét học sinh",
+    description: "Tạo nhận xét tự nhiên, tích cực, có điểm mạnh và hướng cải thiện.",
+    examples: ["Cuối kỳ", "Tiến bộ", "Cần hỗ trợ thêm"],
+    href: "/tools/student-comments",
+    icon: MessageSquareText,
+    tone: "from-amber-500 to-orange-500",
+  },
+  {
+    title: "Soạn tin nhắn phụ huynh",
+    description: "Viết tin nhắn ngắn gọn, lịch sự và rõ ý để gửi phụ huynh.",
+    examples: ["Nhắc học bài", "Mời họp", "Báo tiến bộ"],
+    href: "/tools/parent-message-generator",
+    icon: Send,
+    tone: "from-pink-500 to-rose-500",
+  },
+  {
+    title: "Tạo rubric",
+    description: "Tạo bảng tiêu chí đánh giá có mức độ, mô tả và điểm số.",
+    examples: ["Thuyết trình", "Bài viết", "Dự án nhóm"],
+    href: "/tools/rubric-generator",
+    icon: PenTool,
+    tone: "from-purple-500 to-fuchsia-500",
+  },
+  {
+    title: "Chuyển ảnh công thức sang LaTeX",
+    description: "Nhận diện công thức từ ảnh đã cắt gọn để sao chép vào tài liệu.",
+    examples: ["Phân số", "Căn thức", "Ma trận"],
+    href: "/tools/image-to-latex?mode=formula",
+    icon: ImageIcon,
+    tone: "from-sky-500 to-blue-600",
+  },
+  {
+    title: "Vẽ lại hình học bằng TikZ",
+    description: "Tạo bản nháp TikZ từ hình học rõ nét để chỉnh trong LaTeX editor.",
+    examples: ["Tam giác", "Đường tròn", "Hình tọa độ"],
+    href: "/tools/image-to-latex?mode=geometry",
+    icon: Ruler,
+    tone: "from-cyan-500 to-indigo-500",
+  },
+];
+
+export default function CreatePage() {
+  return (
+    <AppShell title="Tạo mới">
+      <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-blue-700 via-indigo-700 to-sky-600 p-6 text-white shadow-[0_28px_70px_rgba(37,99,235,.25)] sm:p-9">
+        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[44px] border-white/10" />
+        <div className="relative max-w-3xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-1.5 text-xs font-extrabold ring-1 ring-white/20">
+            <Sparkles size={14} />
+            Trung tâm tạo tài liệu
+          </span>
+          <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Bạn muốn tạo gì?</h1>
+          <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-blue-50 sm:text-lg">
+            Chọn một công việc, Soạn Lab sẽ mở đúng công cụ và gợi ý thông tin cần nhập.
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {tasks.map((task) => {
+          const Icon = task.icon;
+          return (
+            <Link
+              key={task.title}
+              href={task.href}
+              className="group flex min-h-[300px] flex-col rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-1 hover:border-blue-200 hover:bg-gradient-to-br hover:from-white hover:to-blue-50 hover:shadow-xl hover:shadow-blue-100/60 focus-visible:ring-4 focus-visible:ring-blue-200"
+            >
+              <span className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${task.tone} text-white shadow-lg`}>
+                <Icon size={23} />
+              </span>
+              <h2 className="mt-5 text-lg font-black text-slate-900">{task.title}</h2>
+              <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{task.description}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {task.examples.map((example) => (
+                  <span key={example} className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-extrabold text-blue-700">
+                    {example}
+                  </span>
+                ))}
+              </div>
+              <span className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-black text-blue-700">
+                Bắt đầu
+                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              </span>
+            </Link>
+          );
+        })}
+      </section>
+    </AppShell>
+  );
+}
