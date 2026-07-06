@@ -59,15 +59,12 @@ export default function HomePage() {
             <BrandLogo variant="full" />
           </div>
           <h1 className="mt-6 text-4xl font-black leading-[1.03] tracking-[-.04em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Soạn đề <span className="text-blue-600">nhanh.</span>
+            Soạn tài liệu dạy học
             <br />
-            Tạo tài liệu <span className="text-cyan-500">gọn.</span>
-            <br />
-            Xuất Word <span className="text-indigo-600">dễ dàng.</span>
+            <span className="text-blue-600">nhanh hơn</span> với Soạn Lab
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600">
-            Soạn Lab hỗ trợ giáo viên tạo đề kiểm tra, phiếu học tập, giáo án,
-            nhận xét học sinh và tài liệu giảng dạy trong vài phút.
+            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian duy nhất.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link href="/create" className="btn-primary min-h-13 px-6">

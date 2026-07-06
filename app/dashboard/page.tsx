@@ -76,9 +76,9 @@ export default function DashboardPage() {
             <Sparkles size={14} />
             Không gian tạo tài liệu cho giáo viên
           </span>
-          <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Hôm nay thầy cô muốn tạo gì?</h1>
+          <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Bạn muốn tạo tài liệu gì hôm nay?</h1>
           <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-blue-50 sm:text-lg">
-            Tìm công cụ, bắt đầu từ mẫu hoặc mở trung tâm tạo mới để Soạn Lab dẫn thầy/cô tới đúng luồng làm việc.
+            Chọn công cụ, dùng mẫu có sẵn hoặc tìm nhanh công việc cần làm.
           </p>
           <div className="mt-7 flex flex-col gap-3 lg:flex-row">
             <label className="relative min-h-14 flex-1">
@@ -91,8 +91,11 @@ export default function DashboardPage() {
               />
             </label>
             <Link href="/create" className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-black text-blue-700 shadow-xl transition hover:-translate-y-0.5">
-              Tạo mới
+              Tạo tài liệu mới
               <ArrowRight size={18} />
+            </Link>
+            <Link href="/samples" className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/14 px-6 text-sm font-black text-white ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:bg-white/20">
+              Xem mẫu sử dụng
             </Link>
           </div>
         </div>

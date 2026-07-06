@@ -49,8 +49,12 @@ function LoginContent() {
           <Link href="/" className="inline-flex">
             <BrandLogo />
           </Link>
-          <h1 className="mt-10 max-w-xl text-5xl font-black tracking-tight text-slate-950">Soạn Lab giúp giáo viên tạo tài liệu nhanh hơn, gọn hơn.</h1>
-          <p className="mt-5 max-w-lg text-lg leading-8 text-slate-600">Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian làm việc rõ ràng.</p>
+          <h1 className="mt-10 max-w-xl text-5xl font-black tracking-tight text-slate-950">
+            Soạn Lab giúp giáo viên tạo tài liệu nhanh hơn, gọn hơn.
+          </h1>
+          <p className="mt-5 max-w-lg text-lg leading-8 text-slate-600">
+            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian làm việc rõ ràng.
+          </p>
           <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
             {[
               [FileText, "Tạo tài liệu"],
@@ -80,7 +84,7 @@ function LoginContent() {
 
           {!supabase ? (
             <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">
-              Tài khoản đang được thiết lập cho môi trường sử dụng hiện tại. Bạn vẫn có thể tiếp tục vào Soạn Lab trên thiết bị này.
+              Tài khoản đang được thiết lập cho môi trường sử dụng hiện tại. Thầy/cô vẫn có thể tiếp tục vào Soạn Lab trên thiết bị này.
             </div>
           ) : null}
 
@@ -99,7 +103,7 @@ function LoginContent() {
           </form>
 
           <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-            Đăng ký tài khoản hiện chưa mở. Tài khoản thử nghiệm được cấp bởi quản trị viên.
+            Đăng ký tài khoản hiện chưa mở. Tài khoản được cấp bởi quản trị viên.
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
