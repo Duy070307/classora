@@ -372,6 +372,12 @@ const rawToolLinks = [
   })),
   {
     category: "Công thức & LaTeX",
+    title: "Ảnh công thức → LaTeX",
+    description: "Chuyển ảnh công thức Toán, biểu thức hoặc hình học đã cắt gọn thành mã LaTeX.",
+    href: "/tools/image-to-latex"
+  },
+  {
+    category: "Công thức & LaTeX",
     title: "Preview LaTeX",
     description: "Nhập LaTeX và xem preview công thức bằng KaTeX nếu có thể.",
     href: "/tools/latex-preview"

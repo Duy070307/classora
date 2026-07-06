@@ -27,6 +27,6 @@ Phiên bản này chuẩn bị Soạn Lab cho public preview chính thức.
 - Chưa có tài khoản/đăng nhập.
 - Chưa có đồng bộ dữ liệu qua cơ sở dữ liệu.
 - Chưa có thanh toán.
-- Chưa có OCR ảnh/PDF.
+- Có công cụ Ảnh công thức → LaTeX cho ảnh đã cắt gọn; chưa có OCR PDF hoặc quét nguyên trang tài liệu.
 - Dữ liệu cá nhân lưu trong trình duyệt bằng `localStorage`.
 - PDF được tạo qua hộp thoại in của trình duyệt, nên bố cục có thể khác nhẹ theo trình duyệt và thiết lập máy in.

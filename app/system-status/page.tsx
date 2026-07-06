@@ -14,7 +14,7 @@ const items = [
   ["Lưu lịch sử", "Hoạt động", "active"],
   ["Tài khoản", "Hoạt động nếu Supabase được cấu hình", "active"],
   ["Đồng bộ dữ liệu", "Hoạt động nếu Supabase được cấu hình", "active"],
-  ["OCR ảnh/PDF", "Chưa mở", "upcoming"],
+  ["Ảnh công thức → LaTeX", "Hoạt động với Gemini", "active"],
 ] as const;
 
 export const metadata: Metadata = {

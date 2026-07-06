@@ -15,6 +15,7 @@
 - [ ] Lịch sử lưu, mở lại, xuất lại Word/Print được.
 - [ ] Mẫu cá nhân, ngân hàng câu hỏi, backup/restore local data hoạt động.
 - [ ] Command palette, favorites và recent tools hoạt động.
+- [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX qua Gemini khi được cấu hình, copy/download/lưu lịch sử hoạt động.
 
 ## Export
 
@@ -51,7 +52,7 @@
 ## Giới hạn cần truyền đạt
 
 - [ ] Nội dung là bản nháp và cần giáo viên rà soát.
-- [ ] Chưa có tài khoản, đồng bộ dữ liệu, thanh toán và OCR.
+- [ ] Chưa có thanh toán và OCR PDF/quét nguyên trang; Ảnh công thức → LaTeX chỉ dành cho ảnh công thức hoặc hình học đã cắt gọn.
 - [ ] Dữ liệu lưu cục bộ trong trình duyệt/localStorage.
 
 ## Supabase Auth và cloud data

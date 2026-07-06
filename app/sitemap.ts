@@ -13,6 +13,7 @@ const routes = [
   "/tools/worksheet-generator",
   "/tools/lesson-plan-generator",
   "/tools/student-comments",
+  "/tools/image-to-latex",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -7,5 +7,6 @@ export const draftToolNames: Record<string, string> = {
   "/tools/lesson-plan-generator": "Tạo giáo án",
   "/tools/student-comments": "Tạo nhận xét học sinh",
   "/tools/bulk-student-comments": "Nhận xét học sinh hàng loạt",
-  "/tools/import-questions": "Nhập câu hỏi"
+  "/tools/import-questions": "Nhập câu hỏi",
+  "/tools/image-to-latex": "Ảnh công thức → LaTeX"
 };

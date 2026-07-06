@@ -12,6 +12,6 @@
 2. Mở rộng bộ mẫu nội dung sau các vòng rà soát chuyên môn.
 3. Nghiên cứu tích hợp dịch vụ tạo nội dung phía máy chủ với cơ chế bảo vệ phù hợp.
 4. Tài khoản và đồng bộ dữ liệu khi hạ tầng sẵn sàng.
-5. OCR ảnh/PDF, không gian tổ chuyên môn và thanh toán chỉ được xem xét sau các giai đoạn trên.
+5. OCR PDF đầy đủ, quét nguyên trang tài liệu, không gian tổ chuyên môn và thanh toán chỉ được xem xét sau các giai đoạn trên. Công cụ Ảnh công thức → LaTeX hiện chỉ dành cho ảnh công thức/hình học đã cắt gọn.
 
 Các mục tương lai chưa phải tính năng đang hoạt động.

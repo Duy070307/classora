@@ -19,6 +19,7 @@ export type ToolType =
   | "homeroom-plan"
   | "parent-meeting-minutes"
   | "latex-converter"
+  | "image-to-latex"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {

@@ -12,6 +12,7 @@ import {
   Home,
   MessageCircle,
   Settings,
+  Sigma,
   Wrench,
   X,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const groups = [
       ["Soạn đề", "/tools?category=exam-assessment", ClipboardList],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Nhận xét", "/tools/student-comments", MessageCircle],
+      ["Ảnh → LaTeX", "/tools/image-to-latex", Sigma],
     ],
   },
   {

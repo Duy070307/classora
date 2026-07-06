@@ -39,6 +39,7 @@ export function getHistory(): GeneratedDocument[] {
           "homeroom-plan",
           "parent-meeting-minutes",
           "latex-converter",
+          "image-to-latex",
           "bulk-student-comments"
         ].includes(candidate.type ?? "")
       );

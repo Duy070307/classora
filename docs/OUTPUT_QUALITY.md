@@ -24,6 +24,6 @@ Soạn Lab tạo bản nháp theo môn học và loại tài liệu để giáo 
 ## Giới hạn hiện tại
 
 - Nội dung được tạo tự động từ mẫu và cần giáo viên rà soát.
-- Chưa tạo hình vẽ, biểu đồ hoặc OCR ảnh/PDF.
+- Có công cụ Ảnh công thức → LaTeX cho ảnh đã cắt gọn; chưa hỗ trợ OCR PDF hoặc quét nguyên trang tài liệu.
 - Không có tài khoản hoặc đồng bộ dữ liệu; lịch sử và mẫu cá nhân lưu trong trình duyệt.
 - Đề dài hoặc nội dung quá đặc thù có thể cần chỉnh sửa nhiều hơn.

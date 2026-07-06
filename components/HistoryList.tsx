@@ -33,6 +33,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "homeroom-plan": "Kế hoạch chủ nhiệm",
   "parent-meeting-minutes": "Biên bản họp phụ huynh",
   "latex-converter": "Công thức LaTeX",
+  "image-to-latex": "Ảnh công thức → LaTeX",
   "bulk-student-comments": "Nhận xét hàng loạt"
 };
 

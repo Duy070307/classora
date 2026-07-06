@@ -33,6 +33,7 @@ Tool routes quan trọng:
 - `/tools/rubric-generator`
 - `/tools/parent-message-generator`
 - `/tools/import-questions`
+- `/tools/image-to-latex`
 - `/tools/latex-preview`
 
 ## Sample prefill
@@ -112,6 +113,15 @@ Provider thật nếu có key:
 2. Đặt `AI_PROVIDER=openai` hoặc `AI_PROVIDER=gemini`.
 3. Tạo đề kiểm tra.
 4. Lưu lịch sử và xuất Word/PDF lại.
+
+## Ảnh công thức → LaTeX
+
+1. Đặt `AI_PROVIDER=gemini` và cấu hình `GEMINI_API_KEY` nếu muốn kiểm thử nhận diện thật.
+2. Mở `/tools/image-to-latex`.
+3. Upload ảnh PNG/JPG/WEBP đã cắt gọn, dưới 5MB.
+4. Xác nhận UI nhắc giáo viên cắt ảnh chỉ chứa công thức hoặc hình cần nhận diện.
+5. Tạo LaTeX, copy, preview KaTeX nếu render được, tải TXT/Markdown và lưu lịch sử.
+6. Với provider không phải Gemini hoặc thiếu key, xác nhận hiển thị lỗi thân thiện, không crash.
 
 ## Public wording audit
 
