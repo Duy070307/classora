@@ -58,7 +58,7 @@ export type GeneratedDocument = {
 
 export type DocumentFolder = "Đề kiểm tra" | "Giáo án" | "Phiếu học tập" | "Nhận xét học sinh" | "Khác";
 
-export type QuestionType = "Trắc nghiệm" | "Tự luận" | "Điền khuyết" | "Đúng/Sai";
+export type QuestionType = "Trắc nghiệm" | "Tự luận" | "Điền khuyết" | "Trả lời ngắn" | "Đúng/Sai";
 export type QuestionDifficulty = "Nhận biết" | "Thông hiểu" | "Vận dụng" | "Vận dụng cao";
 
 export type QuestionItem = {

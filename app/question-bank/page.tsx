@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, Download, FileUp, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
@@ -84,6 +84,30 @@ export default function QuestionBankPage() {
     <AppShell title="Ngân hàng câu hỏi">
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
         <BugReportLink source="question-bank" className="mb-4" />
+        <section className="mb-6 rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 className="text-xl font-black text-slate-900">Nhập câu hỏi từ file</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                Tải mẫu Excel, điền câu hỏi theo từng dòng rồi upload lại để thêm vào ngân hàng câu hỏi. Hỗ trợ .xlsx, .csv, .tsv.
+              </p>
+              <p className="mt-2 text-sm font-semibold text-amber-700">
+                Không đổi tên các cột trong file mẫu. Mỗi dòng là một câu hỏi.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.xlsx" className="btn-primary" download>
+                <Download size={16} /> Tải mẫu Excel
+              </Link>
+              <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.csv" className="btn-secondary" download>
+                <Download size={16} /> Tải mẫu CSV
+              </Link>
+              <Link href="/tools/import-questions" className="btn-secondary">
+                <FileUp size={16} /> Upload file
+              </Link>
+            </div>
+          </div>
+        </section>
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
           <form onSubmit={submit} className="tool-form-card">
             <div className="flex items-center gap-2"><Plus size={18} className="text-brand" /><h2 className="font-bold text-ink">{editingId ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi"}</h2></div>

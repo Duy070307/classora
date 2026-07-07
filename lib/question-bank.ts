@@ -5,7 +5,7 @@ import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
 
 const QUESTION_BANK_KEY = STORAGE_KEYS.questions;
 
-const types: QuestionType[] = ["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"];
+const types: QuestionType[] = ["Trắc nghiệm", "Tự luận", "Điền khuyết", "Trả lời ngắn", "Đúng/Sai"];
 const difficulties: QuestionDifficulty[] = ["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"];
 
 export function getQuestions(): QuestionItem[] {
