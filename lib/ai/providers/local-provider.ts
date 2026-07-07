@@ -68,6 +68,9 @@ export const localProvider: AIProvider = {
       case "lesson-plan":
       case "lesson-plan-generator":
         content = await generateLessonPlan(asGeneric(request.input));
+        if (!/bản nháp|tham khảo|rà soát/i.test(content)) {
+          content = `${content}\n\nGHI CHÚ RÀ SOÁT\nGiáo án được tạo là bản nháp tham khảo. Thầy cô cần kiểm tra, điều chỉnh theo lớp học, chương trình và yêu cầu chuyên môn trước khi sử dụng.`;
+        }
         break;
       case "student-comments":
         content = await generateStudentComments(request.input as unknown as StudentCommentInput);

@@ -165,15 +165,71 @@ export function buildWorksheetPrompt(input: unknown) {
 
 export function buildLessonPlanPrompt(input: unknown) {
   return prompt(
-    "Soạn kế hoạch bài dạy",
+    "Soạn kế hoạch bài dạy dạng bản nháp tham khảo",
     input,
-    `KẾ HOẠCH BÀI DẠY
-- Thông tin bài học.
-- Mục tiêu.
-- Học liệu.
-- Tiến trình hoạt động: mở đầu, hình thành kiến thức, luyện tập, vận dụng.
-- Đánh giá.
-- Điều chỉnh sau bài dạy.`
+    `KẾ HOẠCH BÀI DẠY - BẢN NHÁP THAM KHẢO
+
+Yêu cầu bắt buộc:
+- Đặt giáo án là tài liệu tham khảo/bản nháp, không viết như tài liệu chính thức đã được chứng nhận.
+- Dùng bối cảnh giáo dục Việt Nam, phù hợp môn học, lớp, chủ đề và thời lượng.
+- Nếu người dùng cung cấp "Yêu cầu cần đạt / chuẩn chương trình", ưu tiên nội dung đó.
+- Nếu chưa có yêu cầu cần đạt, viết "Gợi ý yêu cầu cần đạt tham khảo" và nhắc giáo viên kiểm tra theo chương trình chính thức.
+- Không bịa mã chương trình/chứng nhận chính thức nếu người dùng không cung cấp.
+- Mục tiêu phải đo được, tránh động từ mơ hồ như "hiểu", "nắm được", "biết được"; hãy chuyển thành động từ đo được.
+
+Cấu trúc đầu ra:
+I. THÔNG TIN BÀI HỌC
+- Môn học
+- Lớp
+- Chủ đề/Bài học
+- Thời lượng
+- Định hướng sử dụng: bản nháp tham khảo, giáo viên cần điều chỉnh theo lớp học và chương trình.
+
+II. MỤC TIÊU BÀI HỌC
+- Yêu cầu cần đạt tham khảo
+- Năng lực đặc thù
+- Năng lực chung
+- Phẩm chất
+- Mục tiêu cụ thể theo thang Bloom
+
+Với mục tiêu Bloom, tạo 3-6 mục tiêu cụ thể, đo được. Chọn động từ phù hợp:
+- Nhớ: nêu được, kể tên được, nhận biết được, liệt kê được, xác định được.
+- Hiểu: trình bày được, mô tả được, giải thích được, phân biệt được, tóm tắt được.
+- Vận dụng: vận dụng được, thực hiện được, giải quyết được, tính được, sử dụng được.
+- Phân tích: phân tích được, so sánh được, chỉ ra được, phân loại được, nhận xét được.
+- Đánh giá: đánh giá được, lựa chọn được, bảo vệ được ý kiến, nhận định được, phản biện được.
+- Sáng tạo: thiết kế được, xây dựng được, đề xuất được, tạo ra được, lập kế hoạch được.
+
+III. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU
+
+IV. TIẾN TRÌNH DẠY HỌC
+1. Khởi động
+2. Hình thành kiến thức
+3. Luyện tập
+4. Vận dụng
+5. Củng cố/Dặn dò
+
+Với mỗi hoạt động ghi rõ:
+- Mục tiêu hoạt động
+- Thời lượng
+- Hoạt động của giáo viên
+- Hoạt động của học sinh
+- Sản phẩm dự kiến
+- Cách đánh giá
+
+V. LƯU Ý CHUYÊN MÔN
+- Các điểm dễ nhầm
+- Gợi ý điều chỉnh theo lớp học
+- Lưu ý an toàn nếu có thí nghiệm
+
+VI. GHI CHÚ RÀ SOÁT
+- Giáo viên cần kiểm tra lại tính chính xác, đáp án, số liệu, thí nghiệm và yêu cầu chương trình trước khi sử dụng.
+
+Nếu là Vật lí/Khoa học với chủ đề điện, quang học, sóng, cơ học:
+- Có giải thích khái niệm cốt lõi.
+- Có lỗi hiểu nhầm thường gặp.
+- Có gợi ý minh họa/thí nghiệm đơn giản nếu phù hợp.
+- Có lưu ý an toàn khi dùng thiết bị, điện, nhiệt, ánh sáng mạnh hoặc hóa chất.`
   );
 }
 

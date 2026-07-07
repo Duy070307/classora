@@ -6,6 +6,8 @@ import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
 import { exportOfficialExamDocx } from "@/lib/export-exam-docx";
 import { parseDocumentContent } from "@/lib/documents/document-content";
+import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
+import { containsMathLikeText } from "@/lib/content/math-symbol-normalize";
 
 function safeFileName(value: string) {
   return value
@@ -19,25 +21,32 @@ function safeFileName(value: string) {
 }
 
 export async function exportDocx(document: GeneratedDocument) {
-  if (document.type === "exam") {
-    await exportOfficialExamDocx(document);
+  const cleanDocument = normalizeGeneratedDocument(document);
+  if (cleanDocument.type === "exam") {
+    await exportOfficialExamDocx(cleanDocument);
     return;
   }
   const settings = getDocumentSettings();
   const fontSize = Number(settings.fontSize) * 2;
-  const contentBlocks = parseDocumentContent(document.content).map((block) => {
+  const textRun = (text: string, options: { bold?: boolean; size?: number } = {}) => new TextRun({
+    text,
+    bold: options.bold,
+    font: containsMathLikeText(text) ? "Cambria Math" : settings.fontFamily,
+    size: options.size ?? fontSize,
+  });
+  const contentBlocks = parseDocumentContent(cleanDocument.content).map((block) => {
     if (block.type === "heading") {
       return new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 220, after: 100 },
-        children: [new TextRun({ text: block.text, bold: true, font: settings.fontFamily, size: fontSize + 2 })]
+        children: [textRun(block.text, { bold: true, size: fontSize + 2 })]
       });
     }
     if (block.type === "bullet") {
       return new Paragraph({
         spacing: { after: 70 },
         bullet: { level: 0 },
-        children: [new TextRun({ text: block.text, font: settings.fontFamily, size: fontSize })]
+        children: [textRun(block.text)]
       });
     }
     if (block.type === "table") {
@@ -53,14 +62,14 @@ export async function exportDocx(document: GeneratedDocument) {
         },
         rows: block.rows.map((row, rowIndex) => new TableRow({
           children: row.map((cell) => new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: cell, bold: rowIndex === 0, font: settings.fontFamily, size: Math.max(fontSize - 2, 18) })] })]
+            children: [new Paragraph({ children: [textRun(cell, { bold: rowIndex === 0, size: Math.max(fontSize - 2, 18) })] })]
           }))
         }))
       });
     }
     return new Paragraph({
       spacing: { after: 90 },
-      children: [new TextRun({ text: block.text, font: settings.fontFamily, size: fontSize })]
+      children: [textRun(block.text)]
     });
   });
   const headerLines = getDocumentHeaderLines(settings);
@@ -77,7 +86,7 @@ export async function exportDocx(document: GeneratedDocument) {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 240 },
-            children: [new TextRun({ text: document.title, bold: true, size: fontSize + 8, font: settings.fontFamily })]
+            children: [textRun(cleanDocument.title, { bold: true, size: fontSize + 8 })]
           }),
           ...contentBlocks
         ]
@@ -89,7 +98,7 @@ export async function exportDocx(document: GeneratedDocument) {
   const url = URL.createObjectURL(blob);
   const link = window.document.createElement("a");
   link.href = url;
-  link.download = `${safeFileName(document.title) || "soan-lab"}.docx`;
+  link.download = `${safeFileName(cleanDocument.title) || "soan-lab"}.docx`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

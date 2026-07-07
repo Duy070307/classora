@@ -3,6 +3,7 @@
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
+import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
 
 const warning = "Nội dung được tạo tự động và cần giáo viên kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
 
@@ -31,20 +32,22 @@ function download(filename: string, content: string, type: string) {
 }
 
 export function downloadMarkdown(document: GeneratedDocument) {
-  const lines = header(document);
-  const titleIndex = lines.indexOf(document.title);
+  const cleanDocument = normalizeGeneratedDocument(document);
+  const lines = header(cleanDocument);
+  const titleIndex = lines.indexOf(cleanDocument.title);
   const content = [
     ...lines.map((line, index) => index === titleIndex ? `# ${line}` : line),
     "",
-    document.content || "(Tài liệu chưa có nội dung.)",
+    cleanDocument.content || "(Tài liệu chưa có nội dung.)",
     "",
     "---",
     warning
   ].join("\n");
-  download(`${cleanFileName(document.title)}.md`, content, "text/markdown;charset=utf-8");
+  download(`${cleanFileName(cleanDocument.title)}.md`, content, "text/markdown;charset=utf-8");
 }
 
 export function downloadTxt(document: GeneratedDocument) {
-  const content = [...header(document), "", document.content || "(Tài liệu chưa có nội dung.)", "", warning].join("\n");
-  download(`${cleanFileName(document.title)}.txt`, content, "text/plain;charset=utf-8");
+  const cleanDocument = normalizeGeneratedDocument(document);
+  const content = [...header(cleanDocument), "", cleanDocument.content || "(Tài liệu chưa có nội dung.)", "", warning].join("\n");
+  download(`${cleanFileName(cleanDocument.title)}.txt`, content, "text/plain;charset=utf-8");
 }

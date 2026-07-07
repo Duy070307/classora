@@ -40,11 +40,15 @@ export function lessonPlanTemplate(input: GenericToolInput) {
   const subject = value(input, "subject", "Toán");
   const grade = value(input, "grade", "8");
   const lesson = value(input, "lessonName", "Bài học mới");
-  const activity = (number: number, name: string, objective: string, organization: string, product: string) => `HOẠT ĐỘNG ${number}: ${name}
-- Mục tiêu: ${objective}
-- Tổ chức thực hiện: ${organization}
+  const requirement = value(input, "curriculumRequirement", `Gợi ý yêu cầu cần đạt tham khảo: học sinh trình bày được kiến thức trọng tâm của bài ${lesson} và vận dụng được vào nhiệm vụ học tập phù hợp.`);
+  const bloomLevel = value(input, "bloomLevel", "Đầy đủ theo Bloom");
+  const activity = (number: number, name: string, objective: string, teacher: string, student: string, product: string) => `HOẠT ĐỘNG ${number}: ${name}
+- Mục tiêu hoạt động: ${objective}
+- Thời lượng: ${number === 1 ? "5 phút" : number === 5 ? "5 phút" : "10-15 phút"}
+- Hoạt động của giáo viên: ${teacher}
+- Hoạt động của học sinh: ${student}
 - Sản phẩm dự kiến: ${product}
-- Đánh giá: Quan sát quá trình, đối chiếu sản phẩm và phản hồi ngắn.`;
+- Cách đánh giá: Quan sát quá trình, đối chiếu sản phẩm và phản hồi ngắn.`;
   return `KẾ HOẠCH BÀI DẠY
 
 I. THÔNG TIN BÀI HỌC
@@ -52,29 +56,42 @@ I. THÔNG TIN BÀI HỌC
 - Lớp: ${grade}
 - Tên bài/chủ đề: ${lesson}
 - Thời lượng: ${value(input, "duration", "45 phút")}
+- Định hướng sử dụng: Giáo án được tạo là bản nháp tham khảo. Thầy cô cần điều chỉnh theo lớp học, chương trình và yêu cầu chuyên môn.
 
 II. MỤC TIÊU BÀI HỌC
-- Kiến thức: ${value(input, "objectives", `Nắm được kiến thức trọng tâm của bài ${lesson}.`)}
-- Năng lực: Tự học, giao tiếp, hợp tác và giải quyết vấn đề.
+- Yêu cầu cần đạt tham khảo: ${requirement}
+- Năng lực đặc thù: Trình bày được kiến thức trọng tâm của bài; vận dụng được kiến thức để giải quyết nhiệm vụ học tập phù hợp với môn ${subject}.
+- Năng lực chung: Tự học, giao tiếp, hợp tác và giải quyết vấn đề.
 - Phẩm chất: Chăm chỉ, trách nhiệm, trung thực trong học tập.
+- Mục tiêu cụ thể theo thang Bloom (${bloomLevel}):
+  1. Nêu được các khái niệm hoặc dữ kiện chính liên quan đến ${lesson}.
+  2. Mô tả được mối quan hệ giữa các nội dung trọng tâm của bài học.
+  3. Vận dụng được kiến thức vào bài tập hoặc tình huống quen thuộc.
+  4. Phân tích được một ví dụ/tình huống để chỉ ra kiến thức cần dùng.
+  5. Nhận xét được cách giải quyết hoặc sản phẩm học tập của bản thân/nhóm.
 
 III. THIẾT BỊ DẠY HỌC VÀ HỌC LIỆU
 - Phương pháp: ${value(input, "methods", "Gợi mở, thảo luận nhóm, luyện tập cá nhân")}.
 - Học liệu: ${value(input, "materials", "Sách giáo khoa, bảng phụ, phiếu học tập")}.
 
 IV. TIẾN TRÌNH DẠY HỌC
-${activity(1, "MỞ ĐẦU", `Kích hoạt kiến thức nền về ${lesson}.`, "Giáo viên nêu tình huống; học sinh suy nghĩ và chia sẻ nhanh.", "Câu trả lời dự đoán hoặc bảng từ khóa.")}
+${activity(1, "KHỞI ĐỘNG", `Kích hoạt kiến thức nền về ${lesson}.`, "Nêu tình huống gợi mở, đặt câu hỏi ngắn và định hướng nhiệm vụ.", "Suy nghĩ cá nhân, chia sẻ dự đoán hoặc kinh nghiệm liên quan.", "Câu trả lời dự đoán hoặc bảng từ khóa.")}
 
-${activity(2, "HÌNH THÀNH KIẾN THỨC", `Hình thành nội dung cốt lõi của ${lesson}.`, "Học sinh khai thác ví dụ hoặc ngữ liệu; giáo viên dẫn dắt và chuẩn hóa.", "Ghi chép kiến thức trọng tâm và ví dụ minh họa.")}
+${activity(2, "HÌNH THÀNH KIẾN THỨC", `Trình bày và giải thích được nội dung cốt lõi của ${lesson}.`, "Tổ chức khai thác ví dụ/ngữ liệu, đặt câu hỏi dẫn dắt và chuẩn hóa kiến thức.", "Quan sát, thảo luận, ghi chép và trả lời câu hỏi gợi mở.", "Ghi chép kiến thức trọng tâm và ví dụ minh họa.")}
 
-${activity(3, "LUYỆN TẬP", "Củng cố kiến thức và rèn kĩ năng.", "Học sinh làm bài cá nhân hoặc cặp đôi; giáo viên hỗ trợ và chữa bài.", "Bài làm có bước giải, luận điểm hoặc kết luận rõ ràng.")}
+${activity(3, "LUYỆN TẬP", "Củng cố kiến thức và rèn kĩ năng.", "Giao bài tập/nhiệm vụ theo mức độ, hỗ trợ học sinh gặp khó khăn và chữa lỗi thường gặp.", "Làm bài cá nhân hoặc cặp đôi, đối chiếu kết quả và giải thích cách làm.", "Bài làm có bước giải, luận điểm hoặc kết luận rõ ràng.")}
 
-${activity(4, "VẬN DỤNG", `Liên hệ ${lesson} với tình huống mới.`, "Học sinh đề xuất cách giải quyết và trình bày sản phẩm ngắn.", "Câu trả lời vận dụng, poster hoặc bảng tổng hợp.")}
+${activity(4, "VẬN DỤNG", `Liên hệ ${lesson} với tình huống mới.`, "Đưa tình huống thực tế hoặc nhiệm vụ mở, hướng dẫn tiêu chí sản phẩm.", "Đề xuất cách giải quyết và trình bày sản phẩm ngắn.", "Câu trả lời vận dụng, poster hoặc bảng tổng hợp.")}
 
-V. ĐIỀU CHỈNH SAU BÀI DẠY
-- Nội dung học sinh đã nắm chắc: ........................................................
-- Nội dung cần hỗ trợ thêm: .............................................................
-- Điều chỉnh phương pháp, thời lượng hoặc học liệu: .....................................`;
+${activity(5, "CỦNG CỐ/DẶN DÒ", "Hệ thống hóa kiến thức và định hướng tự học.", "Tóm tắt điểm chính, giao nhiệm vụ về nhà hoặc câu hỏi tự kiểm tra.", "Nêu lại kiến thức trọng tâm và ghi nhiệm vụ học tập tiếp theo.", "Bảng tóm tắt/câu trả lời củng cố.")}
+
+V. LƯU Ý CHUYÊN MÔN
+- Các điểm dễ nhầm: giáo viên cần rà soát lại thuật ngữ, ví dụ, số liệu và yêu cầu bài tập.
+- Gợi ý điều chỉnh: tăng/giảm số nhiệm vụ theo năng lực lớp học.
+- Lưu ý an toàn: nếu có thí nghiệm hoặc thiết bị, cần kiểm tra điều kiện an toàn trước giờ học.
+
+VI. GHI CHÚ RÀ SOÁT
+Giáo viên cần kiểm tra lại tính chính xác, đáp án, số liệu, thí nghiệm và yêu cầu chương trình trước khi sử dụng chính thức.`;
 }
 
 export function commentTemplate(input: StudentCommentInput) {

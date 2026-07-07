@@ -6,6 +6,7 @@ import { exportDocx } from "@/lib/export-docx";
 import { downloadMarkdown, downloadTxt } from "@/lib/export-text";
 import { printGeneratedDocument } from "@/lib/print-document";
 import type { GeneratedDocument } from "@/lib/types";
+import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
 
 export function DocumentExportMenu({
   document,
@@ -22,7 +23,7 @@ export function DocumentExportMenu({
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(document.content || "");
+      await navigator.clipboard.writeText(normalizeGeneratedDocument(document).content || "");
       setMessage("Đã sao chép vào bộ nhớ tạm.");
     } catch {
       setMessage("Chưa thể sao chép. Vui lòng thử lại.");
@@ -35,7 +36,7 @@ export function DocumentExportMenu({
     setExporting(true);
     setMessage("Đang tạo file...");
     try {
-      await exportDocx(document);
+      await exportDocx(normalizeGeneratedDocument(document));
       setMessage("Đã xuất Word.");
     } catch {
       setMessage("Chưa thể xuất Word. Vui lòng thử lại.");
@@ -58,13 +59,13 @@ export function DocumentExportMenu({
       <button type="button" aria-label="Xuất tài liệu Word" disabled={exporting} className={buttonClass} onClick={word}>
         <Download size={16} /> {exporting ? "Đang tạo file..." : document.type === "exam" ? "Xuất Word dạng đề thi" : "Xuất Word"}
       </button>
-      <button type="button" aria-label="Mở bản in hoặc lưu PDF" className={buttonClass} onClick={() => printGeneratedDocument(document)}>
+      <button type="button" aria-label="Mở bản in hoặc lưu PDF" className={buttonClass} onClick={() => printGeneratedDocument(normalizeGeneratedDocument(document))}>
         <Printer size={16} /> In/Lưu PDF
       </button>
-      <button type="button" aria-label="Tải tài liệu Markdown" className={buttonClass} onClick={() => downloadMarkdown(document)}>
+      <button type="button" aria-label="Tải tài liệu Markdown" className={buttonClass} onClick={() => downloadMarkdown(normalizeGeneratedDocument(document))}>
         <FileText size={16} /> Tải Markdown
       </button>
-      <button type="button" aria-label="Tải tài liệu TXT" className={buttonClass} onClick={() => downloadTxt(document)}>
+      <button type="button" aria-label="Tải tài liệu TXT" className={buttonClass} onClick={() => downloadTxt(normalizeGeneratedDocument(document))}>
         <FileText size={16} /> Tải TXT
       </button>
     </div>

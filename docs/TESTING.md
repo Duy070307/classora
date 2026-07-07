@@ -42,6 +42,24 @@ Nếu kiểm tra query prefill nội bộ, mở trực tiếp URL công cụ có
 
 ## Export regression
 
+### Nội dung có công thức/toán/ký hiệu logic
+
+Tạo hoặc dán nội dung kiểm thử:
+
+- Mệnh đề tương đương: P ↔ Q đúng khi P và Q cùng đúng hoặc cùng sai.
+- Với mọi x ∈ X, P(x) đúng.
+- Tồn tại x ∈ X sao cho P(x) đúng.
+- P ⇒ Q và P ⇔ Q.
+- x^2 > 0; a^2 + b^2 = c^2; Δ = b^2 - 4ac; x = (-b ± √Δ) / 2a.
+- U = I.R; P = U.I; F = m.a; v = s/t.
+
+Cần xác nhận ở preview, Word, Print/PDF, TXT/Markdown và lịch sử mở lại:
+
+- Không còn marker `**...**` hoặc markdown fence thô.
+- Không có ký tự `�`/`ï¿½`.
+- Các ký hiệu ∀, ∃, ∈, ⇒, ⇔, ↔, ≤, ≥, ≠, √, π, Δ đọc được.
+- Trong Word, công thức được giữ dạng text dễ chỉnh sửa, ưu tiên font toán như Cambria Math khi phù hợp.
+
 ### Đề thi
 
 1. Tạo Toán 12 THPTQG từ công cụ tạo đề.
@@ -67,6 +85,14 @@ Kiểm tra Word và Print/PDF nếu có:
 - Nhận xét học sinh.
 - Rubric.
 - Tin nhắn phụ huynh.
+
+Với giáo án:
+
+- Nội dung phải nói rõ đây là bản nháp tham khảo, cần giáo viên rà soát.
+- Có mục “Yêu cầu cần đạt tham khảo”.
+- Mục tiêu theo Bloom dùng động từ đo được như nêu được, mô tả được, vận dụng được, phân tích được, nhận xét được.
+- Hoạt động của giáo viên và học sinh được tách riêng.
+- Có sản phẩm dự kiến, cách đánh giá và ghi chú rà soát chuyên môn.
 
 ## Metadata/assets
 

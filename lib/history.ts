@@ -2,6 +2,7 @@
 
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { readJson, STORAGE_KEYS, writeJson } from "@/lib/storage";
+import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
 
 const HISTORY_KEY = STORAGE_KEYS.history;
 
@@ -45,17 +46,18 @@ export function getHistory(): GeneratedDocument[] {
           "bulk-student-comments"
         ].includes(candidate.type ?? "")
       );
-    });
+    }).map((item) => normalizeGeneratedDocument(item));
   } catch {
     return [];
   }
 }
 
 export function saveDocument(document: GeneratedDocument) {
-  const next = [document, ...getHistory().filter((item) => item.id !== document.id)];
+  const cleanDocument = normalizeGeneratedDocument(document);
+  const next = [cleanDocument, ...getHistory().filter((item) => item.id !== document.id)];
   writeJson(HISTORY_KEY, next);
   if (typeof window !== "undefined") {
-    import("@/lib/data/documents-store").then(({ saveDocumentToCloud }) => saveDocumentToCloud(document)).catch(() => undefined);
+    import("@/lib/data/documents-store").then(({ saveDocumentToCloud }) => saveDocumentToCloud(cleanDocument)).catch(() => undefined);
   }
 }
 
@@ -84,12 +86,12 @@ function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {
 }
 
 export function createDocument(title: string, type: GeneratedDocument["type"], content: string): GeneratedDocument {
-  return {
+  return normalizeGeneratedDocument({
     id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     title,
     type,
     content,
     createdAt: new Date().toISOString(),
     folder: defaultFolder(type)
-  };
+  });
 }

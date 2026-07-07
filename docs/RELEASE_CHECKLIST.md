@@ -25,6 +25,16 @@
 - [ ] Mở đề từ lịch sử và xuất Word/Print lại thành công.
 - [ ] Phiếu học tập, giáo án, nhận xét học sinh, rubric và tin nhắn phụ huynh xuất Word được.
 - [ ] Bảng rubric, ma trận và bảng đáp án là bảng thật, không lộ Markdown thô.
+- [ ] Nội dung toán/logic không còn marker `**`, không có `�`/`ï¿½`, và các ký hiệu P ↔ Q, ∀, ∃, ∈, ⇒, ⇔, ≤, ≥, ≠, √, π, Δ hiển thị đọc được trong preview, Word, Print/PDF và lịch sử.
+- [ ] Word export giữ công thức ở dạng text dễ chỉnh sửa, ưu tiên font toán khi phát hiện biểu thức/ký hiệu.
+
+## Giáo án và mục tiêu bài học
+
+- [ ] Giáo án được định vị là bản nháp tham khảo, không hứa “chuẩn 100%” hoặc dùng ngay không cần sửa.
+- [ ] Có trường nhập “Yêu cầu cần đạt / chuẩn chương trình” và lựa chọn mức độ Bloom.
+- [ ] Đầu ra có “Yêu cầu cần đạt tham khảo”, năng lực đặc thù, năng lực chung, phẩm chất và mục tiêu cụ thể theo Bloom.
+- [ ] Mục tiêu dùng động từ đo được, tránh “hiểu/nắm được/biết được” nếu không chuyển thành hành vi quan sát được.
+- [ ] Hoạt động dạy học tách hoạt động của giáo viên, hoạt động của học sinh, sản phẩm dự kiến và cách đánh giá.
 
 ## T?o n?i dung t? ??ng
 

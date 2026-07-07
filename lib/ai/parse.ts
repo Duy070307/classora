@@ -1,5 +1,6 @@
 import type { StructuredExam } from "@/lib/exam-types";
 import { extractJson, looksLikeRawJson, stripCodeFences } from "@/lib/ai/extract-json";
+import { normalizeEducationalContent } from "@/lib/content/generated-content";
 
 export function extractJsonObject(text: string): unknown | null {
   const result = extractJson(text);
@@ -12,13 +13,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function parseAIText(text: string) {
   const parsed = extractJsonObject(text);
-  const cleanText = stripCodeFences(text);
+  const cleanText = normalizeEducationalContent(stripCodeFences(text));
   if (!isRecord(parsed)) return { content: looksLikeRawJson(cleanText) ? "" : cleanText };
   if (typeof parsed.html === "string" || Array.isArray(parsed.rows)) {
     return { title: typeof parsed.title === "string" ? parsed.title : undefined, content: cleanText };
   }
   const content = typeof parsed.content === "string"
-    ? stripCodeFences(parsed.content)
+    ? normalizeEducationalContent(stripCodeFences(parsed.content))
     : looksLikeRawJson(cleanText) ? "" : cleanText;
   const title = typeof parsed.title === "string" ? parsed.title : undefined;
   const structuredExam = isRecord(parsed.structuredExam)

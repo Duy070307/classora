@@ -117,6 +117,7 @@ textarea {
 .app-gradient-hero { @apply relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white; box-shadow: 0 28px 70px rgba(67,56,202,.22); }
 .app-badge { @apply inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700; }
 .document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-2xl bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(30,64,175,.13), 0 2px 8px rgba(15,23,42,.05); }
+.math-friendly { font-family: "Cambria Math", "STIX Two Math", "DejaVu Serif", "Times New Roman", serif; letter-spacing: .005em; }
 .tool-form-card input[type="checkbox"] { @apply h-4 w-4 rounded border-slate-300 accent-blue-600; }
 .tool-tip-card { @apply rounded-[1.35rem] border border-cyan-100 bg-gradient-to-br from-cyan-50 to-white p-4 text-sm leading-6 text-slate-600 shadow-sm; }
 .soft-grid-bg { background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px); background-size: 24px 24px; }

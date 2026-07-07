@@ -134,6 +134,7 @@ export type ToolField =
       label: string;
       type: "text" | "number" | "textarea";
       placeholder?: string;
+      helperText?: string;
       defaultValue: string | number;
     }
   | {
@@ -141,6 +142,7 @@ export type ToolField =
       label: string;
       type: "select";
       options: string[];
+      helperText?: string;
       defaultValue: string;
     }
   | {

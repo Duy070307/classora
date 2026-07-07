@@ -1,3 +1,5 @@
+import { normalizeEducationalContent } from "@/lib/content/generated-content";
+
 export type DocumentBlock =
   | { type: "heading"; text: string }
   | { type: "paragraph"; text: string }
@@ -15,7 +17,7 @@ function parseTableLine(line: string) {
 }
 
 export function parseDocumentContent(content: string): DocumentBlock[] {
-  const lines = content.split(/\r?\n/);
+  const lines = normalizeEducationalContent(content).split(/\r?\n/);
   const blocks: DocumentBlock[] = [];
   for (let index = 0; index < lines.length;) {
     const trimmed = lines[index].trim();

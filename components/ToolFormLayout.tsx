@@ -152,10 +152,10 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
               {config.fields.map((field) => {
                 const value = input[field.name];
                 if (field.type === "textarea") {
-                  return <TextAreaField key={field.name} label={field.label} value={String(value ?? "")} placeholder={field.placeholder} onChange={(next) => update(field.name, next)} />;
+                  return <div key={field.name}><TextAreaField label={field.label} value={String(value ?? "")} placeholder={field.placeholder} onChange={(next) => update(field.name, next)} />{"helperText" in field && field.helperText ? <p className="mt-1 text-xs leading-5 text-muted">{field.helperText}</p> : null}</div>;
                 }
                 if (field.type === "select") {
-                  return <SelectField key={field.name} label={field.label} value={String(value ?? "")} options={field.options} onChange={(next) => update(field.name, next)} />;
+                  return <div key={field.name}><SelectField label={field.label} value={String(value ?? "")} options={field.options} onChange={(next) => update(field.name, next)} />{"helperText" in field && field.helperText ? <p className="mt-1 text-xs leading-5 text-muted">{field.helperText}</p> : null}</div>;
                 }
                 if (field.type === "checkbox") {
                   return (
@@ -189,14 +189,16 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
                   );
                 }
                 return (
-                  <InputField
-                    key={field.name}
-                    label={field.label}
-                    type={field.type}
-                    value={(value as string | number) ?? ""}
-                    placeholder={field.placeholder}
-                    onChange={(next) => update(field.name, next)}
-                  />
+                  <div key={field.name}>
+                    <InputField
+                      label={field.label}
+                      type={field.type}
+                      value={(value as string | number) ?? ""}
+                      placeholder={field.placeholder}
+                      onChange={(next) => update(field.name, next)}
+                    />
+                    {"helperText" in field && field.helperText ? <p className="mt-1 text-xs leading-5 text-muted">{field.helperText}</p> : null}
+                  </div>
                 );
               })}
             </div>

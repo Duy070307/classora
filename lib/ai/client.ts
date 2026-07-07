@@ -1,5 +1,6 @@
 import { canUseAIGeneration, getAILimitMessage, incrementAIUsage } from "@/lib/ai/usage-limit";
 import type { AIResponse, AIRefinementAction } from "@/lib/ai/types";
+import { normalizeEducationalContent } from "@/lib/content/generated-content";
 
 export async function generateToolContent({
   tool,
@@ -27,5 +28,6 @@ export async function generateToolContent({
     throw new Error("error" in data && data.error ? data.error : "Không thể tạo nội dung lúc này.");
   }
   incrementAIUsage();
-  return data as AIResponse;
+  const result = data as AIResponse;
+  return { ...result, content: normalizeEducationalContent(result.content || "") };
 }

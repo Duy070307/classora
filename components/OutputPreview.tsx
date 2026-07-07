@@ -3,6 +3,7 @@ import { BugReportLink } from "@/components/BugReportLink";
 import { getDocumentHeaderLines } from "@/lib/document-header";
 import { GenericDocumentContent } from "@/components/document/GenericDocumentContent";
 import { looksLikeRawJson } from "@/lib/ai/extract-json";
+import { normalizeEducationalContent } from "@/lib/content/generated-content";
 
 const headingPattern = /^(#{1,3}\s+|ĐỀ KIỂM TRA|PHIẾU HỌC TẬP|NHẬN XÉT|MA TRẬN|ĐÁP ÁN|TRỘN MÃ ĐỀ|MÃ ĐỀ|I\.|II\.|III\.|IV\.|V\.|VI\.|VII\.|PHẦN|THANG ĐIỂM|MỤC TIÊU|KIẾN THỨC|BÀI TẬP|CHỖ TRỐNG|NGẮN GỌN|TRANG TRỌNG|THÂN THIỆN|LƯU Ý|HƯỚNG DẪN)/i;
 
@@ -14,7 +15,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
         return `Câu ${question.number}. ${question.stem}${options ? `\n${options}` : ""}${subItems ? `\n${subItems}` : ""}`;
       }).join("\n\n")}`).join("\n\n")
     : "";
-  const safeContent = document.type === "exam" && looksLikeRawJson(document.content) && structuredContent ? structuredContent : document.content;
+  const safeContent = normalizeEducationalContent(document.type === "exam" && looksLikeRawJson(document.content) && structuredContent ? structuredContent : document.content);
   const lines = safeContent.split("\n");
   const header = getDocumentHeaderLines();
   const examMeta = document.examMeta;

@@ -19,6 +19,8 @@ import {
 import { getDocumentSettings } from "@/lib/document-settings";
 import type { GeneratedDocument } from "@/lib/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
+import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
+import { containsMathLikeText } from "@/lib/content/math-symbol-normalize";
 
 const FONT = "Times New Roman";
 const BODY_SIZE = 24;
@@ -44,7 +46,7 @@ const footerCellBorders = {
 };
 
 function run(text: string, options: { bold?: boolean; italics?: boolean; size?: number } = {}) {
-  return new TextRun({ text, font: FONT, size: options.size ?? BODY_SIZE, bold: options.bold, italics: options.italics });
+  return new TextRun({ text, font: containsMathLikeText(text) ? "Cambria Math" : FONT, size: options.size ?? BODY_SIZE, bold: options.bold, italics: options.italics });
 }
 
 function paragraph(text = "", options: { bold?: boolean; italics?: boolean; center?: boolean; right?: boolean; before?: number; after?: number; size?: number; borderBottom?: boolean } = {}) {
@@ -215,6 +217,7 @@ function teacherContent(document: GeneratedDocument) {
 }
 
 export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
+  document = normalizeGeneratedDocument(document);
   const settings = getDocumentSettings();
   const meta = document.examMeta ?? {};
   const subject = meta.subject || document.title.match(/Đề kiểm tra\s+(.+?)\s+lớp/i)?.[1] || extract(document.content, "Môn học") || "................................";
