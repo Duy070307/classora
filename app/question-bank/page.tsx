@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Copy, Download, FileUp, Pencil, Plus, Trash2 } from "lucide-react";
+import { Copy, Download, FileUp, Pencil, Plus, Sparkles, Trash2 } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
@@ -26,6 +26,7 @@ const emptyForm = {
 export default function QuestionBankPage() {
   const [items, setItems] = useState<QuestionItem[]>([]);
   const [form, setForm] = useState(emptyForm);
+  const [importMode, setImportMode] = useState<"excel" | "ai">("excel");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
@@ -85,26 +86,58 @@ export default function QuestionBankPage() {
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
         <BugReportLink source="question-bank" className="mb-4" />
         <section className="mb-6 rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h2 className="text-xl font-black text-slate-900">Nhập câu hỏi từ file</h2>
+              <h2 className="text-xl font-black text-slate-900">Nhập câu hỏi</h2>
+              <div className="mt-3 inline-grid gap-2 rounded-2xl border border-blue-100 bg-white p-1.5 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setImportMode("excel")}
+                  className={`rounded-xl px-3 py-2 text-xs font-black transition ${importMode === "excel" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-blue-50"}`}
+                >
+                  Theo mẫu Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImportMode("ai")}
+                  className={`rounded-xl px-3 py-2 text-xs font-black transition ${importMode === "ai" ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-blue-50"}`}
+                >
+                  AI tự nhận diện
+                </button>
+              </div>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                Tải mẫu Excel, điền câu hỏi theo từng dòng rồi upload lại để thêm vào ngân hàng câu hỏi. Hỗ trợ .xlsx, .csv, .tsv.
+                {importMode === "excel"
+                  ? "Phù hợp khi thầy cô muốn nhập dữ liệu chính xác, đúng cột và ít cần chỉnh sửa."
+                  : "Upload đề cũ, file Word/TXT/Markdown/CSV/Excel hoặc nội dung đã có để Soạn Lab thử tách thành dữ liệu có cấu trúc."}
               </p>
-              <p className="mt-2 text-sm font-semibold text-amber-700">
-                Không đổi tên các cột trong file mẫu. Mỗi dòng là một câu hỏi.
-              </p>
+              {importMode === "excel" ? (
+                <p className="mt-2 text-sm font-semibold text-amber-700">
+                  Khuyến nghị dùng mẫu Excel để tránh lỗi định dạng. Không đổi tên các cột trong file mẫu.
+                </p>
+              ) : (
+                <p className="mt-2 text-sm font-semibold text-amber-700">
+                  Kết quả nhận diện là bản nháp. Thầy cô cần kiểm tra lại nội dung, đáp án và phân loại trước khi nhập.
+                </p>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.xlsx" className="btn-primary" download>
-                <Download size={16} /> Tải mẫu Excel
-              </Link>
-              <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.csv" className="btn-secondary" download>
-                <Download size={16} /> Tải mẫu CSV
-              </Link>
-              <Link href="/tools/import-questions" className="btn-secondary">
-                <FileUp size={16} /> Upload file
-              </Link>
+              {importMode === "excel" ? (
+                <>
+                  <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.xlsx" className="btn-primary" download>
+                    <Download size={16} /> Tải mẫu Excel
+                  </Link>
+                  <Link href="/templates/mau-ngan-hang-cau-hoi-soan-lab.csv" className="btn-secondary" download>
+                    <Download size={16} /> Tải mẫu CSV
+                  </Link>
+                  <Link href="/tools/import-questions" className="btn-secondary">
+                    <FileUp size={16} /> Upload file
+                  </Link>
+                </>
+              ) : (
+                <Link href="/tools/import-questions?mode=ai" className="btn-primary">
+                  <Sparkles size={16} /> Upload file để nhận diện
+                </Link>
+              )}
             </div>
           </div>
         </section>

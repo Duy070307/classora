@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, useMemo, useRef, useState } from "react";
-import { AlertCircle, CheckCircle2, Download, FileSpreadsheet, FileUp, Save, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Download, FileSpreadsheet, FileUp, Save, Sparkles, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
@@ -44,6 +44,8 @@ type ImportRow = {
   note: string;
   errors: string[];
 };
+
+type ImportMode = "excel" | "ai";
 
 function stripVietnamese(value: string) {
   return value
@@ -298,6 +300,10 @@ function buildQuestion(row: ImportRow) {
 
 export default function ImportQuestionsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const aiFileInputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<ImportMode>(() =>
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "ai" ? "ai" : "excel",
+  );
   const [rows, setRows] = useState<ImportRow[]>([]);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -333,6 +339,77 @@ export default function ImportQuestionsPage() {
     }
   }
 
+  async function handleAIUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const lowerName = file.name.toLowerCase();
+    if (![".txt", ".md", ".csv", ".tsv", ".xlsx", ".docx"].some((extension) => lowerName.endsWith(extension))) {
+      setRows([]);
+      setMessage("Định dạng này chưa được hỗ trợ trong chế độ nhận diện. Vui lòng dùng .txt, .md, .csv, .xlsx hoặc mẫu Excel.");
+      return;
+    }
+    setBusy(true);
+    setMessage("");
+    try {
+      const payload = new FormData();
+      payload.append("file", file);
+      const response = await fetch("/api/question-bank/ai-import", {
+        method: "POST",
+        body: payload,
+      });
+      const data = await response.json() as {
+        ok?: boolean;
+        error?: string;
+        rows?: Array<{
+          subject?: string;
+          grade?: string;
+          topic?: string;
+          questionType?: string;
+          type?: string;
+          difficulty?: string;
+          content?: string;
+          question?: string;
+          options?: Partial<Record<"A" | "B" | "C" | "D", string>>;
+          answer?: string;
+          explanation?: string;
+          note?: string;
+          warnings?: string[];
+        }>;
+        warnings?: string[];
+      };
+      if (!response.ok || !data.ok) {
+        setRows([]);
+        setMessage(data.error || "Chưa nhận diện được file. Vui lòng thử lại hoặc dùng mẫu Excel.");
+        return;
+      }
+      const parsed = (data.rows || []).map((row) => toImportRow({
+        subject: row.subject || "",
+        grade: row.grade || "",
+        topic: row.topic || "",
+        type: row.questionType || row.type || "",
+        difficulty: row.difficulty || "",
+        question: row.content || row.question || "",
+        optionA: row.options?.A || "",
+        optionB: row.options?.B || "",
+        optionC: row.options?.C || "",
+        optionD: row.options?.D || "",
+        answer: row.answer || "",
+        explanation: row.explanation || "",
+        note: [row.note, ...(row.warnings || [])].filter(Boolean).join(" | "),
+      }));
+      setRows(parsed);
+      setMessage(parsed.length
+        ? `Đã nhận diện ${parsed.length} dòng. Vui lòng kiểm tra bảng xem trước trước khi nhập.${data.warnings?.length ? ` ${data.warnings.join(" ")}` : ""}`
+        : "Chưa nhận diện được câu hỏi rõ ràng. Vui lòng thử file khác hoặc dùng mẫu Excel.");
+    } catch {
+      setRows([]);
+      setMessage("Chưa nhận diện được file. Vui lòng thử lại hoặc dùng mẫu Excel.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function saveValidRows() {
     if (!validRows.length) return;
     addQuestions(validRows.map((row) => createQuestion({
@@ -352,20 +429,39 @@ export default function ImportQuestionsPage() {
   return (
     <AppShell title="Nhập câu hỏi">
       <PageHeader
-        title="Nhập câu hỏi từ file"
-        description="Tải mẫu Excel, điền câu hỏi theo từng dòng rồi upload lại để thêm vào ngân hàng câu hỏi."
+        title="Nhập câu hỏi"
+        description="Chọn nhập theo mẫu Excel chính thức hoặc để Soạn Lab hỗ trợ nhận diện file cũ. Luôn kiểm tra bảng xem trước trước khi nhập."
         category="Ngân hàng câu hỏi"
         iconName="question-bank"
         exportable={false}
       />
 
-      <section className="premium-section">
+      <div className="mb-5 grid gap-2 rounded-[24px] border border-blue-100 bg-white p-2 shadow-sm sm:inline-grid sm:grid-cols-2">
+        {([
+          ["excel", "Theo mẫu Excel"],
+          ["ai", "AI tự nhận diện"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => {
+              setMode(value);
+              setMessage("");
+            }}
+            className={`min-h-11 rounded-2xl px-4 text-sm font-black transition ${mode === value ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {mode === "excel" ? <section className="premium-section">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
-            <span className="premium-pill">Khuyến nghị dùng Excel</span>
-            <h2 className="mt-4 text-2xl font-black text-slate-950">Mẫu import dễ mở trong Excel</h2>
+            <span className="premium-pill">Theo mẫu Excel</span>
+            <h2 className="mt-4 text-2xl font-black text-slate-950">Nhập câu hỏi bằng mẫu chính thức</h2>
             <p className="mt-2 leading-7 text-slate-600">
-              Hỗ trợ .xlsx, .csv, .tsv. Khuyến nghị dùng mẫu Excel để tránh lỗi định dạng. Không đổi tên các cột trong file mẫu. Mỗi dòng là một câu hỏi.
+              Phù hợp khi thầy cô muốn nhập dữ liệu chính xác, đúng cột và ít cần chỉnh sửa. Hỗ trợ .xlsx, .csv, .tsv.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -383,9 +479,36 @@ export default function ImportQuestionsPage() {
         </div>
 
         <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
-          Không đổi tên cột. Có thể để trống Phương án A-D nếu là câu tự luận. Với câu trắc nghiệm, đáp án đúng cần là A, B, C hoặc D.
+          Khuyến nghị dùng mẫu Excel để tránh lỗi định dạng. Không đổi tên cột. Mỗi dòng là một câu hỏi; với câu trắc nghiệm, đáp án đúng cần là A, B, C hoặc D.
         </div>
-      </section>
+      </section> : (
+        <section className="premium-section">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <span className="premium-pill">AI tự nhận diện</span>
+              <h2 className="mt-4 text-2xl font-black text-slate-950">Nhận diện câu hỏi từ file cũ</h2>
+              <p className="mt-2 leading-7 text-slate-600">
+                Upload đề cũ, file Word/TXT/Markdown/CSV/Excel hoặc nội dung đã có. Soạn Lab sẽ thử tách câu hỏi, đáp án và lời giải thành dữ liệu có cấu trúc.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn-primary" onClick={() => aiFileInputRef.current?.click()} disabled={busy}>
+                <Sparkles size={16} /> {busy ? "Đang nhận diện..." : "Upload file để nhận diện"}
+              </button>
+              <Link href={templateXlsx} className="btn-secondary" download>
+                <FileSpreadsheet size={16} /> Tải mẫu Excel
+              </Link>
+              <input ref={aiFileInputRef} type="file" accept=".txt,.md,.csv,.tsv,.xlsx,.docx,text/plain,text/markdown,text/csv,text/tab-separated-values" className="hidden" onChange={handleAIUpload} />
+            </div>
+          </div>
+          <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
+            Kết quả nhận diện là bản nháp. Thầy cô cần kiểm tra lại nội dung, đáp án và phân loại trước khi nhập vào ngân hàng câu hỏi.
+          </div>
+          <div className="mt-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
+            Hỗ trợ trong phiên bản này: .txt, .md, .csv, .tsv, .xlsx, .docx. Chưa nhận diện PDF hoặc ảnh trong luồng này.
+          </div>
+        </section>
+      )}
 
       {message ? <p className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-sm font-bold text-blue-800">{message}</p> : null}
 
