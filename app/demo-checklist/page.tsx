@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 
 const sections = [
-  { title: "Kiểm tra tổng quan", items: [["Mở trang chủ", "/"], ["Mở dashboard", "/dashboard"], ["Mở tất cả công cụ", "/tools"], ["Mở mẫu sử dụng", "/samples"]] },
+  { title: "Kiểm tra tổng quan", items: [["Mở trang chủ", "/"], ["Mở dashboard", "/dashboard"], ["Mở tất cả công cụ", "/tools"], ["Mở trung tâm tạo mới", "/create"]] },
   { title: "Kiểm tra công cụ chính", items: [["Tạo đề kiểm tra", "/tools/exam-generator"], ["Tạo ma trận đề", "/tools/matrix-generator"], ["Tạo phiếu học tập", "/tools/worksheet-generator"], ["Tạo nhận xét học sinh", "/tools/student-comments"], ["Ngân hàng câu hỏi", "/question-bank"]] },
   { title: "Kiểm tra tài liệu", items: [["Lưu và mở lại tài liệu", "/history"], ["Xuất Word", "/tools/exam-generator"], ["Kiểm tra header từ cài đặt", "/settings"], ["Quản lý dữ liệu", "/data"]] },
 ];

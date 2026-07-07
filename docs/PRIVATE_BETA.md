@@ -10,12 +10,12 @@ Tài liệu này lưu lại các bước kiểm tra cũ dưới dạng quy trìn
 - Tự lưu bản nháp form và khôi phục tại `/drafts`.
 - Tìm nhanh bằng Ctrl/Cmd + K, công cụ yêu thích và danh sách dùng gần đây.
 - Xuất Word, Print/PDF, Markdown và TXT.
-- Trang mẫu sử dụng, chia sẻ, hướng dẫn và trạng thái hệ thống.
+- Trang chia sẻ, hướng dẫn và trạng thái hệ thống.
 
 ## Cách kiểm tra
 
 1. Mở `/getting-started`.
-2. Mở `/samples` và thử ít nhất 3 mẫu.
+2. Mở `/tools` và thử ít nhất 3 công cụ chính.
 3. Tạo bản nháp từ đề kiểm tra, phiếu học tập và nhận xét học sinh.
 4. Xuất và mở file Word.
 5. In hoặc lưu PDF.

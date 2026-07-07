@@ -8,7 +8,7 @@ const plans = [
   {
     name: "Cá nhân",
     description: "Phù hợp giáo viên muốn chuẩn bị tài liệu hằng ngày nhanh hơn.",
-    features: ["Tạo đề kiểm tra và tài liệu dạy học", "Xuất Word/PDF", "Lưu lịch sử trên trình duyệt", "Dùng mẫu sử dụng và mẫu cá nhân"],
+    features: ["Tạo đề kiểm tra và tài liệu dạy học", "Xuất Word/PDF", "Lưu lịch sử trên trình duyệt", "Dùng mẫu cá nhân"],
   },
   {
     name: "Tổ chuyên môn",
@@ -42,8 +42,8 @@ export default function PricingPage() {
             <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 shadow-lg">
               Bắt đầu sử dụng
             </Link>
-            <Link href="/samples" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white">
-              Xem mẫu sử dụng <ArrowRight size={16} className="ml-2" />
+            <Link href="/tools" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white">
+              Xem công cụ <ArrowRight size={16} className="ml-2" />
             </Link>
           </div>
         </div>

@@ -16,7 +16,6 @@ import {
   Settings,
   Shield,
   Sigma,
-  Sparkles,
   Wrench,
   X,
 } from "lucide-react";
@@ -35,7 +34,6 @@ const groups = [
     title: "Công cụ",
     links: [
       ["Tất cả công cụ", "/tools", Wrench],
-      ["Mẫu sử dụng", "/samples", Sparkles],
       ["Soạn đề", "/tools/exam-generator", ClipboardList],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Nhận xét", "/tools/student-comments", MessageCircle],

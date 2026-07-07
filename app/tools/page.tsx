@@ -138,11 +138,11 @@ function ToolsContent() {
       <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-indigo-100 bg-indigo-50/70 p-4">
         <div>
           <p className="font-black text-slate-900">Chưa biết nên bắt đầu từ đâu?</p>
-          <p className="mt-1 text-sm text-slate-600">Mở trung tâm tạo mới hoặc xem các ví dụ theo môn học và loại tài liệu.</p>
+          <p className="mt-1 text-sm text-slate-600">Mở trung tâm tạo mới hoặc chọn trực tiếp công cụ phù hợp với công việc hôm nay.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/create" className="btn-primary">Tạo mới</Link>
-          <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
+          <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
         </div>
       </div>
 

@@ -6,7 +6,6 @@ Public routes cần mở không lỗi, không overflow ngang desktop/mobile và 
 
 - `/`
 - `/tools`
-- `/samples`
 - `/getting-started`
 - `/pricing`
 - `/privacy`
@@ -35,24 +34,17 @@ Tool routes quan trọng:
 - `/tools/image-to-latex`
 - `/tools/latex-preview`
 
-## Sample prefill
+## Công cụ và prefill nội bộ
 
-Mở `/samples` và kiểm tra từng mẫu:
+`/samples` là route ẩn legacy và phải redirect về `/tools`. Giao diện khách hàng không được quảng bá thư viện mẫu công khai.
 
-- Toán 12 THPTQG → `/tools/exam-generator?sample=math-12-thptqg`
-- Lịch sử 12 THPTQG → `/tools/exam-generator?sample=history-12-thptqg`
-- Phiếu học tập Toán 8 → `/tools/worksheet-generator?sample=worksheet-math-8`
-- Giáo án Ngữ văn 9 → `/tools/lesson-plan-generator?sample=lesson-literature-9`
-- Nhận xét học sinh → `/tools/student-comments?sample=student-comment`
-- Tin nhắn phụ huynh → `/tools/parent-message-generator?sample=parent-message`
-
-Xác nhận đúng công cụ mở, field được điền, không có warning controlled/uncontrolled input, có thể tạo bản nháp và các nút export xuất hiện sau khi tạo.
+Nếu kiểm tra query prefill nội bộ, mở trực tiếp URL công cụ có tham số prefill và xác nhận đúng công cụ mở, field được điền, không có warning controlled/uncontrolled input, có thể tạo bản nháp và các nút export xuất hiện sau khi tạo.
 
 ## Export regression
 
 ### Đề thi
 
-1. Tạo Toán 12 THPTQG từ mẫu.
+1. Tạo Toán 12 THPTQG từ công cụ tạo đề.
 2. Xuất Word.
 3. Mở Print/PDF.
 4. Lưu lịch sử.
@@ -153,7 +145,7 @@ npm run smoke
 - Không cấu hình Supabase: app build được, public pages mở được, localStorage fallback hoạt động.
 - Có Supabase env: `/login` đăng nhập được bằng tài khoản giáo viên.
 - `/register` hiển thị đăng ký tài khoản hiện chưa mở.
-- Tài khoản giáo viên mở dashboard, samples, tools, history, templates, question bank, data, settings.
+- Tài khoản giáo viên mở dashboard, tools, history, templates, question bank, data, settings.
 - Lưu lịch sử, mở `/history`, mở chi tiết và export Word/PDF từ lịch sử.
 - Tạo mẫu cá nhân, tạo câu hỏi trong ngân hàng câu hỏi, lưu cài đặt tài liệu.
 - `/data` chuyển dữ liệu từ trình duyệt lên tài khoản và không xóa dữ liệu local.

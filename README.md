@@ -4,11 +4,10 @@ Soạn Lab là bộ công cụ hỗ trợ giáo viên Việt Nam soạn đề ki
 
 ## Tính năng hiện tại
 
-- Tool hub cho giáo viên với dashboard, thư viện công cụ, mẫu sử dụng và hướng dẫn bắt đầu.
+- Tool hub cho giáo viên với dashboard, thư viện công cụ, trung tâm tạo mới và hướng dẫn bắt đầu.
 - Tạo đề kiểm tra theo cấu trúc PHẦN I/II/III, kèm đáp án, thang điểm, ma trận và bản đặc tả.
 - Xuất Word và Print/PDF theo bố cục đề thi THPTQG.
 - Tạo phiếu học tập, kế hoạch bài dạy, nhận xét học sinh, rubric và tin nhắn phụ huynh.
-- Mẫu sử dụng có prefill cho Toán 12 THPTQG, Lịch sử 12 THPTQG, phiếu học tập Toán 8, giáo án Ngữ văn 9, nhận xét học sinh và tin nhắn phụ huynh.
 - Lưu lịch sử, mẫu cá nhân, ngân hàng câu hỏi, bản nháp biểu mẫu, công cụ yêu thích và công cụ gần đây.
 - Sao lưu và khôi phục dữ liệu cục bộ bằng JSON.
 - Metadata, favicon, app icons, manifest và OG image dùng asset local trong repo.

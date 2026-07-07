@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 import { getHistory } from "@/lib/history";
-import { sampleLinks } from "@/lib/sample-prefill";
 import type { GeneratedDocument } from "@/lib/types";
 
 const quickTools = [
@@ -37,15 +36,9 @@ const taskCards = [
   ["Công thức & hình học", "LaTeX, TikZ, preview", "/tools?category=formula-latex", ImageIcon],
 ] as const;
 
-const samples = [
-  ["Toán 12 THPTQG", "Mẫu đề kiểm tra có cấu trúc quen thuộc.", sampleLinks.math12Thptqg],
-  ["Phiếu học tập Toán 8", "Mẫu phiếu bài tập có hướng dẫn.", sampleLinks.worksheetMath8],
-  ["Giáo án Ngữ văn 9", "Mẫu kế hoạch bài dạy dễ chỉnh sửa.", sampleLinks.lessonLiterature9],
-] as const;
-
 const checklist = [
-  ["Dùng một mẫu có sẵn", "/samples"],
   ["Tạo tài liệu đầu tiên", "/create"],
+  ["Thử một công cụ thường dùng", "/tools"],
   ["Lưu vào lịch sử", "/history"],
   ["Xuất Word/PDF", "/tools/exam-generator"],
   ["Kiểm tra lại nội dung trước khi dùng", "/known-issues"],
@@ -78,7 +71,7 @@ export default function DashboardPage() {
           </span>
           <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Bạn muốn tạo tài liệu gì hôm nay?</h1>
           <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-blue-50 sm:text-lg">
-            Chọn công cụ, dùng mẫu có sẵn hoặc tìm nhanh công việc cần làm.
+            Chọn công cụ hoặc tìm nhanh công việc cần làm.
           </p>
           <div className="mt-7 flex flex-col gap-3 lg:flex-row">
             <label className="relative min-h-14 flex-1">
@@ -94,8 +87,8 @@ export default function DashboardPage() {
               Tạo tài liệu mới
               <ArrowRight size={18} />
             </Link>
-            <Link href="/samples" className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/14 px-6 text-sm font-black text-white ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:bg-white/20">
-              Xem mẫu sử dụng
+            <Link href="/tools" className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/14 px-6 text-sm font-black text-white ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:bg-white/20">
+              Xem công cụ
             </Link>
           </div>
         </div>
@@ -156,22 +149,6 @@ export default function DashboardPage() {
               <Icon className="text-indigo-600" size={25} />
               <h3 className="mt-4 font-black text-slate-900">{title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-8">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <SectionTitle title="Mẫu sử dụng nhanh" desc="Mở mẫu đã điền sẵn để thử luồng tạo tài liệu nhanh hơn." compact />
-          <Link href="/samples" className="btn-secondary">Xem tất cả mẫu</Link>
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {samples.map(([title, desc, href]) => (
-            <Link key={title} href={href} className="rounded-[26px] border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl">
-              <p className="font-black text-slate-900">{title}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-black text-blue-700">Dùng mẫu <ArrowRight size={15} /></span>
             </Link>
           ))}
         </div>

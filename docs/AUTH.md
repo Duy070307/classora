@@ -6,7 +6,7 @@ Soạn Lab dùng Supabase Auth khi `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_S
 - `/register`: luôn hiển thị thông báo đăng ký chưa mở trong giai đoạn đầu.
 - `/api/auth/logout`: đăng xuất.
 - `/api/auth/me`: trả về user an toàn, không trả secret.
-- Middleware bảo vệ dashboard, tools, samples, history, templates, question bank, data, settings, print và admin khi Supabase đã cấu hình.
+- Middleware bảo vệ dashboard, tools, history, templates, question bank, data, settings, print và admin khi Supabase đã cấu hình.
 
 Role:
 

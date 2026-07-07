@@ -17,7 +17,6 @@ import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandLogo } from "@/components/BrandLogo";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
-import { sampleLinks } from "@/lib/sample-prefill";
 
 const capabilities = [
   ["Soạn đề kiểm tra", "Tạo đề, đáp án, thang điểm, ma trận", PenTool],
@@ -25,7 +24,7 @@ const capabilities = [
   ["Lập kế hoạch bài dạy", "Mục tiêu, hoạt động, đánh giá", BookOpenCheck],
   ["Viết nhận xét học sinh", "Nhận xét tự nhiên, tích cực, dễ chỉnh sửa", MessageSquareText],
   ["Quản lý tài liệu", "Lưu lịch sử, xuất lại khi cần", History],
-  ["Dùng mẫu nhanh", "Bắt đầu từ các mẫu có sẵn", ClipboardList],
+  ["Bắt đầu từ công việc", "Chọn đúng công cụ theo việc cần làm", ClipboardList],
 ] as const;
 
 const steps = [
@@ -34,13 +33,6 @@ const steps = [
   ["Tạo bản nháp", "Soạn Lab tạo nội dung ban đầu để giáo viên đọc, chỉnh và hoàn thiện.", Sparkles],
   ["Xuất hoặc lưu", "Xuất Word/PDF khi cần in ấn, hoặc lưu lịch sử để mở lại sau.", FileText],
 ] as const;
-
-const samples = [
-  ["Toán 12 THPTQG", "Đề kiểm tra có cấu trúc THPTQG", sampleLinks.math12Thptqg, PenTool],
-  ["Lịch sử 12 THPTQG", "Đề ôn tập kèm đáp án giáo viên", sampleLinks.history12Thptqg, BookOpenCheck],
-  ["Phiếu học tập Toán 8", "Phiếu bài tập có phần hướng dẫn", sampleLinks.worksheetMath8, FileText],
-] as const;
-
 
 export const metadata: Metadata = {
   title: { absolute: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam" },
@@ -53,7 +45,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-10 sm:py-14 lg:grid-cols-[1.02fr_.98fr] lg:py-18">
         <div>
           <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
-            Dành cho giáo viên Việt Nam · Xuất Word/PDF · Có mẫu sử dụng nhanh
+            Dành cho giáo viên Việt Nam · Xuất Word/PDF · Quy trình gọn gàng
           </span>
           <div className="mt-6">
             <BrandLogo variant="full" />
@@ -71,8 +63,8 @@ export default function HomePage() {
               Dùng thử Soạn Lab
               <ArrowRight size={18} />
             </Link>
-            <Link href="/samples" className="btn-secondary min-h-13 px-6">
-              Xem mẫu sử dụng
+            <Link href="/tools" className="btn-secondary min-h-13 px-6">
+              Xem công cụ
             </Link>
           </div>
           <p className="mt-5 text-sm font-semibold text-slate-500">
@@ -133,38 +125,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-        <div className="grid gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
-          <div>
-            <span className="soft-badge">Mẫu sử dụng</span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Bắt đầu nhanh bằng mẫu có sẵn
-            </h2>
-            <p className="mt-3 leading-7 text-slate-600">
-              Chọn một mẫu quen thuộc, mở công cụ đã điền sẵn thông tin gợi ý, rồi chỉnh lại theo lớp của thầy/cô.
-            </p>
-            <Link href="/samples" className="btn-primary mt-6">
-              Xem tất cả mẫu sử dụng
-              <ArrowRight size={17} />
-            </Link>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {samples.map(([title, text, href, Icon]) => (
-              <Link key={title} href={href} className="play-card group p-5 transition hover:-translate-y-1">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">
-                  <Icon size={19} />
-                </span>
-                <h3 className="mt-4 font-extrabold text-slate-900">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
-                <span className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-blue-700">
-                  Dùng mẫu này <ArrowRight size={15} className="transition group-hover:translate-x-1" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="border-y border-blue-100 bg-white/70 py-16 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-2">
           <div className="play-card p-7 sm:p-9">
@@ -209,11 +169,10 @@ export default function HomePage() {
               Sẵn sàng tạo tài liệu đầu tiên với Soạn Lab?
             </h2>
             <p className="mt-4 leading-7 text-slate-600">
-              Mở dashboard, chọn một mẫu nhanh hoặc bắt đầu từ công cụ quen thuộc để tạo bản nháp và xuất Word/PDF.
+              Mở dashboard hoặc bắt đầu từ công cụ quen thuộc để tạo bản nháp và xuất Word/PDF.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link href="/create" className="btn-primary">Dùng thử Soạn Lab</Link>
-              <Link href="/samples" className="btn-secondary">Xem mẫu sử dụng</Link>
               <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
             </div>
           </div>
@@ -230,7 +189,7 @@ function HeroMockup() {
     ["Phiếu học tập", "Mục tiêu · Bài tập · Hướng dẫn", FileText],
     ["Xuất Word/PDF", "Tải xuống hoặc in nhanh", ShieldCheck],
     ["Lưu lịch sử", "Mở lại tài liệu đã tạo", History],
-    ["Mẫu sử dụng", "Bắt đầu từ ví dụ có sẵn", ClipboardList],
+    ["Trung tâm tạo mới", "Chọn đúng công cụ theo công việc", ClipboardList],
   ] as const;
 
   return (
@@ -262,8 +221,8 @@ function HeroMockup() {
           <Link href="/tools/exam-generator" className="rounded-2xl bg-blue-600 px-4 py-3 text-center text-sm font-extrabold text-white">
             Tạo đề
           </Link>
-          <Link href="/samples" className="rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-extrabold text-slate-800">
-            Xem mẫu
+          <Link href="/tools" className="rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-extrabold text-slate-800">
+            Xem công cụ
           </Link>
         </div>
       </div>

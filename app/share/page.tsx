@@ -7,10 +7,10 @@ import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
 const shareMessage =
-  "Em muốn giới thiệu Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF. Thầy/cô có thể mở mẫu sử dụng, tạo một bản nháp tài liệu, xuất Word/PDF rồi rà soát và chỉnh sửa trước khi dùng.";
+  "Em muốn giới thiệu Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF. Thầy/cô có thể chọn công cụ phù hợp, tạo một bản nháp tài liệu, xuất Word/PDF rồi rà soát và chỉnh sửa trước khi dùng.";
 
 const flow = [
-  "Mở mẫu sử dụng",
+  "Chọn công cụ phù hợp",
   "Tạo một tài liệu",
   "Xuất Word hoặc PDF",
   "Rà soát và chỉnh sửa trước khi dùng",
@@ -71,7 +71,6 @@ export default function SharePage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/dashboard" className="btn-primary">Dashboard</Link>
           <Link href="/tools" className="btn-secondary">Công cụ</Link>
-          <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
           <Link href="/tools/exam-generator" className="btn-secondary">Tạo đề kiểm tra</Link>
         </div>
       </section>

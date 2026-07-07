@@ -16,9 +16,6 @@ export function Navbar() {
           <Link href="/tools" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Công cụ
           </Link>
-          <Link href="/samples" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
-            Mẫu sử dụng
-          </Link>
           <Link href="/getting-started" className="rounded-full px-4 py-2 hover:bg-white hover:text-blue-700">
             Hướng dẫn
           </Link>

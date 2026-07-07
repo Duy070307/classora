@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
-import { sampleLinks } from "@/lib/sample-prefill";
 
 const steps = [
   ["01", "Chọn công cụ", "Vào Dashboard hoặc trang Công cụ, chọn đúng luồng cho tài liệu cần tạo.", LayoutDashboard],
@@ -28,13 +27,6 @@ const tools = [
   ["Nhận xét học sinh", "Nhận xét tự nhiên, tích cực, dễ chỉnh sửa.", "/tools/student-comments", MessageSquareText],
   ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi cục bộ.", "/question-bank", CheckCircle2],
 ] as const;
-
-const quickSamples = [
-  ["Toán 12 THPTQG", sampleLinks.math12Thptqg, PenTool],
-  ["Lịch sử 12 THPTQG", sampleLinks.history12Thptqg, BookOpenCheck],
-  ["Phiếu học tập Toán 8", sampleLinks.worksheetMath8, FileText],
-] as const;
-
 
 export const metadata: Metadata = {
   title: { absolute: "Hướng dẫn bắt đầu - Soạn Lab" },
@@ -66,8 +58,8 @@ export default function GettingStartedPage() {
               <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 shadow-lg">
                 Bắt đầu sử dụng
               </Link>
-              <Link href="/samples" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white">
-                Xem mẫu nhanh <ArrowRight size={16} className="ml-2" />
+              <Link href="/tools" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white">
+                Xem công cụ <ArrowRight size={16} className="ml-2" />
               </Link>
             </div>
           </div>
@@ -98,25 +90,6 @@ export default function GettingStartedPage() {
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 text-indigo-700"><Icon size={21} /></span>
                 <div className="min-w-0 flex-1"><h3 className="font-bold text-ink">{title}</h3><p className="mt-1 text-sm text-muted">{text}</p></div>
                 <ArrowRight size={17} className="shrink-0 text-indigo-600 transition group-hover:translate-x-1" />
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-10 rounded-3xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <span className="app-badge">Mẫu nhanh nên dùng</span>
-              <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-ink">Thử nhanh bằng mẫu có sẵn</h2>
-              <p className="mt-2 text-sm leading-6 text-muted">Mở công cụ với thông tin đã điền thử, sau đó chỉnh sửa theo lớp học thật.</p>
-            </div>
-            <Link href="/samples" className="btn-secondary">Xem tất cả mẫu</Link>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {quickSamples.map(([title, href, Icon]) => (
-              <Link key={href} href={href} className="card app-card-hover flex items-center gap-3 p-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-blue-700"><Icon size={18} /></span>
-                <span className="font-bold text-ink">{title}</span>
               </Link>
             ))}
           </div>

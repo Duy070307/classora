@@ -105,9 +105,9 @@ const groups = [
 ];
 
 const suggestions = [
-  ["Tạo đề Toán 12", "/tools/exam-generator?sample=math-12-thptqg"],
-  ["Tạo phiếu học tập", "/tools/worksheet-generator?sample=worksheet-math-8"],
-  ["Viết nhận xét học sinh", "/tools/student-comments?sample=student-comment"],
+  ["Tạo đề kiểm tra", "/tools/exam-generator"],
+  ["Tạo phiếu học tập", "/tools/worksheet-generator"],
+  ["Viết nhận xét học sinh", "/tools/student-comments"],
   ["Chuyển ảnh công thức sang LaTeX", "/tools/image-to-latex?mode=formula"],
 ] as const;
 

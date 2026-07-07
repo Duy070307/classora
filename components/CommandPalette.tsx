@@ -11,7 +11,6 @@ const pages: Item[] = [
   ["Dashboard", "Tổng quan workspace Soạn Lab.", "/dashboard", "Trang chính", "Trang"],
   ["Tạo mới", "Chọn công việc cần tạo và mở đúng công cụ.", "/create", "Tạo tài liệu", "Trang"],
   ["Công cụ", "Tìm và mở mọi công cụ.", "/tools", "Điều hướng", "Trang"],
-  ["Mẫu sử dụng", "Ví dụ nhập liệu và kết quả dự kiến.", "/samples", "Hướng dẫn", "Trang"],
   ["Hướng dẫn", "Quy trình bắt đầu với Soạn Lab.", "/getting-started", "Hướng dẫn", "Trang"],
   ["Tạo đề kiểm tra", "Mở nhanh công cụ tạo đề.", "/tools/exam-generator", "Công cụ nổi bật", "Công cụ"],
   ["Phiếu học tập", "Mở nhanh công cụ tạo phiếu học tập.", "/tools/worksheet-generator", "Công cụ nổi bật", "Công cụ"],

@@ -4,7 +4,7 @@
 
 - [ ] `/` mở bình thường, hero nói rõ Soạn Lab hỗ trợ giáo viên tạo bản nháp và xuất Word/PDF.
 - [ ] `/tools` tìm kiếm, lọc danh mục, yêu thích và gần đây hoạt động.
-- [ ] `/samples` có đủ 6 mẫu sử dụng và mỗi CTA mở đúng công cụ.
+- [ ] `/samples` redirect về `/tools` và không được quảng bá trong UI khách hàng.
 - [ ] `/getting-started` mô tả luồng chọn công cụ → nhập thông tin → tạo bản nháp → xuất Word/PDF hoặc lưu lịch sử.
 - [ ] `/pricing`, `/privacy`, `/terms`, `/share` dùng wording chính thức.
 - [ ] Header, sidebar, footer và command palette không quảng bá route nội bộ.
@@ -19,7 +19,7 @@
 
 ## Export
 
-- [ ] Tạo đề Toán 12 THPTQG từ mẫu, xuất Word thành công.
+- [ ] Tạo đề Toán 12 THPTQG từ công cụ tạo đề, xuất Word thành công.
 - [ ] Print/PDF đề THPTQG hiển thị đúng header, mã đề, PHẦN I/II/III và trang giáo viên.
 - [ ] Đáp án giáo viên, thang điểm, ma trận và bản đặc tả không lẫn vào đề học sinh.
 - [ ] Mở đề từ lịch sử và xuất Word/Print lại thành công.

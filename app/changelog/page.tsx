@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
 
 const entries = [
-  ["Hiện tại", ["Mẫu sử dụng có điền sẵn dữ liệu", "Xuất Word/PDF cho đề THPTQG", "Bảng đáp án giáo viên", "Tài liệu ngoài đề thi", "Điều hướng sản phẩm chính thức"]],
+  ["Hiện tại", ["Trung tâm tạo tài liệu", "Xuất Word/PDF cho đề THPTQG", "Bảng đáp án giáo viên", "Tài liệu ngoài đề thi", "Điều hướng sản phẩm chính thức"]],
   ["Nâng cấp tài liệu", ["Cấu trúc PHẦN I/II/III", "Ma trận và bản đặc tả", "Lưu lịch sử và xuất lại", "Mẫu cá nhân"]],
   ["Nền tảng dữ liệu cục bộ", ["Bản nháp biểu mẫu", "Sao l?u/kh?i ph?c d? li?u", "Ngân hàng câu hỏi", "Cài đặt header tài liệu"]],
   ["Công cụ cốt lõi", ["Tạo đề kiểm tra", "Phiếu học tập", "Giáo án", "Nhận xét học sinh", "Export Word"]],

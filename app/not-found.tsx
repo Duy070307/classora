@@ -10,7 +10,6 @@ export default function NotFound() {
       <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
         <Link href="/dashboard" className="btn-primary">Về dashboard</Link>
         <Link href="/tools" className="btn-secondary">Xem tất cả công cụ</Link>
-        <Link href="/samples" className="btn-secondary">Mẫu sử dụng</Link>
       </div>
     </section>
   </main>;

@@ -8,7 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: [
         "/",
         "/tools",
-        "/samples",
         "/getting-started",
         "/pricing",
         "/privacy",

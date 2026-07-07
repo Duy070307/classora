@@ -7,14 +7,8 @@ Phiên bản này chuẩn bị Soạn Lab cho public preview chính thức.
 ### Điểm nổi bật
 
 - Hoàn thiện branding chính thức Soạn Lab, public navigation, footer, favicon, app icons, manifest và OG image.
-- Landing page, mẫu sử dụng, hướng dẫn bắt đầu, bảng giá, bảo mật, điều khoản và trạng thái hệ thống dùng wording chính thức.
-- Thư viện mẫu sử dụng có prefill cho:
-  - Toán 12 THPTQG.
-  - Lịch sử 12 THPTQG.
-  - Phiếu học tập Toán 8.
-  - Giáo án Ngữ văn 9.
-  - Nhận xét học sinh.
-  - Tin nhắn phụ huynh.
+- Landing page, hướng dẫn bắt đầu, bảng giá, bảo mật, điều khoản và trạng thái hệ thống dùng wording chính thức.
+- Trang công cụ và trung tâm tạo mới tập trung vào các công việc giáo viên cần làm hằng ngày.
 - Tạo đề kiểm tra có cấu trúc PHẦN I/II/III, đáp án giáo viên, thang điểm, ma trận và bản đặc tả.
 - Xuất Word và Print/PDF cho đề THPTQG, bao gồm mở lại từ lịch sử và xuất lại.
 - Template tài liệu giáo viên cho phiếu học tập, giáo án, nhận xét, rubric và tin nhắn phụ huynh.
