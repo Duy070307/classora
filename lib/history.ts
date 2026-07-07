@@ -41,6 +41,7 @@ export function getHistory(): GeneratedDocument[] {
           "latex-converter",
           "image-to-latex",
           "image-to-tikz",
+          "3d-animation",
           "bulk-student-comments"
         ].includes(candidate.type ?? "")
       );

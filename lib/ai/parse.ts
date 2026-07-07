@@ -14,6 +14,9 @@ export function parseAIText(text: string) {
   const parsed = extractJsonObject(text);
   const cleanText = stripCodeFences(text);
   if (!isRecord(parsed)) return { content: looksLikeRawJson(cleanText) ? "" : cleanText };
+  if (typeof parsed.html === "string" || Array.isArray(parsed.rows)) {
+    return { title: typeof parsed.title === "string" ? parsed.title : undefined, content: cleanText };
+  }
   const content = typeof parsed.content === "string"
     ? stripCodeFences(parsed.content)
     : looksLikeRawJson(cleanText) ? "" : cleanText;

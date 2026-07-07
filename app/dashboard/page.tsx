@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BookOpenCheck,
+  Box,
   CheckCircle2,
   ClipboardList,
   FileText,
@@ -27,6 +28,7 @@ const quickTools = [
   { title: "Nhận xét học sinh", desc: "Viết nhận xét tự nhiên, dễ chỉnh sửa.", href: "/tools/student-comments", icon: MessageSquareText, badge: "Nhanh", tone: "from-amber-500 to-orange-500", keywords: "nhận xét học sinh cuối kỳ" },
   { title: "Tin nhắn phụ huynh", desc: "Soạn tin nhắn lịch sự, rõ ý.", href: "/tools/parent-message-generator", icon: Send, badge: "Chủ nhiệm", tone: "from-pink-500 to-rose-500", keywords: "phụ huynh tin nhắn zalo" },
   { title: "Ảnh công thức → LaTeX", desc: "Chuyển ảnh công thức hoặc hình học sang mã dùng lại.", href: "/tools/image-to-latex", icon: ImageIcon, badge: "Mới", tone: "from-sky-500 to-blue-600", keywords: "latex hình học tikz công thức" },
+  { title: "Tạo mô phỏng 3D", desc: "Tạo cảnh 3D đơn giản để minh họa bài học.", href: "/tools/3d-animation", icon: Box, badge: "Beta", tone: "from-blue-500 to-cyan-500", keywords: "3d mô phỏng trực quan vật lý hóa học" },
 ] as const;
 
 const taskCards = [
@@ -34,6 +36,7 @@ const taskCards = [
   ["Tạo tài liệu dạy học", "Phiếu học tập, giáo án, hoạt động", "/tools?category=lesson-materials", FileText],
   ["Công tác chủ nhiệm", "Nhận xét, tin nhắn, kế hoạch", "/tools?category=homeroom-parent", MessageSquareText],
   ["Công thức & hình học", "LaTeX, TikZ, preview", "/tools?category=formula-latex", ImageIcon],
+  ["Mô phỏng trực quan", "3D, chuyển động, minh họa", "/tools?category=visual-tools", Box],
 ] as const;
 
 const checklist = [

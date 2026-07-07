@@ -1,8 +1,8 @@
-import { BookOpenCheck, CheckCircle2, Database, FileCheck2, FileText, Grid2X2, KeyRound, MessageSquareText, PenLine, Sigma, Shuffle, UploadCloud, UsersRound } from "lucide-react";
+import { BookOpenCheck, Box, CheckCircle2, Database, FileCheck2, FileText, Grid2X2, KeyRound, MessageSquareText, PenLine, Sigma, Shuffle, UploadCloud, UsersRound } from "lucide-react";
 
 export type SoanLabIconName =
   | "exam" | "matrix" | "answer" | "shuffle" | "worksheet" | "lesson"
-  | "comment" | "bulk-comment" | "question-bank" | "template" | "latex" | "import" | "default";
+  | "comment" | "bulk-comment" | "question-bank" | "template" | "latex" | "visual" | "import" | "default";
 
 export function iconNameFromHref(href: string): SoanLabIconName {
   if (href.includes("matrix")) return "matrix";
@@ -14,6 +14,7 @@ export function iconNameFromHref(href: string): SoanLabIconName {
   if (href.includes("comment") || href.includes("parent")) return "comment";
   if (href.includes("question-bank") || href === "/question-bank") return "question-bank";
   if (href.includes("template") || href === "/templates") return "template";
+  if (href.includes("3d-animation")) return "visual";
   if (href.includes("latex")) return "latex";
   if (href.includes("import")) return "import";
   if (href.includes("exam") || href.includes("rubric")) return "exam";
@@ -31,6 +32,7 @@ export function iconNameFromText(text: string): SoanLabIconName {
   if (value.includes("nhận xét") || value.includes("phụ huynh")) return "comment";
   if (value.includes("ngân hàng")) return "question-bank";
   if (value.includes("mẫu")) return "template";
+  if (value.includes("3d") || value.includes("mô phỏng")) return "visual";
   if (value.includes("latex")) return "latex";
   if (value.includes("nhập") || value.includes("import")) return "import";
   if (value.includes("đề") || value.includes("rubric")) return "exam";
@@ -49,6 +51,7 @@ const map = {
   "question-bank": Database,
   template: FileText,
   latex: Sigma,
+  visual: Box,
   import: UploadCloud,
   default: CheckCircle2
 } as const;

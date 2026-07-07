@@ -3,6 +3,7 @@ export type ToolCategory =
   | "lesson-materials"
   | "homeroom-parent"
   | "formula-latex"
+  | "visual-tools"
   | "personalization";
 
 export type ToolMeta = {
@@ -22,6 +23,7 @@ export const categoryLabels: Record<ToolCategory, string> = {
   "lesson-materials": "Soạn bài & tài liệu",
   "homeroom-parent": "Chủ nhiệm & phụ huynh",
   "formula-latex": "Công thức & LaTeX",
+  "visual-tools": "Công cụ trực quan",
   personalization: "Cá nhân hóa",
 };
 
@@ -30,6 +32,7 @@ export const categoryOrder: ToolCategory[] = [
   "lesson-materials",
   "homeroom-parent",
   "formula-latex",
+  "visual-tools",
   "personalization",
 ];
 
@@ -256,6 +259,17 @@ export const toolRegistry: ToolMeta[] = [
     category: "formula-latex",
     aliases: ["preview", "xem trước", "latex"],
     tags: ["Preview", "LaTeX"],
+  },
+  {
+    title: "Tạo mô phỏng 3D",
+    description: "Tạo cảnh 3D đơn giản từ mô tả để minh họa bài học.",
+    href: "/tools/3d-animation",
+    category: "visual-tools",
+    badge: "Beta",
+    popular: true,
+    aliases: ["3d", "mô phỏng", "chuyển động", "trực quan", "vật lý", "hóa học"],
+    tags: ["3D", "Minh họa", "Beta"],
+    example: "Ví dụ: Trái Đất quay quanh Mặt Trời, con lắc đơn, phân tử H2O",
   },
   {
     title: "Mẫu cá nhân",

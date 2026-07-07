@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BookOpenCheck,
+  Box,
   ClipboardList,
   FileText,
   ImageIcon,
@@ -102,6 +103,20 @@ const groups = [
       },
     ],
   },
+  {
+    title: "Trực quan hóa bài học",
+    description: "Tạo mô phỏng 3D đơn giản để minh họa khái niệm hoặc chuyển động.",
+    items: [
+      {
+        title: "Tạo mô phỏng 3D",
+        description: "Tạo cảnh 3D đơn giản từ mô tả để minh họa bài học.",
+        examples: ["Hệ Mặt Trời", "Con lắc", "Phân tử H2O"],
+        href: "/tools/3d-animation",
+        icon: Box,
+        tone: "from-blue-500 to-cyan-500",
+      },
+    ],
+  },
 ];
 
 const suggestions = [
@@ -109,6 +124,7 @@ const suggestions = [
   ["Tạo phiếu học tập", "/tools/worksheet-generator"],
   ["Viết nhận xét học sinh", "/tools/student-comments"],
   ["Chuyển ảnh công thức sang LaTeX", "/tools/image-to-latex?mode=formula"],
+  ["Tạo mô phỏng 3D", "/tools/3d-animation"],
 ] as const;
 
 export default function CreatePage() {

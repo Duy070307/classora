@@ -21,6 +21,7 @@ export type ToolType =
   | "latex-converter"
   | "image-to-latex"
   | "image-to-tikz"
+  | "3d-animation"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {

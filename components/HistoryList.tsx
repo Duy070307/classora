@@ -35,6 +35,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "latex-converter": "Công thức LaTeX",
   "image-to-latex": "Ảnh công thức → LaTeX",
   "image-to-tikz": "Ảnh hình học → TikZ",
+  "3d-animation": "Mô phỏng 3D",
   "bulk-student-comments": "Nhận xét hàng loạt",
 };
 

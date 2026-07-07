@@ -13,7 +13,7 @@ import { categoryLabels, categoryOrder, getToolSearchText, toolRegistry } from "
 
 type Mode = "Tất cả" | "Phổ biến" | "Yêu thích" | "Gần đây";
 
-const displayCategories = ["Tất cả", "Soạn đề", "Tài liệu", "Nhận xét", "Phụ huynh", "Toán/LaTeX", "Quản lý dữ liệu"];
+const displayCategories = ["Tất cả", "Soạn đề", "Tài liệu", "Nhận xét", "Phụ huynh", "Toán/LaTeX", "Trực quan", "Quản lý dữ liệu"];
 
 function categoryMatches(toolCategory: string, label: string) {
   if (label === "Tất cả") return true;
@@ -21,6 +21,7 @@ function categoryMatches(toolCategory: string, label: string) {
   if (label === "Tài liệu") return toolCategory === "lesson-materials";
   if (label === "Nhận xét" || label === "Phụ huynh") return toolCategory === "homeroom-parent";
   if (label === "Toán/LaTeX") return toolCategory === "formula-latex";
+  if (label === "Trực quan") return toolCategory === "visual-tools";
   if (label === "Quản lý dữ liệu") return toolCategory === "personalization";
   return true;
 }
