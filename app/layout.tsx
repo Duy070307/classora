@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { UsageLimitNotice } from "@/components/UsageLimitNotice";
 import { CommandPalette } from "@/components/CommandPalette";
+import { BetaNoticeModal } from "@/components/BetaNoticeModal";
 
 const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
@@ -61,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
-      <body>{children}<CommandPalette /><UsageLimitNotice /></body>
+      <body>{children}<CommandPalette /><UsageLimitNotice /><BetaNoticeModal /></body>
     </html>
   );
 }
