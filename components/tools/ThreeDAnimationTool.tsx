@@ -199,7 +199,7 @@ export function ThreeDAnimationTool() {
               <h2 className="text-xl font-black text-slate-950">Kết quả mô phỏng</h2>
               <p className="mt-1 text-sm text-slate-500">Preview chạy trong iframe sandbox, tách khỏi trang chính.</p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 lg:justify-end">
               <button type="button" className="btn-secondary" disabled={!canUseResult} onClick={() => setPreviewKey((value) => value + 1)}>
                 <Play size={16} /> Chạy lại
               </button>
@@ -216,15 +216,25 @@ export function ThreeDAnimationTool() {
           </div>
 
           {html ? (
-            <iframe
-              key={previewKey}
-              title="Kết quả mô phỏng 3D"
-              srcDoc={html}
-              sandbox="allow-scripts"
-              className="mt-5 h-[460px] w-full rounded-2xl border border-slate-200 bg-slate-50"
-            />
+            <div className="mt-5 h-[380px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 sm:h-[520px] xl:h-[580px]">
+              <iframe
+                key={previewKey}
+                title="Kết quả mô phỏng 3D"
+                srcDoc={html}
+                sandbox="allow-scripts"
+                className="block h-full w-full border-0 bg-slate-50"
+              />
+            </div>
+          ) : loading ? (
+            <div className="mt-5 flex min-h-[360px] items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center sm:min-h-[420px]">
+              <div>
+                <RefreshCw className="mx-auto animate-spin text-blue-500" size={34} />
+                <p className="mt-3 font-bold text-slate-900">Đang tạo mô phỏng 3D…</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Soạn Lab đang dựng bản nháp minh họa để thầy cô xem trước.</p>
+              </div>
+            </div>
           ) : (
-            <div className="mt-5 flex min-h-[360px] items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center">
+            <div className="mt-5 flex min-h-[360px] items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center sm:min-h-[420px]">
               <div>
                 <Sparkles className="mx-auto text-blue-500" size={34} />
                 <p className="mt-3 font-bold text-slate-900">Nhập mô tả để tạo mô phỏng 3D đầu tiên.</p>

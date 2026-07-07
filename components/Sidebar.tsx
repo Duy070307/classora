@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import {
   BookOpenCheck,
+  Box,
   ClipboardList,
   Database,
   FileClock,
@@ -38,6 +39,7 @@ const groups = [
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Nhận xét", "/tools/student-comments", MessageCircle],
       ["Ảnh → LaTeX", "/tools/image-to-latex", Sigma],
+      ["Tạo mô phỏng 3D", "/tools/3d-animation", Box, "Beta"],
     ],
   },
   {
@@ -105,7 +107,7 @@ function Content({
             <section key={group.title} className="mb-6">
               <p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-400">{group.title}</p>
               <div className="space-y-1">
-                {group.links.map(([label, href, Icon]) => {
+                {group.links.map(([label, href, Icon, badge]) => {
                   const I = Icon as typeof Home;
                   const selected = active(href as string);
                   return (
@@ -113,7 +115,12 @@ function Content({
                       <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${selected ? "bg-white/18 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-blue-600"}`}>
                         <I size={16} />
                       </span>
-                      {label as string}
+                      <span className="min-w-0 flex-1 truncate">{label as string}</span>
+                      {badge ? (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
+                          {badge as string}
+                        </span>
+                      ) : null}
                     </Link>
                   );
                 })}
