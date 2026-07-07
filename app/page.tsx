@@ -7,117 +7,117 @@ import {
   ClipboardList,
   FileText,
   History,
-  LayoutDashboard,
   MessageSquareText,
   PenTool,
-  ShieldCheck,
-  Sparkles,
+  Sigma,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
-import { BrandLogo } from "@/components/BrandLogo";
-import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 
 const capabilities = [
-  ["Soạn đề kiểm tra", "Tạo đề, đáp án, thang điểm, ma trận", PenTool],
-  ["Tạo phiếu học tập", "Bài tập cơ bản, vận dụng, hướng dẫn giáo viên", FileText],
-  ["Lập kế hoạch bài dạy", "Mục tiêu, hoạt động, đánh giá", BookOpenCheck],
-  ["Viết nhận xét học sinh", "Nhận xét tự nhiên, tích cực, dễ chỉnh sửa", MessageSquareText],
-  ["Quản lý tài liệu", "Lưu lịch sử, xuất lại khi cần", History],
-  ["Bắt đầu từ công việc", "Chọn đúng công cụ theo việc cần làm", ClipboardList],
+  ["Soạn đề kiểm tra", "Tạo đề, đáp án, thang điểm và ma trận để giáo viên rà soát.", PenTool],
+  ["Tạo phiếu học tập", "Chuẩn bị bài tập, phần vận dụng và hướng dẫn giáo viên.", FileText],
+  ["Lập kế hoạch bài dạy", "Gợi ý mục tiêu, hoạt động học và cách đánh giá.", BookOpenCheck],
+  ["Viết nhận xét học sinh", "Soạn nhận xét tự nhiên, tích cực và dễ chỉnh sửa.", MessageSquareText],
+  ["Quản lý tài liệu", "Lưu lịch sử, mở lại và xuất file khi cần dùng lại.", History],
+  ["Ảnh công thức → LaTeX", "Chuyển ảnh công thức hoặc hình học đã cắt gọn thành mã LaTeX/TikZ.", Sigma],
 ] as const;
 
 const steps = [
-  ["Chọn công cụ", "Chọn đúng luồng cho đề kiểm tra, phiếu học tập, giáo án hoặc nhận xét.", LayoutDashboard],
-  ["Nhập thông tin bài học", "Điền môn, lớp, chủ đề và yêu cầu cụ thể bằng biểu mẫu rõ ràng.", ClipboardList],
-  ["Tạo bản nháp", "Soạn Lab tạo nội dung ban đầu để giáo viên đọc, chỉnh và hoàn thiện.", Sparkles],
-  ["Xuất hoặc lưu", "Xuất Word/PDF khi cần in ấn, hoặc lưu lịch sử để mở lại sau.", FileText],
+  ["Chọn công cụ", "Chọn đúng công cụ theo công việc cần làm."],
+  ["Nhập thông tin", "Điền môn, lớp, chủ đề và yêu cầu cụ thể."],
+  ["Tạo bản nháp", "Soạn Lab tạo bản nháp để thầy cô chỉnh sửa."],
+  ["Xuất hoặc lưu", "Xuất Word/PDF hoặc lưu lịch sử để dùng lại."],
+] as const;
+
+const benefits = [
+  [
+    "Giảm thời gian lặp lại",
+    "Tạo bản nháp cho những công việc quen thuộc như đề kiểm tra, phiếu học tập, nhận xét và tin nhắn phụ huynh.",
+  ],
+  [
+    "Xuất file dễ chỉnh sửa",
+    "Tài liệu có thể xuất Word/PDF để thầy cô kiểm tra, chỉnh sửa và sử dụng theo nhu cầu.",
+  ],
+  [
+    "Có bước rà soát rõ ràng",
+    "Nội dung được xem là bản nháp hỗ trợ. Giáo viên luôn cần kiểm tra lại chuyên môn, đáp án và định dạng.",
+  ],
 ] as const;
 
 export const metadata: Metadata = {
   title: { absolute: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam" },
   description: "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.",
 };
+
 export default function HomePage() {
   return (
-    <main className="warm-page">
+    <main className="warm-page min-h-screen">
       <Navbar />
-      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-10 sm:py-14 lg:grid-cols-[1.02fr_.98fr] lg:py-18">
-        <div>
-          <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-extrabold text-blue-700 ring-1 ring-blue-100">
-            Dành cho giáo viên Việt Nam · Xuất Word/PDF · Quy trình gọn gàng
-          </span>
-          <div className="mt-6">
-            <BrandLogo variant="full" />
-          </div>
-          <h1 className="mt-6 text-4xl font-black leading-[1.03] tracking-[-.04em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Soạn tài liệu dạy học
-            <br />
-            <span className="text-blue-600">nhanh hơn</span> với Soạn Lab
+
+      <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[1fr_0.88fr] lg:py-20">
+        <div className="max-w-2xl">
+          <p className="text-sm font-bold text-blue-700">Bộ công cụ hỗ trợ giáo viên Việt Nam</p>
+          <h1 className="mt-4 text-4xl font-black leading-tight tracking-[-0.03em] text-slate-950 sm:text-5xl lg:text-6xl">
+            Soạn tài liệu dạy học <span className="text-blue-600">nhanh hơn</span>
           </h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-600">
-            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian duy nhất.
+          <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
+            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian gọn gàng.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link href="/create" className="btn-primary min-h-13 px-6">
-              Dùng thử Soạn Lab
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Link href="/dashboard" className="btn-primary min-h-12 px-5">
+              Bắt đầu sử dụng
               <ArrowRight size={18} />
             </Link>
-            <Link href="/tools" className="btn-secondary min-h-13 px-6">
+            <Link href="/tools" className="btn-secondary min-h-12 px-5">
               Xem công cụ
             </Link>
           </div>
-          <p className="mt-5 text-sm font-semibold text-slate-500">
-            Tạo bản nháp · Cần giáo viên rà soát · Lưu trên trình duyệt
+          <p className="mt-4 text-sm font-medium text-slate-500">
+            Nội dung là bản nháp hỗ trợ giáo viên và cần được rà soát trước khi sử dụng.
           </p>
         </div>
-        <HeroMockup />
+        <HeroPreview />
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:py-18">
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
         <div className="max-w-3xl">
-          <span className="soft-badge">Công cụ cho công việc hằng ngày</span>
-          <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+          <p className="text-sm font-bold text-blue-700">Công cụ nổi bật</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
             Giáo viên có thể làm gì với Soạn Lab?
           </h2>
           <p className="mt-3 leading-7 text-slate-600">
-            Bắt đầu từ biểu mẫu rõ ràng, tạo bản nháp nhanh, rồi xuất tài liệu để chỉnh sửa hoặc in ấn.
+            Chọn công cụ, nhập thông tin cần thiết và xuất tài liệu để chỉnh sửa hoặc in ấn.
           </p>
         </div>
-        <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {capabilities.map(([title, text, Icon]) => (
-            <article key={title} className="play-card p-6">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-                <Icon size={21} />
+            <article key={title} className="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:shadow-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                <Icon size={19} />
               </span>
-              <h3 className="mt-5 text-lg font-extrabold text-slate-900">{title}</h3>
+              <h3 className="mt-4 text-base font-extrabold text-slate-950">{title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="how-it-works" className="bg-blue-50/70 py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="text-center">
-            <span className="soft-badge">Quy trình rõ ràng</span>
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Cách hoạt động
+      <section className="border-y border-slate-200 bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="max-w-3xl">
+            <p className="text-sm font-bold text-blue-700">Cách hoạt động</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Từ ý tưởng đến tài liệu có thể chỉnh sửa
             </h2>
-            <p className="mt-3 text-slate-600">
-              Bốn bước ngắn để có bản nháp tài liệu đầu tiên.
-            </p>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map(([title, text, Icon], index) => (
-              <article key={title} className="play-card p-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-blue-600">0{index + 1}</span>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-600 text-white">
-                    <Icon size={19} />
-                  </span>
-                </div>
-                <h3 className="mt-5 font-extrabold text-slate-900">{title}</h3>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {steps.map(([title, text], index) => (
+              <article key={title} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">
+                  {index + 1}
+                </span>
+                <h3 className="mt-4 font-extrabold text-slate-950">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
               </article>
             ))}
@@ -125,106 +125,86 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-blue-100 bg-white/70 py-16 sm:py-20">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-2">
-          <div className="play-card p-7 sm:p-9">
-            <span className="soft-badge">Đầu ra dễ sử dụng</span>
-            <h2 className="mt-5 text-3xl font-black text-slate-950">
-              Tạo bản nháp nhanh, luôn có bước rà soát.
-            </h2>
-            <p className="mt-4 leading-7 text-slate-600">
-              Nội dung được tạo tự động để hỗ trợ giáo viên. Trước khi dùng chính thức,
-              giáo viên cần kiểm tra chuyên môn, đáp án và cách diễn đạt.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {["Tạo bản nháp", "Xuất Word/PDF", "Lưu lịch sử", "Dễ rà soát"].map((item) => (
-                <SoanLabBadge key={item} tone={item.includes("Word") ? "export" : "useful"}>
-                  {item}
-                </SoanLabBadge>
-              ))}
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        <div className="grid gap-4 lg:grid-cols-3">
+          {benefits.map(([title, text]) => (
+            <article key={title} className="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 className="text-xl font-black text-slate-950">{title}</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-14 sm:pb-20">
+        <div className="rounded-3xl border border-blue-100 bg-blue-50/70 p-6 sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-sm font-bold text-blue-700">Lưu ý khi sử dụng</p>
+              <h2 className="mt-3 text-2xl font-black text-slate-950 sm:text-3xl">
+                Soạn Lab hỗ trợ tạo bản nháp, không thay thế giáo viên.
+              </h2>
+              <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+                Trước khi dùng chính thức, thầy cô cần kiểm tra lại chuyên môn, đáp án, thang điểm, cách diễn đạt và định dạng tài liệu.
+              </p>
             </div>
-          </div>
-          <div className="play-card p-7 sm:p-9">
-            <span className="soft-badge">Tập trung cho giáo viên</span>
-            <h2 className="mt-5 text-3xl font-black text-slate-950">
-              Giảm thời gian cho các việc lặp lại.
-            </h2>
-            <p className="mt-4 leading-7 text-slate-600">
-              Soạn Lab gom các bước chuẩn bị tài liệu vào một luồng rõ ràng: chọn công cụ,
-              nhập thông tin, tạo bản nháp, xuất Word/PDF hoặc lưu lịch sử.
-            </p>
-            <p className="mt-4 rounded-2xl bg-cyan-50 p-4 text-sm font-semibold leading-6 text-cyan-900">
-              Mục tiêu không phải thay thế giáo viên, mà giúp giáo viên có thêm thời gian cho học sinh và chất lượng bài dạy.
-            </p>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <Link href="/dashboard" className="btn-primary">
+                Bắt đầu sử dụng
+              </Link>
+              <Link href="/tools" className="btn-secondary">
+                Xem công cụ
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20">
-        <div className="play-card relative overflow-hidden p-8 sm:p-12">
-          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-cyan-100" />
-          <div className="relative max-w-3xl">
-            <BrandLogo variant="mark" />
-            <h2 className="mt-6 text-3xl font-black text-slate-950 sm:text-4xl">
-              Sẵn sàng tạo tài liệu đầu tiên với Soạn Lab?
-            </h2>
-            <p className="mt-4 leading-7 text-slate-600">
-              Mở dashboard hoặc bắt đầu từ công cụ quen thuộc để tạo bản nháp và xuất Word/PDF.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/create" className="btn-primary">Dùng thử Soạn Lab</Link>
-              <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
-            </div>
-          </div>
-        </div>
-      </section>
       <SiteFooter />
     </main>
   );
 }
 
-function HeroMockup() {
+function HeroPreview() {
   const rows = [
-    ["Tạo đề kiểm tra", "Đáp án · Ma trận · Thang điểm", PenTool],
-    ["Phiếu học tập", "Mục tiêu · Bài tập · Hướng dẫn", FileText],
-    ["Xuất Word/PDF", "Tải xuống hoặc in nhanh", ShieldCheck],
-    ["Lưu lịch sử", "Mở lại tài liệu đã tạo", History],
-    ["Trung tâm tạo mới", "Chọn đúng công cụ theo công việc", ClipboardList],
+    ["Soạn đề kiểm tra", "Đáp án · Ma trận · Thang điểm", ClipboardList],
+    ["Phiếu học tập", "Bài tập · Hướng dẫn · In ấn", FileText],
+    ["Nhận xét học sinh", "Tự nhiên · Tích cực · Dễ chỉnh", MessageSquareText],
+    ["Xuất Word/PDF", "Tải xuống hoặc in nhanh", History],
   ] as const;
 
   return (
-    <div className="relative mx-auto w-full max-w-xl">
-      <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-cyan-200/50 to-indigo-200/50 blur-2xl" />
-      <div className="play-card relative overflow-hidden p-5 shadow-2xl sm:p-6">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-wide text-blue-600">Soạn Lab workspace</p>
-            <h2 className="mt-1 text-xl font-black text-slate-950">Tài liệu giảng dạy</h2>
-          </div>
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-700">Sẵn sàng</span>
+    <div className="w-full rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-blue-700">Soạn Lab Workspace</p>
+          <h2 className="mt-2 text-xl font-black text-slate-950">Tài liệu giảng dạy</h2>
         </div>
-        <div className="mt-5 space-y-3">
-          {rows.map(([title, text, Icon]) => (
-            <div key={title} className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                <Icon size={18} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-extrabold text-slate-900">{title}</p>
-                <p className="text-xs leading-5 text-slate-500">{text}</p>
-              </div>
-              <Check className="shrink-0 text-emerald-500" size={18} />
+        <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+          Bản nháp
+        </span>
+      </div>
+      <div className="mt-5 space-y-3">
+        {rows.map(([title, text, Icon]) => (
+          <div key={title} className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 ring-1 ring-slate-200">
+              <Icon size={18} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-extrabold text-slate-900">{title}</p>
+              <p className="text-xs leading-5 text-slate-500">{text}</p>
             </div>
-          ))}
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <Link href="/tools/exam-generator" className="rounded-2xl bg-blue-600 px-4 py-3 text-center text-sm font-extrabold text-white">
-            Tạo đề
-          </Link>
-          <Link href="/tools" className="rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-extrabold text-slate-800">
-            Xem công cụ
-          </Link>
-        </div>
+            <Check className="shrink-0 text-blue-600" size={18} />
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Link href="/create" className="rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-extrabold text-white transition hover:bg-blue-700">
+          Tạo tài liệu
+        </Link>
+        <Link href="/tools" className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-extrabold text-slate-800 transition hover:border-blue-200 hover:text-blue-700">
+          Xem công cụ
+        </Link>
       </div>
     </div>
   );
