@@ -140,7 +140,7 @@ export function FeedbackWidget() {
           setStatus("");
           setError("");
         }}
-        className="fixed bottom-4 right-4 z-40 inline-flex min-h-11 items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-[0_16px_40px_rgba(37,99,235,.18)] transition hover:border-blue-200 hover:bg-blue-50 sm:bottom-5 sm:right-5"
+        className="fixed bottom-3 right-3 z-40 inline-flex min-h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 sm:bottom-5 sm:right-5 sm:min-h-11 sm:px-4 sm:text-sm"
         aria-label="Góp ý cho Soạn Lab"
       >
         <MessageCircle size={17} />

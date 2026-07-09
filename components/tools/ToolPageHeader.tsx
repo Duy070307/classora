@@ -8,9 +8,8 @@ const steps = ["Nhập thông tin", "Tạo bản nháp", "Xuất Word/PDF hoặc
 export function ToolPageHeader({ title, description, category = "Công cụ giáo viên", iconName, exportable = true }: { title: string; description: string; category?: string; iconName?: SoanLabIconName; exportable?: boolean }) {
   const resolvedIcon = iconName || iconNameFromText(title);
   return (
-    <header className="relative mb-6 overflow-hidden rounded-[30px] border border-blue-100 bg-white p-5 shadow-[0_18px_48px_rgba(30,64,175,0.09)] sm:p-7">
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-600 to-indigo-600" />
-      <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-blue-100/80 blur-3xl" />
+    <header className="relative mb-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="absolute inset-x-0 top-0 h-1 bg-blue-600" />
       <div className="relative">
         <Link href="/tools" className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-blue-100">
           <ArrowLeft size={14} />Quay lại thư viện công cụ
@@ -22,7 +21,7 @@ export function ToolPageHeader({ title, description, category = "Công cụ giá
               <span className="soft-badge">{category}</span>
               {exportable ? <SoanLabBadge tone="export">Xuất Word/PDF</SoanLabBadge> : null}
             </div>
-            <h1 className="mt-3 text-2xl font-black tracking-tight text-ink sm:text-3xl lg:text-4xl">{title}</h1>
+            <h1 className="mt-3 text-2xl font-black tracking-tight text-ink sm:text-3xl">{title}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p>
             <div className="mt-3 flex gap-2 rounded-2xl bg-blue-50/70 p-3 text-sm leading-6 text-blue-900">
               <ShieldCheck className="mt-0.5 shrink-0 text-blue-600" size={18} />
@@ -32,7 +31,7 @@ export function ToolPageHeader({ title, description, category = "Công cụ giá
         </div>
         <div className="mt-5 grid min-w-0 gap-2 sm:grid-cols-3">
           {steps.map((step, index) => (
-            <span key={step} className="inline-flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/55 px-3 py-2 text-xs font-bold text-slate-700">
+            <span key={step} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[11px] text-white">{index + 1}</span>
               {step}
             </span>

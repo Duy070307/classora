@@ -14,7 +14,7 @@ export function ToolOutputActions({
   onGenerateAgain?: () => void;
 }) {
   return (
-    <div className="document-actions sticky top-20 z-10 flex flex-wrap gap-2 rounded-2xl border border-blue-100 bg-white/95 p-3 shadow-lg shadow-blue-100/60 backdrop-blur-xl">
+    <div className="document-actions sticky top-20 z-10 flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
       <DocumentExportMenu document={document} onSave={onSave} />
       {onGenerateAgain ? (
         <button type="button" onClick={onGenerateAgain} className="btn-secondary">

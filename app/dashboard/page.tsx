@@ -11,10 +11,7 @@ import {
   FileText,
   History,
   ImageIcon,
-  MessageSquareText,
   Search,
-  Send,
-  Sparkles,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -23,29 +20,12 @@ import { getHistory } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
 
 const quickTools = [
-  { title: "Soạn đề kiểm tra", desc: "Tạo đề, đáp án, ma trận và thang điểm.", href: "/tools/exam-generator", icon: ClipboardList, badge: "Phổ biến", tone: "from-blue-500 to-cyan-500", keywords: "đề kiểm tra thi thptqg" },
-  { title: "Phiếu học tập", desc: "Bài tập theo chủ đề, có gợi ý đáp án.", href: "/tools/worksheet-generator", icon: BookOpenCheck, badge: "Word/PDF", tone: "from-emerald-500 to-teal-500", keywords: "phiếu worksheet bài tập" },
-  { title: "Giáo án", desc: "Kế hoạch bài dạy có hoạt động và đánh giá.", href: "/tools/lesson-plan-generator", icon: FileText, badge: "Tài liệu", tone: "from-indigo-500 to-violet-500", keywords: "giáo án kế hoạch bài dạy" },
-  { title: "Nhận xét học sinh", desc: "Viết nhận xét tự nhiên, dễ chỉnh sửa.", href: "/tools/student-comments", icon: MessageSquareText, badge: "Nhanh", tone: "from-amber-500 to-orange-500", keywords: "nhận xét học sinh cuối kỳ" },
-  { title: "Tin nhắn phụ huynh", desc: "Soạn tin nhắn lịch sự, rõ ý.", href: "/tools/parent-message-generator", icon: Send, badge: "Chủ nhiệm", tone: "from-pink-500 to-rose-500", keywords: "phụ huynh tin nhắn zalo" },
-  { title: "Ảnh công thức → LaTeX", desc: "Chuyển ảnh công thức hoặc hình học sang mã dùng lại.", href: "/tools/image-to-latex", icon: ImageIcon, badge: "Mới", tone: "from-sky-500 to-blue-600", keywords: "latex hình học tikz công thức" },
-  { title: "Tạo mô phỏng 3D", desc: "Tạo cảnh 3D đơn giản để minh họa bài học.", href: "/tools/3d-animation", icon: Box, badge: "Beta", tone: "from-blue-500 to-cyan-500", keywords: "3d mô phỏng trực quan vật lý hóa học" },
-] as const;
-
-const taskCards = [
-  ["Soạn đề kiểm tra", "Môn, lớp, chủ đề, số câu", "/tools/exam-generator", ClipboardList],
-  ["Tạo tài liệu dạy học", "Phiếu học tập, giáo án, hoạt động", "/tools?category=lesson-materials", FileText],
-  ["Công tác chủ nhiệm", "Nhận xét, tin nhắn, kế hoạch", "/tools?category=homeroom-parent", MessageSquareText],
-  ["Công thức & hình học", "LaTeX, TikZ, preview", "/tools?category=formula-latex", ImageIcon],
-  ["Mô phỏng trực quan", "3D, chuyển động, minh họa", "/tools?category=visual-tools", Box],
-] as const;
-
-const checklist = [
-  ["Tạo tài liệu đầu tiên", "/create"],
-  ["Thử một công cụ thường dùng", "/tools"],
-  ["Lưu vào lịch sử", "/history"],
-  ["Xuất Word/PDF", "/tools/exam-generator"],
-  ["Kiểm tra lại nội dung trước khi dùng", "/getting-started"],
+  { title: "Tạo đề kiểm tra", desc: "Tạo đề, đáp án, thang điểm, ma trận và bản đặc tả.", href: "/tools/exam-generator", icon: ClipboardList, badge: "Thường dùng", keywords: "đề kiểm tra thi thptqg" },
+  { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan-generator", icon: FileText, badge: "Tài liệu", keywords: "giáo án kế hoạch bài dạy" },
+  { title: "Phiếu học tập", desc: "Tạo bài tập theo chủ đề, có gợi ý đáp án để rà soát.", href: "/tools/worksheet-generator", icon: BookOpenCheck, badge: "Word/PDF", keywords: "phiếu học tập worksheet bài tập" },
+  { title: "Ngân hàng câu hỏi", desc: "Lưu, tìm kiếm và quản lý câu hỏi theo môn/lớp/chủ đề.", href: "/question-bank", icon: BookOpenCheck, badge: "Quản lý", keywords: "ngân hàng câu hỏi import" },
+  { title: "Ảnh công thức → LaTeX", desc: "Chuyển ảnh công thức hoặc hình học đã cắt gọn thành mã dùng lại.", href: "/tools/image-to-latex", icon: ImageIcon, badge: "Toán học", keywords: "latex hình học tikz công thức" },
+  { title: "Tạo mô phỏng 3D", desc: "Tạo mô phỏng minh họa đơn giản cho bài học.", href: "/tools/3d-animation", icon: Box, badge: "Beta", keywords: "3d mô phỏng trực quan vật lý hóa học" },
 ] as const;
 
 export default function DashboardPage() {
@@ -62,89 +42,71 @@ export default function DashboardPage() {
   }, [query]);
 
   return (
-    <AppShell title="Dashboard">
+    <AppShell title="Trang tổng quan">
       <DashboardOnboarding />
 
-      <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-blue-700 via-indigo-700 to-sky-600 p-6 text-white shadow-[0_28px_70px_rgba(37,99,235,.25)] sm:p-9">
-        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[44px] border-white/10" />
-        <div className="absolute bottom-0 right-10 hidden h-24 w-56 rounded-t-full bg-white/10 blur-xl lg:block" />
-        <div className="relative max-w-4xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-1.5 text-xs font-extrabold ring-1 ring-white/20">
-            <Sparkles size={14} />
-            Không gian tạo tài liệu cho giáo viên
-          </span>
-          <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Bạn muốn tạo tài liệu gì hôm nay?</h1>
-          <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-blue-50 sm:text-lg">
-            Chọn công cụ hoặc tìm nhanh công việc cần làm.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 lg:flex-row">
-            <label className="relative min-h-14 flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={19} />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Tìm: đề, phiếu, phụ huynh, latex, hình học..."
-                className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm font-semibold text-slate-800 shadow-xl outline-none ring-1 ring-white/30 placeholder:text-slate-400 focus:ring-4 focus:ring-cyan-200/50"
-              />
-            </label>
-            <Link href="/create" className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-black text-blue-700 shadow-xl transition hover:-translate-y-0.5">
-              Tạo tài liệu mới
-              <ArrowRight size={18} />
-            </Link>
-            <Link href="/tools" className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/14 px-6 text-sm font-black text-white ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:bg-white/20">
-              Xem công cụ
-            </Link>
+      <section className="rounded-[30px] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-extrabold text-blue-700">
+              <CheckCircle2 size={14} />
+              Không gian làm việc cho giáo viên
+            </span>
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Chào mừng đến với Soạn Lab</h1>
+            <p className="mt-3 max-w-3xl text-base leading-8 text-slate-600">
+              Chọn một công cụ để tạo bản nháp tài liệu, xuất Word/PDF hoặc lưu lại để chỉnh sửa sau.
+            </p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Link href="/tools/exam-generator" className="btn-primary">Tạo đề kiểm tra</Link>
+              <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
+              <Link href="/teacher-testing-guide" className="btn-secondary">Hướng dẫn dùng thử</Link>
+            </div>
+          </div>
+          <div className="rounded-[24px] border border-blue-100 bg-blue-50 p-4">
+            <div className="flex items-start gap-3">
+              <ClipboardCheck className="mt-0.5 shrink-0 text-blue-700" size={22} />
+              <div>
+                <h2 className="font-black text-slate-950">Dùng thử Soạn Lab trong 10 phút</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Làm theo một vài bước gợi ý để kiểm tra các công cụ chính và gửi góp ý.
+                </p>
+                <Link href="/teacher-testing-guide" className="mt-4 inline-flex text-sm font-black text-blue-700 hover:underline">
+                  Xem hướng dẫn
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mt-6 rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-              <ClipboardCheck size={22} />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-950">Dùng thử Soạn Lab trong 10 phút</h2>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
-                Thầy cô có thể làm theo các bước gợi ý để trải nghiệm nhanh các công cụ chính và gửi góp ý.
-              </p>
-            </div>
-          </div>
-          <Link href="/teacher-testing-guide" className="btn-primary shrink-0">Xem hướng dẫn dùng thử</Link>
-        </div>
+      <section className="mt-6 rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm">
+        <label className="relative block">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Tìm nhanh: đề kiểm tra, giáo án, LaTeX, mô phỏng..."
+            className="form-field pl-11"
+          />
+        </label>
       </section>
-
-      {!history.length ? (
-        <section className="mt-6 rounded-[30px] border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm">
-          <SectionTitle title="Bắt đầu với Soạn Lab" desc="Một lộ trình ngắn để có tài liệu đầu tiên và dùng an toàn hơn." compact />
-          <div className="mt-4 grid gap-3 md:grid-cols-5">
-            {checklist.map(([label, href], index) => (
-              <Link key={label} href={href} className="rounded-2xl bg-white p-4 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-amber-100 transition hover:-translate-y-0.5 hover:text-blue-700">
-                <span className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 text-xs font-black text-amber-700">{index + 1}</span>
-                {label}
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       <section className="mt-8">
-        <SectionTitle title="Công cụ thường dùng" desc="Những công cụ được giáo viên dùng nhiều nhất." />
+        <SectionTitle title="Công cụ nên thử trước" desc="Các công cụ chính trong vòng dùng thử với giáo viên." />
         {filteredTools.length ? (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredTools.map((tool) => {
               const Icon = tool.icon;
               return (
-                <Link key={tool.href} href={tool.href} className="group rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:bg-gradient-to-br hover:from-white hover:to-blue-50 hover:shadow-xl hover:shadow-blue-100/60">
+                <Link key={tool.href} href={tool.href} className="group rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
                   <div className="flex items-start justify-between gap-4">
-                    <span className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${tool.tone} text-white shadow-lg`}>
-                      <Icon size={22} />
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                      <Icon size={21} />
                     </span>
-                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-extrabold text-blue-700">{tool.badge}</span>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-extrabold text-slate-600">{tool.badge}</span>
                   </div>
-                  <h2 className="mt-5 text-lg font-black text-slate-900">{tool.title}</h2>
-                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-500">{tool.desc}</p>
+                  <h2 className="mt-4 text-lg font-black text-slate-900">{tool.title}</h2>
+                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">{tool.desc}</p>
                   <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-black text-blue-700">
                     <span>Mở công cụ</span>
                     <ArrowRight size={17} className="transition group-hover:translate-x-1" />
@@ -154,28 +116,15 @@ export default function DashboardPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-[28px] border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center">
-            <Search className="mx-auto text-blue-500" size={32} />
+          <div className="rounded-[24px] border border-dashed border-blue-200 bg-blue-50 p-8 text-center">
+            <Search className="mx-auto text-blue-500" size={30} />
             <h3 className="mt-3 font-black text-slate-900">Chưa tìm thấy công cụ phù hợp.</h3>
             <Link href="/tools" className="btn-secondary mt-5">Xem tất cả công cụ</Link>
           </div>
         )}
       </section>
 
-      <section className="mt-8">
-        <SectionTitle title="Bắt đầu từ công việc" desc="Chọn nhóm việc trước, rồi Soạn Lab mở đúng khu vực cần dùng." />
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {taskCards.map(([title, desc, href, Icon]) => (
-            <Link key={title} href={href} className="rounded-[26px] border border-indigo-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:bg-indigo-50/50 hover:shadow-xl">
-              <Icon className="text-indigo-600" size={25} />
-              <h3 className="mt-4 font-black text-slate-900">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-8 rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
+      <section className="mt-8 rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <SectionTitle title="Lịch sử gần đây" desc="Mở lại tài liệu đã lưu để chỉnh sửa hoặc xuất file." compact />
           <Link href="/history" className="btn-secondary">Xem tất cả</Link>
@@ -183,8 +132,8 @@ export default function DashboardPage() {
         {history.length ? (
           <div className="mt-5 grid gap-3">
             {history.map((item) => (
-              <Link key={item.id} href={`/history/${item.id}`} className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 transition hover:border-blue-200 hover:bg-white">
-                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
+              <Link key={item.id} href={`/history/${item.id}`} className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-white">
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
                   <History size={18} />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -196,19 +145,19 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-5 rounded-3xl border border-dashed border-blue-200 bg-blue-50/60 p-8 text-center">
-            <History className="mx-auto text-blue-500" size={32} />
-            <h3 className="mt-3 font-black text-slate-900">Chưa có tài liệu nào</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Tài liệu đã lưu sẽ xuất hiện ở đây để thầy cô mở lại và xuất file.</p>
+          <div className="mt-5 rounded-3xl border border-dashed border-blue-200 bg-blue-50 p-8 text-center">
+            <History className="mx-auto text-blue-500" size={30} />
+            <h3 className="mt-3 font-black text-slate-900">Chưa có tài liệu nào được lưu</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Hãy tạo tài liệu đầu tiên để xem lại tại đây.</p>
             <Link href="/create" className="btn-primary mt-5">Tạo tài liệu đầu tiên</Link>
           </div>
         )}
       </section>
 
-      <section className="mt-8 flex gap-3 rounded-[26px] border border-blue-100 bg-blue-50 p-5 text-sm leading-6 text-blue-950">
+      <section className="mt-8 flex gap-3 rounded-[24px] border border-blue-100 bg-blue-50 p-5 text-sm leading-6 text-blue-950">
         <CheckCircle2 className="mt-0.5 shrink-0 text-blue-600" size={20} />
         <p>
-          <span className="font-black">Lưu ý khi dùng nội dung AI: </span>
+          <span className="font-black">Lưu ý khi sử dụng: </span>
           Nội dung là bản nháp hỗ trợ giáo viên. Thầy cô nên rà soát lại chuyên môn, đáp án và định dạng trước khi sử dụng.
         </p>
       </section>

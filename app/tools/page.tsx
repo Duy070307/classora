@@ -93,34 +93,33 @@ function ToolsContent() {
 
   return (
     <AppShell title="Công cụ">
-      <section className="relative mb-6 overflow-hidden rounded-[32px] bg-gradient-to-br from-blue-700 via-indigo-700 to-sky-600 p-6 text-white shadow-[0_24px_60px_rgba(37,99,235,.22)] sm:p-9">
-        <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[38px] border-white/10" />
+      <section className="relative mb-6 overflow-hidden rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="relative max-w-4xl">
-          <p className="text-xs font-extrabold uppercase tracking-[.18em] text-blue-100">Thư viện công cụ giáo viên</p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-5xl">Tìm công cụ phù hợp cho tiết dạy hôm nay</h1>
-          <p className="mt-4 max-w-2xl text-blue-50">Soạn đề, tạo tài liệu, viết nhận xét, xử lý LaTeX và lưu lại lịch sử trong một không gian gọn gàng.</p>
+          <p className="text-xs font-extrabold uppercase tracking-[.14em] text-blue-700">Thư viện công cụ giáo viên</p>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Tìm công cụ phù hợp cho tiết dạy hôm nay</h1>
+          <p className="mt-4 max-w-2xl text-slate-600">Soạn đề, tạo tài liệu, viết nhận xét, xử lý LaTeX và lưu lại lịch sử trong một không gian gọn gàng.</p>
           <label className="relative mt-7 block max-w-3xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={19} />
             <input
-              className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm font-semibold text-slate-800 shadow-xl outline-none ring-1 ring-white/30 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-300/40"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Tìm: đề, kiểm tra, phụ huynh, latex, hình học, nhận xét..."
             />
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20">{toolRegistry.length}+ công cụ</span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><Sparkles size={13} className="mr-1 inline" />Tạo bản nháp</span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><History size={13} className="mr-1 inline" />Lưu lịch sử</span>
-            <span className="rounded-full bg-white/12 px-3 py-1.5 text-xs font-bold ring-1 ring-white/20"><FileDown size={13} className="mr-1 inline" />Xuất Word/PDF</span>
+            <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">{toolRegistry.length}+ công cụ</span>
+            <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"><Sparkles size={13} className="mr-1 inline" />Tạo bản nháp</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600"><History size={13} className="mr-1 inline" />Lưu lịch sử</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600"><FileDown size={13} className="mr-1 inline" />Xuất Word/PDF</span>
           </div>
         </div>
       </section>
 
-      <section className="sticky top-[84px] z-10 mb-7 rounded-[26px] border border-blue-100 bg-white/90 p-3 shadow-sm backdrop-blur-xl sm:p-4">
+      <section className="sticky top-[74px] z-10 mb-7 rounded-[24px] border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl sm:p-4">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
           {displayCategories.map((item) => (
-            <button key={item} type="button" onClick={() => change(item)} className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-black transition ${category === item ? "bg-blue-600 text-white shadow-md shadow-blue-200" : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}>
+            <button key={item} type="button" onClick={() => change(item)} className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-black transition ${category === item ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}>
               {item}
             </button>
           ))}

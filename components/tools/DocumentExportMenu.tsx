@@ -34,7 +34,7 @@ export function DocumentExportMenu({
   async function word() {
     if (exporting) return;
     setExporting(true);
-    setMessage("Đang tạo file...");
+      setMessage("Đang xuất Word…");
     try {
       await exportDocx(normalizeGeneratedDocument(document));
       setMessage("Đã xuất Word.");
@@ -57,10 +57,10 @@ export function DocumentExportMenu({
         </button>
       ) : null}
       <button type="button" aria-label="Xuất tài liệu Word" disabled={exporting} className={buttonClass} onClick={word}>
-        <Download size={16} /> {exporting ? "Đang tạo file..." : document.type === "exam" ? "Xuất Word dạng đề thi" : "Xuất Word"}
+        <Download size={16} /> {exporting ? "Đang xuất Word…" : document.type === "exam" ? "Xuất Word dạng đề thi" : "Xuất Word"}
       </button>
       <button type="button" aria-label="Mở bản in hoặc lưu PDF" className={buttonClass} onClick={() => printGeneratedDocument(normalizeGeneratedDocument(document))}>
-        <Printer size={16} /> In/Lưu PDF
+        <Printer size={16} /> Xuất PDF
       </button>
       <button type="button" aria-label="Tải tài liệu Markdown" className={buttonClass} onClick={() => downloadMarkdown(normalizeGeneratedDocument(document))}>
         <FileText size={16} /> Tải Markdown

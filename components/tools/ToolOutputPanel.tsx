@@ -4,7 +4,7 @@ import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 
 export function ToolOutputPanel({
   loading = false,
-  loadingTitle = "Đang tạo bản nháp...",
+  loadingTitle = "Đang tạo bản nháp…",
   loadingDescription = "Soạn Lab đang chuẩn bị nội dung cho bạn.",
   hasOutput,
   children,
@@ -35,12 +35,11 @@ export function ToolOutputPanel({
 
   if (!hasOutput) {
     return (
-      <section className="relative overflow-hidden rounded-[28px] border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/70 p-5 text-center shadow-sm sm:p-7">
-        <div className="absolute -right-14 -top-16 h-44 w-44 rounded-full bg-cyan-100/70 blur-3xl" />
+      <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-7">
         <div className="relative mx-auto max-w-md">
           <SoanLabIllustration variant="document" className="max-w-[240px]" />
           <h2 className="mt-4 text-xl font-black text-ink">{emptyTitle || "Kết quả sẽ xuất hiện tại đây"}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">{emptyDescription || "Sau khi tạo bản nháp, bạn có thể sao chép, lưu lịch sử hoặc xuất Word/PDF."}</p>
+          <p className="mt-2 text-sm leading-6 text-muted">{emptyDescription || "Sau khi tạo bản nháp, thầy cô có thể sao chép, lưu lịch sử hoặc xuất Word/PDF."}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <SoanLabBadge tone="export">Word/PDF</SoanLabBadge>
             <SoanLabBadge tone="useful">Lưu lịch sử</SoanLabBadge>

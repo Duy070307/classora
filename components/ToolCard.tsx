@@ -37,8 +37,7 @@ export function ToolCard({
   }, [href]);
 
   return (
-    <article className="group relative flex min-h-[292px] flex-col overflow-hidden rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-1 hover:border-blue-200 hover:bg-gradient-to-br hover:from-white hover:to-blue-50/80 hover:shadow-xl hover:shadow-blue-100/60 focus-within:ring-4 focus-within:ring-blue-100">
-      <div className="absolute -right-12 -top-14 h-36 w-36 rounded-full bg-blue-100/70 blur-2xl transition group-hover:bg-cyan-100" />
+    <article className="group relative flex min-h-[260px] flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-within:ring-4 focus-within:ring-blue-100">
       <button
         type="button"
         className={`absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition ${favorite ? "bg-amber-50 text-amber-500 ring-1 ring-amber-100" : "bg-white text-slate-400 ring-1 ring-slate-100 hover:bg-blue-50 hover:text-blue-600"}`}
@@ -58,7 +57,7 @@ export function ToolCard({
       </div>
       <h3 className="mt-3 text-lg font-black leading-6 text-slate-900">{title}</h3>
       <p className="mt-2 line-clamp-2 min-h-12 text-sm leading-6 text-slate-500">{description}</p>
-      <div className="mt-4 rounded-2xl bg-blue-50/70 p-3 text-xs font-semibold leading-5 text-slate-600">
+      <div className="mt-4 rounded-2xl bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-600">
         {displayExample}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">

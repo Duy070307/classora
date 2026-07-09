@@ -203,13 +203,13 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
               })}
             </div>
             <button className="btn-primary w-full" disabled={loading}>
-              {loading ? "Đang tạo..." : `Tạo ${config.title.toLowerCase()}`}
+              {loading ? "Đang tạo bản nháp…" : `Tạo ${config.title.toLowerCase()}`}
             </button>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
           </form>
           }
           output={
-            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo tài liệu..." loadingDescription="Soạn Lab đang chuẩn bị bản nháp để bạn rà soát." hasOutput={Boolean(document)} showWarning={false}>
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo bản nháp…" loadingDescription="Soạn Lab đang chuẩn bị nội dung để thầy cô rà soát." hasOutput={Boolean(document)} showWarning={false}>
               {document ? <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool={config.type} input={input} currentContent={document.content} onRefined={handleRefined} />

@@ -130,28 +130,27 @@ const suggestions = [
 export default function CreatePage() {
   return (
     <AppShell title="Tạo mới">
-      <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-blue-700 via-indigo-700 to-sky-600 p-6 text-white shadow-[0_28px_70px_rgba(37,99,235,.25)] sm:p-9">
-        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full border-[44px] border-white/10" />
-        <div className="absolute bottom-6 right-8 hidden rounded-3xl bg-white/12 p-4 text-sm font-bold ring-1 ring-white/20 lg:block">
+      <section className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="absolute bottom-6 right-8 hidden rounded-3xl border border-blue-100 bg-blue-50 p-4 text-sm font-bold text-blue-800 lg:block">
           Bản nháp → rà soát → xuất file
         </div>
         <div className="relative max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-1.5 text-xs font-extrabold ring-1 ring-white/20">
+          <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-extrabold text-blue-700">
             <Sparkles size={14} />
             Trung tâm tạo tài liệu
           </span>
-          <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">Bạn muốn tạo gì?</h1>
-          <p className="mt-4 max-w-2xl text-base font-medium leading-7 text-blue-50 sm:text-lg">
+          <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Bạn muốn tạo gì?</h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
             Chọn một công việc, Soạn Lab sẽ mở đúng công cụ và gợi ý thông tin cần nhập.
           </p>
         </div>
       </section>
 
-      <section className="mt-6 rounded-[28px] border border-indigo-100 bg-white p-4 shadow-sm">
+      <section className="mt-6 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-black text-slate-900">Gợi ý bắt đầu:</span>
           {suggestions.map(([label, href]) => (
-            <Link key={label} href={href} className="rounded-full bg-indigo-50 px-3 py-2 text-xs font-extrabold text-indigo-700 transition hover:bg-indigo-600 hover:text-white">
+            <Link key={label} href={href} className="rounded-full bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-600 hover:text-white">
               {label}
             </Link>
           ))}
@@ -172,9 +171,9 @@ export default function CreatePage() {
                   <Link
                     key={task.title}
                     href={task.href}
-                    className="group flex min-h-[300px] flex-col rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-1 hover:border-blue-200 hover:bg-gradient-to-br hover:from-white hover:to-blue-50 hover:shadow-xl hover:shadow-blue-100/60 focus-visible:ring-4 focus-visible:ring-blue-200"
+                    className="group flex min-h-[250px] flex-col rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-visible:ring-4 focus-visible:ring-blue-100"
                   >
-                    <span className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${task.tone} text-white shadow-lg`}>
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
                       <Icon size={23} />
                     </span>
                     <h3 className="mt-5 text-lg font-black text-slate-900">{task.title}</h3>

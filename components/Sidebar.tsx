@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   BookOpenCheck,
   Box,
@@ -14,7 +14,8 @@ import {
   History,
   Home,
   MessageCircle,
-  PlusCircle,
+  MessagesSquare,
+  PenTool,
   Settings,
   Shield,
   Sigma,
@@ -25,40 +26,52 @@ import { AccountPanel } from "@/components/AccountPanel";
 import { BrandLogo } from "@/components/BrandLogo";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 
-const groups = [
+type NavItem = [label: string, href: string, icon: typeof Home, badge?: string, adminOnly?: boolean];
+
+const groups: Array<{ title: string; links: NavItem[] }> = [
   {
-    title: "Tổng quan",
+    title: "Chính",
     links: [
-      ["Dashboard", "/dashboard", Home],
-      ["Hướng dẫn dùng thử", "/teacher-testing-guide", ClipboardCheck],
-      ["Tạo mới", "/create", PlusCircle],
+      ["Trang tổng quan", "/dashboard", Home],
+      ["Trung tâm công cụ", "/tools", Wrench],
+      ["Lịch sử", "/history", History],
+      ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck],
     ],
   },
   {
-    title: "Công cụ",
+    title: "Soạn tài liệu",
     links: [
-      ["Tất cả công cụ", "/tools", Wrench],
-      ["Soạn đề", "/tools/exam-generator", ClipboardList],
+      ["Tạo đề kiểm tra", "/tools/exam-generator", ClipboardList],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
-      ["Nhận xét", "/tools/student-comments", MessageCircle],
-      ["Ảnh → LaTeX", "/tools/image-to-latex", Sigma],
+      ["Giáo án", "/tools/lesson-plan-generator", FileText],
+      ["Rubric", "/tools/rubric-generator", PenTool],
+      ["Nhận xét học sinh", "/tools/student-comments", MessageCircle],
+      ["Tin nhắn phụ huynh", "/tools/parent-message-generator", MessagesSquare],
+    ],
+  },
+  {
+    title: "Công thức & trực quan",
+    links: [
+      ["Ảnh công thức → LaTeX", "/tools/image-to-latex?mode=formula", Sigma],
+      ["Hình học → TikZ", "/tools/image-to-latex?mode=geometry", Sigma],
       ["Tạo mô phỏng 3D", "/tools/3d-animation", Box, "Beta"],
     ],
   },
   {
-    title: "Tài liệu",
+    title: "Hỗ trợ",
     links: [
-      ["Lịch sử", "/history", History],
-      ["Ngân hàng câu hỏi", "/question-bank", BookOpenCheck],
+      ["Hướng dẫn dùng thử", "/teacher-testing-guide", ClipboardCheck],
+      ["Góp ý", "#feedback", MessageCircle],
       ["Mẫu cá nhân", "/templates", FileClock],
+      ["Dữ liệu", "/data", Database],
+      ["Cài đặt", "/settings", Settings],
     ],
   },
   {
-    title: "Tài khoản",
+    title: "Quản trị",
     links: [
-      ["Dữ liệu", "/data", Database],
-      ["Cài đặt", "/settings", Settings],
-      ["Quản trị", "/admin", Shield],
+      ["Quản trị", "/admin", Shield, undefined, true],
+      ["Góp ý giáo viên", "/admin/feedback", MessageCircle, undefined, true],
     ],
   },
 ];
@@ -85,53 +98,100 @@ function Content({
   onClose?: () => void;
 }) {
   const pathname = usePathname();
-  const currentCategory = useSearchParams().get("category");
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams.get("category");
+  const currentMode = searchParams.get("mode");
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (mounted) setIsAdmin(data?.user?.role === "admin");
+      })
+      .catch(() => {
+        if (mounted) setIsAdmin(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const active = (href: string) => {
+    if (href === "#feedback") return false;
     const [path, query] = href.split("?");
     if (pathname !== path) return false;
     const category = query ? new URLSearchParams(query).get("category") : null;
-    return category ? category === currentCategory : !currentCategory;
+    const mode = query ? new URLSearchParams(query).get("mode") : null;
+    if (category) return category === currentCategory;
+    if (mode) return mode === currentMode;
+    return true;
   };
 
   return (
     <>
       <button type="button" aria-label="Đóng menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-blue-100/80 bg-white/95 shadow-2xl backdrop-blur-xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-72 md:shrink-0 md:translate-x-0 md:shadow-[8px_0_30px_rgba(30,64,175,0.045)] ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex items-center border-b border-blue-50 px-5 py-5">
-          <Link href="/" className="min-w-0">
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-72 md:shrink-0 md:translate-x-0 md:shadow-none ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex items-center border-b border-slate-100 px-5 py-5">
+          <Link href="/dashboard" className="min-w-0">
             <BrandLogo compact />
           </Link>
-          <button type="button" className="ml-auto rounded-xl p-2 text-muted md:hidden" onClick={onClose} aria-label="Đóng menu">
+          <button type="button" className="ml-auto rounded-xl p-2 text-slate-500 hover:bg-slate-100 md:hidden" onClick={onClose} aria-label="Đóng menu">
             <X size={18} />
           </button>
         </div>
-        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-5">
-          {groups.map((group) => (
-            <section key={group.title} className="mb-6">
-              <p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-400">{group.title}</p>
-              <div className="space-y-1">
-                {group.links.map(([label, href, Icon, badge]) => {
-                  const I = Icon as typeof Home;
-                  const selected = active(href as string);
-                  return (
-                    <Link key={href as string} href={href as string} onClick={onClose} aria-current={selected ? "page" : undefined} className={`group relative flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm font-bold transition ${selected ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-100" : "text-slate-600 hover:bg-blue-50/80 hover:text-blue-800"}`}>
-                      <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${selected ? "bg-white/18 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-blue-600"}`}>
-                        <I size={16} />
-                      </span>
-                      <span className="min-w-0 flex-1 truncate">{label as string}</span>
-                      {badge ? (
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
-                          {badge as string}
+        <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-4">
+          {groups.map((group) => {
+            const links = group.links.filter(([, , , , adminOnly]) => !adminOnly || isAdmin);
+            if (!links.length) return null;
+            return (
+              <section key={group.title} className="mb-5">
+                <p className="mb-2 px-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-slate-400">{group.title}</p>
+                <div className="space-y-1">
+                  {links.map(([label, href, Icon, badge]) => {
+                    const selected = active(href);
+                    const baseClass = `group relative flex min-h-10 items-center gap-3 rounded-2xl px-3 text-sm font-bold transition ${selected ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-800"}`;
+                    const content = (
+                      <>
+                        <span className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-blue-600"}`}>
+                          <Icon size={16} />
                         </span>
-                      ) : null}
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          ))}
+                        <span className="min-w-0 flex-1 truncate">{label}</span>
+                        {badge ? (
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
+                            {badge}
+                          </span>
+                        ) : null}
+                      </>
+                    );
+                    if (href === "#feedback") {
+                      return (
+                        <button
+                          key={href}
+                          type="button"
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent("soanlab:open-feedback"));
+                            onClose?.();
+                          }}
+                          className={`${baseClass} w-full text-left`}
+                        >
+                          {content}
+                        </button>
+                      );
+                    }
+                    return (
+                      <Link key={href} href={href} onClick={onClose} aria-current={selected ? "page" : undefined} className={baseClass}>
+                        {content}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
         </nav>
-        <div className="border-t border-blue-50 bg-gradient-to-br from-blue-50/70 to-white p-4">
+        <div className="border-t border-slate-100 bg-slate-50/80 p-4">
           <AccountPanel />
         </div>
       </aside>
