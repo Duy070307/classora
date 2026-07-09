@@ -18,3 +18,11 @@
 
 - Không ghi tài khoản thật, mật khẩu test hoặc khóa dịch vụ vào tài liệu commit.
 - Khi báo lỗi, nên gửi: công cụ đã dùng, input chính, ảnh chụp preview/export và file Word/PDF nếu có thể.
+
+## Góp ý trực tiếp trong ứng dụng
+
+- Giáo viên đã đăng nhập có thể bấm nút “Góp ý” ở góc dưới bên phải trong khu vực làm việc.
+- Biểu mẫu ghi nhận loại góp ý, công cụ/trang đang dùng, mức độ hài lòng, nội dung góp ý và thông tin liên hệ tùy chọn.
+- Khi có cấu hình cloud, góp ý được lưu để quản trị viên xem tại `/admin/feedback`.
+- Khi chạy local chưa cấu hình cloud, góp ý được lưu tạm trong trình duyệt để phục vụ kiểm thử giao diện.
+- Không ghi mật khẩu, khóa dịch vụ, API key hoặc dữ liệu nhạy cảm vào nội dung góp ý.

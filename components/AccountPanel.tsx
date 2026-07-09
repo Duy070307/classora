@@ -69,6 +69,7 @@ export function AccountPanel() {
       </div>
       <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold">
         {account.role === "admin" ? <Link href="/admin" className="text-blue-700">Quản trị</Link> : null}
+        {account.role === "admin" ? <Link href="/admin/feedback" className="text-blue-700">Góp ý</Link> : null}
         <Link href="/settings" className="text-slate-500 hover:text-blue-700">Cài đặt</Link>
         <form action="/api/auth/logout" method="post">
           <button className="inline-flex items-center gap-1 text-slate-500 hover:text-blue-700" type="submit">

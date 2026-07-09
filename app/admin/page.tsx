@@ -79,6 +79,7 @@ export default async function AdminPage() {
           <div className="mt-5 flex flex-wrap gap-2">
             <Link href="/dashboard" className="btn-secondary">Dashboard</Link>
             <Link href="/tools" className="btn-secondary">Công cụ</Link>
+            <Link href="/admin/feedback" className="btn-secondary">Góp ý giáo viên</Link>
           </div>
         </section>
       </div>

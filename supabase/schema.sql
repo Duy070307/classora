@@ -58,11 +58,29 @@ create table if not exists public.user_settings (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.feedback (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  user_id uuid references auth.users(id) on delete set null,
+  user_email text,
+  user_role text,
+  category text not null,
+  tool text not null,
+  rating integer check (rating is null or (rating >= 1 and rating <= 5)),
+  message text not null check (char_length(message) <= 3000),
+  contact text,
+  path text,
+  user_agent text,
+  status text not null default 'new' check (status in ('new', 'reviewing', 'resolved', 'ignored')),
+  admin_note text
+);
+
 alter table public.profiles enable row level security;
 alter table public.documents enable row level security;
 alter table public.templates enable row level security;
 alter table public.question_bank enable row level security;
 alter table public.user_settings enable row level security;
+alter table public.feedback enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -104,6 +122,19 @@ drop policy if exists "user_settings_own_all" on public.user_settings;
 create policy "user_settings_own_all" on public.user_settings
 for all using (user_id = auth.uid() or public.is_admin())
 with check (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "feedback_insert_own" on public.feedback;
+create policy "feedback_insert_own" on public.feedback
+for insert with check (user_id = auth.uid());
+
+drop policy if exists "feedback_select_own_or_admin" on public.feedback;
+create policy "feedback_select_own_or_admin" on public.feedback
+for select using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "feedback_admin_update" on public.feedback;
+create policy "feedback_admin_update" on public.feedback
+for update using (public.is_admin())
+with check (public.is_admin());
 
 create or replace function public.handle_new_user()
 returns trigger

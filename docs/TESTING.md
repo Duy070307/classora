@@ -177,3 +177,21 @@ npm run smoke
 - `/data` chuyển dữ liệu từ trình duyệt lên tài khoản và không xóa dữ liệu local.
 - Tài khoản admin mở `/admin`; giáo viên không có quyền admin.
 - `/system-status` chuyển về dashboard và không hiển thị thông tin kỹ thuật cho giáo viên.
+
+## In-app teacher feedback
+
+Teacher:
+
+1. Đăng nhập bằng tài khoản giáo viên.
+2. Mở dashboard và xác nhận nút “Góp ý” xuất hiện ở góc dưới bên phải.
+3. Gửi góp ý với loại góp ý, mức độ hài lòng và nội dung.
+4. Mở công cụ tạo đề hoặc Ảnh công thức → LaTeX/TikZ, mở lại modal và xác nhận công cụ/trang được tự nhận diện.
+5. Kiểm tra mobile khoảng 390px: nút không che nội dung chính, modal vừa màn hình, textarea và các nút dùng được.
+6. Xác nhận giáo viên không truy cập được `/admin/feedback`.
+
+Admin:
+
+1. Đăng nhập bằng tài khoản admin.
+2. Mở `/admin/feedback`.
+3. Xác nhận góp ý mới nhất hiển thị trước, có loại góp ý, công cụ, rating, nội dung, liên hệ và đường dẫn trang.
+4. Xác nhận giao diện không hiển thị thông tin kỹ thuật nội bộ hoặc khóa dịch vụ.

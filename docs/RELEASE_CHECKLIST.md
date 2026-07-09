@@ -12,6 +12,9 @@
 ## App flows
 
 - [ ] `/dashboard`, `/history`, `/templates`, `/question-bank`, `/data`, `/settings` mở không lỗi.
+- [ ] Nút “Góp ý” chỉ xuất hiện trong khu vực làm việc phù hợp, không xuất hiện trên login/register.
+- [ ] Giáo viên gửi góp ý trong app được, modal tự nhận diện trang/công cụ và không che các thao tác chính trên mobile.
+- [ ] Admin mở `/admin/feedback` xem được góp ý mới nhất trước; giáo viên không truy cập được trang này.
 - [ ] Lịch sử lưu, mở lại, xuất lại Word/Print được.
 - [ ] Mẫu cá nhân, ngân hàng câu hỏi, backup/restore local data hoạt động.
 - [ ] Command palette, favorites và recent tools hoạt động.
@@ -77,3 +80,4 @@
 - [ ] History/templates/question bank/settings save to Supabase for logged-in users.
 - [ ] LocalStorage fallback still works when Supabase env is missing.
 - [ ] `/data` migration copies local browser data to cloud without deleting local data.
+- [ ] `supabase/schema.sql` has the `feedback` table before enabling in-app feedback in production.

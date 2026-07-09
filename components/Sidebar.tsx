@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { AccountPanel } from "@/components/AccountPanel";
 import { BrandLogo } from "@/components/BrandLogo";
+import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 const groups = [
   {
@@ -132,6 +133,7 @@ function Content({
           <AccountPanel />
         </div>
       </aside>
+      <FeedbackWidget />
     </>
   );
 }
