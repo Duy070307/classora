@@ -20,10 +20,12 @@ import { worksheetPresets } from "@/lib/presets";
 import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { getCurrentSampleId, getWorksheetSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
+import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
   grade: "6",
+  bookSeries: DEFAULT_BOOK_SERIES,
   topic: "Văn bản truyện đồng thoại",
   objective: "Học sinh nhận biết nhân vật, chi tiết tiêu biểu và rút ra bài học từ văn bản.",
   exerciseCount: 5,
@@ -59,8 +61,8 @@ export default function WorksheetGeneratorPage() {
     setMessage("");
     try {
     const aiResult = await generateToolContent({ tool: "worksheet", input: input as unknown as Record<string, unknown> });
-    const generated = aiResult.content;
-    const content = applyTemplate(resolveTemplate(templateId), generated, { subject: input.subject, grade: input.grade, topic: input.topic, objective: input.objective, extraRequirements: input.extraRequirements });
+    const generated = withSourceAlignmentNote(aiResult.content, input as unknown as Record<string, unknown>);
+    const content = applyTemplate(resolveTemplate(templateId), generated, { subject: input.subject, grade: input.grade, bookSeries: input.bookSeries, topic: input.topic, objective: input.objective, extraRequirements: input.extraRequirements });
     const next = createDocument(`Phiếu học tập ${input.subject} lớp ${input.grade}`, "worksheet", content);
     setDocument(next);
     incrementUsage();
@@ -105,6 +107,11 @@ export default function WorksheetGeneratorPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div><label className="label">Môn học</label><input className="form-field mt-1" value={input.subject} onChange={(e) => setInput({ ...input, subject: e.target.value })} /></div>
               <div><label className="label">Lớp</label><input className="form-field mt-1" value={input.grade} onChange={(e) => setInput({ ...input, grade: e.target.value })} /></div>
+            </div>
+            <div>
+              <label className="label">Bộ sách / định hướng nội dung</label>
+              <select className="form-field mt-1" value={input.bookSeries} onChange={(e) => setInput({ ...input, bookSeries: e.target.value })}>{BOOK_SERIES_OPTIONS.map((value) => <option key={value}>{value}</option>)}</select>
+              <p className="mt-1 text-xs leading-5 text-muted">{BOOK_SERIES_HELPER_TEXT}</p>
             </div>
             <div><label className="label">Chủ đề</label><input className="form-field mt-1" value={input.topic} onChange={(e) => setInput({ ...input, topic: e.target.value })} /></div>
             <div><label className="label">Mục tiêu bài học</label><textarea className="form-field mt-1 min-h-24" value={input.objective} onChange={(e) => setInput({ ...input, objective: e.target.value })} /></div>

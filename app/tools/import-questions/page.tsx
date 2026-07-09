@@ -8,6 +8,7 @@ import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader"
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { addQuestions, createQuestion } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionType } from "@/lib/types";
+import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES } from "@/lib/curriculum";
 
 const templateXlsx = "/templates/mau-ngan-hang-cau-hoi-soan-lab.xlsx";
 const templateCsv = "/templates/mau-ngan-hang-cau-hoi-soan-lab.csv";
@@ -305,6 +306,7 @@ export default function ImportQuestionsPage() {
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "ai" ? "ai" : "excel",
   );
   const [rows, setRows] = useState<ImportRow[]>([]);
+  const [bookSeries, setBookSeries] = useState(DEFAULT_BOOK_SERIES);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -354,6 +356,7 @@ export default function ImportQuestionsPage() {
     try {
       const payload = new FormData();
       payload.append("file", file);
+      payload.append("bookSeries", bookSeries);
       const response = await fetch("/api/question-bank/ai-import", {
         method: "POST",
         body: payload,
@@ -421,6 +424,12 @@ export default function ImportQuestionsPage() {
       question: buildQuestion(row),
       answer: row.answer.trim(),
       explanation: row.explanation.trim(),
+      metadata: {
+        bookSeries,
+        sourceType: "generated",
+        contentType: row.type === "Trắc nghiệm" || row.type === "Đúng/Sai" ? "Lý thuyết" : "Bài tập",
+        needsReview: true,
+      },
     })));
     setMessage(`Đã nhập ${validRows.length} câu hỏi hợp lệ vào ngân hàng câu hỏi.`);
     setRows([]);
@@ -454,6 +463,14 @@ export default function ImportQuestionsPage() {
           </button>
         ))}
       </div>
+
+      <section className="mb-5 rounded-[24px] border border-blue-100 bg-white p-4 shadow-sm">
+        <label className="label">Bộ sách / định hướng nội dung</label>
+        <select className="form-field mt-1 max-w-md" value={bookSeries} onChange={(event) => setBookSeries(event.target.value)}>
+          {BOOK_SERIES_OPTIONS.map((value) => <option key={value}>{value}</option>)}
+        </select>
+        <p className="mt-1 text-xs leading-5 text-muted">{BOOK_SERIES_HELPER_TEXT}</p>
+      </section>
 
       {mode === "excel" ? <section className="premium-section">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">

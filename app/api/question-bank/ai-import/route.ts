@@ -36,6 +36,7 @@ type ImportCandidate = {
   explanation: string;
   note: string;
   warnings: string[];
+  metadata?: Record<string, unknown>;
 };
 
 function jsonResponse(body: unknown, status = 200) {
@@ -248,6 +249,7 @@ function normalizeRows(value: unknown): { rows: ImportCandidate[]; warnings: str
       if (!item || typeof item !== "object") return null;
       const row = item as Record<string, unknown>;
       const options = row.options && typeof row.options === "object" ? row.options as Record<string, unknown> : {};
+      const metadata = row.metadata && typeof row.metadata === "object" ? row.metadata as Record<string, unknown> : {};
       return {
         subject: String(row.subject || ""),
         grade: String(row.grade || ""),
@@ -263,6 +265,7 @@ function normalizeRows(value: unknown): { rows: ImportCandidate[]; warnings: str
         },
         answer: String(row.answer || ""),
         explanation: String(row.explanation || row.solution || ""),
+        metadata,
         note: String(row.note || ""),
         warnings: Array.isArray(row.warnings) ? row.warnings.map(String) : [],
       };
@@ -301,6 +304,7 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData();
   const file = formData.get("file");
+  const bookSeries = typeof formData.get("bookSeries") === "string" ? String(formData.get("bookSeries")) : "Kết nối tri thức";
   if (!(file instanceof File)) return jsonResponse({ ok: false, error: "Vui lòng chọn file cần nhận diện." }, 400);
   if (file.size > maxFileSize) return jsonResponse({ ok: false, error: "File quá lớn. Vui lòng dùng file tối đa 5MB." }, 400);
 
@@ -338,7 +342,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const prompt = buildQuestionBankImportPrompt({ fileName: file.name, extractedText: extracted.text });
+    const prompt = buildQuestionBankImportPrompt({ fileName: file.name, extractedText: extracted.text, bookSeries });
     const response = await provider.generate({
       tool: "question-bank-import",
       input: { fileName: file.name },

@@ -11,6 +11,7 @@ import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types
 import Link from "next/link";
 import { BugReportLink } from "@/components/BugReportLink";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
+import { BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES } from "@/lib/curriculum";
 
 const emptyForm = {
   subject: "Toán",
@@ -20,8 +21,16 @@ const emptyForm = {
   type: "Trắc nghiệm" as QuestionType,
   difficulty: "Nhận biết" as QuestionDifficulty,
   answer: "",
-  explanation: ""
+  explanation: "",
+  bookSeries: DEFAULT_BOOK_SERIES,
+  contentType: "Lý thuyết"
 };
+
+function mergeQuestions(localItems: QuestionItem[], cloudItems: QuestionItem[]) {
+  const map = new Map<string, QuestionItem>();
+  [...cloudItems, ...localItems].forEach((item) => map.set(item.id, item));
+  return [...map.values()].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
 
 export default function QuestionBankPage() {
   const [items, setItems] = useState<QuestionItem[]>([]);
@@ -30,10 +39,27 @@ export default function QuestionBankPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
-  const [filters, setFilters] = useState({ subject: "", grade: "", topic: "", type: "", difficulty: "" });
+  const [filters, setFilters] = useState({ subject: "", grade: "", topic: "", type: "", difficulty: "", bookSeries: "", contentType: "" });
   const [message, setMessage] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
-  useEffect(() => queueMicrotask(() => setItems(getQuestions())), []);
+  useEffect(() => {
+    queueMicrotask(() => {
+      const local = getQuestions();
+      setItems(local);
+      import("@/lib/data/question-bank-store")
+        .then(({ listCloudQuestions }) => listCloudQuestions())
+        .then((cloud) => {
+          if (cloud?.length) setItems((current) => mergeQuestions(current.length ? current : local, cloud));
+        })
+        .catch(() => undefined);
+      fetch("/api/auth/me")
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => setIsAdmin(data?.user?.role === "admin"))
+        .catch(() => undefined);
+    });
+  }, []);
 
   function persist(next: QuestionItem[]) {
     setItems(next);
@@ -44,8 +70,40 @@ export default function QuestionBankPage() {
     event.preventDefault();
     if (!form.question.trim()) return setMessage("Vui lòng nhập nội dung câu hỏi.");
     const nextItem = editingId
-      ? { ...items.find((item) => item.id === editingId)!, ...form }
-      : createQuestion(form);
+      ? {
+          ...items.find((item) => item.id === editingId)!,
+          subject: form.subject,
+          grade: form.grade,
+          topic: form.topic,
+          question: form.question,
+          type: form.type,
+          difficulty: form.difficulty,
+          answer: form.answer,
+          explanation: form.explanation,
+          metadata: {
+            ...(items.find((item) => item.id === editingId)?.metadata || {}),
+            bookSeries: form.bookSeries,
+            contentType: form.contentType,
+            sourceType: "generated",
+            needsReview: true,
+          },
+        }
+      : createQuestion({
+          subject: form.subject,
+          grade: form.grade,
+          topic: form.topic,
+          question: form.question,
+          type: form.type,
+          difficulty: form.difficulty,
+          answer: form.answer,
+          explanation: form.explanation,
+          metadata: {
+            bookSeries: form.bookSeries,
+            contentType: form.contentType,
+            sourceType: "generated",
+            needsReview: true,
+          },
+        });
     persist(editingId ? items.map((item) => item.id === editingId ? nextItem : item) : [nextItem, ...items]);
     setForm(emptyForm);
     setEditingId(null);
@@ -56,7 +114,9 @@ export default function QuestionBankPage() {
     setEditingId(item.id);
     setForm({
       subject: item.subject, grade: item.grade, topic: item.topic, question: item.question,
-      type: item.type, difficulty: item.difficulty, answer: item.answer, explanation: item.explanation
+      type: item.type, difficulty: item.difficulty, answer: item.answer, explanation: item.explanation,
+      bookSeries: item.metadata?.bookSeries || DEFAULT_BOOK_SERIES,
+      contentType: item.metadata?.contentType || "Lý thuyết"
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -74,12 +134,36 @@ export default function QuestionBankPage() {
       && (!filters.grade || item.grade === filters.grade)
       && (!filters.topic || item.topic === filters.topic)
       && (!filters.type || item.type === filters.type)
-      && (!filters.difficulty || item.difficulty === filters.difficulty);
+      && (!filters.difficulty || item.difficulty === filters.difficulty)
+      && (!filters.bookSeries || (item.metadata?.bookSeries || "Khác") === filters.bookSeries)
+      && (!filters.contentType || (item.metadata?.contentType || "Bài tập") === filters.contentType);
   }), [filters, items, query]);
 
   const exportItems = selected.length ? items.filter((item) => selected.includes(item.id)) : filtered;
   const exportDocument = createDocument(`Ngân hàng câu hỏi - ${exportItems.length} câu`, "question-bank", questionsToDocument(exportItems));
   const unique = (key: "subject" | "grade" | "topic") => [...new Set(items.map((item) => item[key]).filter(Boolean))];
+  const hasSeedQuestions = items.some((item) => item.metadata?.generatedBy === "Soạn Lab seed");
+
+  async function seedKnttQuestions() {
+    setSeeding(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/seed-question-bank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "kntt-theory" }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || "Chưa thêm được câu hỏi mẫu.");
+      const { listCloudQuestions } = await import("@/lib/data/question-bank-store");
+      const cloud = await listCloudQuestions();
+      if (cloud?.length) setItems((current) => mergeQuestions(current, cloud));
+      setMessage(`Đã thêm ${data.inserted || 0} câu hỏi mẫu. Bỏ qua ${data.skipped || 0} câu hỏi đã tồn tại.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Chưa thêm được câu hỏi mẫu. Vui lòng thử lại.");
+    }
+    setSeeding(false);
+  }
 
   return (
     <AppShell title="Ngân hàng câu hỏi">
@@ -138,6 +222,11 @@ export default function QuestionBankPage() {
                   <Sparkles size={16} /> Upload file để nhận diện
                 </Link>
               )}
+              {isAdmin ? (
+                <button type="button" className="btn-secondary" onClick={seedKnttQuestions} disabled={seeding}>
+                  {seeding ? "Đang thêm…" : "Thêm câu hỏi mẫu Kết nối tri thức"}
+                </button>
+              ) : null}
             </div>
           </div>
         </section>
@@ -154,6 +243,10 @@ export default function QuestionBankPage() {
               <div><label className="label">Loại câu hỏi</label><select className="form-field mt-1" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as QuestionType })}>{["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"].map((value) => <option key={value}>{value}</option>)}</select></div>
               <div><label className="label">Mức độ</label><select className="form-field mt-1" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value as QuestionDifficulty })}>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>
             </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div><label className="label">Bộ sách</label><select className="form-field mt-1" value={form.bookSeries} onChange={(e) => setForm({ ...form, bookSeries: e.target.value })}>{BOOK_SERIES_OPTIONS.map((value) => <option key={value}>{value}</option>)}</select></div>
+              <div><label className="label">Loại nội dung</label><select className="form-field mt-1" value={form.contentType} onChange={(e) => setForm({ ...form, contentType: e.target.value })}>{["Lý thuyết", "Bài tập", "Thí nghiệm", "Vận dụng thực tế"].map((value) => <option key={value}>{value}</option>)}</select></div>
+            </div>
             <div><label className="label">Đáp án</label><textarea className="form-field mt-1 min-h-20" value={form.answer} onChange={(e) => setForm({ ...form, answer: e.target.value })} /></div>
             <div><label className="label">Lời giải hoặc ghi chú</label><textarea className="form-field mt-1 min-h-20" value={form.explanation} onChange={(e) => setForm({ ...form, explanation: e.target.value })} /></div>
             <div className="flex gap-2"><button className="btn-primary flex-1">{editingId ? "Lưu chỉnh sửa" : "Thêm câu hỏi"}</button>{editingId ? <button type="button" className="btn-secondary" onClick={() => { setEditingId(null); setForm(emptyForm); }}>Hủy</button> : null}</div>
@@ -163,10 +256,17 @@ export default function QuestionBankPage() {
           <section className="space-y-4">
             <div className="card space-y-3 p-4">
               <input className="form-field" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm nội dung, đáp án hoặc lời giải..." />
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+              {hasSeedQuestions ? (
+                <p className="rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-800">
+                  Câu hỏi mẫu chỉ dùng để tham khảo và làm dữ liệu khởi đầu. Thầy cô cần kiểm tra, chỉnh sửa hoặc thay thế theo nội dung dạy học thực tế.
+                </p>
+              ) : null}
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {(["subject", "grade", "topic"] as const).map((key) => <select key={key} className="form-field" value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option value="">{key === "subject" ? "Mọi môn" : key === "grade" ? "Mọi lớp" : "Mọi chủ đề"}</option>{unique(key).map((value) => <option key={value}>{value}</option>)}</select>)}
                 <select className="form-field" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}><option value="">Mọi loại</option>{["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"].map((value) => <option key={value}>{value}</option>)}</select>
                 <select className="form-field" value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select>
+                <select className="form-field" value={filters.bookSeries} onChange={(e) => setFilters({ ...filters, bookSeries: e.target.value })}><option value="">Mọi bộ sách</option>{["Kết nối tri thức", "Chân trời sáng tạo", "Cánh diều", "Khác"].map((value) => <option key={value}>{value}</option>)}</select>
+                <select className="form-field" value={filters.contentType} onChange={(e) => setFilters({ ...filters, contentType: e.target.value })}><option value="">Mọi loại nội dung</option>{["Lý thuyết", "Bài tập", "Thí nghiệm", "Vận dụng thực tế"].map((value) => <option key={value}>{value}</option>)}</select>
               </div>
               <div className="flex flex-wrap gap-2">
                 <DocumentExportMenu document={exportDocument} />
@@ -179,7 +279,7 @@ export default function QuestionBankPage() {
                 <div className="flex items-start gap-3">
                   <input type="checkbox" className="mt-1" checked={selected.includes(item.id)} onChange={(e) => setSelected(e.target.checked ? [...selected, item.id] : selected.filter((id) => id !== item.id))} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap gap-2 text-xs"><span className="rounded bg-blue-50 px-2 py-1 font-semibold text-brand">{item.subject} · Lớp {item.grade}</span><span className="rounded bg-slate-100 px-2 py-1">{item.topic || "Chưa có chủ đề"}</span><span className="rounded bg-amber-50 px-2 py-1 text-amber-700">{item.type} · {item.difficulty}</span></div>
+                    <div className="flex flex-wrap gap-2 text-xs"><span className="rounded bg-blue-50 px-2 py-1 font-semibold text-brand">{item.subject} · Lớp {item.grade}</span><span className="rounded bg-slate-100 px-2 py-1">{item.topic || "Chưa có chủ đề"}</span><span className="rounded bg-amber-50 px-2 py-1 text-amber-700">{item.type} · {item.difficulty}</span>{item.metadata?.bookSeries ? <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">{item.metadata.bookSeries}</span> : null}{item.metadata?.contentType ? <span className="rounded bg-emerald-50 px-2 py-1 text-emerald-700">{item.metadata.contentType}</span> : null}</div>
                     <p className="mt-3 whitespace-pre-wrap font-medium leading-6 text-ink">{item.question}</p>
                     <p className="mt-2 text-sm text-muted"><strong>Đáp án:</strong> {item.answer || "Chưa có"}</p>
                     {item.explanation ? <p className="mt-1 text-sm text-muted"><strong>Lời giải:</strong> {item.explanation}</p> : null}

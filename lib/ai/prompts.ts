@@ -1,4 +1,5 @@
 import type { AIRefinementAction } from "@/lib/ai/types";
+import { buildCurriculumPromptRules } from "@/lib/curriculum";
 
 const reviewNote =
   "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
@@ -42,6 +43,9 @@ Nhiệm vụ: ${task}
 
 Dữ liệu đầu vào:
 ${formatInput(input)}
+
+Định hướng nội dung:
+${buildCurriculumPromptRules(input)}
 
 Cấu trúc mong muốn:
 ${structure}

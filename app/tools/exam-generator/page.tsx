@@ -23,12 +23,14 @@ import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
 import { createStructuredExam } from "@/lib/mock-exam-generator";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
+import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 
 const initialInput: ExamInput = {
   schoolName: "",
   teacherName: "",
   subject: "Toán",
   grade: "7",
+  bookSeries: DEFAULT_BOOK_SERIES,
   topic: "Tỉ lệ thức và dãy tỉ số bằng nhau",
   duration: "45 phút",
   examType: "Kết hợp",
@@ -80,7 +82,17 @@ export default function ExamGeneratorPage() {
         schoolName: current.schoolName || settings.schoolName,
         teacherName: current.teacherName || settings.teacherName
       }));
-      setBankQuestions(getQuestions());
+      const localQuestions = getQuestions();
+      setBankQuestions(localQuestions);
+      import("@/lib/data/question-bank-store")
+        .then(({ listCloudQuestions }) => listCloudQuestions())
+        .then((cloud) => {
+          if (!cloud?.length) return;
+          const merged = new Map<string, QuestionItem>();
+          [...cloud, ...localQuestions].forEach((item) => merged.set(item.id, item));
+          setBankQuestions([...merged.values()]);
+        })
+        .catch(() => undefined);
     });
   }, []);
 
@@ -109,15 +121,19 @@ export default function ExamGeneratorPage() {
     try {
     const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
     const generatedRaw = aiResult.content;
-    const generated = generatedRaw
+    const generated = withSourceAlignmentNote(generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
-      .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. ");
+      .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. "), input as unknown as Record<string, unknown>);
     const matching = bankQuestions.filter((item) =>
       item.subject.toLowerCase() === input.subject.toLowerCase()
       && item.grade.toLowerCase() === input.grade.toLowerCase()
       && (!input.topic || item.topic.toLowerCase().includes(input.topic.toLowerCase()) || input.topic.toLowerCase().includes(item.topic.toLowerCase()))
       && (!bankDifficulty || item.difficulty === bankDifficulty)
-    ).slice(0, bankCount);
+    ).sort((a, b) => {
+      const aMatch = a.metadata?.bookSeries === input.bookSeries ? 1 : 0;
+      const bMatch = b.metadata?.bookSeries === input.bookSeries ? 1 : 0;
+      return bMatch - aMatch;
+    }).slice(0, bankCount);
     const bankContent = useBank && matching.length
       ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map((item, index) => `Câu NH${index + 1}. ${item.question}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}`).join("\n\n")}`
       : "";
@@ -125,6 +141,7 @@ export default function ExamGeneratorPage() {
       subject: input.subject,
       grade: input.grade,
       topic: input.topic,
+      bookSeries: input.bookSeries,
       duration: input.duration,
       extraRequirements: input.extraRequirements
     });
@@ -209,6 +226,11 @@ export default function ExamGeneratorPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Lớp</label><input className="form-field mt-1" value={input.grade} onChange={(e) => setInput({ ...input, grade: e.target.value })} /></div>
                   <div><label className="label">Thời gian làm bài</label><input className="form-field mt-1" value={input.duration ?? ""} onChange={(e) => setInput({ ...input, duration: e.target.value })} /></div>
+                </div>
+                <div>
+                  <label className="label">Bộ sách / định hướng nội dung</label>
+                  <select className="form-field mt-1" value={input.bookSeries} onChange={(e) => setInput({ ...input, bookSeries: e.target.value })}>{BOOK_SERIES_OPTIONS.map((value) => <option key={value}>{value}</option>)}</select>
+                  <p className="mt-1 text-xs leading-5 text-muted">{BOOK_SERIES_HELPER_TEXT}</p>
                 </div>
                 <div><label className="label">Chủ đề/chương</label><input className="form-field mt-1" value={input.topic} onChange={(e) => setInput({ ...input, topic: e.target.value })} /></div>
               </div>

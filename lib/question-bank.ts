@@ -54,7 +54,7 @@ export function createQuestion(input: Omit<QuestionItem, "id" | "createdAt">): Q
 export function questionsToDocument(items: QuestionItem[]) {
   const header = items[0];
   const questions = items.map((item, index) =>
-    `Câu ${index + 1}. ${item.question}\nLoại: ${item.type} | Mức độ: ${item.difficulty}\nĐáp án: ${item.answer || "Chưa có"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`
+    `Câu ${index + 1}. ${item.question}\nLoại: ${item.type} | Mức độ: ${item.difficulty}${item.metadata?.bookSeries ? ` | Bộ sách: ${item.metadata.bookSeries}` : ""}\nĐáp án: ${item.answer || "Chưa có"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`
   );
   return `NGÂN HÀNG CÂU HỎI\nMôn học: ${header?.subject || "Nhiều môn"}\nLớp: ${header?.grade || "Nhiều lớp"}\nChủ đề: ${header?.topic || "Nhiều chủ đề"}\nSố câu: ${items.length}\n\n${questions.join("\n\n")}`;
 }

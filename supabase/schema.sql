@@ -114,6 +114,17 @@ for all using (user_id = auth.uid() or public.is_admin())
 with check (user_id = auth.uid() or public.is_admin());
 
 drop policy if exists "question_bank_own_all" on public.question_bank;
+drop policy if exists "question_bank_select_own_seed_or_admin" on public.question_bank;
+create policy "question_bank_select_own_seed_or_admin" on public.question_bank
+for select using (
+  user_id = auth.uid()
+  or public.is_admin()
+  or (
+    metadata->>'generatedBy' = 'Soạn Lab seed'
+    and metadata->>'sourceType' = 'tham khảo'
+  )
+);
+
 create policy "question_bank_own_all" on public.question_bank
 for all using (user_id = auth.uid() or public.is_admin())
 with check (user_id = auth.uid() or public.is_admin());

@@ -178,6 +178,26 @@ npm run smoke
 - Tài khoản admin mở `/admin`; giáo viên không có quyền admin.
 - `/system-status` chuyển về dashboard và không hiển thị thông tin kỹ thuật cho giáo viên.
 
+## Ngân hàng câu hỏi Kết nối tri thức
+
+Admin:
+
+1. Đăng nhập bằng tài khoản admin.
+2. Mở `/question-bank`.
+3. Bấm “Thêm câu hỏi mẫu Kết nối tri thức”.
+4. Xác nhận thông báo “Đã thêm X câu hỏi mẫu. Bỏ qua Y câu hỏi đã tồn tại.”
+5. Bấm lại lần nữa và xác nhận câu trùng được bỏ qua.
+6. Kiểm tra bảng `question_bank`: metadata có `bookSeries: "Kết nối tri thức"`, `sourceType: "tham khảo"`, `contentType: "Lý thuyết"`, `needsReview: true`.
+
+Teacher:
+
+1. Đăng nhập bằng tài khoản giáo viên.
+2. Mở `/question-bank`.
+3. Lọc môn Vật lí/Hóa học, lớp 10/11/12, bộ sách “Kết nối tri thức”, loại nội dung “Lý thuyết”.
+4. Xác nhận câu hỏi mẫu hiển thị như dữ liệu tham khảo, không gọi là câu hỏi chính thức của SGK.
+5. Mở `/tools/exam-generator`, chọn Vật lí 10, chủ đề “Ba định luật Newton”, bộ sách “Kết nối tri thức”, bật “Lấy câu hỏi từ ngân hàng câu hỏi” và tạo đề.
+6. Xác nhận đề có ghi chú bản nháp tham khảo, xuất Word/PDF vẫn hoạt động.
+
 ## In-app teacher feedback
 
 Teacher:

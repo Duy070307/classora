@@ -1,6 +1,7 @@
 export function buildQuestionBankImportPrompt(input: {
   fileName: string;
   extractedText: string;
+  bookSeries?: string;
 }) {
   return `Bạn là trợ lý hỗ trợ giáo viên Việt Nam chuẩn hóa dữ liệu ngân hàng câu hỏi.
 
@@ -18,6 +19,8 @@ Quy tắc bắt buộc:
 - Trích xuất phương án A/B/C/D khi có.
 - Trích xuất đáp án đúng khi có.
 - Trích xuất lời giải/hướng dẫn giải khi có.
+- Nếu giáo viên chọn bộ sách, đưa vào metadata.bookSeries; không khẳng định câu hỏi là nội dung chính thức nếu file không ghi rõ.
+- Với câu hỏi được chuẩn hóa/tự sinh bổ sung metadata: sourceType "generated", needsReview true.
 - Giữ ký hiệu toán học dạng văn bản hoặc LaTeX nếu file đã có.
 - Không đưa lời giải bài toán mới nếu file không có lời giải.
 - Không thêm nhận xét ngoài JSON.
@@ -41,6 +44,12 @@ Schema JSON cần trả về:
       },
       "answer": "C",
       "explanation": "Lời giải nếu có",
+      "metadata": {
+        "bookSeries": "${input.bookSeries || "Kết nối tri thức"}",
+        "sourceType": "generated",
+        "contentType": "Lý thuyết",
+        "needsReview": true
+      },
       "note": "",
       "warnings": []
     }

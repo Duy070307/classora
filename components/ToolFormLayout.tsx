@@ -23,6 +23,7 @@ import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { getCurrentSampleId, getGenericSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { generateToolContent } from "@/lib/ai/client";
+import { withSourceAlignmentNote } from "@/lib/curriculum";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -105,7 +106,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
       setLoading(false);
       return;
     }
-    const generated = polishGeneratedContent(config.type, input, rawGenerated);
+    const generated = withSourceAlignmentNote(polishGeneratedContent(config.type, input, rawGenerated), input as Record<string, unknown>);
     const values = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, String(value)]));
     const content = applyTemplate(resolveTemplate(templateId), generated, values);
     const next = createDocument(config.makeTitle(input), config.type, content);

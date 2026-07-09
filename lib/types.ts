@@ -73,6 +73,15 @@ export type QuestionItem = {
   answer: string;
   explanation: string;
   createdAt: string;
+  options?: Record<string, string> | null;
+  metadata?: {
+    bookSeries?: string;
+    sourceType?: string;
+    contentType?: string;
+    generatedBy?: string;
+    needsReview?: boolean;
+    [key: string]: unknown;
+  };
 };
 
 export type ExamInput = {
@@ -80,6 +89,7 @@ export type ExamInput = {
   teacherName: string;
   subject: string;
   grade: string;
+  bookSeries: string;
   topic: string;
   duration: string;
   examType: "Trắc nghiệm" | "Tự luận" | "Kết hợp";
@@ -105,6 +115,7 @@ export type ExamInput = {
 export type WorksheetInput = {
   subject: string;
   grade: string;
+  bookSeries: string;
   topic: string;
   objective: string;
   exerciseCount: number;

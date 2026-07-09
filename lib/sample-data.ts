@@ -10,6 +10,7 @@ export const sampleExamInput: ExamInput = {
   teacherName: "Nguyễn Thị Lan",
   subject: "Toán",
   grade: "8",
+  bookSeries: "Kết nối tri thức",
   topic: "Phương trình bậc nhất một ẩn",
   duration: "45 phút",
   examType: "Kết hợp",
@@ -35,6 +36,7 @@ export const sampleExamInput: ExamInput = {
 export const sampleWorksheetInput: WorksheetInput = {
   subject: "Ngữ văn",
   grade: "6",
+  bookSeries: "Kết nối tri thức",
   topic: "Truyện đồng thoại",
   objective: "Học sinh nhận biết nhân vật, chi tiết tiêu biểu và rút ra bài học từ văn bản.",
   exerciseCount: 5,
@@ -59,6 +61,7 @@ export const sampleStudentCommentInput: StudentCommentInput = {
 export const sampleLessonPlanInput: GenericToolInput = {
   subject: "Toán",
   grade: "8",
+  bookSeries: "Kết nối tri thức",
   lessonName: "Phương trình bậc nhất một ẩn",
   duration: "45 phút",
   objectives: "Học sinh nhận biết phương trình bậc nhất, giải được bài tập cơ bản và vận dụng vào tình huống thực tế.",

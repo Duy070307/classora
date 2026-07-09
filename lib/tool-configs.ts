@@ -19,6 +19,7 @@ import {
 } from "@/lib/mock-ai";
 import type { GenericToolInput, ToolConfig } from "@/lib/types";
 import { sampleAnswerKeyInput, sampleExamShufflerInput, sampleLessonPlanInput, sampleMatrixInput } from "@/lib/sample-data";
+import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES } from "@/lib/curriculum";
 
 const text = (input: GenericToolInput, key: string, fallback = "") => String(input[key] ?? fallback);
 
@@ -35,6 +36,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     fields: [
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Toán" },
       { name: "grade", label: "Lớp", type: "text", defaultValue: "8" },
+      { name: "bookSeries", label: "Bộ sách / định hướng nội dung", type: "select", options: [...BOOK_SERIES_OPTIONS], helperText: BOOK_SERIES_HELPER_TEXT, defaultValue: DEFAULT_BOOK_SERIES },
       { name: "lessonName", label: "Tên bài học", type: "text", defaultValue: "Phương trình bậc nhất" },
       { name: "duration", label: "Thời lượng", type: "text", defaultValue: "45 phút" },
       { name: "curriculumRequirement", label: "Yêu cầu cần đạt / chuẩn chương trình", type: "textarea", placeholder: "Ví dụ: Học sinh mô tả được hiện tượng khúc xạ ánh sáng và vận dụng để giải thích một số hiện tượng thực tế.", helperText: "Nếu để trống, Soạn Lab sẽ gợi ý mục tiêu tham khảo theo môn, lớp và chủ đề. Thầy cô nên kiểm tra lại theo chương trình chính thức.", defaultValue: "" },
@@ -97,6 +99,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     fields: [
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Ngữ văn" },
       { name: "grade", label: "Lớp", type: "text", defaultValue: "7" },
+      { name: "bookSeries", label: "Bộ sách / định hướng nội dung", type: "select", options: [...BOOK_SERIES_OPTIONS], helperText: BOOK_SERIES_HELPER_TEXT, defaultValue: DEFAULT_BOOK_SERIES },
       { name: "assignmentType", label: "Loại bài", type: "select", options: ["Bài viết", "Thuyết trình", "Dự án nhóm", "Bài thực hành"], defaultValue: "Bài viết" },
       { name: "criteria", label: "Tiêu chí cần chấm", type: "textarea", defaultValue: "Nội dung, lập luận, trình bày, sáng tạo" },
       { name: "totalScore", label: "Tổng điểm", type: "number", defaultValue: 10 },
@@ -131,6 +134,7 @@ export const expandedToolConfigs: ToolConfig[] = [
     fields: [
       { name: "subject", label: "Môn học", type: "text", defaultValue: "Lịch sử" },
       { name: "grade", label: "Lớp", type: "text", defaultValue: "8" },
+      { name: "bookSeries", label: "Bộ sách / định hướng nội dung", type: "select", options: [...BOOK_SERIES_OPTIONS], helperText: BOOK_SERIES_HELPER_TEXT, defaultValue: DEFAULT_BOOK_SERIES },
       { name: "topic", label: "Chủ đề", type: "text", defaultValue: "Cách mạng công nghiệp" },
       { name: "questionCount", label: "Số lượng câu hỏi", type: "number", defaultValue: 10 },
       { name: "questionType", label: "Loại câu hỏi", type: "select", options: ["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"], defaultValue: "Trắc nghiệm" },
