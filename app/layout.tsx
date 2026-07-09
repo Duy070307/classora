@@ -3,6 +3,7 @@ import "./globals.css";
 import { UsageLimitNotice } from "@/components/UsageLimitNotice";
 import { CommandPalette } from "@/components/CommandPalette";
 import { BetaNoticeModal } from "@/components/BetaNoticeModal";
+import { getSiteUrl } from "@/lib/site-url";
 
 const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
@@ -11,7 +12,7 @@ const ogImage = "/og-image.png";
 const iconVersion = "soanlab-transparent-20260705";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(getSiteUrl()),
   applicationName: "Soạn Lab",
   manifest: `/manifest.json?v=${iconVersion}`,
   keywords: [

@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getRequestOrigin } from "@/lib/site-url";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const supabase = await createSupabaseServerClient();
   if (supabase) await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"));
+  return NextResponse.redirect(new URL("/login", getRequestOrigin(request)));
 }
 
-export async function GET() {
-  return POST();
+export async function GET(request: NextRequest) {
+  return POST(request);
 }

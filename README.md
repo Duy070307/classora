@@ -46,7 +46,7 @@ npm run smoke
 3. Build command: `npm run build`.
 4. Không cần biến môi trường bắt buộc.
 
-Có thể đặt `NEXT_PUBLIC_APP_URL` thành domain chính thức để metadata và sitemap dùng URL production. Nếu không đặt, ứng dụng vẫn build và hoạt động.
+Có thể đặt `NEXT_PUBLIC_SITE_URL` hoặc `NEXT_PUBLIC_APP_URL` thành domain chính thức để metadata và sitemap dùng URL production. Với website production hiện tại, dùng `https://soanlab.ducduytran.shop`. Nếu không đặt, production sẽ fallback về domain chính thức này, còn local development vẫn dùng `http://localhost:3000`.
 
 AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần API key. Xem [AI integration](docs/AI_INTEGRATION.md) để cấu hình OpenAI/Gemini trên server hoặc Vercel.
 
