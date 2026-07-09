@@ -426,7 +426,7 @@ export default function ImportQuestionsPage() {
       explanation: row.explanation.trim(),
       metadata: {
         bookSeries,
-        sourceType: "generated",
+        sourceType: "teacher_imported",
         contentType: row.type === "Trắc nghiệm" || row.type === "Đúng/Sai" ? "Lý thuyết" : "Bài tập",
         needsReview: true,
       },

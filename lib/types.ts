@@ -73,6 +73,8 @@ export type QuestionItem = {
   answer: string;
   explanation: string;
   createdAt: string;
+  bankScope?: "system" | "user";
+  userId?: string | null;
   options?: Record<string, string> | null;
   metadata?: {
     bookSeries?: string;

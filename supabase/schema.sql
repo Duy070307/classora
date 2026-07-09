@@ -37,7 +37,8 @@ create table if not exists public.templates (
 
 create table if not exists public.question_bank (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
+  bank_scope text not null default 'user' check (bank_scope in ('system', 'user')),
   subject text,
   grade text,
   topic text,
@@ -49,7 +50,11 @@ create table if not exists public.question_bank (
   explanation text,
   metadata jsonb default '{}'::jsonb,
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  check (
+    (bank_scope = 'system' and user_id is null)
+    or (bank_scope = 'user' and user_id is not null)
+  )
 );
 
 create table if not exists public.user_settings (
@@ -115,19 +120,38 @@ with check (user_id = auth.uid() or public.is_admin());
 
 drop policy if exists "question_bank_own_all" on public.question_bank;
 drop policy if exists "question_bank_select_own_seed_or_admin" on public.question_bank;
-create policy "question_bank_select_own_seed_or_admin" on public.question_bank
+drop policy if exists "question_bank_select_system_own_or_admin" on public.question_bank;
+drop policy if exists "question_bank_insert_own_or_admin_system" on public.question_bank;
+drop policy if exists "question_bank_update_own_or_admin" on public.question_bank;
+drop policy if exists "question_bank_delete_own_or_admin" on public.question_bank;
+create policy "question_bank_select_system_own_or_admin" on public.question_bank
 for select using (
-  user_id = auth.uid()
-  or public.is_admin()
-  or (
-    metadata->>'generatedBy' = 'Soạn Lab seed'
-    and metadata->>'sourceType' = 'tham khảo'
-  )
+  public.is_admin()
+  or bank_scope = 'system'
+  or (bank_scope = 'user' and user_id = auth.uid())
 );
 
-create policy "question_bank_own_all" on public.question_bank
-for all using (user_id = auth.uid() or public.is_admin())
-with check (user_id = auth.uid() or public.is_admin());
+create policy "question_bank_insert_own_or_admin_system" on public.question_bank
+for insert with check (
+  (bank_scope = 'user' and user_id = auth.uid())
+  or public.is_admin()
+);
+
+create policy "question_bank_update_own_or_admin" on public.question_bank
+for update using (
+  public.is_admin()
+  or (bank_scope = 'user' and user_id = auth.uid())
+)
+with check (
+  public.is_admin()
+  or (bank_scope = 'user' and user_id = auth.uid())
+);
+
+create policy "question_bank_delete_own_or_admin" on public.question_bank
+for delete using (
+  public.is_admin()
+  or (bank_scope = 'user' and user_id = auth.uid())
+);
 
 drop policy if exists "user_settings_own_all" on public.user_settings;
 create policy "user_settings_own_all" on public.user_settings

@@ -7,10 +7,12 @@ Bảng chính:
 - `profiles`: hồ sơ và role người dùng.
 - `documents`: lịch sử tài liệu đã lưu.
 - `templates`: mẫu cá nhân.
-- `question_bank`: ngân hàng câu hỏi.
+- `question_bank`: ngân hàng câu hỏi. `bank_scope = 'system'` là câu hỏi mẫu Soạn Lab dùng chung, giáo viên chỉ đọc; `bank_scope = 'user'` là câu hỏi riêng của từng giáo viên.
 - `user_settings`: cài đặt tài liệu.
 
-RLS được bật để giáo viên chỉ thao tác dữ liệu của chính mình. Admin có thể xem dữ liệu qua trang `/admin` khi server có `SUPABASE_SERVICE_ROLE_KEY`.
+RLS được bật để giáo viên đọc được câu hỏi mẫu Soạn Lab và chỉ thao tác dữ liệu riêng của chính mình. Admin có thể xem dữ liệu qua trang `/admin` khi server có `SUPABASE_SERVICE_ROLE_KEY`.
+
+Migration production cho Batch 80 nằm ở `supabase/migrations/20260710_question_bank_scopes.sql`.
 
 Fallback:
 

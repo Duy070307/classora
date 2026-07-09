@@ -26,14 +26,16 @@ export default async function AdminPage() {
   }
 
   const admin = createSupabaseAdminClient();
-  const [users, documents, templates, questions] = admin
+  const [users, documents, templates, questions, systemQuestions, teacherQuestions] = admin
     ? await Promise.all([
         admin.auth.admin.listUsers({ page: 1, perPage: 20 }),
         admin.from("documents").select("id", { count: "exact", head: true }),
         admin.from("templates").select("id", { count: "exact", head: true }),
         admin.from("question_bank").select("id", { count: "exact", head: true }),
+        admin.from("question_bank").select("id", { count: "exact", head: true }).eq("bank_scope", "system"),
+        admin.from("question_bank").select("id", { count: "exact", head: true }).eq("bank_scope", "user"),
       ])
-    : [null, null, null, null] as const;
+    : [null, null, null, null, null, null] as const;
 
   const userCount = users && "data" in users ? users.data.users.length : 0;
 
@@ -75,6 +77,8 @@ export default async function AdminPage() {
             <Row label="Tài liệu" value={documents?.count ?? "—"} />
             <Row label="Mẫu cá nhân" value={templates?.count ?? "—"} />
             <Row label="Ngân hàng câu hỏi" value={questions?.count ?? "—"} />
+            <Row label="Câu hỏi Soạn Lab" value={systemQuestions?.count ?? "—"} />
+            <Row label="Câu hỏi giáo viên" value={teacherQuestions?.count ?? "—"} />
           </dl>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link href="/dashboard" className="btn-secondary">Dashboard</Link>

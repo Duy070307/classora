@@ -21,6 +21,8 @@
 - [ ] Lịch sử lưu, mở lại, xuất lại Word/Print được.
 - [ ] Mẫu cá nhân, ngân hàng câu hỏi, backup/restore local data hoạt động.
 - [ ] Ngân hàng câu hỏi có filter “Bộ sách” và “Loại nội dung”; câu hỏi mẫu Kết nối tri thức chỉ được mô tả là tham khảo, không phải nội dung chính thức SGK.
+- [ ] Ngân hàng câu hỏi tách “Ngân hàng Soạn Lab” và “Ngân hàng của tôi”; giáo viên xem được câu Soạn Lab nhưng không sửa/xóa được.
+- [ ] Tạo đề kiểm tra có lựa chọn nguồn câu hỏi: Soạn Lab, của tôi, cả hai, hoặc tự tạo bằng AI.
 - [ ] Admin có thể chạy “Thêm câu hỏi mẫu Kết nối tri thức”; chạy lại không tạo trùng.
 - [ ] Command palette, favorites và recent tools hoạt động.
 - [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX hoặc TikZ qua Gemini khi được cấu hình; copy LaTeX/TikZ, copy standalone, tải `.tex`/TXT/Markdown và lưu lịch sử hoạt động.
@@ -83,7 +85,7 @@
 - [ ] `/register` remains locked.
 - [ ] Protected routes redirect to login when Supabase is configured and user is not signed in.
 - [ ] History/templates/question bank/settings save to Supabase for logged-in users.
-- [ ] `supabase/schema.sql` đã được cập nhật để giáo viên có thể xem câu hỏi seed tham khảo nhưng không sửa/xóa dữ liệu seed của admin.
+- [ ] `supabase/schema.sql` và migration `supabase/migrations/20260710_question_bank_scopes.sql` đã được chạy để `bank_scope='system'` hiển thị cho mọi giáo viên và `bank_scope='user'` chỉ thuộc giáo viên sở hữu.
 - [ ] LocalStorage fallback still works when Supabase env is missing.
 - [ ] `/data` migration copies local browser data to cloud without deleting local data.
 - [ ] `supabase/schema.sql` has the `feedback` table before enabling in-app feedback in production.

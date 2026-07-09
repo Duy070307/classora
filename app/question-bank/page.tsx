@@ -13,6 +13,8 @@ import { BugReportLink } from "@/components/BugReportLink";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES } from "@/lib/curriculum";
 
+type ScopeFilter = "all" | "system" | "user";
+
 const emptyForm = {
   subject: "Toán",
   grade: "8",
@@ -28,8 +30,13 @@ const emptyForm = {
 
 function mergeQuestions(localItems: QuestionItem[], cloudItems: QuestionItem[]) {
   const map = new Map<string, QuestionItem>();
-  [...cloudItems, ...localItems].forEach((item) => map.set(item.id, item));
+  localItems.forEach((item) => map.set(item.id, { ...item, bankScope: item.bankScope || "user" }));
+  cloudItems.forEach((item) => map.set(item.id, item));
   return [...map.values()].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+function scopeOf(item: QuestionItem): "system" | "user" {
+  return item.bankScope === "system" || item.metadata?.generatedBy === "Soạn Lab seed" ? "system" : "user";
 }
 
 export default function QuestionBankPage() {
@@ -39,6 +46,7 @@ export default function QuestionBankPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [query, setQuery] = useState("");
+  const [scopeFilter, setScopeFilter] = useState<ScopeFilter>("all");
   const [filters, setFilters] = useState({ subject: "", grade: "", topic: "", type: "", difficulty: "", bookSeries: "", contentType: "" });
   const [message, setMessage] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -63,7 +71,7 @@ export default function QuestionBankPage() {
 
   function persist(next: QuestionItem[]) {
     setItems(next);
-    saveQuestions(next);
+    saveQuestions(next.filter((item) => scopeOf(item) === "user"));
   }
 
   function submit(event: FormEvent) {
@@ -80,11 +88,12 @@ export default function QuestionBankPage() {
           difficulty: form.difficulty,
           answer: form.answer,
           explanation: form.explanation,
+          bankScope: "user" as const,
           metadata: {
             ...(items.find((item) => item.id === editingId)?.metadata || {}),
             bookSeries: form.bookSeries,
             contentType: form.contentType,
-            sourceType: "generated",
+            sourceType: "teacher_created",
             needsReview: true,
           },
         }
@@ -97,10 +106,11 @@ export default function QuestionBankPage() {
           difficulty: form.difficulty,
           answer: form.answer,
           explanation: form.explanation,
+          bankScope: "user",
           metadata: {
             bookSeries: form.bookSeries,
             contentType: form.contentType,
-            sourceType: "generated",
+            sourceType: "teacher_created",
             needsReview: true,
           },
         });
@@ -111,6 +121,7 @@ export default function QuestionBankPage() {
   }
 
   function edit(item: QuestionItem) {
+    if (scopeOf(item) === "system") return setMessage("Câu hỏi Soạn Lab là dữ liệu tham khảo dùng chung. Hãy sao chép vào ngân hàng của tôi để chỉnh sửa.");
     setEditingId(item.id);
     setForm({
       subject: item.subject, grade: item.grade, topic: item.topic, question: item.question,
@@ -122,6 +133,8 @@ export default function QuestionBankPage() {
   }
 
   function remove(id: string) {
+    const target = items.find((item) => item.id === id);
+    if (target && scopeOf(target) === "system") return setMessage("Không thể xóa câu hỏi Soạn Lab. Thầy/cô có thể sao chép câu hỏi này vào ngân hàng của tôi để chỉnh sửa riêng.");
     if (!window.confirm("Xóa câu hỏi này?")) return;
     persist(items.filter((item) => item.id !== id));
     setSelected((current) => current.filter((item) => item !== id));
@@ -130,6 +143,7 @@ export default function QuestionBankPage() {
   const filtered = useMemo(() => items.filter((item) => {
     const text = query.trim().toLowerCase();
     return (!text || `${item.question} ${item.answer} ${item.explanation}`.toLowerCase().includes(text))
+      && (scopeFilter === "all" || scopeOf(item) === scopeFilter)
       && (!filters.subject || item.subject === filters.subject)
       && (!filters.grade || item.grade === filters.grade)
       && (!filters.topic || item.topic === filters.topic)
@@ -137,12 +151,17 @@ export default function QuestionBankPage() {
       && (!filters.difficulty || item.difficulty === filters.difficulty)
       && (!filters.bookSeries || (item.metadata?.bookSeries || "Khác") === filters.bookSeries)
       && (!filters.contentType || (item.metadata?.contentType || "Bài tập") === filters.contentType);
-  }), [filters, items, query]);
+  }), [filters, items, query, scopeFilter]);
 
   const exportItems = selected.length ? items.filter((item) => selected.includes(item.id)) : filtered;
   const exportDocument = createDocument(`Ngân hàng câu hỏi - ${exportItems.length} câu`, "question-bank", questionsToDocument(exportItems));
   const unique = (key: "subject" | "grade" | "topic") => [...new Set(items.map((item) => item[key]).filter(Boolean))];
   const hasSeedQuestions = items.some((item) => item.metadata?.generatedBy === "Soạn Lab seed");
+  const counts = {
+    all: items.length,
+    system: items.filter((item) => scopeOf(item) === "system").length,
+    user: items.filter((item) => scopeOf(item) === "user").length,
+  };
 
   async function seedKnttQuestions() {
     setSeeding(true);
@@ -163,6 +182,47 @@ export default function QuestionBankPage() {
       setMessage(error instanceof Error ? error.message : "Chưa thêm được câu hỏi mẫu. Vui lòng thử lại.");
     }
     setSeeding(false);
+  }
+
+  async function copyToMyBank(item: QuestionItem) {
+    setMessage("");
+    try {
+      const response = await fetch("/api/question-bank/copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || "Chưa sao chép được câu hỏi.");
+      const { listCloudQuestions } = await import("@/lib/data/question-bank-store");
+      const cloud = await listCloudQuestions();
+      if (cloud?.length) setItems((current) => mergeQuestions(current, cloud));
+      setMessage(data.message || "Đã sao chép câu hỏi vào ngân hàng của tôi.");
+    } catch (error) {
+      const copied = createQuestion({
+        subject: item.subject,
+        grade: item.grade,
+        topic: item.topic,
+        question: item.question,
+        type: item.type,
+        difficulty: item.difficulty,
+        answer: item.answer,
+        explanation: item.explanation,
+        options: item.options || null,
+        bankScope: "user",
+        metadata: {
+          ...(item.metadata || {}),
+          generatedBy: undefined,
+          sourceType: "copied_from_soanlab",
+          needsReview: true,
+          referenceSourceId: item.id,
+        },
+      });
+      delete copied.metadata?.generatedBy;
+      delete copied.metadata?.seedKey;
+      persist([copied, ...items]);
+      setMessage(error instanceof Error ? `${error.message} Đã lưu bản sao cục bộ vào ngân hàng của tôi.` : "Đã lưu bản sao cục bộ vào ngân hàng của tôi.");
+    }
   }
 
   return (
@@ -255,6 +315,25 @@ export default function QuestionBankPage() {
 
           <section className="space-y-4">
             <div className="card space-y-3 p-4">
+              <div className="grid gap-2 rounded-2xl border border-blue-100 bg-blue-50/60 p-1.5 sm:grid-cols-3">
+                {([
+                  ["all", `Tất cả (${counts.all})`],
+                  ["system", `Ngân hàng Soạn Lab (${counts.system})`],
+                  ["user", `Ngân hàng của tôi (${counts.user})`],
+                ] as const).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => {
+                      setScopeFilter(value);
+                      setSelected([]);
+                    }}
+                    className={`rounded-xl px-3 py-2 text-xs font-black transition ${scopeFilter === value ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:text-blue-700"}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
               <input className="form-field" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm nội dung, đáp án hoặc lời giải..." />
               {hasSeedQuestions ? (
                 <p className="rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-800">
@@ -262,6 +341,7 @@ export default function QuestionBankPage() {
                 </p>
               ) : null}
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                <select className="form-field" value={scopeFilter} onChange={(e) => setScopeFilter(e.target.value as ScopeFilter)}><option value="all">Mọi nguồn</option><option value="system">Soạn Lab</option><option value="user">Của tôi</option></select>
                 {(["subject", "grade", "topic"] as const).map((key) => <select key={key} className="form-field" value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option value="">{key === "subject" ? "Mọi môn" : key === "grade" ? "Mọi lớp" : "Mọi chủ đề"}</option>{unique(key).map((value) => <option key={value}>{value}</option>)}</select>)}
                 <select className="form-field" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}><option value="">Mọi loại</option>{["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"].map((value) => <option key={value}>{value}</option>)}</select>
                 <select className="form-field" value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select>
@@ -271,7 +351,7 @@ export default function QuestionBankPage() {
               <div className="flex flex-wrap gap-2">
                 <DocumentExportMenu document={exportDocument} />
                 <button type="button" className="btn-secondary" onClick={() => navigator.clipboard.writeText(questionsToDocument(exportItems))}><Copy size={16} />Copy {selected.length ? "đã chọn" : "kết quả lọc"}</button>
-                <button type="button" className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa toàn bộ ngân hàng câu hỏi?")) { persist([]); setSelected([]); } }}><Trash2 size={16} />Xóa tất cả</button>
+                <button type="button" className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa toàn bộ câu hỏi trong ngân hàng của tôi?")) { persist(items.filter((item) => scopeOf(item) === "system")); setSelected([]); } }}><Trash2 size={16} />Xóa câu hỏi của tôi</button>
               </div>
             </div>
             {filtered.length ? filtered.map((item) => (
@@ -279,7 +359,7 @@ export default function QuestionBankPage() {
                 <div className="flex items-start gap-3">
                   <input type="checkbox" className="mt-1" checked={selected.includes(item.id)} onChange={(e) => setSelected(e.target.checked ? [...selected, item.id] : selected.filter((id) => id !== item.id))} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap gap-2 text-xs"><span className="rounded bg-blue-50 px-2 py-1 font-semibold text-brand">{item.subject} · Lớp {item.grade}</span><span className="rounded bg-slate-100 px-2 py-1">{item.topic || "Chưa có chủ đề"}</span><span className="rounded bg-amber-50 px-2 py-1 text-amber-700">{item.type} · {item.difficulty}</span>{item.metadata?.bookSeries ? <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">{item.metadata.bookSeries}</span> : null}{item.metadata?.contentType ? <span className="rounded bg-emerald-50 px-2 py-1 text-emerald-700">{item.metadata.contentType}</span> : null}</div>
+                    <div className="flex flex-wrap gap-2 text-xs"><span className={scopeOf(item) === "system" ? "rounded bg-blue-600 px-2 py-1 font-semibold text-white" : "rounded bg-slate-900 px-2 py-1 font-semibold text-white"}>{scopeOf(item) === "system" ? "Soạn Lab" : "Của tôi"}</span><span className="rounded bg-blue-50 px-2 py-1 font-semibold text-brand">{item.subject} · Lớp {item.grade}</span><span className="rounded bg-slate-100 px-2 py-1">{item.topic || "Chưa có chủ đề"}</span><span className="rounded bg-amber-50 px-2 py-1 text-amber-700">{item.type} · {item.difficulty}</span>{item.metadata?.bookSeries ? <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">{item.metadata.bookSeries}</span> : null}{item.metadata?.contentType ? <span className="rounded bg-emerald-50 px-2 py-1 text-emerald-700">{item.metadata.contentType}</span> : null}</div>
                     <p className="mt-3 whitespace-pre-wrap font-medium leading-6 text-ink">{item.question}</p>
                     <p className="mt-2 text-sm text-muted"><strong>Đáp án:</strong> {item.answer || "Chưa có"}</p>
                     {item.explanation ? <p className="mt-1 text-sm text-muted"><strong>Lời giải:</strong> {item.explanation}</p> : null}
@@ -287,12 +367,13 @@ export default function QuestionBankPage() {
                   </div>
                   <div className="flex gap-1">
                     <button className="rounded-md border border-line p-2" title="Sao chép" aria-label="Sao chép câu hỏi" onClick={() => navigator.clipboard.writeText(item.question)}><Copy size={15} /></button>
-                    <button className="rounded-md border border-line p-2" title="Chỉnh sửa" aria-label="Chỉnh sửa câu hỏi" onClick={() => edit(item)}><Pencil size={15} /></button>
-                    <button className="rounded-md border border-line p-2 text-red-600" title="Xóa" aria-label="Xóa câu hỏi" onClick={() => remove(item.id)}><Trash2 size={15} /></button>
+                    {scopeOf(item) === "system" ? <button className="rounded-md border border-line px-2 py-1 text-xs font-bold text-blue-700" title="Sao chép vào ngân hàng của tôi" onClick={() => copyToMyBank(item)}>Sao chép vào của tôi</button> : null}
+                    {scopeOf(item) === "user" ? <button className="rounded-md border border-line p-2" title="Chỉnh sửa" aria-label="Chỉnh sửa câu hỏi" onClick={() => edit(item)}><Pencil size={15} /></button> : null}
+                    {scopeOf(item) === "user" ? <button className="rounded-md border border-line p-2 text-red-600" title="Xóa" aria-label="Xóa câu hỏi" onClick={() => remove(item.id)}><Trash2 size={15} /></button> : null}
                   </div>
                 </div>
               </article>
-            )) : <SoanLabEmptyState title="Chưa có câu hỏi phù hợp" description="Thêm thủ công hoặc nhập nhanh từ văn bản/CSV để xây ngân hàng câu hỏi cục bộ." action={<Link href="/tools/import-questions" className="btn-primary">Nhập câu hỏi</Link>} />}
+            )) : <SoanLabEmptyState title="Chưa có câu hỏi phù hợp" description={scopeFilter === "system" ? "Chưa có câu hỏi mẫu phù hợp. Vui lòng thử môn, lớp hoặc chủ đề khác." : scopeFilter === "user" ? "Thầy cô chưa thêm câu hỏi riêng. Có thể thêm thủ công, nhập từ Excel hoặc dùng AI tự nhận diện file." : "Thử đổi bộ lọc hoặc thêm câu hỏi vào ngân hàng của tôi."} action={<Link href="/tools/import-questions" className="btn-primary">Nhập câu hỏi</Link>} />}
           </section>
         </div>
     </AppShell>

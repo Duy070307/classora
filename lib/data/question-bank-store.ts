@@ -19,6 +19,8 @@ export async function listCloudQuestions() {
     answer: row.answer || "",
     explanation: row.explanation || "",
     createdAt: row.created_at,
+    bankScope: row.bank_scope === "system" ? "system" : "user",
+    userId: row.user_id || null,
     options: row.options || null,
     metadata: row.metadata || {}
   } as QuestionItem));
@@ -28,10 +30,11 @@ export async function saveQuestionsToCloud(items: QuestionItem[]) {
   const cloud = await getCloudClientForUser();
   if (!cloud) return false;
   for (const item of items) {
-    if (item.metadata?.generatedBy === "Soạn Lab seed") continue;
+    if (item.bankScope === "system" || item.metadata?.generatedBy === "Soạn Lab seed") continue;
     const { error } = await cloud.supabase.from("question_bank").upsert({
       id: item.id,
       user_id: cloud.user.id,
+      bank_scope: "user",
       subject: item.subject,
       grade: item.grade,
       topic: item.topic,
@@ -41,7 +44,11 @@ export async function saveQuestionsToCloud(items: QuestionItem[]) {
       options: item.options || null,
       answer: item.answer,
       explanation: item.explanation,
-      metadata: item.metadata || {},
+      metadata: {
+        ...(item.metadata || {}),
+        sourceType: item.metadata?.sourceType || "teacher_created",
+        needsReview: true,
+      },
       updated_at: new Date().toISOString()
     });
     if (error) return false;

@@ -25,7 +25,7 @@ export function getQuestions(): QuestionItem[] {
         types.includes(value.type as QuestionType) &&
         difficulties.includes(value.difficulty as QuestionDifficulty)
       );
-    });
+    }).map((item) => ({ ...item, bankScope: item.bankScope === "system" ? "system" : "user" }));
   } catch {
     return [];
   }

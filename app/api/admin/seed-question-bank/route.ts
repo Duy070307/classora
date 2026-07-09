@@ -36,8 +36,8 @@ export async function POST(request: NextRequest) {
   const seeds = getKnttTheorySeedQuestions();
   const { data: existingRows, error: existingError } = await admin
     .from("question_bank")
-    .select("id, content, metadata")
-    .eq("metadata->>generatedBy", "Soạn Lab seed")
+    .select("id, subject, grade, topic, content, metadata, bank_scope")
+    .eq("bank_scope", "system")
     .eq("metadata->>bookSeries", "Kết nối tri thức");
 
   if (existingError) {
@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
     .filter((item) => !existingKeys.has(String(item.metadata?.seedKey || item.question)))
     .map((item) => ({
       id: item.id,
-      user_id: user.id,
+      user_id: null,
+      bank_scope: "system",
       subject: item.subject,
       grade: item.grade,
       topic: item.topic,

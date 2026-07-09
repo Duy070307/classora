@@ -183,25 +183,32 @@ npm run smoke
 - Tài khoản admin mở `/admin`; giáo viên không có quyền admin.
 - `/system-status` chuyển về dashboard và không hiển thị thông tin kỹ thuật cho giáo viên.
 
-## Ngân hàng câu hỏi Kết nối tri thức
+## Ngân hàng câu hỏi Soạn Lab và của tôi
 
 Admin:
 
-1. Đăng nhập bằng tài khoản admin.
-2. Mở `/question-bank`.
-3. Bấm “Thêm câu hỏi mẫu Kết nối tri thức”.
-4. Xác nhận thông báo “Đã thêm X câu hỏi mẫu. Bỏ qua Y câu hỏi đã tồn tại.”
-5. Bấm lại lần nữa và xác nhận câu trùng được bỏ qua.
-6. Kiểm tra bảng `question_bank`: metadata có `bookSeries: "Kết nối tri thức"`, `sourceType: "tham khảo"`, `contentType: "Lý thuyết"`, `needsReview: true`.
+1. Chạy migration `supabase/migrations/20260710_question_bank_scopes.sql` trên Supabase production nếu database đã tồn tại.
+2. Đăng nhập bằng tài khoản admin.
+3. Mở `/question-bank`.
+4. Bấm “Thêm câu hỏi mẫu Kết nối tri thức”.
+5. Xác nhận thông báo “Đã thêm X câu hỏi mẫu. Bỏ qua Y câu hỏi đã tồn tại.”
+6. Bấm lại lần nữa và xác nhận câu trùng được bỏ qua.
+7. Kiểm tra bảng `question_bank`: câu mẫu có `bank_scope = 'system'`, `user_id = null`, metadata có `bookSeries: "Kết nối tri thức"`, `sourceType: "tham khảo"`, `contentType: "Lý thuyết"`, `needsReview: true`.
+8. Mở `/admin` và xác nhận có số lượng câu hỏi Soạn Lab/câu hỏi giáo viên.
 
 Teacher:
 
 1. Đăng nhập bằng tài khoản giáo viên.
 2. Mở `/question-bank`.
-3. Lọc môn Vật lí/Hóa học, lớp 10/11/12, bộ sách “Kết nối tri thức”, loại nội dung “Lý thuyết”.
-4. Xác nhận câu hỏi mẫu hiển thị như dữ liệu tham khảo, không gọi là câu hỏi chính thức của SGK.
-5. Mở `/tools/exam-generator`, chọn Vật lí 10, chủ đề “Ba định luật Newton”, bộ sách “Kết nối tri thức”, bật “Lấy câu hỏi từ ngân hàng câu hỏi” và tạo đề.
-6. Xác nhận đề có ghi chú bản nháp tham khảo, xuất Word/PDF vẫn hoạt động.
+3. Tab “Tất cả” hiển thị cả badge “Soạn Lab” và “Của tôi” nếu có.
+4. Chọn “Ngân hàng Soạn Lab”, lọc môn Vật lí/Hóa học, lớp 10/11/12, bộ sách “Kết nối tri thức”, loại nội dung “Lý thuyết”.
+5. Xác nhận câu hỏi mẫu hiển thị như dữ liệu tham khảo, không gọi là câu hỏi chính thức của SGK.
+6. Xác nhận câu hỏi Soạn Lab không có nút sửa/xóa, có thể “Sao chép vào của tôi”.
+7. Chọn “Ngân hàng của tôi”, thêm thủ công một câu hỏi và xác nhận câu đó có badge “Của tôi”.
+8. Nhập file CSV/Excel nhỏ và xác nhận câu nhập vào “Ngân hàng của tôi”.
+9. Mở `/tools/exam-generator`, chọn Vật lí 10, chủ đề “Ba định luật Newton”, bộ sách “Kết nối tri thức”, bật “Lấy câu hỏi từ ngân hàng câu hỏi”.
+10. Thử nguồn “Ngân hàng Soạn Lab”, “Ngân hàng của tôi”, “Cả hai”, “Tự tạo bằng AI”.
+11. Xác nhận đề có ghi chú bản nháp tham khảo, xuất Word/PDF vẫn hoạt động.
 
 ## In-app teacher feedback
 
