@@ -6,7 +6,6 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
-import { PlanSelector } from "@/components/PlanSelector";
 import {
   defaultDocumentSettings,
   getDocumentSettings,
@@ -101,16 +100,6 @@ export default function SettingsPage() {
         </section>
 
         <aside className="space-y-5">
-          <section className="rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
-            <h2 className="text-lg font-black text-slate-900">Gói sử dụng</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Chọn chế độ phù hợp với nhu cầu soạn tài liệu của thầy/cô.
-            </p>
-            <div className="mt-4">
-              <PlanSelector />
-            </div>
-          </section>
-
           <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-3">
               <ShieldCheck className="text-blue-600" size={22} />

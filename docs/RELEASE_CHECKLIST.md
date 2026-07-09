@@ -6,7 +6,8 @@
 - [ ] `/tools` tìm kiếm, lọc danh mục, yêu thích và gần đây hoạt động.
 - [ ] `/samples` redirect về `/tools` và không được quảng bá trong UI khách hàng.
 - [ ] `/getting-started` mô tả luồng chọn công cụ → nhập thông tin → tạo bản nháp → xuất Word/PDF hoặc lưu lịch sử.
-- [ ] `/pricing`, `/privacy`, `/terms`, `/share` dùng wording chính thức.
+- [ ] `/privacy`, `/terms`, `/share` dùng wording chính thức.
+- [ ] `/pricing` đang được ẩn trong bản thử nghiệm giáo viên, redirect về `/` và không xuất hiện trong navbar/footer/sitemap/command palette.
 - [ ] Header, sidebar, footer và command palette không quảng bá route nội bộ.
 
 ## App flows

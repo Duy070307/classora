@@ -18,7 +18,7 @@ export default function TermsPage() {
       <p>Soạn Lab không bảo đảm độ chính xác tuyệt đối của nội dung được tạo ra và không thay thế vai trò chuyên môn của giáo viên.</p>
       <p>Không sử dụng Soạn Lab để tạo nội dung vi phạm pháp luật, xâm phạm quyền riêng tư hoặc xử lý dữ liệu nhạy cảm không cần thiết.</p>
       <p>Sản phẩm có thể thay đổi theo thời gian, bao gồm giao diện, tính năng, giới hạn sử dụng và chính sách dữ liệu.</p>
-      <p>Các gói trả phí và giao dịch thanh toán hiện chưa được kích hoạt.</p>
+      <p>Hiện tại Soạn Lab đang ở bản thử nghiệm dành cho giáo viên góp ý. Thông tin sử dụng chính thức sẽ được cập nhật sau.</p>
     </div>
   </section><SiteFooter /></main>;
 }

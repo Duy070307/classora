@@ -18,9 +18,6 @@ export function Navbar() {
           <Link href="/getting-started" className="hover:text-blue-700">
             Hướng dẫn
           </Link>
-          <Link href="/pricing" className="hover:text-blue-700">
-            Bảng giá
-          </Link>
         </nav>
         <Link href="/login" className="ml-auto hidden text-sm font-bold text-slate-600 hover:text-blue-700 sm:inline-flex lg:ml-0">
           Đăng nhập

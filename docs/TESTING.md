@@ -7,7 +7,6 @@ Public routes cần mở không lỗi, không overflow ngang desktop/mobile và 
 - `/`
 - `/tools`
 - `/getting-started`
-- `/pricing`
 - `/privacy`
 - `/terms`
 - `/share`
@@ -157,6 +156,12 @@ Kỳ vọng: geometry mode trả mã TikZ, không hiển thị JSON thô, không
 ## Public wording audit
 
 Giao diện public chính không được hiển thị tên thương hiệu cũ, CTA góp ý công khai hoặc từ ngữ phát triển nội bộ. Các route nội bộ cũ nếu còn tồn tại không được xuất hiện trong public nav, footer, sitemap hoặc command palette.
+
+## Pricing hidden during teacher testing
+
+- Navbar, footer, command palette và app sidebar không hiển thị “Bảng giá”, nâng cấp, gói trả phí hoặc thanh toán.
+- `/pricing` redirect về `/`.
+- `/sitemap.xml` không liệt kê `/pricing`.
 
 ## Lệnh kiểm tra
 

@@ -19,7 +19,6 @@ const pages: Item[] = [
   ["Ảnh công thức & hình học → LaTeX/TikZ", "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học thành TikZ.", "/tools/image-to-latex", "Công thức & LaTeX", "Công cụ"],
   ["Lịch sử", "Tài liệu đã lưu trên trình duyệt.", "/history", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
   ["Cài đặt", "Header, font và dữ liệu làm việc.", "/settings", "Cấu hình", "Trang"],
-  ["Bảng giá", "Thông tin các gói sử dụng.", "/pricing", "Sản phẩm", "Trang"],
 ].map(([title, description, href, category, group]) => ({ title, description, href, category, group: group as Item["group"] }));
 
 export function CommandPaletteButton({ compact = false }: { compact?: boolean }) {

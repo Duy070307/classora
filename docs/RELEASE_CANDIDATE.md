@@ -11,7 +11,7 @@
 
 ## Cần kiểm tra thủ công
 
-1. Mở `/dashboard`, `/tools`, `/pricing`, `/privacy` và `/terms` để đối chiếu phạm vi chức năng hiện tại.
+1. Mở `/dashboard`, `/tools`, `/privacy` và `/terms` để đối chiếu phạm vi chức năng hiện tại.
 2. Mở `/tools`, dùng công cụ tạo đề và phiếu học tập.
 3. Tạo bản nháp, xuất Word, in/lưu PDF và lưu lịch sử.
 4. Mở lại tài liệu từ `/history` và xuất lại.
@@ -25,6 +25,6 @@ Nội dung được tạo tự động là bản nháp hỗ trợ giáo viên. G
 ## Checklist phát hành
 
 - Chạy `npm run lint`, `npm run build`, `npm run smoke`.
-- Kiểm tra `/tools`, `/pricing`, `/privacy` và `/terms`.
+- Kiểm tra `/tools`, `/privacy` và `/terms`; `/pricing` phải redirect về `/` trong bản thử nghiệm giáo viên.
 - Test dashboard, tools, history, export, backup và mobile trên URL deploy.
 - Xác nhận không có CTA công khai tới `/feedback`.

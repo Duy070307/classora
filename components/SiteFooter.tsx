@@ -6,7 +6,6 @@ const columns = [
     "Liên kết",
     ["Công cụ", "/tools"],
     ["Hướng dẫn", "/getting-started"],
-    ["Bảng giá", "/pricing"],
     ["Điều khoản", "/terms"],
     ["Quyền riêng tư", "/privacy"],
   ],

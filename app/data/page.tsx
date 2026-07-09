@@ -30,7 +30,7 @@ import {
 import { getQuestions } from "@/lib/question-bank";
 import { getRecentTools } from "@/lib/recent-tools";
 import { getTemplates } from "@/lib/templates";
-import { getMockPlan, getUsageCount } from "@/lib/usage";
+import { getUsageCount } from "@/lib/usage";
 
 type Summary = {
   history: number;
@@ -40,7 +40,6 @@ type Summary = {
   favorites: number;
   recent: number;
   settings: boolean;
-  plan: string;
   usage: number;
 };
 
@@ -52,7 +51,6 @@ const emptySummary: Summary = {
   favorites: 0,
   recent: 0,
   settings: false,
-  plan: "Miễn phí",
   usage: 0,
 };
 
@@ -67,7 +65,6 @@ function readSummary(): Summary {
     favorites: getFavoriteTools().length,
     recent: getRecentTools().length,
     settings: hasSettings,
-    plan: getMockPlan() === "pro" ? "Cá nhân" : "Miễn phí",
     usage: getUsageCount(),
   };
 }
@@ -144,7 +141,6 @@ export default function DataManagementPage() {
     ["Công cụ yêu thích", summary.favorites],
     ["Công cụ dùng gần đây", summary.recent],
     ["Cài đặt tài liệu", summary.settings ? "Đã thiết lập" : "Chưa thiết lập"],
-    ["Gói sử dụng", summary.plan],
     ["Lượt tạo nội dung", summary.usage],
   ] as const;
 
