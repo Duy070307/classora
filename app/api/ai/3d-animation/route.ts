@@ -254,11 +254,19 @@ async function buildResult(input: { prompt: string; subject: string; grade: stri
   const provider = getConfiguredProvider();
   if (provider.name === "local") return localResult(input);
 
-  const response = await provider.generate({
-    tool: "3d-animation",
-    input,
-    prompt: buildThreeDAnimationPrompt(input),
-  });
+  let response;
+  try {
+    response = await provider.generate({
+      tool: "3d-animation",
+      input,
+      prompt: buildThreeDAnimationPrompt(input),
+    });
+  } catch {
+    return {
+      ...localResult(input),
+      warnings: ["Soạn Lab đã dùng mô phỏng minh họa an toàn cơ bản để thầy cô tiếp tục xem trước và chỉnh sửa."],
+    };
+  }
   const parsed = extractJson(response.content);
   if (!parsed.ok) return localResult(input);
   const result = normalizeResult(parsed.value) ?? localResult(input);

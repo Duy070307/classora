@@ -44,7 +44,7 @@ const checklist = [
   ["Thử một công cụ thường dùng", "/tools"],
   ["Lưu vào lịch sử", "/history"],
   ["Xuất Word/PDF", "/tools/exam-generator"],
-  ["Kiểm tra lại nội dung trước khi dùng", "/known-issues"],
+  ["Kiểm tra lại nội dung trước khi dùng", "/getting-started"],
 ] as const;
 
 export default function DashboardPage() {

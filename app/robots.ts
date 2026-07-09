@@ -22,6 +22,8 @@ export default function robots(): MetadataRoute.Robots {
         "/demo-data",
         "/feedback",
         "/ai-lab",
+        "/samples",
+        "/system-status",
         "/known-issues",
       ],
     },

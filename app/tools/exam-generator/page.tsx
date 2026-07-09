@@ -130,13 +130,6 @@ export default function ExamGeneratorPage() {
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
     next.structuredExam = aiResult.structuredExam || createStructuredExam(input);
-    next.generationMeta = {
-      provider: aiResult.provider,
-      providerRequested: aiResult.providerRequested,
-      fallbackUsed: aiResult.fallbackUsed,
-      fallbackReason: aiResult.providerFallbackReason,
-      retryCount: aiResult.retryCount
-    };
     next.examMeta = {
       schoolName: input.schoolName,
       teacherName: input.teacherName,

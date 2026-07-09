@@ -21,8 +21,6 @@ type ApiResult = {
   explanation?: string;
   confidence?: "high" | "medium" | "low";
   warnings?: string[];
-  provider: string;
-  model: string;
 } | {
   ok: false;
   error: string;
@@ -54,8 +52,6 @@ export default function ImageToLatexPage() {
   const [explanation, setExplanation] = useState("");
   const [warnings, setWarnings] = useState<string[]>([]);
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
-  const [provider, setProvider] = useState("");
-  const [model, setModel] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -85,6 +81,13 @@ export default function ImageToLatexPage() {
   function showMessage(text: string) {
     setMessage(text);
     setTimeout(() => setMessage(""), 1800);
+  }
+
+  function friendlyError(raw: string) {
+    if (/gemini|openai|provider|model|api|key|supabase|database|fallback|local/i.test(raw)) {
+      return "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn, đã cắt gọn và chỉ chứa công thức hoặc hình cần nhận diện.";
+    }
+    return raw || "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn và đã cắt gọn.";
   }
 
   function pickFile(nextFile: File | null) {
@@ -126,7 +129,7 @@ export default function ImageToLatexPage() {
       });
       const result = await response.json() as ApiResult;
       if (!result.ok) {
-        setError(result.error);
+        setError(friendlyError(result.error));
         return;
       }
       setLatex(result.latex);
@@ -137,8 +140,6 @@ export default function ImageToLatexPage() {
       setExplanation(result.explanation || "");
       setWarnings(result.warnings || []);
       setConfidence(result.confidence || "medium");
-      setProvider(result.provider);
-      setModel(result.model || "");
       saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
       showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
     } catch {
@@ -165,8 +166,6 @@ export default function ImageToLatexPage() {
     setExplanation("");
     setWarnings([]);
     setConfidence("");
-    setProvider("");
-    setModel("");
     setError("");
     setMessage("");
   }
@@ -207,9 +206,7 @@ export default function ImageToLatexPage() {
     saveDocument({
       ...document,
       generationMeta: {
-        provider,
         mode: isTikzOutput ? "geometry" : mode,
-        model,
         confidence: confidence || undefined,
         warnings,
         hasStandaloneLatex: Boolean(standaloneLatex),

@@ -5,14 +5,11 @@ const protectedPrefixes = [
   "/admin",
   "/dashboard",
   "/data",
-  "/getting-started",
   "/history",
   "/print",
   "/question-bank",
-  "/samples",
   "/settings",
-  "/templates",
-  "/tools"
+  "/templates"
 ];
 
 function isSupabaseConfigured() {
@@ -20,6 +17,7 @@ function isSupabaseConfigured() {
 }
 
 function isProtected(pathname: string) {
+  if (pathname.startsWith("/tools/")) return true;
   return protectedPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 

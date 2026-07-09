@@ -103,7 +103,7 @@ function LoginContent() {
           </form>
 
           <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-            Đăng ký tài khoản hiện chưa mở. Tài khoản được cấp bởi quản trị viên.
+            Đăng ký tài khoản hiện chưa mở. Tài khoản thử nghiệm được cấp bởi nhóm phát triển Soạn Lab.
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
