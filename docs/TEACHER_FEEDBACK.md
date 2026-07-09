@@ -21,8 +21,18 @@
 
 ## Góp ý trực tiếp trong ứng dụng
 
+- Giáo viên có thể mở `/teacher-testing-guide` hoặc bấm “Hướng dẫn dùng thử” trên dashboard/sidebar để xem luồng thử nhanh.
 - Giáo viên đã đăng nhập có thể bấm nút “Góp ý” ở góc dưới bên phải trong khu vực làm việc.
 - Biểu mẫu ghi nhận loại góp ý, công cụ/trang đang dùng, mức độ hài lòng, nội dung góp ý và thông tin liên hệ tùy chọn.
 - Khi có cấu hình cloud, góp ý được lưu để quản trị viên xem tại `/admin/feedback`.
 - Khi chạy local chưa cấu hình cloud, góp ý được lưu tạm trong trình duyệt để phục vụ kiểm thử giao diện.
 - Không ghi mật khẩu, khóa dịch vụ, API key hoặc dữ liệu nhạy cảm vào nội dung góp ý.
+
+## Luồng dùng thử gợi ý
+
+1. Tạo một đề kiểm tra ngắn, ví dụ Toán 12 chủ đề Xác suất.
+2. Xuất Word/PDF và kiểm tra định dạng, bảng biểu, công thức.
+3. Tạo một giáo án tham khảo, ví dụ Vật lý 10 chủ đề Khúc xạ ánh sáng.
+4. Thử lưu một vài câu hỏi trong ngân hàng câu hỏi.
+5. Thử Ảnh công thức → LaTeX hoặc Hình học → TikZ nếu có ảnh đã cắt gọn.
+6. Gửi góp ý trực tiếp trong app, ghi rõ công cụ đã dùng và điểm cần cải thiện.

@@ -6,6 +6,7 @@ import {
   BookOpenCheck,
   Box,
   CheckCircle2,
+  ClipboardCheck,
   ClipboardList,
   FileText,
   History,
@@ -94,6 +95,23 @@ export default function DashboardPage() {
               Xem công cụ
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+              <ClipboardCheck size={22} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-slate-950">Dùng thử Soạn Lab trong 10 phút</h2>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
+                Thầy cô có thể làm theo các bước gợi ý để trải nghiệm nhanh các công cụ chính và gửi góp ý.
+              </p>
+            </div>
+          </div>
+          <Link href="/teacher-testing-guide" className="btn-primary shrink-0">Xem hướng dẫn dùng thử</Link>
         </div>
       </section>
 

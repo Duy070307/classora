@@ -72,6 +72,17 @@ export function FeedbackWidget() {
     };
   }, [open]);
 
+  useEffect(() => {
+    const openFeedback = () => {
+      setTool(detectedTool);
+      setStatus("");
+      setError("");
+      setOpen(true);
+    };
+    window.addEventListener("soanlab:open-feedback", openFeedback);
+    return () => window.removeEventListener("soanlab:open-feedback", openFeedback);
+  }, [detectedTool]);
+
   if (!visible) return null;
 
   async function submit(event: FormEvent) {

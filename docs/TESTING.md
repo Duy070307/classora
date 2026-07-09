@@ -183,11 +183,14 @@ npm run smoke
 Teacher:
 
 1. Đăng nhập bằng tài khoản giáo viên.
-2. Mở dashboard và xác nhận nút “Góp ý” xuất hiện ở góc dưới bên phải.
-3. Gửi góp ý với loại góp ý, mức độ hài lòng và nội dung.
-4. Mở công cụ tạo đề hoặc Ảnh công thức → LaTeX/TikZ, mở lại modal và xác nhận công cụ/trang được tự nhận diện.
-5. Kiểm tra mobile khoảng 390px: nút không che nội dung chính, modal vừa màn hình, textarea và các nút dùng được.
-6. Xác nhận giáo viên không truy cập được `/admin/feedback`.
+2. Mở dashboard và xác nhận card “Dùng thử Soạn Lab trong 10 phút” hiển thị.
+3. Bấm “Xem hướng dẫn dùng thử” và xác nhận `/teacher-testing-guide` mở được.
+4. Kiểm tra checklist, ghi chú bản nháp, câu hỏi góp ý và các quick link.
+5. Xác nhận nút “Góp ý” xuất hiện ở góc dưới bên phải, và nút “Gửi góp ý” trong guide mở cùng modal.
+6. Gửi góp ý với loại góp ý, mức độ hài lòng và nội dung.
+7. Mở công cụ tạo đề hoặc Ảnh công thức → LaTeX/TikZ, mở lại modal và xác nhận công cụ/trang được tự nhận diện.
+8. Kiểm tra mobile khoảng 390px: guide page đọc được, card stack dọc, nút không tràn, modal vừa màn hình.
+9. Xác nhận giáo viên không truy cập được `/admin/feedback`.
 
 Admin:
 

@@ -83,6 +83,13 @@ export default async function AdminPage() {
           </div>
         </section>
       </div>
+
+      <section className="mt-6 rounded-[28px] border border-blue-100 bg-blue-50 p-5 text-sm leading-7 text-blue-950">
+        <p>
+          <span className="font-black">Gợi ý khi mời giáo viên dùng thử: </span>
+          Sau khi gửi link test, quản trị viên có thể theo dõi phản hồi tại mục Góp ý giáo viên để ưu tiên sửa những điểm ảnh hưởng nhiều nhất tới trải nghiệm.
+        </p>
+      </section>
     </AppShell>
   );
 }

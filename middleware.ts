@@ -9,7 +9,8 @@ const protectedPrefixes = [
   "/print",
   "/question-bank",
   "/settings",
-  "/templates"
+  "/templates",
+  "/teacher-testing-guide"
 ];
 
 function isSupabaseConfigured() {

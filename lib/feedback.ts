@@ -45,6 +45,7 @@ export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/templates")) return "Mẫu cá nhân";
   if (pathname.startsWith("/data")) return "Dữ liệu";
   if (pathname.startsWith("/settings")) return "Cài đặt";
+  if (pathname.startsWith("/teacher-testing-guide")) return "Hướng dẫn dùng thử";
   if (pathname.startsWith("/admin")) return "Quản trị";
   if (pathname.startsWith("/create")) return "Tạo mới";
   if (pathname.startsWith("/tools")) return "Công cụ";

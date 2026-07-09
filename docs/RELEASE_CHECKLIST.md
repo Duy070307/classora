@@ -13,6 +13,8 @@
 
 - [ ] `/dashboard`, `/history`, `/templates`, `/question-bank`, `/data`, `/settings` mở không lỗi.
 - [ ] Nút “Góp ý” chỉ xuất hiện trong khu vực làm việc phù hợp, không xuất hiện trên login/register.
+- [ ] `/teacher-testing-guide` mở được sau đăng nhập, có checklist dùng thử, ghi chú bản nháp và quick links.
+- [ ] Dashboard có card “Dùng thử Soạn Lab trong 10 phút” trỏ tới `/teacher-testing-guide`.
 - [ ] Giáo viên gửi góp ý trong app được, modal tự nhận diện trang/công cụ và không che các thao tác chính trên mobile.
 - [ ] Admin mở `/admin/feedback` xem được góp ý mới nhất trước; giáo viên không truy cập được trang này.
 - [ ] Lịch sử lưu, mở lại, xuất lại Word/Print được.

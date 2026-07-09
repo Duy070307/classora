@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import {
   BookOpenCheck,
   Box,
+  ClipboardCheck,
   ClipboardList,
   Database,
   FileClock,
@@ -29,6 +30,7 @@ const groups = [
     title: "Tổng quan",
     links: [
       ["Dashboard", "/dashboard", Home],
+      ["Hướng dẫn dùng thử", "/teacher-testing-guide", ClipboardCheck],
       ["Tạo mới", "/create", PlusCircle],
     ],
   },
