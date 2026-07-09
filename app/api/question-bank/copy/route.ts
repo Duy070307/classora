@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
   const copiedMetadata = { ...metadata };
   delete copiedMetadata.generatedBy;
   delete copiedMetadata.seedKey;
+  const bookSeries = String(source.book_series || metadata.bookSeries || "");
+  const contentType = String(source.content_type || metadata.contentType || "");
   const { error } = await supabase.from("question_bank").insert({
     user_id: user.id,
     bank_scope: "user",
@@ -69,8 +71,14 @@ export async function POST(request: NextRequest) {
     options: source.options || null,
     answer: source.answer,
     explanation: source.explanation,
+    book_series: bookSeries || null,
+    source_type: "copied_from_soanlab",
+    content_type: contentType || null,
+    needs_review: true,
     metadata: {
       ...copiedMetadata,
+      ...(bookSeries ? { bookSeries } : {}),
+      ...(contentType ? { contentType } : {}),
       sourceType: "copied_from_soanlab",
       needsReview: true,
       referenceSourceId: source.id,

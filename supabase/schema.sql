@@ -49,6 +49,10 @@ create table if not exists public.question_bank (
   answer text,
   explanation text,
   metadata jsonb default '{}'::jsonb,
+  book_series text,
+  source_type text,
+  content_type text,
+  needs_review boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   check (

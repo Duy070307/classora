@@ -36,9 +36,8 @@ export async function POST(request: NextRequest) {
   const seeds = getKnttTheorySeedQuestions();
   const { data: existingRows, error: existingError } = await admin
     .from("question_bank")
-    .select("id, subject, grade, topic, content, metadata, bank_scope")
-    .eq("bank_scope", "system")
-    .eq("metadata->>bookSeries", "Kết nối tri thức");
+    .select("id, subject, grade, topic, content, metadata, bank_scope, book_series, source_type")
+    .eq("bank_scope", "system");
 
   if (existingError) {
     return NextResponse.json({ ok: false, error: "Chưa kiểm tra được dữ liệu mẫu hiện có." }, { status: 500 });
@@ -66,6 +65,10 @@ export async function POST(request: NextRequest) {
       options: item.options || null,
       answer: item.answer,
       explanation: item.explanation,
+      book_series: item.metadata?.bookSeries || "Kết nối tri thức",
+      source_type: "Soạn Lab seed",
+      content_type: item.metadata?.contentType || "Lý thuyết",
+      needs_review: true,
       metadata: item.metadata || {},
       created_at: item.createdAt,
       updated_at: new Date().toISOString(),

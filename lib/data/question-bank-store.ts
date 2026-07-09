@@ -3,6 +3,17 @@
 import type { QuestionItem } from "@/lib/types";
 import { getCloudClientForUser } from "@/lib/data/storage-mode";
 
+function mergeQuestionMetadata(row: Record<string, unknown>) {
+  const metadata = row.metadata && typeof row.metadata === "object" ? row.metadata as Record<string, unknown> : {};
+  return {
+    ...metadata,
+    bookSeries: row.book_series || metadata.bookSeries,
+    sourceType: row.source_type || metadata.sourceType,
+    contentType: row.content_type || metadata.contentType,
+    needsReview: typeof row.needs_review === "boolean" ? row.needs_review : metadata.needsReview,
+  };
+}
+
 export async function listCloudQuestions() {
   const cloud = await getCloudClientForUser();
   if (!cloud) return null;
@@ -22,7 +33,7 @@ export async function listCloudQuestions() {
     bankScope: row.bank_scope === "system" ? "system" : "user",
     userId: row.user_id || null,
     options: row.options || null,
-    metadata: row.metadata || {}
+    metadata: mergeQuestionMetadata(row)
   } as QuestionItem));
 }
 
@@ -44,6 +55,10 @@ export async function saveQuestionsToCloud(items: QuestionItem[]) {
       options: item.options || null,
       answer: item.answer,
       explanation: item.explanation,
+      book_series: item.metadata?.bookSeries || null,
+      source_type: item.metadata?.sourceType || "teacher_created",
+      content_type: item.metadata?.contentType || null,
+      needs_review: typeof item.metadata?.needsReview === "boolean" ? item.metadata.needsReview : true,
       metadata: {
         ...(item.metadata || {}),
         sourceType: item.metadata?.sourceType || "teacher_created",
