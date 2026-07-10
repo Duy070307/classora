@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
@@ -22,12 +22,13 @@ import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
 import { createStructuredExam } from "@/lib/mock-exam-generator";
-import { formatQuestionOptions } from "@/lib/question-bank";
+import { formatQuestionOptions, isValidMultipleChoice } from "@/lib/question-bank";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
 
 type BankSource = "system" | "user" | "both" | "ai";
+type DifficultyMode = "auto" | "suggested";
 
 const systemBankSubjects = ["Vật lí", "Hóa học"];
 const systemBankSubjectNote = "Ngân hàng Soạn Lab hiện có câu hỏi mẫu cho Vật lí và Hóa học. Với môn này, thầy cô có thể chọn ‘Tự tạo bằng AI’ hoặc dùng ‘Ngân hàng của tôi’.";
@@ -44,6 +45,86 @@ function normalizeText(value: string) {
 function renderBankQuestion(item: QuestionItem, index: number) {
   const options = item.type === "Trắc nghiệm" ? formatQuestionOptions(item.options) : "";
   return `Câu NH${index + 1}. [${questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}] ${item.question}${options ? `\n${options}` : ""}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`;
+}
+
+function sourceLabel(source: BankSource) {
+  if (source === "system") return "Ngân hàng Soạn Lab";
+  if (source === "user") return "Ngân hàng của tôi";
+  if (source === "both") return "Cả hai";
+  return "Tự tạo bằng AI";
+}
+
+function isValidBankMcq(item: QuestionItem) {
+  return item.type === "Trắc nghiệm" && isValidMultipleChoice(item);
+}
+
+function topicScore(itemTopic: string, inputTopic: string) {
+  const item = normalizeText(itemTopic);
+  const target = normalizeText(inputTopic);
+  if (!target) return 1;
+  if (item === target) return 3;
+  if (item.includes(target) || target.includes(item)) return 2;
+  return 0;
+}
+
+function shuffleQuestions(items: QuestionItem[]) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
+function distributeQuestions(items: QuestionItem[], count: number, mode: DifficultyMode) {
+  const unique = new Map<string, QuestionItem>();
+  items.forEach((item) => unique.set(item.id || item.question, item));
+  const pool = [...unique.values()];
+  if (mode === "auto") return shuffleQuestions(pool).slice(0, count);
+
+  const targets: Record<string, number> = {
+    "Nhận biết": Math.round(count * 0.4),
+    "Thông hiểu": Math.round(count * 0.4),
+    "Vận dụng": Math.floor(count * 0.2),
+    "Vận dụng cao": 0,
+  };
+  targets["Nhận biết"] += count - Object.values(targets).reduce((sum, value) => sum + value, 0);
+  const selected: QuestionItem[] = [];
+  const used = new Set<string>();
+  Object.entries(targets).forEach(([difficulty, target]) => {
+    shuffleQuestions(pool.filter((item) => item.difficulty === difficulty && !used.has(item.id))).slice(0, target).forEach((item) => {
+      selected.push(item);
+      used.add(item.id);
+    });
+  });
+  shuffleQuestions(pool.filter((item) => !used.has(item.id))).slice(0, count - selected.length).forEach((item) => selected.push(item));
+  return shuffleQuestions(selected).slice(0, count);
+}
+
+function buildBankExamContent(input: ExamInput, questions: QuestionItem[], bankSource: BankSource, notes: string[]) {
+  const source = sourceLabel(bankSource);
+  const questionLines = questions.map((item, index) => {
+    const options = formatQuestionOptions(item.options);
+    return `Câu ${index + 1}. ${item.question}${options ? `\n${options}` : ""}`;
+  }).join("\n\n");
+  const answers = questions.map((item, index) => `${index + 1}. ${item.answer.trim().toUpperCase()}`).join("\n");
+  const explanations = questions.map((item, index) => `Câu ${index + 1}. ${item.explanation || "Giáo viên rà soát và bổ sung lời giải nếu cần."}`).join("\n");
+  return `BẢN NHÁP ĐỀ KIỂM TRA
+Môn: ${input.subject}
+Lớp: ${input.grade}
+Chủ đề: ${input.topic || "Theo ngân hàng câu hỏi"}
+Nguồn câu hỏi: ${source}
+Bộ sách / định hướng: ${input.bookSeries}
+Số câu: ${questions.length}
+
+PHẦN I. TRẮC NGHIỆM
+Chọn phương án đúng nhất trong mỗi câu.
+
+${questionLines}
+
+ĐÁP ÁN
+${answers}
+
+HƯỚNG DẪN GIẢI / LỜI GIẢI NGẮN
+${explanations}
+
+LƯU Ý
+Đề kiểm tra được tạo từ ngân hàng câu hỏi tham khảo. Thầy cô cần rà soát lại nội dung, đáp án và mức độ trước khi sử dụng.${notes.length ? `\n${notes.join("\n")}` : ""}`;
 }
 
 const initialInput: ExamInput = {
@@ -74,9 +155,11 @@ const initialInput: ExamInput = {
   extraRequirements: ""
 };
 
-const quickExamPresets: Array<{ label: string; values: Partial<ExamInput> }> = [
+const quickExamPresets: Array<{ label: string; values: Partial<ExamInput>; bank?: Partial<{ useBank: boolean; bankSource: BankSource; bankCount: number }> }> = [
   { label: "Toán 12 THPTQG", values: { subject: "Toán", grade: "12", topic: "Hàm số, mũ - logarit, tích phân, xác suất", duration: "90 phút", examStyle: "THPTQG / tốt nghiệp", multipleChoiceCount: 12, trueFalseCount: 4, shortAnswerCount: 6 } },
   { label: "Xác suất", values: { subject: "Toán", grade: "12", topic: "Xác suất, biến cố, quy tắc cộng và quy tắc nhân", examStyle: "THPTQG / tốt nghiệp" } },
+  { label: "Vật lí 11 · Định luật Ohm", values: { subject: "Vật lí", grade: "11", topic: "Định luật Ohm", bookSeries: DEFAULT_BOOK_SERIES, examType: "Trắc nghiệm", multipleChoiceCount: 10, trueFalseCount: 0, shortAnswerCount: 0 }, bank: { useBank: true, bankSource: "system", bankCount: 10 } },
+  { label: "Hóa 10 · Cấu tạo nguyên tử", values: { subject: "Hóa học", grade: "10", topic: "Cấu tạo nguyên tử", bookSeries: DEFAULT_BOOK_SERIES, examType: "Trắc nghiệm", multipleChoiceCount: 10, trueFalseCount: 0, shortAnswerCount: 0 }, bank: { useBank: true, bankSource: "system", bankCount: 10 } },
   { label: "Lịch sử 12", values: { subject: "Lịch sử", grade: "12", topic: "Việt Nam giai đoạn 1919-1975", duration: "50 phút" } },
   { label: "Tiếng Anh 9", values: { subject: "Tiếng Anh", grade: "9", topic: "Vocabulary, grammar and reading comprehension", duration: "45 phút" } },
   { label: "Toán 8", values: { subject: "Toán", grade: "8", topic: "Phương trình bậc nhất một ẩn", duration: "45 phút" } },
@@ -89,12 +172,41 @@ export default function ExamGeneratorPage() {
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [useBank, setUseBank] = useState(false);
-  const [bankSource, setBankSource] = useState<BankSource>("both");
+  const [bankSource, setBankSource] = useState<BankSource>("system");
   const [bankQuestions, setBankQuestions] = useState<QuestionItem[]>([]);
   const [bankDifficulty, setBankDifficulty] = useState("");
-  const [bankCount, setBankCount] = useState(5);
+  const [bankCount, setBankCount] = useState(10);
+  const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("suggested");
   const normalizeExamDraft = useCallback((saved: ExamInput) => ({ ...initialInput, ...saved }), []);
   const draft = useFormDraft("/tools/exam-generator", input, setInput, normalizeExamDraft);
+
+  const bankPreview = useMemo(() => {
+    if (bankSource === "ai") return { valid: [] as QuestionItem[], invalidSkipped: 0, relatedUsed: false };
+    let invalidSkipped = 0;
+    const candidates = bankQuestions.filter((item) => {
+      const scope = questionScope(item);
+      const subjectGradeMatch = normalizeText(item.subject) === normalizeText(input.subject) && normalizeText(item.grade) === normalizeText(input.grade);
+      const sourceMatch = bankSource === "both" || scope === bankSource;
+      if (!subjectGradeMatch || !sourceMatch) return false;
+      if (scope === "system" && !systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject))) return false;
+      if (!isValidBankMcq(item)) {
+        invalidSkipped += 1;
+        return false;
+      }
+      if (bankDifficulty && item.difficulty !== bankDifficulty) return false;
+      return true;
+    });
+    const exactOrPartial = candidates.filter((item) => topicScore(item.topic, input.topic) >= 2);
+    const requestedCount = Math.min(Math.max(bankCount || 1, 1), 50);
+    const base = exactOrPartial.length
+      ? [...exactOrPartial, ...candidates.filter((item) => !exactOrPartial.some((exact) => exact.id === item.id))]
+      : candidates;
+    return {
+      valid: distributeQuestions(base.sort((a, b) => topicScore(b.topic, input.topic) - topicScore(a.topic, input.topic)), requestedCount, difficultyMode),
+      invalidSkipped,
+      relatedUsed: Boolean(input.topic && candidates.length && exactOrPartial.length < Math.min(requestedCount, candidates.length)),
+    };
+  }, [bankCount, bankDifficulty, bankQuestions, bankSource, difficultyMode, input.grade, input.subject, input.topic]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -124,10 +236,11 @@ export default function ExamGeneratorPage() {
     const queryPreset = typeof window !== "undefined" ? getQueryPrefill(window.location.search) : null;
     if (!sample && !queryPreset) return;
     queueMicrotask(() => {
-      const presetInput = { ...(sample || {}), ...(queryPreset || {}) } as Partial<ExamInput> & { bankSource?: BankSource; useBank?: boolean };
+      const presetInput = { ...(sample || {}), ...(queryPreset || {}) } as Partial<ExamInput> & { bankSource?: BankSource; useBank?: boolean; bankCount?: number };
       setInput((current) => mergeDefined({ ...initialInput, ...current }, presetInput));
       if (typeof presetInput.useBank === "boolean") setUseBank(presetInput.useBank);
       if (presetInput.bankSource) setBankSource(presetInput.bankSource);
+      if (presetInput.bankCount) setBankCount(Math.min(50, Math.max(1, Number(presetInput.bankCount))));
       setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo bản nháp.");
     });
   }, []);
@@ -145,6 +258,98 @@ export default function ExamGeneratorPage() {
     setLoading(true);
     setMessage("");
     try {
+    if (useBank && bankSource !== "ai") {
+      const requestedCount = Math.min(Math.max(bankCount || 1, 1), 50);
+      const selected = bankPreview.valid.slice(0, requestedCount);
+      if (!selected.length) {
+        const emptyMessage = bankSource === "system"
+          ? "Ngân hàng Soạn Lab hiện chưa có câu hỏi phù hợp với môn, lớp hoặc chủ đề này. Thầy cô có thể chọn ‘Tự tạo bằng AI’ hoặc dùng ‘Ngân hàng của tôi’."
+          : bankSource === "user"
+            ? "Ngân hàng của tôi chưa có câu hỏi phù hợp. Thầy cô có thể thêm câu hỏi, nhập từ Excel hoặc chọn Ngân hàng Soạn Lab."
+            : "Chưa có đủ câu hỏi phù hợp trong các nguồn đã chọn. Thầy cô có thể giảm số câu hoặc để Soạn Lab tạo bổ sung bằng AI.";
+        setMessage(emptyMessage);
+        setLoading(false);
+        return;
+      }
+      const notes: string[] = [];
+      if (selected.length < requestedCount) notes.push(`Nguồn câu hỏi đã chọn hiện chỉ có ${selected.length} câu phù hợp. Thầy cô có thể giảm số câu, chọn thêm nguồn khác hoặc để Soạn Lab tạo bổ sung bằng AI.`);
+      if (bankPreview.relatedUsed) notes.push("Một số câu được lấy từ chủ đề gần liên quan do ngân hàng chưa đủ câu đúng chủ đề.");
+      if (bankPreview.invalidSkipped) notes.push("Một số câu trong ngân hàng chưa đủ phương án nên đã được bỏ qua.");
+      if (difficultyMode === "suggested") notes.push("Một số mức độ có thể được điều chỉnh do số câu phù hợp trong ngân hàng chưa đủ.");
+
+      const content = applyTemplate(resolveTemplate(templateId), buildBankExamContent(input, selected, bankSource, notes), {
+        subject: input.subject,
+        grade: input.grade,
+        topic: input.topic,
+        bookSeries: input.bookSeries,
+        duration: input.duration,
+        extraRequirements: input.extraRequirements
+      });
+      const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
+      next.structuredExam = {
+        metadata: {
+          title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`,
+          examStyle: input.examStyle,
+          subject: input.subject,
+          grade: input.grade,
+          duration: input.duration,
+          examCode: input.examCode.padStart(4, "0"),
+          schoolName: input.schoolName,
+        },
+        parts: [{
+          type: "multiple_choice",
+          title: "PHẦN I. TRẮC NGHIỆM",
+          instruction: "Chọn phương án đúng nhất trong mỗi câu.",
+          questions: selected.map((item, index) => ({
+            id: item.id,
+            part: "multiple_choice",
+            number: index + 1,
+            stem: item.question,
+            options: {
+              A: item.options?.A || "",
+              B: item.options?.B || "",
+              C: item.options?.C || "",
+              D: item.options?.D || "",
+            },
+            answer: item.answer.trim().toUpperCase(),
+            explanation: item.explanation || "",
+            score: Number((input.totalScore / selected.length).toFixed(2)),
+            difficulty: item.difficulty,
+            topic: item.topic,
+          })),
+        }],
+        teacherOnly: {
+          scoringGuide: selected.map((item, index) => `Câu ${index + 1}: ${item.answer.trim().toUpperCase()} - ${item.explanation || "Rà soát lời giải."}`).join("\n"),
+          matrix: `Nguồn: ${sourceLabel(bankSource)}\nSố câu: ${selected.length}\nChủ đề: ${input.topic || "Theo ngân hàng câu hỏi"}`,
+          specification: "Đề trắc nghiệm được tạo từ ngân hàng câu hỏi tham khảo. Giáo viên cần rà soát trước khi sử dụng.",
+          notes: notes.join("\n"),
+        },
+      };
+      next.examMeta = {
+        schoolName: input.schoolName,
+        teacherName: input.teacherName,
+        subject: input.subject,
+        grade: input.grade,
+        duration: input.duration,
+        topic: input.topic,
+        examCode: input.examCode.padStart(4, "0"),
+        examStyle: input.examStyle
+      };
+      next.generationMeta = {
+        source: "question-bank",
+        bankSource: sourceLabel(bankSource),
+        subject: input.subject,
+        grade: input.grade,
+        topic: input.topic,
+        questionCount: selected.length,
+        warnings: notes,
+      };
+      setDocument(next);
+      incrementUsage();
+      setMessage(notes[0] || "Đã tạo đề kiểm tra từ ngân hàng câu hỏi.");
+      setLoading(false);
+      return;
+    }
     const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
     const generatedRaw = aiResult.content;
     const generated = withSourceAlignmentNote(generatedRaw
@@ -226,8 +431,11 @@ export default function ExamGeneratorPage() {
     setMessage("Đã điền dữ liệu mẫu.");
   }
 
-  function applyQuickPreset(values: Partial<ExamInput>) {
+  function applyQuickPreset(values: Partial<ExamInput>, bank?: Partial<{ useBank: boolean; bankSource: BankSource; bankCount: number }>) {
     setInput((current) => ({ ...current, ...values }));
+    if (typeof bank?.useBank === "boolean") setUseBank(bank.useBank);
+    if (bank?.bankSource) setBankSource(bank.bankSource);
+    if (bank?.bankCount) setBankCount(bank.bankCount);
     setMessage("Đã điền mẫu nhanh. Có thể chỉnh sửa nội dung sau khi tạo trước khi xuất file.");
   }
 
@@ -245,7 +453,7 @@ export default function ExamGeneratorPage() {
                   <button
                     key={preset.label}
                     type="button"
-                    onClick={() => applyQuickPreset(preset.values)}
+                    onClick={() => applyQuickPreset(preset.values, preset.bank)}
                     className="rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 ring-1 ring-blue-100 transition hover:bg-blue-600 hover:text-white"
                   >
                     {preset.label}
@@ -325,30 +533,30 @@ export default function ExamGeneratorPage() {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Mức độ</label><select className="form-field mt-1" value={bankDifficulty} onChange={(e) => setBankDifficulty(e.target.value)}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>
-                  <div><label className="label">Số câu lấy tối đa</label><input type="number" min="1" className="form-field mt-1" value={bankCount} onChange={(e) => setBankCount(Number(e.target.value))} /></div>
+                  <div>
+                    <label className="label">Số câu hỏi</label>
+                    <input type="number" min="1" max="50" className="form-field mt-1" value={bankCount} onChange={(e) => setBankCount(Math.min(50, Math.max(1, Number(e.target.value) || 1)))} />
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {[5, 10, 15, 20].map((count) => <button key={count} type="button" className={`rounded-full px-2.5 py-1 text-[11px] font-black ${bankCount === count ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-700"}`} onClick={() => setBankCount(count)}>{count}</button>)}
+                    </div>
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-blue-700">Phân bố mức độ</p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="radio" checked={difficultyMode === "auto"} onChange={() => setDifficultyMode("auto")} />Tự động</label>
+                    <label className="flex items-center gap-2 text-sm font-semibold text-slate-700"><input type="radio" checked={difficultyMode === "suggested"} onChange={() => setDifficultyMode("suggested")} />Theo tỉ lệ gợi ý 40% - 40% - 20%</label>
+                  </div>
                 </div>
                 {bankSource === "system" || bankSource === "both" ? (
                   <p className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-900">
                     Ngân hàng Soạn Lab hiện ưu tiên câu hỏi trắc nghiệm tham khảo cho Vật lí và Hóa học. Nếu thầy cô cần môn hoặc dạng câu hỏi khác, có thể chọn “Tự tạo bằng AI” hoặc “Ngân hàng của tôi”.
                   </p>
                 ) : null}
-                {bankSource === "ai" ? <p className="text-sm text-muted">Soạn Lab sẽ tự tạo bản nháp bằng AI, không lấy câu hỏi từ ngân hàng.</p> : bankQuestions.filter((item) => {
-                  const scope = questionScope(item);
-                  return item.subject.toLowerCase() === input.subject.toLowerCase()
-                    && item.grade.toLowerCase() === input.grade.toLowerCase()
-                    && (bankSource === "both" || scope === bankSource)
-                    && (scope !== "system" || (systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject)) && item.type === "Trắc nghiệm"))
-                    && (!bankDifficulty || item.difficulty === bankDifficulty);
-                }).length ? (
+                {bankSource === "ai" ? <p className="text-sm text-muted">Soạn Lab sẽ tự tạo bản nháp bằng AI, không lấy câu hỏi từ ngân hàng.</p> : bankPreview.valid.length ? (
                   <div className="max-h-40 space-y-2 overflow-auto rounded-md border border-line bg-white p-3 text-sm">
-                    {bankQuestions.filter((item) => {
-                      const scope = questionScope(item);
-                      return item.subject.toLowerCase() === input.subject.toLowerCase()
-                        && item.grade.toLowerCase() === input.grade.toLowerCase()
-                        && (bankSource === "both" || scope === bankSource)
-                        && (scope !== "system" || (systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject)) && item.type === "Trắc nghiệm"))
-                        && (!bankDifficulty || item.difficulty === bankDifficulty);
-                    }).slice(0, bankCount).map((item) => <p key={item.id} className="border-b border-line pb-2 last:border-0"><span className="font-bold text-blue-700">{questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}:</span> {item.question}</p>)}
+                    <p className="font-bold text-slate-900">Tìm thấy {bankPreview.valid.length} câu phù hợp để đưa vào đề.</p>
+                    {bankPreview.valid.slice(0, Math.min(bankCount, 5)).map((item, index) => <div key={item.id} className="border-b border-line pb-2 last:border-0"><p><span className="font-bold text-blue-700">Câu {index + 1} · {questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}:</span> {item.question}</p><pre className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600">{formatQuestionOptions(item.options)}</pre></div>)}
                   </div>
                 ) : <p className="text-sm text-muted">{(bankSource === "system" || bankSource === "both") && !systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(input.subject)) ? systemBankSubjectNote : (bankSource === "system" || bankSource === "both") && (input.trueFalseCount > 0 || input.shortAnswerCount > 0 || input.essayCount > 0) ? systemBankTypeNote : "Chưa có câu hỏi trong nguồn đã chọn. Thầy cô có thể chọn nguồn khác hoặc để Soạn Lab tạo bản nháp bằng AI."}</p>}
               </> : null}

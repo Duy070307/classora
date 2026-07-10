@@ -54,6 +54,12 @@ export type GeneratedDocument = {
     warnings?: string[];
     hasStandaloneLatex?: boolean;
     standaloneLatex?: string;
+    source?: string;
+    bankSource?: string;
+    subject?: string;
+    grade?: string;
+    topic?: string;
+    questionCount?: number;
   };
 };
 
