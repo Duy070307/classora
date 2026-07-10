@@ -15,6 +15,8 @@ import { BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES } from "@/lib/curriculum";
 
 type ScopeFilter = "all" | "system" | "user";
 
+const systemBankNote = "Hiện tại Ngân hàng Soạn Lab ưu tiên câu hỏi trắc nghiệm tham khảo cho Vật lí và Hóa học. Các dạng câu hỏi khác sẽ được bổ sung sau.";
+
 const emptyForm = {
   subject: "Toán",
   grade: "8",
@@ -140,6 +142,7 @@ export default function QuestionBankPage() {
     setSelected((current) => current.filter((item) => item !== id));
   }
 
+  const activeTypeFilter = scopeFilter === "system" ? "Trắc nghiệm" : filters.type;
   const filtered = useMemo(() => items.filter((item) => {
     const text = query.trim().toLowerCase();
     return (!text || `${item.question} ${item.answer} ${item.explanation}`.toLowerCase().includes(text))
@@ -147,15 +150,25 @@ export default function QuestionBankPage() {
       && (!filters.subject || item.subject === filters.subject)
       && (!filters.grade || item.grade === filters.grade)
       && (!filters.topic || item.topic === filters.topic)
-      && (!filters.type || item.type === filters.type)
+      && (!activeTypeFilter || item.type === activeTypeFilter)
       && (!filters.difficulty || item.difficulty === filters.difficulty)
       && (!filters.bookSeries || (item.metadata?.bookSeries || "Khác") === filters.bookSeries)
       && (!filters.contentType || (item.metadata?.contentType || "Bài tập") === filters.contentType);
-  }), [filters, items, query, scopeFilter]);
+  }), [activeTypeFilter, filters, items, query, scopeFilter]);
 
   const exportItems = selected.length ? items.filter((item) => selected.includes(item.id)) : filtered;
   const exportDocument = createDocument(`Ngân hàng câu hỏi - ${exportItems.length} câu`, "question-bank", questionsToDocument(exportItems));
-  const unique = (key: "subject" | "grade" | "topic") => [...new Set(items.map((item) => item[key]).filter(Boolean))];
+  const filterSourceItems = scopeFilter === "all" ? items : items.filter((item) => scopeOf(item) === scopeFilter);
+  const unique = (key: "subject" | "grade" | "topic") => {
+    const values = [...new Set(filterSourceItems.map((item) => item[key]).filter(Boolean))];
+    return key === "subject"
+      ? values.sort((a, b) => {
+          const priority = (value: string) => value === "Vật lí" ? 0 : value === "Hóa học" ? 1 : 2;
+          return priority(a) - priority(b) || a.localeCompare(b, "vi");
+        })
+      : values.sort((a, b) => a.localeCompare(b, "vi", { numeric: true }));
+  };
+  const typeOptions = scopeFilter === "system" ? ["Trắc nghiệm"] : ["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai", "Trả lời ngắn"];
   const hasSeedQuestions = items.some((item) => item.metadata?.generatedBy === "Soạn Lab seed");
   const counts = {
     all: items.length,
@@ -177,7 +190,7 @@ export default function QuestionBankPage() {
       const { listCloudQuestions } = await import("@/lib/data/question-bank-store");
       const cloud = await listCloudQuestions();
       if (cloud?.length) setItems((current) => mergeQuestions(current, cloud));
-      setMessage(`Đã thêm ${data.inserted || 0} câu hỏi mẫu. Bỏ qua ${data.skipped || 0} câu hỏi đã tồn tại.`);
+      setMessage(`Đã thêm ${data.inserted || 0} câu hỏi trắc nghiệm mẫu. Bỏ qua ${data.skipped || 0} câu hỏi đã tồn tại.${data.cleaned ? ` Đã dọn ${data.cleaned} câu hỏi mẫu không còn dùng trong Ngân hàng Soạn Lab.` : ""}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Chưa thêm được câu hỏi mẫu. Vui lòng thử lại.");
     }
@@ -284,7 +297,7 @@ export default function QuestionBankPage() {
               )}
               {isAdmin ? (
                 <button type="button" className="btn-secondary" onClick={seedKnttQuestions} disabled={seeding}>
-                  {seeding ? "Đang thêm…" : "Thêm câu hỏi mẫu Kết nối tri thức"}
+                  {seeding ? "Đang thêm…" : "Thêm trắc nghiệm Vật lí/Hóa học"}
                 </button>
               ) : null}
             </div>
@@ -338,6 +351,7 @@ export default function QuestionBankPage() {
                     type="button"
                     onClick={() => {
                       setScopeFilter(value);
+                      setFilters((current) => ({ ...current, type: value === "system" ? "Trắc nghiệm" : current.type === "Trắc nghiệm" ? "" : current.type }));
                       setSelected([]);
                     }}
                     className={`rounded-xl px-3 py-2 text-xs font-black transition ${scopeFilter === value ? "bg-blue-600 text-white" : "bg-white text-slate-600 hover:text-blue-700"}`}
@@ -352,10 +366,19 @@ export default function QuestionBankPage() {
                   Câu hỏi mẫu chỉ dùng để tham khảo và làm dữ liệu khởi đầu. Thầy cô cần kiểm tra, chỉnh sửa hoặc thay thế theo nội dung dạy học thực tế.
                 </p>
               ) : null}
+              {scopeFilter === "system" ? (
+                <p className="rounded-2xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm leading-6 text-blue-900">
+                  {systemBankNote}
+                </p>
+              ) : null}
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                <select className="form-field" value={scopeFilter} onChange={(e) => setScopeFilter(e.target.value as ScopeFilter)}><option value="all">Mọi nguồn</option><option value="system">Soạn Lab</option><option value="user">Của tôi</option></select>
+                <select className="form-field" value={scopeFilter} onChange={(e) => {
+                  const value = e.target.value as ScopeFilter;
+                  setScopeFilter(value);
+                  setFilters((current) => ({ ...current, type: value === "system" ? "Trắc nghiệm" : current.type === "Trắc nghiệm" ? "" : current.type }));
+                }}><option value="all">Mọi nguồn</option><option value="system">Soạn Lab</option><option value="user">Của tôi</option></select>
                 {(["subject", "grade", "topic"] as const).map((key) => <select key={key} className="form-field" value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option value="">{key === "subject" ? "Mọi môn" : key === "grade" ? "Mọi lớp" : "Mọi chủ đề"}</option>{unique(key).map((value) => <option key={value}>{value}</option>)}</select>)}
-                <select className="form-field" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}><option value="">Mọi loại</option>{["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"].map((value) => <option key={value}>{value}</option>)}</select>
+                <select className="form-field" value={activeTypeFilter} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>{scopeFilter === "system" ? null : <option value="">Mọi loại</option>}{typeOptions.map((value) => <option key={value}>{value}</option>)}</select>
                 <select className="form-field" value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select>
                 <select className="form-field" value={filters.bookSeries} onChange={(e) => setFilters({ ...filters, bookSeries: e.target.value })}><option value="">Mọi bộ sách</option>{["Kết nối tri thức", "Chân trời sáng tạo", "Cánh diều", "Khác"].map((value) => <option key={value}>{value}</option>)}</select>
                 <select className="form-field" value={filters.contentType} onChange={(e) => setFilters({ ...filters, contentType: e.target.value })}><option value="">Mọi loại nội dung</option>{["Lý thuyết", "Bài tập", "Thí nghiệm", "Vận dụng thực tế"].map((value) => <option key={value}>{value}</option>)}</select>

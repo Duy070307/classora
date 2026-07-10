@@ -28,8 +28,16 @@ import { getQueryPrefill } from "@/lib/public-beta-presets";
 
 type BankSource = "system" | "user" | "both" | "ai";
 
+const systemBankSubjects = ["Vật lí", "Hóa học"];
+const systemBankSubjectNote = "Ngân hàng Soạn Lab hiện có câu hỏi mẫu cho Vật lí và Hóa học. Với môn này, thầy cô có thể chọn ‘Tự tạo bằng AI’ hoặc dùng ‘Ngân hàng của tôi’.";
+const systemBankTypeNote = "Ngân hàng Soạn Lab hiện ưu tiên câu hỏi trắc nghiệm. Các dạng khác sẽ được bổ sung sau.";
+
 function questionScope(item: QuestionItem): "system" | "user" {
   return item.bankScope === "system" || item.metadata?.generatedBy === "Soạn Lab seed" ? "system" : "user";
+}
+
+function normalizeText(value: string) {
+  return value.trim().toLowerCase();
 }
 
 const initialInput: ExamInput = {
@@ -136,11 +144,15 @@ export default function ExamGeneratorPage() {
     const generated = withSourceAlignmentNote(generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
       .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. "), input as unknown as Record<string, unknown>);
+    const wantsSystemBank = bankSource === "system" || bankSource === "both";
+    const systemSubjectSupported = systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(input.subject));
+    const hasNonMultipleChoiceParts = input.trueFalseCount > 0 || input.shortAnswerCount > 0 || input.essayCount > 0;
     const matching = bankSource === "ai" ? [] : bankQuestions.filter((item) => {
       const scope = questionScope(item);
       return item.subject.toLowerCase() === input.subject.toLowerCase()
         && item.grade.toLowerCase() === input.grade.toLowerCase()
         && (bankSource === "both" || scope === bankSource)
+        && (scope !== "system" || (systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject)) && item.type === "Trắc nghiệm"))
         && (!input.topic || item.topic.toLowerCase().includes(input.topic.toLowerCase()) || input.topic.toLowerCase().includes(item.topic.toLowerCase()))
         && (!bankDifficulty || item.difficulty === bankDifficulty);
     }).sort((a, b) => {
@@ -151,8 +163,15 @@ export default function ExamGeneratorPage() {
     const bankContent = useBank && matching.length
       ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map((item, index) => `Câu NH${index + 1}. [${questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}] ${item.question}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}`).join("\n\n")}`
       : "";
-    const bankNote = useBank && bankSource !== "ai" && !matching.length
-      ? "\n\nLƯU Ý NGUỒN CÂU HỎI\nChưa có câu hỏi trong nguồn đã chọn. Soạn Lab đã tạo bản nháp tham khảo để thầy cô rà soát."
+    const bankWarning = useBank && bankSource !== "ai" && !matching.length
+      ? wantsSystemBank && !systemSubjectSupported
+        ? systemBankSubjectNote
+        : wantsSystemBank && hasNonMultipleChoiceParts
+          ? systemBankTypeNote
+          : "Chưa có câu hỏi trong nguồn đã chọn. Soạn Lab đã tạo bản nháp tham khảo để thầy cô rà soát."
+      : "";
+    const bankNote = bankWarning
+      ? `\n\nLƯU Ý NGUỒN CÂU HỎI\n${bankWarning}`
       : "";
     const content = applyTemplate(resolveTemplate(templateId), generated + bankContent + bankNote, {
       subject: input.subject,
@@ -176,7 +195,7 @@ export default function ExamGeneratorPage() {
     };
     setDocument(next);
     incrementUsage();
-    setMessage(useBank && bankSource !== "ai" && !matching.length ? "Chưa có câu hỏi trong nguồn đã chọn. Soạn Lab đã tạo bản nháp tham khảo để thầy cô rà soát." : "Đã tạo đề kiểm tra thành công.");
+    setMessage(bankWarning || "Đã tạo đề kiểm tra thành công.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
     }
@@ -293,7 +312,7 @@ export default function ExamGeneratorPage() {
                     <option value="ai">Tự tạo bằng AI</option>
                   </select>
                   <div className="mt-2 space-y-1 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-900">
-                    <p><strong>Ngân hàng Soạn Lab:</strong> Câu hỏi mẫu tham khảo do Soạn Lab chuẩn bị, giáo viên nào cũng có thể xem.</p>
+                    <p><strong>Ngân hàng Soạn Lab:</strong> Câu hỏi trắc nghiệm tham khảo theo định hướng Kết nối tri thức cho Vật lí và Hóa học.</p>
                     <p><strong>Ngân hàng của tôi:</strong> Câu hỏi do thầy cô tự thêm hoặc upload, chỉ tài khoản của thầy cô nhìn thấy.</p>
                     <p><strong>Cả hai:</strong> Kết hợp câu hỏi mẫu và câu hỏi riêng.</p>
                   </div>
@@ -302,11 +321,30 @@ export default function ExamGeneratorPage() {
                   <div><label className="label">Mức độ</label><select className="form-field mt-1" value={bankDifficulty} onChange={(e) => setBankDifficulty(e.target.value)}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>
                   <div><label className="label">Số câu lấy tối đa</label><input type="number" min="1" className="form-field mt-1" value={bankCount} onChange={(e) => setBankCount(Number(e.target.value))} /></div>
                 </div>
-                {bankSource === "ai" ? <p className="text-sm text-muted">Soạn Lab sẽ tự tạo bản nháp bằng AI, không lấy câu hỏi từ ngân hàng.</p> : bankQuestions.filter((item) => item.subject.toLowerCase() === input.subject.toLowerCase() && item.grade.toLowerCase() === input.grade.toLowerCase() && (bankSource === "both" || questionScope(item) === bankSource) && (!bankDifficulty || item.difficulty === bankDifficulty)).length ? (
+                {bankSource === "system" || bankSource === "both" ? (
+                  <p className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-900">
+                    Ngân hàng Soạn Lab hiện ưu tiên câu hỏi trắc nghiệm tham khảo cho Vật lí và Hóa học. Nếu thầy cô cần môn hoặc dạng câu hỏi khác, có thể chọn “Tự tạo bằng AI” hoặc “Ngân hàng của tôi”.
+                  </p>
+                ) : null}
+                {bankSource === "ai" ? <p className="text-sm text-muted">Soạn Lab sẽ tự tạo bản nháp bằng AI, không lấy câu hỏi từ ngân hàng.</p> : bankQuestions.filter((item) => {
+                  const scope = questionScope(item);
+                  return item.subject.toLowerCase() === input.subject.toLowerCase()
+                    && item.grade.toLowerCase() === input.grade.toLowerCase()
+                    && (bankSource === "both" || scope === bankSource)
+                    && (scope !== "system" || (systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject)) && item.type === "Trắc nghiệm"))
+                    && (!bankDifficulty || item.difficulty === bankDifficulty);
+                }).length ? (
                   <div className="max-h-40 space-y-2 overflow-auto rounded-md border border-line bg-white p-3 text-sm">
-                    {bankQuestions.filter((item) => item.subject.toLowerCase() === input.subject.toLowerCase() && item.grade.toLowerCase() === input.grade.toLowerCase() && (bankSource === "both" || questionScope(item) === bankSource) && (!bankDifficulty || item.difficulty === bankDifficulty)).slice(0, bankCount).map((item) => <p key={item.id} className="border-b border-line pb-2 last:border-0"><span className="font-bold text-blue-700">{questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}:</span> {item.question}</p>)}
+                    {bankQuestions.filter((item) => {
+                      const scope = questionScope(item);
+                      return item.subject.toLowerCase() === input.subject.toLowerCase()
+                        && item.grade.toLowerCase() === input.grade.toLowerCase()
+                        && (bankSource === "both" || scope === bankSource)
+                        && (scope !== "system" || (systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(item.subject)) && item.type === "Trắc nghiệm"))
+                        && (!bankDifficulty || item.difficulty === bankDifficulty);
+                    }).slice(0, bankCount).map((item) => <p key={item.id} className="border-b border-line pb-2 last:border-0"><span className="font-bold text-blue-700">{questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}:</span> {item.question}</p>)}
                   </div>
-                ) : <p className="text-sm text-muted">Chưa có câu hỏi trong nguồn đã chọn. Thầy cô có thể chọn nguồn khác hoặc để Soạn Lab tạo bản nháp bằng AI.</p>}
+                ) : <p className="text-sm text-muted">{(bankSource === "system" || bankSource === "both") && !systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(input.subject)) ? systemBankSubjectNote : (bankSource === "system" || bankSource === "both") && (input.trueFalseCount > 0 || input.shortAnswerCount > 0 || input.essayCount > 0) ? systemBankTypeNote : "Chưa có câu hỏi trong nguồn đã chọn. Thầy cô có thể chọn nguồn khác hoặc để Soạn Lab tạo bản nháp bằng AI."}</p>}
               </> : null}
             </div>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>

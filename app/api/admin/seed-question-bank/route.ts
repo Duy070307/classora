@@ -34,6 +34,42 @@ export async function POST(request: NextRequest) {
   if (!admin) return NextResponse.json({ ok: false, error: "Chưa thể thêm dữ liệu mẫu lúc này." }, { status: 503 });
 
   const seeds = getKnttTheorySeedQuestions();
+
+  const { count: removedOtherSubjects, error: removeSubjectError } = await admin
+    .from("question_bank")
+    .delete({ count: "exact" })
+    .eq("bank_scope", "system")
+    .not("subject", "in", '("Vật lí","Hóa học")');
+
+  if (removeSubjectError) {
+    return NextResponse.json({ ok: false, error: "Chưa dọn được dữ liệu mẫu không còn dùng." }, { status: 500 });
+  }
+
+  const { count: removedOtherTypes, error: removeTypeError } = await admin
+    .from("question_bank")
+    .delete({ count: "exact" })
+    .eq("bank_scope", "system")
+    .neq("question_type", "Trắc nghiệm");
+
+  if (removeTypeError) {
+    return NextResponse.json({ ok: false, error: "Chưa dọn được dạng câu hỏi mẫu không còn dùng." }, { status: 500 });
+  }
+
+  const { error: normalizeError } = await admin
+    .from("question_bank")
+    .update({
+      user_id: null,
+      book_series: "Kết nối tri thức",
+      source_type: "Soạn Lab seed",
+      content_type: "Lý thuyết",
+      needs_review: true,
+    })
+    .eq("bank_scope", "system");
+
+  if (normalizeError) {
+    return NextResponse.json({ ok: false, error: "Chưa chuẩn hóa được dữ liệu mẫu hiện có." }, { status: 500 });
+  }
+
   const { data: existingRows, error: existingError } = await admin
     .from("question_bank")
     .select("id, subject, grade, topic, content, metadata, bank_scope, book_series, source_type")
@@ -75,7 +111,7 @@ export async function POST(request: NextRequest) {
     }));
 
   if (!rows.length) {
-    return NextResponse.json({ ok: true, inserted: 0, skipped: seeds.length });
+    return NextResponse.json({ ok: true, inserted: 0, skipped: seeds.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) });
   }
 
   const { error } = await admin.from("question_bank").upsert(rows, { onConflict: "id" });
@@ -83,5 +119,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Chưa thêm được câu hỏi mẫu. Vui lòng thử lại." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, inserted: rows.length, skipped: seeds.length - rows.length });
+  return NextResponse.json({ ok: true, inserted: rows.length, skipped: seeds.length - rows.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) });
 }
