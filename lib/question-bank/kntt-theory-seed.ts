@@ -186,24 +186,28 @@ function distractorSet(subject: string) {
   ];
 }
 
+function capitalizeFirst(text: string) {
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}
+
 function multipleChoice(group: SeedTopic, topic: string, index: number) {
   const focus = focusFor(group.subject, topic, index);
   const [wrong1, wrong2, wrong3] = distractorSet(group.subject);
   const questionStarters = group.subject === "Vật lí"
     ? [
-        `Khi ôn tập chủ đề ${topic}, nhận định nào đúng nhất về ${focus}?`,
-        `Trong chủ đề ${topic}, ý nào giúp học sinh hiểu đúng ${focus}?`,
-        `Để kiểm tra kiến thức nền về ${topic}, phương án nào phù hợp nhất với ${focus}?`,
+        `Trong chủ đề ${topic}, phát biểu nào đúng về ${focus}?`,
+        `Khi xét ${focus} trong chủ đề ${topic}, nhận định nào sau đây đúng?`,
+        `Phát biểu nào phù hợp với kiến thức Vật lí về ${focus}?`,
       ]
     : [
-        `Khi học chủ đề ${topic}, phát biểu nào phù hợp nhất về ${focus}?`,
-        `Trong chủ đề ${topic}, ý nào thể hiện đúng bản chất của ${focus}?`,
-        `Để kiểm tra kiến thức nền về ${topic}, phương án nào đúng nhất liên quan đến ${focus}?`,
+        `Trong chủ đề ${topic}, phát biểu nào đúng về ${focus}?`,
+        `Khi xét ${focus} trong chủ đề ${topic}, nhận định nào sau đây đúng?`,
+        `Phát biểu nào phù hợp với kiến thức Hóa học về ${focus}?`,
       ];
 
   const correct = group.subject === "Vật lí"
-    ? `Cần gắn ${focus} với khái niệm, đại lượng và điều kiện áp dụng trong tình huống cụ thể.`
-    : `Cần gắn ${focus} với cấu tạo, tính chất, quy luật hoặc bản chất biến đổi chất.`;
+    ? `${capitalizeFirst(focus)} là nhận định đúng khi mô tả hiện tượng, đại lượng hoặc điều kiện áp dụng trong chủ đề ${topic}.`
+    : `${capitalizeFirst(focus)} là nhận định đúng khi mô tả cấu tạo, tính chất hoặc bản chất biến đổi chất trong chủ đề ${topic}.`;
 
   return {
     question: questionStarters[index % questionStarters.length],
@@ -215,8 +219,8 @@ function multipleChoice(group: SeedTopic, topic: string, index: number) {
     },
     answer: "A",
     explanation: group.subject === "Vật lí"
-      ? `Phương án A phù hợp vì câu hỏi Vật lí cần kiểm tra bản chất hiện tượng, đại lượng và điều kiện áp dụng của ${focus}.`
-      : `Phương án A phù hợp vì câu hỏi Hóa học cần kiểm tra bản chất cấu tạo, tính chất hoặc quy luật liên quan đến ${focus}.`,
+      ? `Phương án A đúng vì ${focus} là kiến thức cốt lõi giúp nhận diện đúng hiện tượng hoặc đại lượng trong chủ đề ${topic}.`
+      : `Phương án A đúng vì ${focus} phản ánh đúng bản chất cấu tạo, tính chất hoặc quy luật trong chủ đề ${topic}.`,
   };
 }
 

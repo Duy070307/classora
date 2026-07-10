@@ -8,6 +8,38 @@ type SeedBody = {
   type?: string;
 };
 
+type SystemQuestionRow = {
+  id: string;
+  subject?: string | null;
+  question_type?: string | null;
+  content?: string | null;
+  options?: Record<string, unknown> | null;
+  answer?: string | null;
+  explanation?: string | null;
+  metadata?: Record<string, unknown> | null;
+};
+
+function hasValidOptions(options: unknown) {
+  if (!options || typeof options !== "object") return false;
+  const record = options as Record<string, unknown>;
+  return ["A", "B", "C", "D"].every((key) => typeof record[key] === "string" && String(record[key]).trim().length > 0);
+}
+
+function isInvalidSystemMcq(row: SystemQuestionRow) {
+  const answer = String(row.answer || "").trim().toUpperCase();
+  const content = String(row.content || "");
+  const explanation = String(row.explanation || "");
+  const options = row.options || {};
+  const optionValues = Object.values(options).map((value) => String(value || "").trim().toLowerCase());
+  return row.question_type !== "Trắc nghiệm"
+    || !["Vật lí", "Hóa học"].includes(String(row.subject || ""))
+    || !hasValidOptions(row.options)
+    || !["A", "B", "C", "D"].includes(answer)
+    || new Set(optionValues).size < 4
+    || /kiểm tra kiến thức nền|yêu cầu nào phù hợp|phương án nào phù hợp nhất/i.test(content)
+    || /cần kiểm tra bản chất|Phương án A phù hợp/i.test(explanation);
+}
+
 export async function POST(request: NextRequest) {
   let body: SeedBody = {};
   try {
@@ -70,6 +102,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Chưa chuẩn hóa được dữ liệu mẫu hiện có." }, { status: 500 });
   }
 
+  const { data: healthRows, error: healthError } = await admin
+    .from("question_bank")
+    .select("id, subject, question_type, content, options, answer, explanation, metadata")
+    .eq("bank_scope", "system");
+
+  if (healthError) {
+    return NextResponse.json({ ok: false, error: "Chưa kiểm tra được dữ liệu mẫu hiện có." }, { status: 500 });
+  }
+
+  const invalidRows = ((healthRows || []) as SystemQuestionRow[]).filter(isInvalidSystemMcq);
+  if (invalidRows.length) {
+    const { error: deleteInvalidError } = await admin
+      .from("question_bank")
+      .delete()
+      .eq("bank_scope", "system")
+      .in("id", invalidRows.map((row) => row.id));
+    if (deleteInvalidError) {
+      return NextResponse.json({ ok: false, error: "Chưa dọn được câu hỏi mẫu chưa hợp lệ." }, { status: 500 });
+    }
+  }
+
   const { data: existingRows, error: existingError } = await admin
     .from("question_bank")
     .select("id, subject, grade, topic, content, metadata, bank_scope, book_series, source_type")
@@ -111,7 +164,7 @@ export async function POST(request: NextRequest) {
     }));
 
   if (!rows.length) {
-    return NextResponse.json({ ok: true, inserted: 0, skipped: seeds.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) });
+    return NextResponse.json({ ok: true, inserted: 0, skipped: seeds.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) + invalidRows.length, health: { totalSystem: healthRows?.length || 0, invalidSystemMcq: invalidRows.length } });
   }
 
   const { error } = await admin.from("question_bank").upsert(rows, { onConflict: "id" });
@@ -119,5 +172,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "Chưa thêm được câu hỏi mẫu. Vui lòng thử lại." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, inserted: rows.length, skipped: seeds.length - rows.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) });
+  return NextResponse.json({ ok: true, inserted: rows.length, skipped: seeds.length - rows.length, cleaned: (removedOtherSubjects || 0) + (removedOtherTypes || 0) + invalidRows.length, health: { totalSystem: healthRows?.length || 0, invalidSystemMcq: invalidRows.length } });
 }

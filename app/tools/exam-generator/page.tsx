@@ -22,6 +22,7 @@ import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
 import { createStructuredExam } from "@/lib/mock-exam-generator";
+import { formatQuestionOptions } from "@/lib/question-bank";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
@@ -38,6 +39,11 @@ function questionScope(item: QuestionItem): "system" | "user" {
 
 function normalizeText(value: string) {
   return value.trim().toLowerCase();
+}
+
+function renderBankQuestion(item: QuestionItem, index: number) {
+  const options = item.type === "Trắc nghiệm" ? formatQuestionOptions(item.options) : "";
+  return `Câu NH${index + 1}. [${questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}] ${item.question}${options ? `\n${options}` : ""}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`;
 }
 
 const initialInput: ExamInput = {
@@ -161,7 +167,7 @@ export default function ExamGeneratorPage() {
       return bMatch - aMatch;
     }).slice(0, bankCount);
     const bankContent = useBank && matching.length
-      ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map((item, index) => `Câu NH${index + 1}. [${questionScope(item) === "system" ? "Soạn Lab" : "Của tôi"}] ${item.question}\nĐáp án: ${item.answer || "Giáo viên bổ sung"}`).join("\n\n")}`
+      ? `\n\nCÂU HỎI TỪ NGÂN HÀNG\n${matching.map(renderBankQuestion).join("\n\n")}`
       : "";
     const bankWarning = useBank && bankSource !== "ai" && !matching.length
       ? wantsSystemBank && !systemSubjectSupported

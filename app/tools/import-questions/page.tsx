@@ -289,14 +289,7 @@ async function parseXlsx(file: File) {
 }
 
 function buildQuestion(row: ImportRow) {
-  if (row.type !== "Trắc nghiệm") return row.question.trim();
-  return [
-    row.question.trim(),
-    `A. ${row.optionA.trim()}`,
-    `B. ${row.optionB.trim()}`,
-    `C. ${row.optionC.trim()}`,
-    `D. ${row.optionD.trim()}`,
-  ].join("\n");
+  return row.question.trim();
 }
 
 export default function ImportQuestionsPage() {
@@ -422,6 +415,12 @@ export default function ImportQuestionsPage() {
       type: row.type as QuestionType,
       difficulty: row.difficulty as QuestionDifficulty,
       question: buildQuestion(row),
+      options: row.type === "Trắc nghiệm" ? {
+        A: row.optionA.trim(),
+        B: row.optionB.trim(),
+        C: row.optionC.trim(),
+        D: row.optionD.trim(),
+      } : null,
       answer: row.answer.trim(),
       explanation: row.explanation.trim(),
       metadata: {

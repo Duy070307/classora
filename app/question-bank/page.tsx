@@ -6,7 +6,7 @@ import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { PageHeader } from "@/components/PageHeader";
 import { AppShell } from "@/components/AppShell";
 import { createDocument } from "@/lib/history";
-import { createQuestion, getQuestions, questionsToDocument, saveQuestions } from "@/lib/question-bank";
+import { createQuestion, getQuestions, isValidMultipleChoice, questionsToDocument, saveQuestions } from "@/lib/question-bank";
 import type { QuestionDifficulty, QuestionItem, QuestionType } from "@/lib/types";
 import Link from "next/link";
 import { BugReportLink } from "@/components/BugReportLink";
@@ -24,6 +24,10 @@ const emptyForm = {
   question: "",
   type: "Trắc nghiệm" as QuestionType,
   difficulty: "Nhận biết" as QuestionDifficulty,
+  optionA: "",
+  optionB: "",
+  optionC: "",
+  optionD: "",
   answer: "",
   explanation: "",
   bookSeries: DEFAULT_BOOK_SERIES,
@@ -79,6 +83,13 @@ export default function QuestionBankPage() {
   function submit(event: FormEvent) {
     event.preventDefault();
     if (!form.question.trim()) return setMessage("Vui lòng nhập nội dung câu hỏi.");
+    const options = form.type === "Trắc nghiệm"
+      ? { A: form.optionA.trim(), B: form.optionB.trim(), C: form.optionC.trim(), D: form.optionD.trim() }
+      : null;
+    const normalizedAnswer = form.type === "Trắc nghiệm" ? form.answer.trim().toUpperCase() : form.answer.trim();
+    if (!isValidMultipleChoice({ type: form.type, options, answer: normalizedAnswer })) {
+      return setMessage("Câu hỏi trắc nghiệm cần có đủ 4 phương án A, B, C, D và một đáp án đúng.");
+    }
     const nextItem = editingId
       ? {
           ...items.find((item) => item.id === editingId)!,
@@ -88,7 +99,8 @@ export default function QuestionBankPage() {
           question: form.question,
           type: form.type,
           difficulty: form.difficulty,
-          answer: form.answer,
+          options,
+          answer: normalizedAnswer,
           explanation: form.explanation,
           bankScope: "user" as const,
           metadata: {
@@ -106,7 +118,8 @@ export default function QuestionBankPage() {
           question: form.question,
           type: form.type,
           difficulty: form.difficulty,
-          answer: form.answer,
+          options,
+          answer: normalizedAnswer,
           explanation: form.explanation,
           bankScope: "user",
           metadata: {
@@ -128,6 +141,10 @@ export default function QuestionBankPage() {
     setForm({
       subject: item.subject, grade: item.grade, topic: item.topic, question: item.question,
       type: item.type, difficulty: item.difficulty, answer: item.answer, explanation: item.explanation,
+      optionA: item.options?.A || "",
+      optionB: item.options?.B || "",
+      optionC: item.options?.C || "",
+      optionD: item.options?.D || "",
       bookSeries: item.metadata?.bookSeries || DEFAULT_BOOK_SERIES,
       contentType: item.metadata?.contentType || "Lý thuyết"
     });
@@ -316,11 +333,19 @@ export default function QuestionBankPage() {
               <div><label className="label">Loại câu hỏi</label><select className="form-field mt-1" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as QuestionType })}>{["Trắc nghiệm", "Tự luận", "Điền khuyết", "Đúng/Sai"].map((value) => <option key={value}>{value}</option>)}</select></div>
               <div><label className="label">Mức độ</label><select className="form-field mt-1" value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value as QuestionDifficulty })}>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>
             </div>
+            {form.type === "Trắc nghiệm" ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div><label className="label">Phương án A</label><input className="form-field mt-1" value={form.optionA} onChange={(e) => setForm({ ...form, optionA: e.target.value })} /></div>
+                <div><label className="label">Phương án B</label><input className="form-field mt-1" value={form.optionB} onChange={(e) => setForm({ ...form, optionB: e.target.value })} /></div>
+                <div><label className="label">Phương án C</label><input className="form-field mt-1" value={form.optionC} onChange={(e) => setForm({ ...form, optionC: e.target.value })} /></div>
+                <div><label className="label">Phương án D</label><input className="form-field mt-1" value={form.optionD} onChange={(e) => setForm({ ...form, optionD: e.target.value })} /></div>
+              </div>
+            ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div><label className="label">Bộ sách</label><select className="form-field mt-1" value={form.bookSeries} onChange={(e) => setForm({ ...form, bookSeries: e.target.value })}>{BOOK_SERIES_OPTIONS.map((value) => <option key={value}>{value}</option>)}</select></div>
               <div><label className="label">Loại nội dung</label><select className="form-field mt-1" value={form.contentType} onChange={(e) => setForm({ ...form, contentType: e.target.value })}>{["Lý thuyết", "Bài tập", "Thí nghiệm", "Vận dụng thực tế"].map((value) => <option key={value}>{value}</option>)}</select></div>
             </div>
-            <div><label className="label">Đáp án</label><textarea className="form-field mt-1 min-h-20" value={form.answer} onChange={(e) => setForm({ ...form, answer: e.target.value })} /></div>
+            <div><label className="label">Đáp án</label><textarea className="form-field mt-1 min-h-20" value={form.answer} onChange={(e) => setForm({ ...form, answer: form.type === "Trắc nghiệm" ? e.target.value.toUpperCase().slice(0, 1) : e.target.value })} placeholder={form.type === "Trắc nghiệm" ? "A, B, C hoặc D" : ""} /></div>
             <div><label className="label">Lời giải hoặc ghi chú</label><textarea className="form-field mt-1 min-h-20" value={form.explanation} onChange={(e) => setForm({ ...form, explanation: e.target.value })} /></div>
             <div className="flex gap-2"><button className="btn-primary flex-1">{editingId ? "Lưu chỉnh sửa" : "Thêm câu hỏi"}</button>{editingId ? <button type="button" className="btn-secondary" onClick={() => { setEditingId(null); setForm(emptyForm); }}>Hủy</button> : null}</div>
             {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
@@ -396,6 +421,19 @@ export default function QuestionBankPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap gap-2 text-xs"><span className={scopeOf(item) === "system" ? "rounded bg-blue-600 px-2 py-1 font-semibold text-white" : "rounded bg-slate-900 px-2 py-1 font-semibold text-white"}>{scopeOf(item) === "system" ? "Soạn Lab" : "Của tôi"}</span><span className="rounded bg-blue-50 px-2 py-1 font-semibold text-brand">{item.subject} · Lớp {item.grade}</span><span className="rounded bg-slate-100 px-2 py-1">{item.topic || "Chưa có chủ đề"}</span><span className="rounded bg-amber-50 px-2 py-1 text-amber-700">{item.type} · {item.difficulty}</span>{item.metadata?.bookSeries ? <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">{item.metadata.bookSeries}</span> : null}{item.metadata?.contentType ? <span className="rounded bg-emerald-50 px-2 py-1 text-emerald-700">{item.metadata.contentType}</span> : null}</div>
                     <p className="mt-3 whitespace-pre-wrap font-medium leading-6 text-ink">{item.question}</p>
+                    {item.type === "Trắc nghiệm" && item.options ? (
+                      <div className="mt-3 grid gap-2 text-sm">
+                        {(["A", "B", "C", "D"] as const).map((key) => (
+                          <p key={key} className={`rounded-2xl border px-3 py-2 leading-6 ${item.answer.trim().toUpperCase() === key ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-slate-100 bg-slate-50 text-slate-700"}`}>
+                            <strong>{key}.</strong> {item.options?.[key] || "Chưa có phương án"}
+                          </p>
+                        ))}
+                      </div>
+                    ) : item.type === "Trắc nghiệm" ? (
+                      <p className="mt-2 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
+                        Câu trắc nghiệm này chưa có đủ phương án A/B/C/D.
+                      </p>
+                    ) : null}
                     <p className="mt-2 text-sm text-muted"><strong>Đáp án:</strong> {item.answer || "Chưa có"}</p>
                     {item.explanation ? <p className="mt-1 text-sm text-muted"><strong>Lời giải:</strong> {item.explanation}</p> : null}
                     <p className="mt-2 text-xs text-muted">{new Date(item.createdAt).toLocaleString("vi-VN")}</p>

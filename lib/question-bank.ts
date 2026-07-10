@@ -51,10 +51,26 @@ export function createQuestion(input: Omit<QuestionItem, "id" | "createdAt">): Q
   };
 }
 
+export function isValidMultipleChoice(item: Pick<QuestionItem, "type" | "options" | "answer">) {
+  if (item.type !== "Trắc nghiệm") return true;
+  const options = item.options || {};
+  return (["A", "B", "C", "D"] as const).every((key) => typeof options[key] === "string" && options[key]?.trim())
+    && ["A", "B", "C", "D"].includes(item.answer.trim().toUpperCase());
+}
+
+export function formatQuestionOptions(options: QuestionItem["options"]) {
+  if (!options) return "";
+  return (["A", "B", "C", "D"] as const)
+    .map((key) => options[key]?.trim() ? `${key}. ${options[key]?.trim()}` : "")
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function questionsToDocument(items: QuestionItem[]) {
   const header = items[0];
-  const questions = items.map((item, index) =>
-    `Câu ${index + 1}. ${item.question}\nLoại: ${item.type} | Mức độ: ${item.difficulty}${item.metadata?.bookSeries ? ` | Bộ sách: ${item.metadata.bookSeries}` : ""}\nĐáp án: ${item.answer || "Chưa có"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`
-  );
+  const questions = items.map((item, index) => {
+    const options = item.type === "Trắc nghiệm" ? formatQuestionOptions(item.options) : "";
+    return `Câu ${index + 1}. ${item.question}${options ? `\n${options}` : ""}\nLoại: ${item.type} | Mức độ: ${item.difficulty}${item.metadata?.bookSeries ? ` | Bộ sách: ${item.metadata.bookSeries}` : ""}\nĐáp án: ${item.answer || "Chưa có"}${item.explanation ? `\nLời giải: ${item.explanation}` : ""}`;
+  });
   return `NGÂN HÀNG CÂU HỎI\nMôn học: ${header?.subject || "Nhiều môn"}\nLớp: ${header?.grade || "Nhiều lớp"}\nChủ đề: ${header?.topic || "Nhiều chủ đề"}\nSố câu: ${items.length}\n\n${questions.join("\n\n")}`;
 }
