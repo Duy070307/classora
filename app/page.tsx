@@ -64,6 +64,9 @@ export default function HomePage() {
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
             Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian gọn gàng.
           </p>
+          <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-900">
+            Soạn Lab đang mở bản dùng thử cho giáo viên. Rất mong thầy cô trải nghiệm, xuất thử tài liệu và gửi góp ý để sản phẩm hoàn thiện hơn.
+          </div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link href="/dashboard" className="btn-primary min-h-12 px-5">
               Bắt đầu sử dụng
@@ -78,6 +81,26 @@ export default function HomePage() {
           </p>
         </div>
         <HeroPreview />
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        <div className="rounded-3xl border border-blue-100 bg-white p-6 shadow-sm sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="text-sm font-bold text-blue-700">Bản dùng thử cho giáo viên</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">
+                Soạn Lab đang mở bản dùng thử cho giáo viên
+              </h2>
+              <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+                Soạn Lab là bộ công cụ hỗ trợ giáo viên tạo bản nháp đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF. Hiện sản phẩm đang ở bản thử nghiệm, rất mong nhận được góp ý từ thầy cô để hoàn thiện hơn.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <Link href="/dashboard" className="btn-primary">Bắt đầu dùng thử</Link>
+              <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
@@ -146,6 +169,9 @@ export default function HomePage() {
               </h2>
               <p className="mt-3 max-w-3xl leading-7 text-slate-600">
                 Trước khi dùng chính thức, thầy cô cần kiểm tra lại chuyên môn, đáp án, thang điểm, cách diễn đạt và định dạng tài liệu.
+              </p>
+              <p className="mt-3 max-w-3xl text-sm font-semibold leading-6 text-blue-900">
+                Nếu gặp lỗi hoặc thấy nội dung chưa sát thực tế lớp học, thầy cô có thể dùng nút “Góp ý” trong khu vực làm việc để gửi phản hồi.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">

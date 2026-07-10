@@ -24,6 +24,7 @@ import { sampleExamInput } from "@/lib/sample-data";
 import { createStructuredExam } from "@/lib/mock-exam-generator";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
+import { getQueryPrefill } from "@/lib/public-beta-presets";
 
 type BankSource = "system" | "user" | "both" | "ai";
 
@@ -106,10 +107,14 @@ export default function ExamGeneratorPage() {
   useEffect(() => {
     const sampleId = getCurrentSampleId();
     const sample = getExamSamplePrefill(sampleId);
-    if (!sample) return;
+    const queryPreset = typeof window !== "undefined" ? getQueryPrefill(window.location.search) : null;
+    if (!sample && !queryPreset) return;
     queueMicrotask(() => {
-      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample as Partial<ExamInput>));
-      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo.");
+      const presetInput = { ...(sample || {}), ...(queryPreset || {}) } as Partial<ExamInput> & { bankSource?: BankSource; useBank?: boolean };
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, presetInput));
+      if (typeof presetInput.useBank === "boolean") setUseBank(presetInput.useBank);
+      if (presetInput.bankSource) setBankSource(presetInput.bankSource);
+      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo bản nháp.");
     });
   }, []);
 
@@ -287,7 +292,11 @@ export default function ExamGeneratorPage() {
                     <option value="both">Cả hai</option>
                     <option value="ai">Tự tạo bằng AI</option>
                   </select>
-                  <p className="mt-1 text-xs leading-5 text-muted">Ngân hàng Soạn Lab gồm câu hỏi mẫu tham khảo. Ngân hàng của tôi gồm câu hỏi thầy cô tự thêm hoặc upload.</p>
+                  <div className="mt-2 space-y-1 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-900">
+                    <p><strong>Ngân hàng Soạn Lab:</strong> Câu hỏi mẫu tham khảo do Soạn Lab chuẩn bị, giáo viên nào cũng có thể xem.</p>
+                    <p><strong>Ngân hàng của tôi:</strong> Câu hỏi do thầy cô tự thêm hoặc upload, chỉ tài khoản của thầy cô nhìn thấy.</p>
+                    <p><strong>Cả hai:</strong> Kết hợp câu hỏi mẫu và câu hỏi riêng.</p>
+                  </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div><label className="label">Mức độ</label><select className="form-field mt-1" value={bankDifficulty} onChange={(e) => setBankDifficulty(e.target.value)}><option value="">Mọi mức độ</option>{["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].map((value) => <option key={value}>{value}</option>)}</select></div>

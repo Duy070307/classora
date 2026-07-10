@@ -24,6 +24,7 @@ import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { getCurrentSampleId, getGenericSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { generateToolContent } from "@/lib/ai/client";
 import { withSourceAlignmentNote } from "@/lib/curriculum";
+import { getQueryPrefill } from "@/lib/public-beta-presets";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -66,10 +67,11 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   useEffect(() => {
     const sampleId = getCurrentSampleId();
     const sample = getGenericSamplePrefill(sampleId, config.href);
-    if (!sample) return;
+    const queryPreset = typeof window !== "undefined" ? getQueryPrefill(window.location.search) : null;
+    if (!sample && !queryPreset) return;
     queueMicrotask(() => {
-      setInput((current) => mergeDefined({ ...initialInput, ...current }, sample));
-      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo.");
+      setInput((current) => mergeDefined({ ...initialInput, ...current }, { ...(sample || {}), ...(queryPreset || {}) }));
+      setMessage("Đã điền mẫu nhanh. Thầy/cô có thể chỉnh sửa trước khi tạo bản nháp.");
     });
   }, [config.href, initialInput]);
 

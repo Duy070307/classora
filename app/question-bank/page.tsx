@@ -315,6 +315,18 @@ export default function QuestionBankPage() {
 
           <section className="space-y-4">
             <div className="card space-y-3 p-4">
+              <div className="grid gap-3 lg:grid-cols-3">
+                {[
+                  ["Ngân hàng Soạn Lab", "Câu hỏi mẫu tham khảo do Soạn Lab chuẩn bị, giáo viên nào cũng có thể xem."],
+                  ["Ngân hàng của tôi", "Câu hỏi do thầy cô tự thêm hoặc upload, chỉ tài khoản của thầy cô nhìn thấy."],
+                  ["Cả hai", "Kết hợp câu hỏi mẫu và câu hỏi riêng để tạo đề nhanh hơn."],
+                ].map(([title, desc]) => (
+                  <div key={title} className="rounded-2xl border border-blue-100 bg-blue-50 p-3">
+                    <p className="text-sm font-black text-blue-900">{title}</p>
+                    <p className="mt-1 text-xs font-semibold leading-5 text-blue-800">{desc}</p>
+                  </div>
+                ))}
+              </div>
               <div className="grid gap-2 rounded-2xl border border-blue-100 bg-blue-50/60 p-1.5 sm:grid-cols-3">
                 {([
                   ["all", `Tất cả (${counts.all})`],

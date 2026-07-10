@@ -73,8 +73,11 @@ export function FeedbackWidget() {
   }, [open]);
 
   useEffect(() => {
-    const openFeedback = () => {
-      setTool(detectedTool);
+    const openFeedback = (event: Event) => {
+      const detail = event instanceof CustomEvent && event.detail && typeof event.detail === "object" ? event.detail as { tool?: string; category?: string; message?: string } : {};
+      setTool(detail.tool || detectedTool);
+      if (detail.category) setCategory(detail.category);
+      if (detail.message) setMessage(detail.message);
       setStatus("");
       setError("");
       setOpen(true);

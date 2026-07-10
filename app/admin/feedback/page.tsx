@@ -76,7 +76,7 @@ export default async function AdminFeedbackPage() {
           ))}
         </section>
       ) : (
-        <Empty text="Chưa có góp ý nào." />
+        <Empty text="Chưa có góp ý nào từ giáo viên." />
       )}
     </AppShell>
   );

@@ -14,7 +14,7 @@ export default function RegisterPage() {
         </span>
         <h1 className="mt-6 text-3xl font-black tracking-tight text-slate-950">Đăng ký tài khoản hiện chưa mở</h1>
         <p className="mx-auto mt-4 max-w-md leading-7 text-slate-600">
-          Tài khoản thử nghiệm được cấp bởi nhóm phát triển Soạn Lab. Nếu đã có tài khoản, thầy/cô quay lại trang đăng nhập để tiếp tục.
+          Hiện tại Soạn Lab đang thử nghiệm giới hạn. Tài khoản mới sẽ được cấp sau. Nếu đã có tài khoản dùng thử, thầy/cô quay lại trang đăng nhập để tiếp tục.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link href="/login" className="btn-primary">Quay lại đăng nhập</Link>

@@ -12,12 +12,14 @@ import {
   History,
   ImageIcon,
   Search,
+  Wand2,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { DashboardOnboarding } from "@/components/DashboardOnboarding";
 import { getHistory } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
+import { publicBetaPresets } from "@/lib/public-beta-presets";
 
 const quickTools = [
   { title: "Tạo đề kiểm tra", desc: "Tạo đề, đáp án, thang điểm, ma trận và bản đặc tả.", href: "/tools/exam-generator", icon: ClipboardList, badge: "Thường dùng", keywords: "đề kiểm tra thi thptqg" },
@@ -52,13 +54,13 @@ export default function DashboardPage() {
               <CheckCircle2 size={14} />
               Không gian làm việc cho giáo viên
             </span>
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Chào mừng đến với Soạn Lab</h1>
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Bắt đầu tạo tài liệu dạy học với Soạn Lab</h1>
             <p className="mt-3 max-w-3xl text-base leading-8 text-slate-600">
-              Chọn một công cụ để tạo bản nháp tài liệu, xuất Word/PDF hoặc lưu lại để chỉnh sửa sau.
+              Chọn một công cụ, nhập môn/lớp/chủ đề và tạo bản nháp để thầy cô rà soát, chỉnh sửa, xuất Word/PDF.
             </p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               <Link href="/tools/exam-generator" className="btn-primary">Tạo đề kiểm tra</Link>
-              <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
+              <a href="#dung-thu-nhanh" className="btn-secondary">Dùng thử nhanh</a>
               <Link href="/teacher-testing-guide" className="btn-secondary">Hướng dẫn dùng thử</Link>
             </div>
           </div>
@@ -66,9 +68,9 @@ export default function DashboardPage() {
             <div className="flex items-start gap-3">
               <ClipboardCheck className="mt-0.5 shrink-0 text-blue-700" size={22} />
               <div>
-                <h2 className="font-black text-slate-950">Dùng thử Soạn Lab trong 10 phút</h2>
+                <h2 className="font-black text-slate-950">Gợi ý dùng thử trong 5 phút</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Làm theo một vài bước gợi ý để kiểm tra các công cụ chính và gửi góp ý.
+                  Chọn một mẫu nhanh, tạo bản nháp, xuất thử Word/PDF rồi gửi góp ý bằng nút “Góp ý”.
                 </p>
                 <Link href="/teacher-testing-guide" className="mt-4 inline-flex text-sm font-black text-blue-700 hover:underline">
                   Xem hướng dẫn
@@ -76,6 +78,39 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-3">
+        {[
+          ["Tạo đề nhanh hơn", "Điền môn, lớp, chủ đề và để Soạn Lab tạo bản nháp đề kiểm tra."],
+          ["Xuất Word/PDF để chỉnh sửa", "Tải file về máy, rà soát đáp án, định dạng và dùng theo nhu cầu."],
+          ["Lưu lịch sử và ngân hàng câu hỏi", "Mở lại tài liệu đã tạo và quản lý câu hỏi riêng của thầy cô."],
+        ].map(([title, desc]) => (
+          <article key={title} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <CheckCircle2 className="text-blue-600" size={22} />
+            <h2 className="mt-3 font-black text-slate-950">{title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
+          </article>
+        ))}
+      </section>
+
+      <section id="dung-thu-nhanh" className="mt-8">
+        <SectionTitle title="Dùng thử nhanh" desc="Chọn một mẫu có sẵn để tạo bản nháp đầu tiên nhanh hơn." />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {publicBetaPresets.map((preset) => (
+            <Link key={preset.title} href={preset.href} className="group rounded-[24px] border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                <Wand2 size={20} />
+              </span>
+              <h2 className="mt-4 text-base font-black text-slate-950">{preset.title}</h2>
+              <p className="mt-2 min-h-16 text-sm leading-6 text-slate-600">{preset.description}</p>
+              <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-black text-blue-700">
+                <span>Tạo bản nháp</span>
+                <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -148,7 +183,7 @@ export default function DashboardPage() {
           <div className="mt-5 rounded-3xl border border-dashed border-blue-200 bg-blue-50 p-8 text-center">
             <History className="mx-auto text-blue-500" size={30} />
             <h3 className="mt-3 font-black text-slate-900">Chưa có tài liệu nào được lưu</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Hãy tạo tài liệu đầu tiên để xem lại tại đây.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Chưa có tài liệu nào được lưu. Hãy tạo đề kiểm tra hoặc giáo án đầu tiên để xem lại tại đây.</p>
             <Link href="/create" className="btn-primary mt-5">Tạo tài liệu đầu tiên</Link>
           </div>
         )}
@@ -158,7 +193,7 @@ export default function DashboardPage() {
         <CheckCircle2 className="mt-0.5 shrink-0 text-blue-600" size={20} />
         <p>
           <span className="font-black">Lưu ý khi sử dụng: </span>
-          Nội dung là bản nháp hỗ trợ giáo viên. Thầy cô nên rà soát lại chuyên môn, đáp án và định dạng trước khi sử dụng.
+          Soạn Lab đang ở bản thử nghiệm. Nội dung được tạo tự động chỉ là bản nháp tham khảo và cần thầy cô kiểm tra trước khi sử dụng.
         </p>
       </section>
     </AppShell>
