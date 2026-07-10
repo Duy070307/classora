@@ -19,6 +19,7 @@ import {
   Settings,
   Shield,
   Sigma,
+  UserPlus,
   Wrench,
   X,
 } from "lucide-react";
@@ -71,6 +72,7 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
     title: "Quản trị",
     links: [
       ["Quản trị", "/admin", Shield, undefined, true],
+      ["Đăng ký dùng thử", "/admin/beta-requests", UserPlus, undefined, true],
       ["Góp ý giáo viên", "/admin/feedback", MessageCircle, undefined, true],
     ],
   },

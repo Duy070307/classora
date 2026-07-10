@@ -20,8 +20,8 @@ export function Navbar() {
         <Link href="/login" className="ml-auto hidden text-sm font-bold text-slate-600 hover:text-blue-700 sm:inline-flex lg:ml-0">
           Đăng nhập
         </Link>
-        <Link href="/dashboard" className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700">
-          Bắt đầu
+        <Link href="/dang-ky-dung-thu" className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700">
+          Đăng ký dùng thử
         </Link>
       </div>
     </header>

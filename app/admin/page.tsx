@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, LockKeyhole, Shield, Users } from "lucide-react";
+import { FileText, LockKeyhole, Shield, UserPlus, Users } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { getCurrentUser } from "@/lib/auth/user";
@@ -26,7 +26,7 @@ export default async function AdminPage() {
   }
 
   const admin = createSupabaseAdminClient();
-  const [users, documents, templates, questions, systemQuestions, teacherQuestions] = admin
+  const [users, documents, templates, questions, systemQuestions, teacherQuestions, betaRequests] = admin
     ? await Promise.all([
         admin.auth.admin.listUsers({ page: 1, perPage: 20 }),
         admin.from("documents").select("id", { count: "exact", head: true }),
@@ -34,8 +34,9 @@ export default async function AdminPage() {
         admin.from("question_bank").select("id", { count: "exact", head: true }),
         admin.from("question_bank").select("id", { count: "exact", head: true }).eq("bank_scope", "system"),
         admin.from("question_bank").select("id", { count: "exact", head: true }).eq("bank_scope", "user"),
+        admin.from("beta_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
       ])
-    : [null, null, null, null, null, null] as const;
+    : [null, null, null, null, null, null, null] as const;
 
   const userCount = users && "data" in users ? users.data.users.length : 0;
 
@@ -47,11 +48,12 @@ export default async function AdminPage() {
         <p className="mt-3 max-w-2xl leading-7 text-blue-100">Theo dõi tài khoản, tài liệu đã lưu và trạng thái đăng ký ở mức cần thiết cho quản trị viên.</p>
       </section>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <StatCard icon={Users} label="Tài khoản gần đây" value={String(userCount)} />
         <StatCard icon={FileText} label="Tài liệu đã lưu" value={String(documents?.count ?? "—")} />
         <StatCard icon={Shield} label="Quyền quản trị" value={isSupabaseAdminConfigured() ? "Sẵn sàng" : "Chưa sẵn sàng"} />
         <StatCard icon={LockKeyhole} label="Đăng ký" value={isRegistrationEnabled() ? "Đang mở" : "Đang khóa"} />
+        <StatCard icon={UserPlus} label="Yêu cầu chờ duyệt" value={String(betaRequests?.count ?? "—")} />
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -83,6 +85,7 @@ export default async function AdminPage() {
           <div className="mt-5 flex flex-wrap gap-2">
             <Link href="/dashboard" className="btn-secondary">Dashboard</Link>
             <Link href="/tools" className="btn-secondary">Công cụ</Link>
+            <Link href="/admin/beta-requests" className="btn-secondary">Đăng ký dùng thử</Link>
             <Link href="/admin/feedback" className="btn-secondary">Góp ý giáo viên</Link>
           </div>
         </section>

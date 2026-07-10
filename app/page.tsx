@@ -68,8 +68,8 @@ export default function HomePage() {
             Soạn Lab đang mở bản dùng thử cho giáo viên. Rất mong thầy cô trải nghiệm, xuất thử tài liệu và gửi góp ý để sản phẩm hoàn thiện hơn.
           </div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link href="/dashboard" className="btn-primary min-h-12 px-5">
-              Bắt đầu sử dụng
+            <Link href="/dang-ky-dung-thu" className="btn-primary min-h-12 px-5">
+              Đăng ký dùng thử
               <ArrowRight size={18} />
             </Link>
             <Link href="/tools" className="btn-secondary min-h-12 px-5">
@@ -96,7 +96,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link href="/dashboard" className="btn-primary">Bắt đầu dùng thử</Link>
+              <Link href="/dang-ky-dung-thu" className="btn-primary">Đăng ký dùng thử</Link>
               <Link href="/tools" className="btn-secondary">Xem công cụ</Link>
             </div>
           </div>
@@ -175,8 +175,8 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link href="/dashboard" className="btn-primary">
-                Bắt đầu sử dụng
+              <Link href="/dang-ky-dung-thu" className="btn-primary">
+                Đăng ký dùng thử
               </Link>
               <Link href="/tools" className="btn-secondary">
                 Xem công cụ

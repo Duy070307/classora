@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 const columns = [
   [
     "Liên kết",
+    ["Đăng ký dùng thử", "/dang-ky-dung-thu"],
     ["Công cụ", "/tools"],
     ["Hướng dẫn", "/getting-started"],
     ["Điều khoản", "/terms"],

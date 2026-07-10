@@ -103,11 +103,11 @@ function LoginContent() {
           </form>
 
           <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-            Tài khoản dùng thử được cấp bởi nhóm phát triển Soạn Lab. Nếu thầy cô nhận được tài khoản test, vui lòng đăng nhập tại đây. Đăng ký tài khoản mới hiện chưa mở.
+            SOẠN LAB đang thử nghiệm giới hạn. Nếu thầy/cô chưa có tài khoản, vui lòng đăng ký dùng thử để được xem xét cấp quyền truy cập.
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
-            <Link href="/register" className="text-blue-700">Thông tin đăng ký</Link>
+            <Link href="/dang-ky-dung-thu" className="text-blue-700">Đăng ký dùng thử</Link>
             <Link href="/" className="text-slate-500">Về trang chủ</Link>
           </div>
         </section>

@@ -3,6 +3,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 const routes = [
   "",
+  "/dang-ky-dung-thu",
   "/tools",
   "/getting-started",
   "/privacy",
