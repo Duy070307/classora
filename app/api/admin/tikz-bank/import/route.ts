@@ -18,8 +18,12 @@ function hashCode(code: string) {
   return createHash("sha256").update(normalizeTikzCode(code), "utf8").digest("hex");
 }
 
-function friendlyError(status = 500) {
-  return NextResponse.json({ success: false, message: "Chưa thể xử lý bộ mã TikZ. Vui lòng kiểm tra tệp và thử lại." }, { status });
+function friendlyError(message = "Chưa thể xử lý bộ mã TikZ. Vui lòng kiểm tra tệp và thử lại.", status = 500) {
+  return NextResponse.json({ success: false, message }, { status });
+}
+
+function isMissingColumnError(error: { code?: string } | null) {
+  return Boolean(error && ["42703", "PGRST204"].includes(error.code || ""));
 }
 
 export async function POST(request: NextRequest) {
@@ -28,15 +32,25 @@ export async function POST(request: NextRequest) {
     if (!user) return NextResponse.json({ success: false, message: "Vui lòng đăng nhập." }, { status: 401 });
     if (user.role !== "admin") return NextResponse.json({ success: false, message: "Chỉ quản trị viên mới có thể nhập bộ mã TikZ." }, { status: 403 });
     const body = await request.json().catch(() => null) as ImportBody | null;
-    if (!body || !Array.isArray(body.items) || body.items.length > 1000) return friendlyError(400);
+    if (!body || typeof body !== "object") return friendlyError("JSON không đúng cấu trúc.", 400);
+    if (!("items" in body)) return friendlyError("Không tìm thấy trường items.", 400);
+    if (!Array.isArray(body.items)) return friendlyError("Trường items phải là một danh sách.", 400);
+    if (body.items.length > 1000) return friendlyError("Bộ dữ liệu có quá nhiều mục. Vui lòng chia thành các tệp nhỏ hơn.", 400);
     const mode = body.mode === "import" ? "import" : "preview";
     const duplicateMode = body.duplicateMode === "update" ? "update" : "skip";
     const admin = createSupabaseAdminClient();
-    if (!admin) return friendlyError(503);
+    if (!admin) return friendlyError(undefined, 503);
 
-    const { data: existingData, error: existingError } = await admin.from("tikz_bank").select("id,slug,title,sha256,tikz_code").eq("bank_scope", "system");
-    if (existingError) return friendlyError();
-    const existing = (existingData || []) as ExistingRow[];
+    const existingResult = await admin.from("tikz_bank").select("id,slug,title,sha256,tikz_code").eq("bank_scope", "system");
+    let existing: ExistingRow[];
+    if (isMissingColumnError(existingResult.error)) {
+      const fallback = await admin.from("tikz_bank").select("id,title,tikz_code").eq("bank_scope", "system");
+      if (fallback.error) return friendlyError("Chưa thể kiểm tra các mã TikZ đã tồn tại. Vui lòng thử lại.");
+      existing = (fallback.data || []).map((item) => ({ ...item, slug: null, sha256: null })) as ExistingRow[];
+    } else {
+      if (existingResult.error) return friendlyError("Chưa thể kiểm tra các mã TikZ đã tồn tại. Vui lòng thử lại.");
+      existing = (existingResult.data || []) as ExistingRow[];
+    }
     const bySlug = new Map(existing.filter((item) => item.slug).map((item) => [item.slug as string, item]));
     const byHash = new Map(existing.map((item) => [item.sha256 || hashCode(item.tikz_code), item]));
     const byTitle = new Map(existing.map((item) => [item.title.trim().toLowerCase(), item]));
@@ -45,7 +59,7 @@ export async function POST(request: NextRequest) {
     const seenHashes = new Set<string>();
     const seenTitles = new Set<string>();
     const validated = body.items.map((raw, index) => {
-      const result = validateTikzImportItem(raw);
+      const result = validateTikzImportItem(raw, index);
       const hash = result.item ? hashCode(result.item.tikz_code) : "";
       const duplicateRow = result.item ? bySlug.get(result.item.slug) || byHash.get(hash) || byTitle.get(result.item.title.toLowerCase()) : undefined;
       const titleKey = result.item?.title.toLowerCase() || "";
@@ -96,11 +110,13 @@ export async function POST(request: NextRequest) {
       if (duplicateRow && duplicateMode === "skip") { skipped += 1; continue; }
       const row = importRow(item, entry.hash, user.id);
       if (duplicateRow) {
-        const { error } = await admin.from("tikz_bank").update(row).eq("id", duplicateRow.id).eq("bank_scope", "system");
+        let { error } = await admin.from("tikz_bank").update(row).eq("id", duplicateRow.id).eq("bank_scope", "system");
+        if (isMissingColumnError(error)) ({ error } = await admin.from("tikz_bank").update(baseImportRow(item)).eq("id", duplicateRow.id).eq("bank_scope", "system"));
         if (error) { invalid += 1; continue; }
         updated += 1;
       } else {
-        const { error } = await admin.from("tikz_bank").insert(row);
+        let { error } = await admin.from("tikz_bank").insert(row);
+        if (isMissingColumnError(error)) ({ error } = await admin.from("tikz_bank").insert(baseImportRow(item)));
         if (error) { skipped += 1; continue; }
         inserted += 1;
       }
@@ -119,9 +135,29 @@ export async function POST(request: NextRequest) {
       invalid_count: invalid,
     });
     return NextResponse.json({ success: true, inserted, updated, skipped, invalid });
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") console.error("TikZ Bank import error", error);
     return friendlyError();
   }
+}
+
+function baseImportRow(item: TikzImportItem) {
+  return {
+    user_id: null,
+    bank_scope: "system",
+    title: item.title,
+    description: item.description,
+    category: item.category,
+    subject: item.subject,
+    grade: item.grade || item.grades[0] || null,
+    tags: item.tags,
+    tikz_code: item.tikz_code,
+    full_latex: item.full_latex,
+    preview_note: item.preview_note,
+    source_type: "file_import",
+    needs_review: item.needs_review,
+    updated_at: new Date().toISOString(),
+  };
 }
 
 function importRow(item: TikzImportItem, sha256: string, adminId: string) {

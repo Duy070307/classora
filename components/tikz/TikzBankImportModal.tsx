@@ -46,6 +46,7 @@ export function TikzBankImportModal({ onClose, onImported }: { onClose: () => vo
       setFilename(file.name); setVersion(manifest.version); setItems(manifest.items); setRows(data.rows); setSummary(data.summary);
       setSelected(new Set(data.rows.filter((row) => row.validationStatus !== "error").map((row) => row.index)));
     } catch (readError) {
+      if (process.env.NODE_ENV !== "production") console.error("TikZ Bank import parse error", readError);
       setError(readError instanceof Error ? readError.message : "Chưa đọc được bộ mã TikZ. Vui lòng kiểm tra tệp.");
     } finally { setBusy(false); }
   }
@@ -115,7 +116,9 @@ function Status({ value }: { value: PreviewRow["validationStatus"] }) {
   return <span className={`rounded-full px-2 py-1 text-xs font-black ${styles[value]}`}>{labels[value]}</span>;
 }
 
-async function readManifest(file: File) {
+type ImportFile = Pick<File, "name" | "size" | "text" | "arrayBuffer">;
+
+export async function readManifest(file: ImportFile) {
   const extension = file.name.toLowerCase().split(".").pop();
   if (extension === "json") {
     if (file.size > 5 * 1024 * 1024) throw new Error("Tệp JSON quá lớn. Vui lòng dùng tệp tối đa 5MB.");
@@ -131,15 +134,22 @@ async function readManifest(file: File) {
     const originalName = (entry as typeof entry & { unsafeOriginalName?: string }).unsafeOriginalName || entry.name;
     if (unsafeZipPath(originalName)) throw new Error("Tệp ZIP chứa đường dẫn không an toàn.");
   }
-  const manifestEntry = entries.find((entry) => !entry.dir && entry.name.toLowerCase() === "tikz-bank.json");
-  if (!manifestEntry) throw new Error("Tệp ZIP không có tikz-bank.json ở thư mục gốc.");
+  const candidates = entries.filter((entry) => {
+    if (entry.dir) return false;
+    const parts = entry.name.replace(/\\/g, "/").split("/").filter(Boolean);
+    return parts.length <= 2 && parts.at(-1)?.toLowerCase() === "tikz-bank.json";
+  }).sort((a, b) => a.name.split("/").length - b.name.split("/").length);
+  const manifestEntry = candidates[0];
+  if (!manifestEntry) throw new Error("Không tìm thấy tikz-bank.json trong file ZIP.");
   const text = await manifestEntry.async("string");
   if (new TextEncoder().encode(text).byteLength > 5 * 1024 * 1024) throw new Error("Manifest trong ZIP quá lớn.");
   return parseJson(text);
 }
 
 function parseJson(text: string) {
-  try { return parseTikzManifest(JSON.parse(text)); } catch (error) { throw new Error(error instanceof Error ? error.message : "JSON chưa đúng định dạng."); }
+  let parsed: unknown;
+  try { parsed = JSON.parse(text); } catch { throw new Error("JSON không đúng cấu trúc."); }
+  return parseTikzManifest(parsed);
 }
 
 function unsafeZipPath(name: string) {
