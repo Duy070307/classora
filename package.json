@@ -8,7 +8,8 @@
     "build": "next build",
     "lint": "eslint .",
     "smoke": "node scripts/smoke-test-routes.mjs",
-    "tikz:import-test": "tsx scripts/test-tikz-import-compat.ts"
+    "tikz:import-test": "tsx scripts/test-tikz-import-compat.ts",
+    "exam:bank-test": "tsx scripts/test-exam-bank-filter.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

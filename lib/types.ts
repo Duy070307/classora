@@ -60,6 +60,10 @@ export type GeneratedDocument = {
     grade?: string;
     topic?: string;
     questionCount?: number;
+    bankQuestionCount?: number;
+    aiQuestionCount?: number;
+    allowAiSupplement?: boolean;
+    questionType?: string;
   };
 };
 
