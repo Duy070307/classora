@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CheckCircle2, Clock3, Mail, UserCheck, XCircle } from "lucide-react";
-import type { BetaRequestStatus } from "@/lib/beta-requests";
+import { isBetaRequestStatus, type BetaRequestStatus } from "@/lib/beta-requests";
 
 export type BetaRequestRow = {
   id: string;
@@ -32,7 +32,7 @@ export function BetaRequestsAdmin({ initialRequests, loadError = false }: { init
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const counts = useMemo(() => requests.reduce((result, item) => {
-    result[item.status] += 1;
+    if (isBetaRequestStatus(item.status)) result[item.status] += 1;
     return result;
   }, { pending: 0, approved: 0, rejected: 0 }), [requests]);
 
@@ -44,22 +44,25 @@ export function BetaRequestsAdmin({ initialRequests, loadError = false }: { init
       const response = await fetch(`/api/admin/beta-requests/${item.id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          ...(status ? { status } : {}),
-          admin_note: notes[item.id] || "",
-        }),
+        body: JSON.stringify(status ? { status } : { admin_note: notes[item.id] || "" }),
       });
       const result = await response.json().catch(() => null) as {
-        ok?: boolean;
-        error?: string;
-        request?: Pick<BetaRequestRow, "id" | "status" | "admin_note" | "approved_at">;
+        success?: boolean;
+        message?: string;
+        request?: unknown;
       } | null;
-      if (!response.ok || !result?.ok || !result.request) {
-        setNotice({ tone: "error", text: result?.error || "Chưa cập nhật được yêu cầu. Vui lòng thử lại." });
+      if (!response.ok || !result?.success || !isSafeRequestUpdate(result.request, item.id)) {
+        setNotice({ tone: "error", text: result?.message || "Chưa cập nhật được yêu cầu. Vui lòng thử lại." });
         return;
       }
-      setRequests((current) => current.map((requestItem) => requestItem.id === item.id ? { ...requestItem, ...result.request } : requestItem));
-      setNotes((current) => ({ ...current, [item.id]: result.request?.admin_note || "" }));
+      const updatedRequest = result.request;
+      setRequests((current) => current.map((requestItem) => requestItem.id === item.id ? {
+        ...requestItem,
+        status: updatedRequest.status,
+        admin_note: updatedRequest.admin_note,
+        approved_at: updatedRequest.approved_at,
+      } : requestItem));
+      if (!status) setNotes((current) => ({ ...current, [item.id]: updatedRequest.admin_note || "" }));
       setNotice({
         tone: "success",
         text: status === "approved"
@@ -129,9 +132,9 @@ export function BetaRequestsAdmin({ initialRequests, loadError = false }: { init
                       <textarea value={notes[item.id] || ""} onChange={(event) => setNotes((current) => ({ ...current, [item.id]: event.target.value }))} maxLength={2000} className="form-field mt-2 min-h-20 resize-y bg-white" placeholder="Ghi chú liên hệ, ưu tiên hoặc lý do xử lý..." />
                     </label>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button type="button" disabled={Boolean(updatingId)} onClick={() => updateRequest(item, "approved")} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"><CheckCircle2 size={16} />{updating ? "Đang cập nhật..." : "Đánh dấu đã duyệt"}</button>
-                      <button type="button" disabled={Boolean(updatingId)} onClick={() => updateRequest(item, "rejected")} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"><XCircle size={16} />Đánh dấu từ chối</button>
-                      <button type="button" disabled={Boolean(updatingId)} onClick={() => updateRequest(item)} className="btn-secondary min-h-10 disabled:cursor-not-allowed disabled:opacity-60">Lưu ghi chú</button>
+                      <button type="button" disabled={Boolean(updatingId)} onClick={() => { void updateRequest(item, "approved"); }} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"><CheckCircle2 size={16} />{updating ? "Đang cập nhật..." : "Đánh dấu đã duyệt"}</button>
+                      <button type="button" disabled={Boolean(updatingId)} onClick={() => { void updateRequest(item, "rejected"); }} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"><XCircle size={16} />Đánh dấu từ chối</button>
+                      <button type="button" disabled={Boolean(updatingId)} onClick={() => { void updateRequest(item); }} className="btn-secondary min-h-10 disabled:cursor-not-allowed disabled:opacity-60">Lưu ghi chú</button>
                     </div>
                   </div>
                 </article>
@@ -153,7 +156,17 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof Mail; label: st
 
 function StatusBadge({ status }: { status: BetaRequestStatus }) {
   const colors = { pending: "bg-amber-50 text-amber-700", approved: "bg-emerald-50 text-emerald-700", rejected: "bg-slate-100 text-slate-600" };
-  return <span className={`rounded-full px-3 py-1 text-xs font-black ${colors[status]}`}>{statusLabels[status]}</span>;
+  const safeStatus = isBetaRequestStatus(status) ? status : "pending";
+  return <span className={`rounded-full px-3 py-1 text-xs font-black ${colors[safeStatus]}`}>{statusLabels[safeStatus]}</span>;
+}
+
+function isSafeRequestUpdate(value: unknown, expectedId: string): value is Pick<BetaRequestRow, "id" | "status" | "admin_note" | "approved_at"> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return record.id === expectedId
+    && isBetaRequestStatus(record.status)
+    && (record.admin_note === null || typeof record.admin_note === "string")
+    && (record.approved_at === null || typeof record.approved_at === "string");
 }
 
 function Info({ label, value }: { label: string; value: string }) {
