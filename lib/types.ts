@@ -64,6 +64,7 @@ export type GeneratedDocument = {
     aiQuestionCount?: number;
     allowAiSupplement?: boolean;
     questionType?: string;
+    requestContext?: import("@/lib/generation/request-context").GenerationRequestContext;
   };
 };
 

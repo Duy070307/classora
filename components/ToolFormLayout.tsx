@@ -25,6 +25,8 @@ import { getCurrentSampleId, getGenericSamplePrefill, mergeDefined } from "@/lib
 import { generateToolContent } from "@/lib/ai/client";
 import { withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
+import { createGenerationRequestContext } from "@/lib/generation/request-context";
+import { validateGeneratedTopicText } from "@/lib/generation/topic-validator";
 
 function getInitialInput(fields: ToolField[]): GenericToolInput {
   return fields.reduce<GenericToolInput>((acc, field) => {
@@ -77,6 +79,10 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
 
   function update(name: string, value: string | number | boolean | string[]) {
     setInput((current) => ({ ...current, [name]: value }));
+    if (["subject", "grade", "topic", "lessonName", "bookSeries", "questionType", "source"].includes(name)) {
+      setDocument(null);
+      setMessage("");
+    }
   }
 
   async function generate() {
@@ -109,9 +115,18 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
       return;
     }
     const generated = withSourceAlignmentNote(polishGeneratedContent(config.type, input, rawGenerated), input as Record<string, unknown>);
+    const fidelity = validateGeneratedTopicText(createGenerationRequestContext(input as Record<string, unknown>, config.type), generated);
+    if (!fidelity.valid) {
+      setDocument(null);
+      setMessage("SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu.");
+      setLoading(false);
+      return;
+    }
     const values = Object.fromEntries(Object.entries(input).map(([key, value]) => [key, String(value)]));
     const content = applyTemplate(resolveTemplate(templateId), generated, values);
     const next = createDocument(config.makeTitle(input), config.type, content);
+    const requestContext = createGenerationRequestContext(input as Record<string, unknown>, config.type);
+    next.generationMeta = { subject: requestContext.subject, grade: requestContext.grade, topic: requestContext.topic, source: "automatic", warnings: ["Nội dung đã được kiểm tra độ bám chủ đề."], requestContext };
     setDocument(next);
     incrementUsage();
     saveRecentTool({ title: config.title, href: config.href });
@@ -132,6 +147,8 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
 
   function handleRefined(content: string) {
     if (!document) return;
+    const fidelity = validateGeneratedTopicText(createGenerationRequestContext(input as Record<string, unknown>, config.type), content);
+    if (!fidelity.valid) return setMessage("Nội dung tinh chỉnh chưa bám sát chủ đề nên chưa được áp dụng.");
     setDocument({ ...document, content });
     setMessage("Đã tinh chỉnh nội dung.");
   }
@@ -205,6 +222,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
                 );
               })}
             </div>
+            {config.fields.some((field) => field.name === "topic" || field.name === "lessonName") ? <div className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-sm text-blue-950"><p className="font-bold">✓ Bám sát chủ đề đã chọn</p><p className="mt-1 text-xs leading-5 text-blue-800">SOẠN LAB kiểm tra nội dung theo đúng môn, lớp và chủ đề trước khi hiển thị.</p></div> : null}
             <button className="btn-primary w-full" disabled={loading}>
               {loading ? "Đang tạo bản nháp…" : `Tạo ${config.title.toLowerCase()}`}
             </button>

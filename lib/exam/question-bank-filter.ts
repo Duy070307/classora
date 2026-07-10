@@ -1,4 +1,6 @@
 import type { QuestionItem } from "@/lib/types";
+import { canonicalizeGrade, canonicalizeSubject, canonicalizeTopic, comparisonText } from "@/lib/generation/request-context";
+import { findTopicNode, isTopicAllowed } from "@/lib/generation/topic-taxonomy";
 
 export type ExamBankSource = "system" | "user" | "both";
 
@@ -8,16 +10,17 @@ export type BankFilter = {
   topic: string;
   source: ExamBankSource;
   difficulty?: string;
+  questionType?: string;
+  allowRelatedTopics?: boolean;
+  bookSeries?: string;
 };
 
 export function normalizeBankText(value: string) {
-  return value.normalize("NFC").trim().toLocaleLowerCase("vi-VN").replace(/\s+/g, " ");
+  return comparisonText(value);
 }
 
 export function canonicalSubject(value: string) {
-  const normalized = normalizeBankText(value);
-  if (normalized === "vật lý" || normalized === "vật lí") return "vật lí";
-  return normalized;
+  return canonicalizeSubject(value).toLocaleLowerCase("vi-VN");
 }
 
 export function bankQuestionScope(item: QuestionItem): "system" | "user" {
@@ -25,18 +28,21 @@ export function bankQuestionScope(item: QuestionItem): "system" | "user" {
 }
 
 export function isSafeTopicMatch(itemTopic: string, selectedTopic: string) {
-  const item = normalizeBankText(itemTopic);
-  const selected = normalizeBankText(selectedTopic);
+  const item = canonicalizeTopic(itemTopic);
+  const selected = canonicalizeTopic(selectedTopic);
   if (!item || !selected) return false;
   return item === selected || item.includes(selected) || selected.includes(item);
 }
 
 export function isStrictBankMatch(item: QuestionItem, filter: BankFilter) {
   const scope = bankQuestionScope(item);
+  const node = findTopicNode(filter.subject, canonicalizeGrade(filter.grade), filter.topic);
   return canonicalSubject(item.subject) === canonicalSubject(filter.subject)
-    && normalizeBankText(item.grade) === normalizeBankText(filter.grade)
-    && isSafeTopicMatch(item.topic, filter.topic)
+    && canonicalizeGrade(item.grade) === canonicalizeGrade(filter.grade)
+    && isTopicAllowed(filter.topic, item.topic, node, filter.allowRelatedTopics)
     && (filter.source === "both" || scope === filter.source)
+    && (!filter.questionType || item.type === filter.questionType)
+    && (!filter.bookSeries || !item.metadata?.bookSeries || normalizeBankText(item.metadata.bookSeries) === normalizeBankText(filter.bookSeries))
     && (!filter.difficulty || item.difficulty === filter.difficulty);
 }
 

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "smoke": "node scripts/smoke-test-routes.mjs",
     "tikz:import-test": "tsx scripts/test-tikz-import-compat.ts",
-    "exam:bank-test": "tsx scripts/test-exam-bank-filter.ts"
+    "exam:bank-test": "tsx scripts/test-exam-bank-filter.ts",
+    "topic:fidelity-test": "tsx scripts/test-topic-fidelity.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

@@ -1,5 +1,7 @@
 import type { AIRefinementAction } from "@/lib/ai/types";
 import { buildCurriculumPromptRules } from "@/lib/curriculum";
+import { createGenerationRequestContext } from "@/lib/generation/request-context";
+import { findTopicNode } from "@/lib/generation/topic-taxonomy";
 
 const reviewNote =
   "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra, chỉnh sửa trước khi sử dụng chính thức.";
@@ -38,6 +40,26 @@ Quy t?c b?t bu?c cho To?n 12 - X?c su?t:
 }
 
 function prompt(task: string, input: unknown, structure: string) {
+  const record = input && typeof input === "object" && !Array.isArray(input) ? input as Record<string, unknown> : {};
+  const context = createGenerationRequestContext(record, task);
+  const topicNode = context.topic ? findTopicNode(context.subject, context.grade, context.topic) : undefined;
+  const fidelityRules = context.topic ? `
+RÀNG BUỘC BÁM SÁT CHỦ ĐỀ:
+- Môn học: ${context.subject}
+- Lớp: ${context.grade}
+- Chủ đề bắt buộc: ${context.topic}
+- Bộ sách/định hướng: ${context.bookSeries || "Theo dữ liệu giáo viên cung cấp"}
+- Loại nội dung: ${context.questionType || task}
+- Chỉ tạo nội dung thuộc đúng chủ đề “${context.topic}” của môn ${context.subject}, lớp ${context.grade}. Không đưa kiến thức từ chương, chủ đề hoặc môn học khác.
+- Không dùng ví dụ ngoài phạm vi nếu ví dụ đó đòi hỏi kiến thức chưa thuộc chủ đề.
+- ${context.allowRelatedTopics ? "Chỉ được mở rộng sang các chủ đề con/liên quan đã xác định và phải ghi rõ." : "Không mở rộng sang chủ đề liên quan."}
+${topicNode?.allowedTerms.length ? `- Khái niệm trọng tâm: ${topicNode.allowedTerms.join(", ")}.` : ""}
+${topicNode?.forbiddenTerms.length ? `- Không sử dụng các khái niệm ngoài phạm vi: ${topicNode.forbiddenTerms.join(", ")}.` : ""}
+- Nếu không đủ thông tin để tạo nội dung đúng chủ đề, trả về trạng thái không đủ dữ liệu thay vì tạo nội dung không liên quan.
+- Trước khi trả kết quả, tự kiểm tra từng mục: đúng môn, đúng lớp, đúng chủ đề, không chứa khái niệm ngoài phạm vi và đúng loại nội dung.
+- Không tạo câu hỏi chung chung kiểu “Phát biểu nào đúng về nội dung bài học?”; mỗi mục phải kiểm tra một khái niệm cụ thể.
+- Với câu hỏi, đáp án và lời giải phải cùng bám sát chủ đề. Với giáo án/phiếu học tập, mục tiêu, hoạt động, đánh giá và bài tập đều phải cùng bám sát chủ đề.
+` : "";
   return `Bạn là trợ lý soạn tài liệu cho giáo viên Việt Nam.
 Nhiệm vụ: ${task}
 
@@ -46,6 +68,8 @@ ${formatInput(input)}
 
 Định hướng nội dung:
 ${buildCurriculumPromptRules(input)}
+
+${fidelityRules}
 
 Cấu trúc mong muốn:
 ${structure}
@@ -145,6 +169,7 @@ Schema b?t bu?c:
 }
 
 Y?u c?u ri?ng:
+- Mỗi câu hỏi phải tự khai báo thêm các trường kiểm tra: "subject", "grade", "topic", "relevanceReason", "confidence" (high/medium/low) và "conceptsUsed" (mảng khái niệm). Các trường này phục vụ kiểm tra nội bộ; nội dung thực tế của câu hỏi vẫn nằm trong stem/options/answer/explanation.
 - T?ch tuy?t ??i ?? h?c sinh v? ??p ?n gi?o vi?n: kh?ng ??a ??p ?n/thang ?i?m v?o stem/options.
 - N?u l? To?n 12 THPTQG: PH?N I c? 12 c?u A/B/C/D, PH?N II c? 4 nh?m ??ng/sai v?i a,b,c,d, PH?N III c? 6 c?u tr? l?i ng?n, tr? khi input y?u c?u s? kh?c.
 - C?u h?i v? ??p ?n ph?i g?n v?i nhau; kh?ng d?ng ??p ?n placeholder l?p l?i.

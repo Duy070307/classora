@@ -21,10 +21,12 @@ import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
 import { sampleExamInput } from "@/lib/sample-data";
-import { createStructuredExam, structuredExamToText } from "@/lib/mock-exam-generator";
+import { structuredExamToText } from "@/lib/mock-exam-generator";
 import { formatQuestionOptions, isValidMultipleChoice } from "@/lib/question-bank";
 import { bankQuestionScope, canonicalSubject, filterStrictBankQuestions, normalizeBankText } from "@/lib/exam/question-bank-filter";
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
+import { canonicalizeTopic, createGenerationRequestContext } from "@/lib/generation/request-context";
+import { validateTopicItem } from "@/lib/generation/topic-validator";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
@@ -140,6 +142,7 @@ export default function ExamGeneratorPage() {
   const [bankCount, setBankCount] = useState(10);
   const [difficultyMode, setDifficultyMode] = useState<DifficultyMode>("suggested");
   const [allowAiSupplement, setAllowAiSupplement] = useState(false);
+  const [allowRelatedTopics, setAllowRelatedTopics] = useState(false);
   const normalizeExamDraft = useCallback((saved: ExamInput) => ({ ...initialInput, ...saved }), []);
   const draft = useFormDraft("/tools/exam-generator", input, setInput, normalizeExamDraft);
 
@@ -152,11 +155,20 @@ export default function ExamGeneratorPage() {
       topic: input.topic,
       source: bankSource,
       difficulty: bankDifficulty,
+      questionType: "Trắc nghiệm",
+      allowRelatedTopics,
+      bookSeries: input.bookSeries,
     });
+    const context = createGenerationRequestContext({ ...input, source: bankSource, allowAiSupplement, allowRelatedTopics, questionType: "Trắc nghiệm", questionCount: bankCount }, "exam");
     const candidates = strictMatches.filter((item) => {
       const scope = questionScope(item);
       if (scope === "system" && !systemBankSubjects.some((subject) => canonicalSubject(subject) === canonicalSubject(item.subject))) return false;
       if (!isValidBankMcq(item)) {
+        invalidSkipped += 1;
+        return false;
+      }
+      const topicValidation = validateTopicItem(context, { content: item.question, options: item.options || undefined, answer: item.answer, explanation: item.explanation, topic: item.topic, subject: item.subject, grade: item.grade, questionType: item.type });
+      if (!topicValidation.valid) {
         invalidSkipped += 1;
         return false;
       }
@@ -167,7 +179,7 @@ export default function ExamGeneratorPage() {
       valid: distributeQuestions(candidates, requestedCount, difficultyMode),
       invalidSkipped,
     };
-  }, [bankCount, bankDifficulty, bankQuestions, bankSource, difficultyMode, input.grade, input.subject, input.topic]);
+  }, [allowAiSupplement, allowRelatedTopics, bankCount, bankDifficulty, bankQuestions, bankSource, difficultyMode, input]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -193,7 +205,7 @@ export default function ExamGeneratorPage() {
 
   useEffect(() => {
     queueMicrotask(() => setDocument(null));
-  }, [input.subject, input.grade, input.topic, input.examType, useBank, bankSource, bankCount, bankDifficulty, allowAiSupplement]);
+  }, [input.subject, input.grade, input.topic, input.bookSeries, input.examType, useBank, bankSource, bankCount, bankDifficulty, allowAiSupplement, allowRelatedTopics]);
 
   useEffect(() => {
     const sampleId = getCurrentSampleId();
@@ -240,16 +252,11 @@ export default function ExamGeneratorPage() {
           return;
         }
       }
-      if (selected.length < requestedCount && !allowAiSupplement) {
-        setDocument(null);
-        setMessage(`Hiện có ${selected.length} câu phù hợp trong nguồn đã chọn, nhưng thầy cô yêu cầu ${requestedCount} câu. Vui lòng giảm số câu, chọn chủ đề/nguồn khác hoặc bật “Cho phép AI tạo bổ sung”.`);
-        setLoading(false);
-        return;
-      }
+      const insufficientBank = selected.length < requestedCount && !allowAiSupplement;
       const missingCount = requestedCount - selected.length;
       let aiQuestions: ExamQuestion[] = [];
       if (missingCount > 0 && allowAiSupplement) {
-        const supplementInput: ExamInput & { questionType: string; questionCount: number; source: string; allowAiSupplement: boolean } = {
+        const supplementInput: ExamInput & { questionType: string; questionCount: number; source: string; allowAiSupplement: boolean; allowRelatedTopics: boolean } = {
           ...input,
           examType: "Trắc nghiệm",
           multipleChoiceCount: missingCount,
@@ -260,6 +267,7 @@ export default function ExamGeneratorPage() {
           questionCount: missingCount,
           source: bankSource,
           allowAiSupplement: true,
+          allowRelatedTopics,
           extraRequirements: `${input.extraRequirements}\nChỉ tạo ${missingCount} câu trắc nghiệm mới đúng môn ${input.subject}, lớp ${input.grade}, chủ đề ${input.topic}. Không dùng câu mẫu khác môn hoặc khác chủ đề.`.trim(),
         };
         const aiSupplement = await generateToolContent({ tool: "exam", input: supplementInput as unknown as Record<string, unknown> });
@@ -275,6 +283,9 @@ export default function ExamGeneratorPage() {
         }
       }
       const notes: string[] = [];
+      if (insufficientBank) notes.push(`Chỉ tìm được ${selected.length} câu phù hợp hoàn toàn với chủ đề đã chọn. SOẠN LAB không thêm câu ngoài chủ đề.`);
+      const relatedTopicsUsed = [...new Set(selected.filter((item) => canonicalizeTopic(item.topic) !== canonicalizeTopic(input.topic)).map((item) => item.topic))];
+      if (relatedTopicsUsed.length) notes.push(`Chủ đề liên quan đã dùng theo lựa chọn của giáo viên: ${relatedTopicsUsed.join(", ")}.`);
       if (aiQuestions.length) notes.push(`${aiQuestions.length} câu do AI tạo bổ sung là bản nháp; giáo viên cần rà soát trước khi sử dụng.`);
       if (bankPreview.invalidSkipped) notes.push("Một số câu trong ngân hàng chưa đủ phương án nên đã được bỏ qua.");
       if (difficultyMode === "suggested") notes.push("Một số mức độ có thể được điều chỉnh do số câu phù hợp trong ngân hàng chưa đủ.");
@@ -285,7 +296,7 @@ export default function ExamGeneratorPage() {
         answer: item.answer.trim().toUpperCase(), explanation: item.explanation || "",
         score: Number((input.totalScore / requestedCount).toFixed(2)), difficulty: item.difficulty, topic: item.topic,
       }));
-      const allStructuredQuestions = [...bankStructuredQuestions, ...aiQuestions];
+      const allStructuredQuestions = [...bankStructuredQuestions, ...aiQuestions].map((question) => ({ ...question, score: Number((input.totalScore / Math.max(selected.length + aiQuestions.length, 1)).toFixed(2)) }));
       const structuredExam: StructuredExam = {
         metadata: { title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade, duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName },
         parts: [{ type: "multiple_choice", title: "PHẦN I. TRẮC NGHIỆM", instruction: "Chọn phương án đúng nhất trong mỗi câu.", questions: allStructuredQuestions }],
@@ -329,15 +340,17 @@ export default function ExamGeneratorPage() {
         aiQuestionCount: aiQuestions.length,
         allowAiSupplement,
         questionType: "Trắc nghiệm",
+        requestContext: createGenerationRequestContext({ ...input, source: bankSource, allowAiSupplement, allowRelatedTopics, questionType: "Trắc nghiệm", questionCount: allStructuredQuestions.length }, "exam"),
         warnings: notes,
       };
       setDocument(next);
       incrementUsage();
-      setMessage(`Đã tạo đề với ${selected.length} câu từ ngân hàng${aiQuestions.length ? ` và ${aiQuestions.length} câu AI bổ sung` : ""}.`);
+      setMessage(insufficientBank ? notes[0] : `Đã tạo đề với ${selected.length} câu từ ngân hàng${aiQuestions.length ? ` và ${aiQuestions.length} câu AI bổ sung` : ""}.`);
       setLoading(false);
       return;
     }
     const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
+    if (!aiResult.structuredExam) throw new Error("SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu.");
     const generatedRaw = aiResult.content;
     const generated = withSourceAlignmentNote(generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
@@ -380,7 +393,7 @@ export default function ExamGeneratorPage() {
       extraRequirements: input.extraRequirements
     });
     const next = createDocument(`Đề kiểm tra ${input.subject} lớp ${input.grade}`, "exam", content);
-    next.structuredExam = aiResult.structuredExam || createStructuredExam(input);
+    next.structuredExam = aiResult.structuredExam;
     next.examMeta = {
       schoolName: input.schoolName,
       teacherName: input.teacherName,
@@ -390,6 +403,17 @@ export default function ExamGeneratorPage() {
       topic: input.topic,
       examCode: input.examCode.padStart(4, "0"),
       examStyle: input.examStyle
+    };
+    next.generationMeta = {
+      source: useBank ? bankSource : "ai",
+      bankSource: useBank ? sourceLabel(bankSource) : "Tạo tự động",
+      subject: input.subject,
+      grade: input.grade,
+      topic: input.topic,
+      questionCount: aiResult.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0),
+      warnings: [...(aiResult.warnings || []), "Nội dung đã được kiểm tra độ bám chủ đề."],
+      questionType: input.examType,
+      requestContext: createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowAiSupplement, allowRelatedTopics }, "exam"),
     };
     setDocument(next);
     incrementUsage();
@@ -408,6 +432,8 @@ export default function ExamGeneratorPage() {
 
   function handleRefined(content: string) {
     if (!document) return;
+    const fidelity = validateTopicItem(createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowRelatedTopics }, "exam"), { content, topic: input.topic, subject: input.subject, grade: input.grade });
+    if (!fidelity.valid) return setMessage("Nội dung tinh chỉnh chưa bám sát chủ đề nên chưa được áp dụng.");
     setDocument({ ...document, content });
     setMessage("Đã tinh chỉnh nội dung.");
   }
@@ -541,6 +567,10 @@ export default function ExamGeneratorPage() {
                     <span><strong>Cho phép AI tạo bổ sung khi ngân hàng chưa đủ câu</strong><span className="mt-1 block text-xs leading-5 text-blue-800">Nếu ngân hàng chưa đủ câu, SOẠN LAB có thể tạo thêm câu hỏi bằng AI để thầy cô rà soát.</span></span>
                   </label>
                 ) : null}
+                <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                  <label className="flex items-start gap-2 text-sm text-slate-900"><input className="mt-1" type="checkbox" checked readOnly /><span><strong>Bám sát chủ đề đã chọn</strong><span className="mt-1 block text-xs leading-5 text-slate-600">SOẠN LAB chỉ sử dụng nội dung thuộc đúng chủ đề này. Nếu chưa đủ dữ liệu, hệ thống sẽ báo thay vì lấy câu hỏi ngoài chủ đề.</span></span></label>
+                  <label className="mt-3 flex items-start gap-2 text-sm text-slate-700"><input className="mt-1" type="checkbox" checked={allowRelatedTopics} onChange={(event) => setAllowRelatedTopics(event.target.checked)} /><span>Cho phép mở rộng sang chủ đề liên quan<span className="mt-1 block text-xs leading-5 text-slate-500">Chỉ dùng chủ đề con/liên quan trong cùng môn và lớp; kết quả sẽ ghi rõ nguồn mở rộng.</span></span></label>
+                </div>
                 {bankSource === "system" || bankSource === "both" ? (
                   <p className="rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs leading-5 text-blue-900">
                     Ngân hàng Soạn Lab hiện ưu tiên câu hỏi trắc nghiệm tham khảo cho Vật lí và Hóa học. Nếu thầy cô cần môn hoặc dạng câu hỏi khác, có thể chọn “Tự tạo bằng AI” hoặc “Ngân hàng của tôi”.
@@ -564,6 +594,11 @@ export default function ExamGeneratorPage() {
             <ToolOutputPanel loading={loading} loadingTitle="Đang tạo đề kiểm tra..." loadingDescription="Soạn Lab đang soạn bản nháp có đáp án, thang điểm và ma trận." hasOutput={Boolean(document)} showWarning={false}>
               {document ? (
               <>
+                <div className="mb-3 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-sm text-blue-950">
+                  <div className="grid gap-1 sm:grid-cols-2"><p><strong>Môn:</strong> {document.generationMeta?.subject || input.subject}</p><p><strong>Lớp:</strong> {document.generationMeta?.grade || input.grade}</p><p><strong>Chủ đề:</strong> {document.generationMeta?.topic || input.topic}</p><p><strong>Độ bám chủ đề:</strong> Đã kiểm tra</p></div>
+                  <p className="mt-2 text-xs text-blue-800">SOẠN LAB đã loại các nội dung ngoài chủ đề trước khi hiển thị.</p>
+                </div>
+                {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo kiểm tra chủ đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Số câu hợp lệ: {document.generationMeta?.questionCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />

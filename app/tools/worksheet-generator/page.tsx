@@ -21,6 +21,8 @@ import { ToolOutputPanel } from "@/components/tools/ToolOutputPanel";
 import { ToolWorkspaceLayout } from "@/components/tools/ToolWorkspaceLayout";
 import { getCurrentSampleId, getWorksheetSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
+import { createGenerationRequestContext } from "@/lib/generation/request-context";
+import { validateGeneratedTopicText } from "@/lib/generation/topic-validator";
 
 const initialInput: WorksheetInput = {
   subject: "Ngữ văn",
@@ -53,6 +55,13 @@ export default function WorksheetGeneratorPage() {
     });
   }, []);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      setDocument(null);
+      setMessage("");
+    });
+  }, [input.subject, input.grade, input.topic, input.bookSeries]);
+
   async function generate() {
     if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");
     if (!input.topic.trim()) return setMessage("Vui lòng nhập chủ đề.");
@@ -62,8 +71,11 @@ export default function WorksheetGeneratorPage() {
     try {
     const aiResult = await generateToolContent({ tool: "worksheet", input: input as unknown as Record<string, unknown> });
     const generated = withSourceAlignmentNote(aiResult.content, input as unknown as Record<string, unknown>);
+    const fidelity = validateGeneratedTopicText(createGenerationRequestContext(input as unknown as Record<string, unknown>, "worksheet"), generated);
+    if (!fidelity.valid) throw new Error("SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu.");
     const content = applyTemplate(resolveTemplate(templateId), generated, { subject: input.subject, grade: input.grade, bookSeries: input.bookSeries, topic: input.topic, objective: input.objective, extraRequirements: input.extraRequirements });
     const next = createDocument(`Phiếu học tập ${input.subject} lớp ${input.grade}`, "worksheet", content);
+    next.generationMeta = { subject: input.subject, grade: input.grade, topic: input.topic, source: "automatic", warnings: ["Nội dung đã được kiểm tra độ bám chủ đề."], requestContext: createGenerationRequestContext(input as unknown as Record<string, unknown>, "worksheet") };
     setDocument(next);
     incrementUsage();
     setMessage("Đã tạo phiếu học tập thành công.");
@@ -86,6 +98,8 @@ export default function WorksheetGeneratorPage() {
 
   function handleRefined(content: string) {
     if (!document) return;
+    const fidelity = validateGeneratedTopicText(createGenerationRequestContext(input as unknown as Record<string, unknown>, "worksheet"), content);
+    if (!fidelity.valid) return setMessage("Nội dung tinh chỉnh chưa bám sát chủ đề nên chưa được áp dụng.");
     setDocument({ ...document, content });
     setMessage("Đã tinh chỉnh nội dung.");
   }
