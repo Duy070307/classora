@@ -15,6 +15,6 @@ export function BrandLogo({ variant, compact = false, inverse = false }: { varia
 
   return <span className="inline-flex min-w-0 items-center gap-2.5">
     {!failed ? <Image src="/brand/soan-lab-mark.png" alt="" width={120} height={180} priority onError={() => setFailed(true)} className={`shrink-0 object-contain ${compact ? "h-9 w-7" : "h-11 w-8"}`} /> : <span className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 font-black text-white shadow-md ${compact ? "h-9 w-9 text-base" : "h-11 w-11 text-lg"}`}>S</span>}
-    <span className={`truncate font-extrabold tracking-tight ${compact ? "text-lg" : "text-xl"} ${inverse ? "text-white" : "text-ink"}`}>Soạn Lab</span>
+    <span className={`truncate font-extrabold uppercase tracking-[0.08em] ${compact ? "text-base" : "text-lg"} ${inverse ? "text-white" : "text-ink"}`}>SOẠN LAB</span>
   </span>;
 }

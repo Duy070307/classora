@@ -52,8 +52,8 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
   {
     title: "Công thức & trực quan",
     links: [
-      ["Ảnh công thức → LaTeX", "/tools/image-to-latex?mode=formula", Sigma],
-      ["Hình học → TikZ", "/tools/image-to-latex?mode=geometry", Sigma],
+      ["Ảnh công thức → LaTeX", "/tools/image-to-latex?mode=formula", Sigma, "Beta"],
+      ["Hình học → TikZ", "/tools/image-to-latex?mode=geometry", Sigma, "Beta"],
       ["Tạo mô phỏng 3D", "/tools/3d-animation", Box, "Beta"],
     ],
   },
@@ -151,7 +151,7 @@ function Content({
               />
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-[18px] font-bold leading-tight tracking-[-0.01em] text-slate-950">Soạn Lab</span>
+              <span className="block truncate text-[16px] font-black uppercase leading-tight tracking-[0.08em] text-slate-950">SOẠN LAB</span>
               <span className="mt-0.5 block truncate text-[12px] font-medium leading-tight text-slate-500">Dành cho giáo viên</span>
             </span>
           </Link>

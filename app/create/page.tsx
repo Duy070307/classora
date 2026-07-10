@@ -167,15 +167,21 @@ export default function CreatePage() {
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {group.items.map((task) => {
                 const Icon = task.icon;
+                const isImageToLatexTask = task.href.startsWith("/tools/image-to-latex");
                 return (
                   <Link
                     key={task.title}
                     href={task.href}
                     className="group flex min-h-[250px] flex-col rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-visible:ring-4 focus-visible:ring-blue-100"
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-                      <Icon size={23} />
-                    </span>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                        <Icon size={23} />
+                      </span>
+                      {isImageToLatexTask ? (
+                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
+                      ) : null}
+                    </div>
                     <h3 className="mt-5 text-lg font-black text-slate-900">{task.title}</h3>
                     <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{task.description}</p>
                     <div className="mt-4 flex flex-wrap gap-2">

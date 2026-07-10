@@ -228,6 +228,10 @@ export default function ImageToLatexPage() {
           exportable={false}
         />
 
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
+        </div>
+
         <div className="grid gap-6 xl:grid-cols-[460px_1fr]">
           <section className="tool-form-card">
             <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">

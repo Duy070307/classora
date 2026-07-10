@@ -86,7 +86,7 @@ export function BetaNoticeModal() {
             <BrandLogo variant="mark" compact />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-blue-700">Soạn Lab</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-blue-700">SOẠN LAB</p>
             <h2 id="beta-notice-title" className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
               Thông báo về bản thử nghiệm
             </h2>

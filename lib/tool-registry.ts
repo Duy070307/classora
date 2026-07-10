@@ -247,7 +247,7 @@ export const toolRegistry: ToolMeta[] = [
     href: "/tools/image-to-latex",
     category: "formula-latex",
     popular: true,
-    badge: "Ảnh",
+    badge: "Beta",
     aliases: ["latex", "ảnh công thức", "hình học", "tikz", "toán", "công thức"],
     tags: ["LaTeX", "Toán học", "Sao chép nhanh"],
     example: "Ví dụ: phân số, căn thức, ma trận, hình học → TikZ",
