@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractJson } from "@/lib/ai/extract-json";
 import { getConfiguredProvider } from "@/lib/ai/provider";
 import { buildThreeDAnimationPrompt } from "@/lib/ai/prompts/three-d-animation";
+import { detectGeometryShapeIntent } from "@/lib/geometry/shape-intent";
+import { buildGeometryTemplate, hasGeometryTemplateMismatch } from "@/lib/geometry/three-templates";
 
 type AnimationResult = {
   title: string;
@@ -240,7 +242,10 @@ function localHtml(input: { prompt: string; style: string }) {
 </html>`;
 }
 
-function localResult(input: { prompt: string; style: string }): AnimationResult {
+function localResult(input: { prompt: string; style: string; simulationType?: string }): AnimationResult {
+  const intent = detectGeometryShapeIntent(input.prompt);
+  const template = intent ? buildGeometryTemplate({ prompt: input.prompt, style: input.style, intent }) : null;
+  if (template) return template;
   return {
     title: "Mô phỏng 3D minh họa",
     description: "Mô phỏng 3D đơn giản để giáo viên xem thử, chỉnh sửa hoặc tải file HTML.",
@@ -250,7 +255,11 @@ function localResult(input: { prompt: string; style: string }): AnimationResult 
   };
 }
 
-async function buildResult(input: { prompt: string; subject: string; grade: string; objective: string; style: string }) {
+async function buildResult(input: { prompt: string; subject: string; grade: string; objective: string; style: string; simulationType: string }) {
+  const intent = detectGeometryShapeIntent(input.prompt);
+  const deterministicTemplate = intent ? buildGeometryTemplate({ prompt: input.prompt, style: input.style, intent }) : null;
+  if (deterministicTemplate) return deterministicTemplate;
+
   const provider = getConfiguredProvider();
   if (provider.name === "local") return localResult(input);
 
@@ -272,6 +281,9 @@ async function buildResult(input: { prompt: string; subject: string; grade: stri
   const result = normalizeResult(parsed.value) ?? localResult(input);
   const errors = validateHtml(result.html);
   if (errors.length) return { ...localResult(input), warnings: ["Mã do hệ thống tạo chưa đạt kiểm tra an toàn nên Soạn Lab đã dùng mô phỏng an toàn cơ bản."] };
+  if (intent && hasGeometryTemplateMismatch(intent.intent, result.html)) {
+    return buildGeometryTemplate({ prompt: input.prompt, style: input.style, intent }) ?? localResult(input);
+  }
   return result;
 }
 
@@ -286,6 +298,7 @@ export async function POST(request: NextRequest) {
       grade: asText(body.grade).slice(0, 40),
       objective: asText(body.objective).slice(0, 500),
       style: asText(body.style) || "Đơn giản",
+      simulationType: asText(body.simulationType) || "Tự động",
     };
     const result = await buildResult(input);
     const safetyErrors = validateHtml(result.html);

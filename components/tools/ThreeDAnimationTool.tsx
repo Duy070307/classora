@@ -5,6 +5,11 @@ import { Copy, Download, Play, RefreshCw, Save, Sparkles } from "lucide-react";
 import { createDocument, saveDocument } from "@/lib/history";
 
 const examples = [
+  "Tạo mô hình chóp cụt tứ giác, đáy lớn ở dưới, đáy nhỏ ở trên, có nhãn đáy lớn, đáy nhỏ và chiều cao.",
+  "Tạo mô hình nón cụt có đáy lớn, đáy nhỏ và đường sinh.",
+  "Tạo hình chóp tứ giác đều có đáy, đỉnh và các mặt bên.",
+  "Tạo hình lăng trụ tam giác có nhãn các cạnh.",
+  "Tạo hình trụ có chiều cao h và bán kính r.",
   "Mô phỏng Trái Đất quay quanh Mặt Trời, có quỹ đạo và nhãn tên.",
   "Mô phỏng con lắc đơn dao động qua lại, có dây, quả nặng và vị trí cân bằng.",
   "Mô phỏng chuyển động ném xiên của một quả bóng, có quỹ đạo parabol.",
@@ -13,6 +18,11 @@ const examples = [
 ] as const;
 
 const styles = ["Đơn giản", "Khoa học", "Dễ hiểu cho học sinh", "Màu sắc nhẹ"] as const;
+const simulationTypes = ["Tự động", "Hình học 3D", "Vật lí", "Hóa học", "Khác"] as const;
+
+function looksLikeGeometryPrompt(value: string) {
+  return /chóp|nón|trụ|cầu|lăng trụ|lập phương|hộp chữ nhật/i.test(value);
+}
 
 type AnimationResult = {
   title: string;
@@ -28,6 +38,7 @@ export function ThreeDAnimationTool() {
   const [grade, setGrade] = useState("");
   const [objective, setObjective] = useState("");
   const [style, setStyle] = useState<(typeof styles)[number]>("Đơn giản");
+  const [simulationType, setSimulationType] = useState<(typeof simulationTypes)[number]>("Tự động");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnimationResult | null>(null);
   const [editedHtml, setEditedHtml] = useState("");
@@ -69,7 +80,7 @@ export function ThreeDAnimationTool() {
       const response = await fetch("/api/ai/3d-animation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, subject, grade, objective, style }),
+        body: JSON.stringify({ prompt, subject, grade, objective, style, simulationType }),
       });
       const data = await response.json() as ({ ok: true } & AnimationResult) | { ok: false; error?: string };
       if (!data.ok) {
@@ -121,6 +132,11 @@ export function ThreeDAnimationTool() {
     setMessage("Đã lưu mô phỏng vào lịch sử.");
   }
 
+  function applyExample(example: string) {
+    setPrompt(example);
+    if (looksLikeGeometryPrompt(example)) setSimulationType("Hình học 3D");
+  }
+
   return (
     <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
       <section className="space-y-5">
@@ -162,6 +178,17 @@ export function ThreeDAnimationTool() {
             <input className="form-field mt-1" value={objective} onChange={(event) => setObjective(event.target.value)} placeholder="Ví dụ: giúp học sinh quan sát quỹ đạo và tốc độ chuyển động" />
           </div>
           <div className="mt-3">
+            <label className="label">Loại mô phỏng</label>
+            <select className="form-field mt-1" value={simulationType} onChange={(event) => setSimulationType(event.target.value as (typeof simulationTypes)[number])}>
+              {simulationTypes.map((item) => <option key={item}>{item}</option>)}
+            </select>
+            {simulationType === "Hình học 3D" ? (
+              <p className="mt-2 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-xs font-semibold leading-5 text-blue-800">
+                Phù hợp để tạo các khối như hình chóp, chóp cụt, hình nón, nón cụt, hình trụ, hình cầu, lăng trụ.
+              </p>
+            ) : null}
+          </div>
+          <div className="mt-3">
             <label className="label">Phong cách hiển thị</label>
             <select className="form-field mt-1" value={style} onChange={(event) => setStyle(event.target.value as (typeof styles)[number])}>
               {styles.map((item) => <option key={item}>{item}</option>)}
@@ -183,7 +210,7 @@ export function ThreeDAnimationTool() {
                 type="button"
                 key={example}
                 className="block w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-left text-sm font-semibold leading-6 text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800"
-                onClick={() => setPrompt(example)}
+                onClick={() => applyExample(example)}
               >
                 {example}
               </button>
@@ -245,6 +272,11 @@ export function ThreeDAnimationTool() {
           <p className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
             Mô phỏng 3D được tạo tự động để minh họa ý tưởng. Với nội dung khoa học, thầy cô cần kiểm tra lại tính đúng đắn trước khi dùng trong bài giảng.
           </p>
+          {(simulationType === "Hình học 3D" || looksLikeGeometryPrompt(prompt)) ? (
+            <p className="mt-3 rounded-2xl bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-900">
+              Mô hình hình học 3D là bản minh họa để quan sát. Thầy cô cần kiểm tra lại kích thước, tỉ lệ và ký hiệu trước khi sử dụng.
+            </p>
+          ) : null}
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">

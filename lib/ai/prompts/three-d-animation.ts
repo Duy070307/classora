@@ -4,6 +4,7 @@ export type ThreeDAnimationPromptInput = {
   grade?: string;
   objective?: string;
   style?: string;
+  simulationType?: string;
 };
 
 export function buildThreeDAnimationPrompt(input: ThreeDAnimationPromptInput) {
@@ -48,6 +49,17 @@ Yêu cầu HTML:
 - Không dùng eval, Function, document.cookie, localStorage, sessionStorage, window.top, window.parent, navigation.
 - Giữ animation nhẹ, không tạo object mới liên tục trong animation loop.
 - Dùng hình học đơn giản: sphere, cube, cone, cylinder, torus, line, curve.
+- Nếu người dùng yêu cầu khối hình học phổ biến bằng tiếng Việt, cảnh phải đúng dạng khối được yêu cầu:
+  - "chóp cụt" là hình chóp cụt/frustum, có đáy lớn, đáy nhỏ và các mặt bên xiên; không được thay bằng lập phương hoặc hình hộp.
+  - "nón cụt" là hình nón cụt/frustum, dùng hai bán kính khác nhau; không được thay bằng hình trụ.
+  - "hình chóp" có một đỉnh và đáy đa giác.
+  - "lăng trụ" có hai đáy song song bằng nhau.
+  - "hình trụ" có hai đáy tròn.
+  - "hình cầu" là sphere.
+  - "hình hộp chữ nhật" là rectangular prism.
+  - "lập phương" là cube, chỉ dùng cube khi người dùng yêu cầu rõ lập phương.
+- Không tự thay "chóp cụt" bằng BoxGeometry. Nếu dựng chóp cụt, nên dùng BufferGeometry với đáy lớn, đáy nhỏ và mặt bên hình thang.
+- Nếu dựng nón cụt, nên dùng CylinderGeometry(topRadius, bottomRadius, height, segments) với topRadius khác bottomRadius.
 - Thêm chú thích/comment tiếng Việt trong code.
 - Dùng nhãn giáo dục khi hữu ích, có thể dùng HTML overlay trong chính file.
 - Màu trung tính, dễ nhìn, không quá rực.
@@ -64,5 +76,6 @@ Thông tin yêu cầu:
 - Môn học: ${input.subject || "Không nêu"}
 - Lớp: ${input.grade || "Không nêu"}
 - Mục tiêu minh họa: ${input.objective || "Không nêu"}
-- Phong cách hiển thị: ${input.style || "Đơn giản"}`;
+- Phong cách hiển thị: ${input.style || "Đơn giản"}
+- Loại mô phỏng: ${input.simulationType || "Tự động"}`;
 }
