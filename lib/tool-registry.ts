@@ -261,6 +261,16 @@ export const toolRegistry: ToolMeta[] = [
     tags: ["Preview", "LaTeX"],
   },
   {
+    title: "Ngân hàng TikZ",
+    description: "Lưu và sao chép nhanh mã TikZ cho hình học, đồ thị và bài giảng.",
+    href: "/tikz-bank",
+    category: "formula-latex",
+    popular: true,
+    aliases: ["tikz", "latex", "hình học", "đồ thị", "mã vẽ hình", "kho tikz"],
+    tags: ["TikZ", "LaTeX", "Hình học", "Sao chép nhanh"],
+    example: "Ví dụ: tam giác, đường tròn, đồ thị, hình học không gian",
+  },
+  {
     title: "Tạo mô phỏng 3D",
     description: "Tạo cảnh 3D đơn giản từ mô tả để minh họa bài học.",
     href: "/tools/3d-animation",

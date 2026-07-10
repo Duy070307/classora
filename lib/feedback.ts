@@ -41,6 +41,7 @@ export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/tools/image-to-latex")) return "Ảnh công thức / hình học → LaTeX/TikZ";
   if (pathname.startsWith("/tools/3d-animation")) return "Tạo mô phỏng 3D";
   if (pathname.startsWith("/question-bank")) return "Ngân hàng câu hỏi";
+  if (pathname.startsWith("/tikz-bank")) return "Ngân hàng TikZ";
   if (pathname.startsWith("/history")) return "Lịch sử";
   if (pathname.startsWith("/templates")) return "Mẫu cá nhân";
   if (pathname.startsWith("/data")) return "Dữ liệu";

@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import katex from "katex";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
+import { SaveToTikzBankButton } from "@/components/tikz/SaveToTikzBankButton";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 
@@ -404,6 +405,7 @@ export default function ImageToLatexPage() {
                   <Save size={16} />
                   Lưu lịch sử
                 </button>
+                {isTikzOutput ? <SaveToTikzBankButton tikzCode={tikzCode || latex} fullLatex={standaloneLatex} /> : null}
               </div>
 
               {explanation || warnings.length ? (

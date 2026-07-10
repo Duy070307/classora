@@ -8,6 +8,7 @@ import {
   Box,
   ClipboardCheck,
   ClipboardList,
+  Code2,
   Database,
   FileClock,
   FileText,
@@ -55,6 +56,7 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
     links: [
       ["Ảnh công thức → LaTeX", "/tools/image-to-latex?mode=formula", Sigma, "Beta"],
       ["Hình học → TikZ", "/tools/image-to-latex?mode=geometry", Sigma, "Beta"],
+      ["Ngân hàng TikZ", "/tikz-bank", Code2],
       ["Tạo mô phỏng 3D", "/tools/3d-animation", Box, "Beta"],
     ],
   },
