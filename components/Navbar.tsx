@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
+import Link from "next/link";
 
 export function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link href="/" aria-label="Soạn Lab" className="shrink-0">
-          <BrandLogo variant="full" compact />
-        </Link>
+        <BrandLogo href="/" size="md" className="shrink-0 px-1 py-1" />
         <nav className="ml-auto hidden items-center gap-6 text-sm font-bold text-slate-600 lg:flex">
           <Link href="/" className="hover:text-blue-700">
             Trang chủ
