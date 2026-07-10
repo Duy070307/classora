@@ -87,6 +87,7 @@ create table if not exists public.feedback (
 create table if not exists public.beta_requests (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   full_name text not null check (char_length(full_name) between 1 and 120),
   email text not null check (char_length(email) between 3 and 254),
   phone text check (phone is null or char_length(phone) <= 40),
@@ -210,6 +211,10 @@ drop policy if exists "beta_requests_admin_update" on public.beta_requests;
 create policy "beta_requests_admin_update" on public.beta_requests
 for update to authenticated using (public.is_admin())
 with check (public.is_admin());
+
+drop policy if exists "beta_requests_admin_delete" on public.beta_requests;
+create policy "beta_requests_admin_delete" on public.beta_requests
+for delete to authenticated using (public.is_admin());
 
 create or replace function public.handle_new_user()
 returns trigger

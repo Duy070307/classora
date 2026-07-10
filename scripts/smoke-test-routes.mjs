@@ -48,6 +48,7 @@ const requiredFiles = [
   "app/api/auth/me/route.ts",
   "app/api/feedback/route.ts",
   "app/api/beta-request/route.ts",
+  "app/api/admin/beta-requests/[id]/route.ts",
   "middleware.ts",
   "supabase/schema.sql",
   "lib/supabase/client.ts",
