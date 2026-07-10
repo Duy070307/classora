@@ -27,6 +27,6 @@ export function getRequestOrigin(request: Request) {
   const proto = forwardedProto || new URL(request.url).protocol.replace(":", "") || "https";
   const origin = host ? `${proto}://${host}` : new URL(request.url).origin;
 
-  if (process.env.NODE_ENV === "production" && isLocalUrl(origin)) return getSiteUrl();
+  if (isLocalUrl(origin)) return trimTrailingSlash(origin);
   return trimTrailingSlash(origin);
 }
