@@ -119,7 +119,34 @@ create table if not exists public.tikz_bank (
   preview_note text,
   source_type text,
   needs_review boolean not null default true,
+  slug text,
+  subcategory text,
+  grades text[],
+  complexity text,
+  package_dependencies text[],
+  source_name text,
+  source_url text,
+  source_author text,
+  source_license text,
+  originality_mode text,
+  sha256 text,
+  imported_by uuid references auth.users(id) on delete set null,
+  imported_at timestamptz,
+  metadata jsonb not null default '{}'::jsonb,
   check ((bank_scope = 'system' and user_id is null) or (bank_scope = 'user' and user_id is not null))
+);
+
+create table if not exists public.tikz_imports (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  admin_user_id uuid not null references auth.users(id) on delete cascade,
+  filename text not null,
+  version text,
+  total_items integer not null default 0,
+  inserted_count integer not null default 0,
+  updated_count integer not null default 0,
+  skipped_count integer not null default 0,
+  invalid_count integer not null default 0
 );
 
 create unique index if not exists beta_requests_email_unique on public.beta_requests (lower(email));
@@ -129,6 +156,8 @@ create index if not exists tikz_bank_scope_idx on public.tikz_bank (bank_scope);
 create index if not exists tikz_bank_user_idx on public.tikz_bank (user_id);
 create index if not exists tikz_bank_created_idx on public.tikz_bank (created_at desc);
 create unique index if not exists tikz_bank_system_title_unique on public.tikz_bank (lower(title)) where bank_scope = 'system';
+create unique index if not exists tikz_bank_system_slug_unique on public.tikz_bank (slug) where bank_scope = 'system' and slug is not null;
+create index if not exists tikz_bank_system_sha256_idx on public.tikz_bank (sha256) where bank_scope = 'system' and sha256 is not null;
 
 alter table public.profiles enable row level security;
 alter table public.documents enable row level security;
@@ -138,6 +167,7 @@ alter table public.user_settings enable row level security;
 alter table public.feedback enable row level security;
 alter table public.beta_requests enable row level security;
 alter table public.tikz_bank enable row level security;
+alter table public.tikz_imports enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -266,6 +296,10 @@ create policy "tikz_bank_delete_own_or_admin" on public.tikz_bank
 for delete to authenticated using (
   public.is_admin() or (bank_scope = 'user' and user_id = auth.uid())
 );
+
+drop policy if exists "tikz_imports_admin_all" on public.tikz_imports;
+create policy "tikz_imports_admin_all" on public.tikz_imports
+for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 create or replace function public.handle_new_user()
 returns trigger

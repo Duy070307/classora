@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Check, Code2, Copy, Download, Edit3, Plus, Save, Search, Trash2, X } from "lucide-react";
+import { Check, Code2, Copy, Download, Edit3, FileUp, Plus, Save, Search, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
+import { TikzBankImportModal } from "@/components/tikz/TikzBankImportModal";
 import { buildStandaloneLatex, tikzCategories, tikzFilename, type TikzSnippet } from "@/lib/tikz-bank";
 
 type SourceTab = "all" | "system" | "user";
@@ -35,6 +36,7 @@ export default function TikzBankPage() {
   const [grade, setGrade] = useState("");
   const [tag, setTag] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [editing, setEditing] = useState<TikzSnippet | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
 
@@ -198,6 +200,7 @@ export default function TikzBankPage() {
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <button type="button" className="btn-primary" onClick={openCreate}><Plus size={17} />Thêm mã TikZ</button>
         {isAdmin ? <button type="button" className="btn-secondary" disabled={busy} onClick={() => { void seedSystem(); }}><Code2 size={17} />Thêm mã TikZ mẫu</button> : null}
+        {isAdmin ? <button type="button" className="btn-secondary" onClick={() => setShowImport(true)}><FileUp size={17} />Nhập bộ mã TikZ</button> : null}
         {isAdmin ? <span className="ml-auto text-sm font-bold text-slate-500">Tổng {snippets.length} · SOẠN LAB {counts.system} · Cá nhân {counts.user}</span> : null}
       </div>
 
@@ -256,6 +259,7 @@ export default function TikzBankPage() {
       ) : <div className="empty-state mt-6"><Code2 className="mx-auto text-blue-600" size={34} /><p className="mt-3 font-bold text-slate-900">{emptyText}</p></div>}
 
       {showForm ? <SnippetModal form={form} setForm={setForm} editing={Boolean(editing)} busy={busy} onClose={() => setShowForm(false)} onSave={() => { void saveSnippet(); }} /> : null}
+      {showImport ? <TikzBankImportModal onClose={() => setShowImport(false)} onImported={load} /> : null}
     </AppShell>
   );
 }

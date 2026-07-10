@@ -30,6 +30,19 @@ export type TikzSnippet = {
   preview_note: string | null;
   source_type: string | null;
   needs_review: boolean;
+  slug?: string | null;
+  subcategory?: string | null;
+  grades?: string[] | null;
+  complexity?: string | null;
+  package_dependencies?: string[] | null;
+  source_name?: string | null;
+  source_url?: string | null;
+  source_author?: string | null;
+  source_license?: string | null;
+  originality_mode?: string | null;
+  sha256?: string | null;
+  imported_at?: string | null;
+  metadata?: Record<string, unknown>;
 };
 
 export type TikzSnippetInput = Pick<TikzSnippet, "title" | "description" | "category" | "subject" | "grade" | "tags" | "tikz_code" | "full_latex" | "preview_note"> & {

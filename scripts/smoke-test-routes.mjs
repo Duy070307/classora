@@ -54,6 +54,7 @@ const requiredFiles = [
   "app/api/tikz-bank/[id]/route.ts",
   "app/api/tikz-bank/copy/route.ts",
   "app/api/admin/seed-tikz-bank/route.ts",
+  "app/api/admin/tikz-bank/import/route.ts",
   "middleware.ts",
   "supabase/schema.sql",
   "lib/supabase/client.ts",
