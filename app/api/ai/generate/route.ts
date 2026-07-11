@@ -148,14 +148,14 @@ Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejection
             rejectionReason = "lần tạo lại không hoàn tất";
           }
         }
-        return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu." }, { status: 422 });
+        return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được nội dung phù hợp lúc này. Vui lòng thử lại sau hoặc mô tả chủ đề cụ thể hơn." }, { status: 422 });
       }
       return NextResponse.json(publicAIResult(result));
     } catch {
       const fallback = await localProvider.generate({ ...validated, prompt });
       if (isExam) {
         const checked = validateTopicSafeExam(fallback, validated.input);
-        if (!checked.ok) return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu." }, { status: 422 });
+        if (!checked.ok) return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được nội dung phù hợp lúc này. Vui lòng thử lại sau hoặc mô tả chủ đề cụ thể hơn." }, { status: 422 });
         return NextResponse.json({ ...publicAIResult(checked.result), warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
       }
       return NextResponse.json({

@@ -62,6 +62,13 @@ export type GeneratedDocument = {
     questionCount?: number;
     bankQuestionCount?: number;
     aiQuestionCount?: number;
+    systemBankCount?: number;
+    personalBankCount?: number;
+    requestedCount?: number;
+    finalCount?: number;
+    rejectedCount?: number;
+    isPartial?: boolean;
+    bankQuestionIds?: string[];
     allowAiSupplement?: boolean;
     questionType?: string;
     requestContext?: import("@/lib/generation/request-context").GenerationRequestContext;
