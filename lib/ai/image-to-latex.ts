@@ -330,7 +330,7 @@ Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hi
         return {
           type: "tikz", latex: specialized.tikzCode, tikzCode: specialized.tikzCode, standaloneLatex: specialized.standaloneLatex,
           explanation: "SOẠN LAB đã kiểm tra độ đầy đủ của các thành phần trong hình trước khi tạo TikZ.", confidence: normalizeConfidence(specialized.confidence),
-          warnings: ["Bản vẽ là bản nháp TikZ, thầy cô nên rà soát lại trước khi sử dụng."], provider, model,
+          warnings: [...(specialized.fallbackUsed ? ["SOẠN LAB đã dùng bố cục dựng lại để giữ đủ cấu trúc hình."] : []), "Bản vẽ là bản nháp TikZ, thầy cô nên rà soát lại trước khi sử dụng."], provider, model,
           diagramType: specialized.diagramType, diagramConfidence: specialized.confidence, detectedStructure: specializedStructure, diagramValidation: specialized.validation,
         };
       }

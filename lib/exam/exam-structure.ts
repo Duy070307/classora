@@ -6,22 +6,30 @@ export type ExamStructureRequest = {
   requestedQuestionCount: number;
   totalScore: number;
   difficultyDistribution: { recognition: number; comprehension: number; application: number; highApplication: number };
+  warnings?: string[];
 };
 
 export function calculateExamStructure(input: Partial<ExamInput> & Record<string, unknown>): ExamStructureRequest {
-  const partI = Math.max(0, Number(input.multipleChoiceCount ?? input.partICount ?? 0));
-  const partII = Math.max(0, Number(input.trueFalseCount ?? input.partIICount ?? 0));
-  const partIII = Math.max(0, Number(input.shortAnswerCount ?? input.partIIICount ?? 0));
+  const warnings: string[] = [];
+  const safeNumber = (value: unknown, fallback: number, field: string) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed) || parsed < 0) { warnings.push(`${field} không hợp lệ, đã dùng giá trị an toàn ${fallback}.`); return fallback; }
+    return parsed;
+  };
+  const partI = safeNumber(input.multipleChoiceCount ?? input.partICount ?? 0, 0, "Số câu PHẦN I");
+  const partII = safeNumber(input.trueFalseCount ?? input.partIICount ?? 0, 0, "Số câu PHẦN II");
+  const partIII = safeNumber(input.shortAnswerCount ?? input.partIIICount ?? 0, 0, "Số câu PHẦN III");
   return {
     sectionCounts: { partI, partII, partIII },
     requestedQuestionCount: partI + partII + partIII,
-    totalScore: Number(input.totalScore ?? 10),
+    totalScore: safeNumber(input.totalScore ?? 10, 10, "Tổng điểm"),
     difficultyDistribution: {
-      recognition: Number(input.recognitionRate ?? 30),
-      comprehension: Number(input.understandingRate ?? 40),
-      application: Number(input.applicationRate ?? 20),
-      highApplication: Number(input.advancedRate ?? 10),
+      recognition: safeNumber(input.recognitionRate ?? 30, 30, "Tỉ lệ nhận biết"),
+      comprehension: safeNumber(input.understandingRate ?? 40, 40, "Tỉ lệ thông hiểu"),
+      application: safeNumber(input.applicationRate ?? 20, 20, "Tỉ lệ vận dụng"),
+      highApplication: safeNumber(input.advancedRate ?? 10, 10, "Tỉ lệ vận dụng cao"),
     },
+    ...(warnings.length ? { warnings } : {}),
   };
 }
 

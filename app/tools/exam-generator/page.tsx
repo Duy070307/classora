@@ -242,7 +242,7 @@ export default function ExamGeneratorPage() {
     setLoading(true);
     setMessage("");
     try {
-    if (useBank && bankSource !== "ai") {
+    if (useBank && bankSource !== "ai" && input.trueFalseCount === 0 && input.shortAnswerCount === 0 && input.essayCount === 0) {
       const requestedCount = Math.min(Math.max(bankCount || 1, 1), 50);
       const selected = uniqueBankQuestions(bankPreview.valid).slice(0, requestedCount);
       if (!selected.length && bankOnly) {
@@ -373,7 +373,24 @@ export default function ExamGeneratorPage() {
     }
     const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
     if (!aiResult.structuredExam) throw new Error("SOẠN LAB chưa tạo được nội dung phù hợp lúc này. Vui lòng thử lại sau hoặc mô tả chủ đề cụ thể hơn.");
+    const sectionedBankQuestions = useBank && bankSource !== "ai"
+      ? uniqueBankQuestions(bankPreview.valid).slice(0, input.multipleChoiceCount)
+      : [];
+    if (sectionedBankQuestions.length) {
+      const multipleChoicePart = aiResult.structuredExam.parts.find((part) => part.type === "multiple_choice");
+      if (multipleChoicePart) {
+        const bankItems: ExamQuestion[] = sectionedBankQuestions.map((item, index) => ({
+          id: item.id, part: "multiple_choice", number: index + 1, stem: item.question,
+          options: { A: item.options?.A || "", B: item.options?.B || "", C: item.options?.C || "", D: item.options?.D || "" },
+          answer: item.answer.trim().toUpperCase(), explanation: item.explanation || "Giáo viên rà soát lời giải.",
+          score: Number((input.totalScore / Math.max(input.multipleChoiceCount + input.trueFalseCount + input.shortAnswerCount, 1)).toFixed(2)), difficulty: item.difficulty, topic: item.topic,
+        }));
+        multipleChoicePart.questions = [...bankItems, ...multipleChoicePart.questions].slice(0, input.multipleChoiceCount);
+      }
+    }
     const structureAudit = sanitizeExamStructure(aiResult.structuredExam, input as unknown as ExamInput & Record<string, unknown>);
+    const sectionedBankIds = new Set(sectionedBankQuestions.map((item) => item.id));
+    const validatedSectionedBankCount = structureAudit.exam.parts.flatMap((part) => part.questions).filter((question) => sectionedBankIds.has(question.id)).length;
     aiResult.structuredExam = structureAudit.exam;
     const generatedRaw = structuredExamToText(structureAudit.exam, input);
     const generated = withSourceAlignmentNote(generatedRaw
@@ -441,6 +458,8 @@ export default function ExamGeneratorPage() {
       requestedSectionCounts: structureAudit.request.sectionCounts,
       generatedSectionCounts: structureAudit.generated,
       duplicateRemovedCount: structureAudit.duplicateRemovedCount,
+      bankQuestionCount: validatedSectionedBankCount,
+      aiQuestionCount: Math.max(0, structureAudit.finalCount - validatedSectionedBankCount),
       warnings: [...(aiResult.warnings || []), "Nội dung đã được kiểm tra độ bám chủ đề."],
       questionType: input.examType,
       requestContext: createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowAiSupplement, allowRelatedTopics }, "exam"),

@@ -9,14 +9,21 @@ function xy(value: unknown, fallback: XY): XY { return Array.isArray(value) && v
 function lineAngleTikz(structure: Record<string, unknown>) {
   const lines = list(structure.lines).map(record);
   const points = list(structure.points).map(record);
-  const positions: Record<string, XY> = { D: [-2, 1.3], C: [-2, -1.3], A_2: [2, 1.3], B_4: [2, -1.3] };
+  const positions: Record<string, XY> = { D: [0, 2], C: [0, 0], A_2: [3, 2], B_4: [4, 0] };
+  const commonFallback = ["D", "C", "A_2", "B_4"].every((label) => points.some((point) => String(point.label) === label))
+    && lines.filter((line) => String(line.orientation) === "horizontal").length >= 2
+    && lines.some((line) => String(line.orientation) === "vertical")
+    && lines.some((line) => !["horizontal", "vertical"].includes(String(line.orientation)));
   points.forEach((point, index) => { const label = String(point.label || ""); if (label && !positions[label]) positions[label] = [index % 2 ? 2 : -2, 1.3 - Math.floor(index / 2) * 2.6]; });
   const tikz = ["\\begin{tikzpicture}[scale=1, line cap=round, line join=round]"];
   lines.forEach((line, index) => {
     const orientation = String(line.orientation || ""); const id = String(line.id || `line_${index + 1}`); const label = String(line.label || "");
     const through = list(line.passesThrough).map(String); const known = through.map((point) => positions[point]).filter(Boolean);
     let from: XY; let to: XY;
-    if (orientation === "horizontal") { const y = known[0]?.[1] ?? 1.3 - index * 1.3; from = [-3.5, y]; to = [3.5, y]; }
+    if (commonFallback && orientation === "horizontal") { const y = known[0]?.[1] ?? (index ? 0 : 2); from = [-1.2, y]; to = [5.2, y]; }
+    else if (commonFallback && orientation === "vertical") { from = [0, -0.8]; to = [0, 2.8]; }
+    else if (commonFallback && orientation !== "horizontal" && orientation !== "vertical") { from = [2.4, 2.8]; to = [4.6, -0.8]; }
+    else if (orientation === "horizontal") { const y = known[0]?.[1] ?? 1.3 - index * 1.3; from = [-3.5, y]; to = [3.5, y]; }
     else if (orientation === "vertical") { const x = known[0]?.[0] ?? -2; from = [x, -2.5]; to = [x, 2.5]; }
     else if (known.length >= 2) { from = known[0]; to = known[1]; }
     else { from = [-2.8, 2.2]; to = [2.8, -2.2]; }
@@ -32,7 +39,7 @@ function lineAngleTikz(structure: Record<string, unknown>) {
   });
   list(structure.angleLabels).map(record).forEach((angle, index) => { const near = positions[String(angle.near || "")] || [0, 0]; tikz.push(`  \\node at (${near[0] + 0.35},${near[1] - 0.35 - index * 0.03}) {$${String(angle.label || "")}$};`); });
   tikz.push("\\end{tikzpicture}");
-  return tikz.join("\n");
+  return { tikzCode: tikz.join("\n"), fallbackUsed: commonFallback };
 }
 
 function graphTikz(structure: Record<string, unknown>) {
@@ -51,7 +58,8 @@ function graphTikz(structure: Record<string, unknown>) {
 export function generateStructuredDiagramTikz(structure: Record<string, unknown>) {
   const diagramType = String(structure.diagramType || "unknown");
   if (!new Set(["line_angle_diagram", "coordinate_graph", "function_graph"]).has(diagramType)) return null;
-  const tikzCode = diagramType === "line_angle_diagram" ? lineAngleTikz(structure) : graphTikz(structure);
+  const lineResult = diagramType === "line_angle_diagram" ? lineAngleTikz(structure) : null;
+  const tikzCode = lineResult?.tikzCode || graphTikz(structure);
   const validation = validateDiagramCompleteness(diagramType, structure, tikzCode);
-  return { diagramType, confidence: Number(structure.confidence ?? 0.7), tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), validation };
+  return { diagramType, confidence: Number(structure.confidence ?? 0.7), tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), validation, fallbackUsed: lineResult?.fallbackUsed || false };
 }

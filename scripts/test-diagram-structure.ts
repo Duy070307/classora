@@ -20,8 +20,13 @@ assert.ok(lineResult?.validation.valid);
 assert.ok((lineResult?.tikzCode.match(/\\draw/g) || []).length >= 4);
 for (const label of ["a", "b", "c", "D", "C", "A_2", "B_4", "1", "2", "3", "4"]) assert.ok(lineResult?.tikzCode.includes(`$${label}$`), `Thiếu nhãn ${label}`);
 assert.equal((lineResult?.tikzCode.match(/right-angle-marker/g) || []).length, 2);
-assert.match(lineResult?.tikzCode || "", /\(-2,1\.3\)/);
-assert.match(lineResult?.tikzCode || "", /\(-2,-1\.3\)/);
+assert.equal(lineResult?.fallbackUsed, true);
+assert.match(lineResult?.tikzCode || "", /\(0,2\)/);
+assert.match(lineResult?.tikzCode || "", /\(0,0\)/);
+assert.match(lineResult?.tikzCode || "", /\(3,2\)/);
+assert.match(lineResult?.tikzCode || "", /\(4,0\)/);
+assert.match(lineResult?.tikzCode || "", /\(-1\.2,2\) -- \(5\.2,2\)/);
+assert.match(lineResult?.tikzCode || "", /\(2\.4,2\.8\) -- \(4\.6,-0\.8\)/);
 
 const graph = {
   diagramType: "function_graph", confidence: 0.86,
