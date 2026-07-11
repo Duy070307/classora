@@ -1,6 +1,6 @@
 import type { StructuredExam } from "@/lib/exam-types";
 
-export type AIProviderName = "local" | "openai" | "gemini";
+export type AIProviderName = "local" | "openai" | "gemini" | "grok";
 
 export type AIRefinementAction =
   | "regenerate"

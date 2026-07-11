@@ -1,5 +1,6 @@
 import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
 import { getGeometryPreset, isKnownSchoolDiagramPattern, validateGenericGeometryTikz, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
+import { GrokRequestError, requestGrokVision } from "@/lib/ai/providers/grok";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -12,9 +13,16 @@ export type ImageToLatexResult = {
   explanation?: string;
   confidence?: "high" | "medium" | "low";
   warnings?: string[];
-  provider: "gemini";
+  provider: "gemini" | "grok";
   model: string;
 };
+
+export class VisionCapabilityError extends Error {
+  constructor() {
+    super("vision_not_supported");
+    this.name = "VisionCapabilityError";
+  }
+}
 
 type GeminiImageResponse = {
   candidates?: Array<{
@@ -124,7 +132,49 @@ function sanitizeLatexOutput(raw: string, parsed: Record<string, unknown> | null
 }
 
 function normalizeConfidence(value: unknown): "high" | "medium" | "low" {
+  if (typeof value === "number") return value >= 0.8 ? "high" : value >= 0.5 ? "medium" : "low";
   return value === "high" || value === "medium" || value === "low" ? value : "medium";
+}
+
+function createVisionRequester(imageBase64: string, mimeType: string) {
+  const provider = (process.env.AI_VISION_PROVIDER || process.env.AI_PROVIDER || "local").trim().toLowerCase();
+  const model = provider === "grok" ? process.env.GROK_MODEL || "grok-4.3" : process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  if (provider === "grok") {
+    return {
+      provider: "grok" as const,
+      model,
+      request: async (prompt: string, includeImage = true) => {
+        try {
+          return await requestGrokVision({ prompt, imageBase64, mimeType, includeImage });
+        } catch (error) {
+          if (error instanceof GrokRequestError && error.reason === "unsupported_vision") throw new VisionCapabilityError();
+          throw error;
+        }
+      },
+    };
+  }
+  if (provider !== "gemini" || !process.env.GEMINI_API_KEY) throw new VisionCapabilityError();
+  const apiKey = process.env.GEMINI_API_KEY;
+  const maxTokens = Number(process.env.AI_MAX_OUTPUT_TOKENS || 4000);
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  return {
+    provider: "gemini" as const,
+    model,
+    request: async (prompt: string, includeImage = true) => {
+      const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [{ text: prompt }];
+      if (includeImage) parts.push({ inlineData: { mimeType, data: imageBase64 } });
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ role: "user", parts }], generationConfig: { temperature: 0.15, maxOutputTokens: maxTokens, responseMimeType: "application/json" } }),
+      });
+      if (!response.ok) throw new Error("vision_request_failed");
+      const data = await response.json() as GeminiImageResponse;
+      const raw = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim();
+      if (!raw) throw new Error("vision_empty_response");
+      return raw;
+    },
+  };
 }
 
 function normalizeWarnings(value: unknown): string[] {
@@ -141,14 +191,8 @@ export async function generateLatexFromImage({
   mimeType: string;
   mode: ImageToLatexMode;
 }): Promise<ImageToLatexResult> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("Gemini chưa được cấu hình nên Soạn Lab chưa thể nhận diện ảnh công thức.");
-  }
-
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  const maxTokens = Number(process.env.AI_MAX_OUTPUT_TOKENS || 4000);
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const requester = createVisionRequester(imageBase64, mimeType);
+  const { provider, model } = requester;
   const wantsTikz = mode === "geometry";
   const prompt = wantsTikz ? `Bạn là trợ lý vẽ lại hình học bằng TikZ/LaTeX cho giáo viên Việt Nam.
 
@@ -182,11 +226,9 @@ Chế độ người dùng chọn: ${modeLabels[mode]}.
 
 Trả về đúng JSON:
 {
-  "type": "tikz",
-  "tikzCode": "\\\\begin{tikzpicture}[scale=1]\\\\n...\\\\n\\\\end{tikzpicture}",
-  "standaloneLatex": "\\\\documentclass[tikz,border=5pt]{standalone}\\\\n\\\\usepackage{tikz}\\\\n\\\\begin{document}\\\\n...\\\\n\\\\end{document}",
-  "explanation": "Mô tả ngắn các yếu tố đã nhận diện.",
-  "confidence": "high",
+  "mode": "geometry",
+  "tikz": "\\\\begin{tikzpicture}[scale=1]\\\\n...\\\\n\\\\end{tikzpicture}",
+  "standalone": "\\\\documentclass[tikz,border=5pt]{standalone}\\\\n\\\\usepackage{tikz}\\\\n\\\\begin{document}\\\\n...\\\\n\\\\end{document}",
   "warnings": []
 }` : `Bạn là trợ lý chuyển ảnh công thức Toán/hình học sang LaTeX cho giáo viên Việt Nam.
 
@@ -203,46 +245,15 @@ Chế độ người dùng chọn: ${modeLabels[mode]}.
 
 Trả về đúng JSON:
 {
+  "mode": "formula",
   "latex": "mã LaTeX chính",
   "displayLatex": "mã LaTeX để render nếu phù hợp",
   "explanation": "ghi chú ngắn bằng tiếng Việt",
-  "confidence": "high|medium|low",
+  "confidence": 0.0,
   "warnings": ["cảnh báo nếu có"]
 }`;
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType,
-                data: imageBase64,
-              },
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.15,
-        maxOutputTokens: maxTokens,
-        responseMimeType: "application/json",
-      },
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Gemini chưa nhận diện được ảnh lúc này (${response.status}).`);
-  }
-
-  const data = await response.json() as GeminiImageResponse;
-  const raw = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim();
-  if (!raw) throw new Error("Gemini không trả về nội dung LaTeX.");
+  const raw = await requester.request(prompt, true);
 
   const parsed = extractJson(raw);
   if (wantsTikz) {
@@ -264,23 +275,10 @@ tikzCode must contain only a complete tikzpicture block.
 
 Provider output to repair:
 ${raw.slice(0, 12000)}`;
-      const repairResponse = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: repairPrompt }] }],
-          generationConfig: {
-            temperature: 0.05,
-            maxOutputTokens: maxTokens,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
-      if (repairResponse.ok) {
-        const repairData = await repairResponse.json() as GeminiImageResponse;
-        const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+      try {
+        const repairRaw = await requester.request(repairPrompt, false);
         extraction = extractTikzFromAIOutput(repairRaw);
-      }
+      } catch { /* Giữ lỗi parse ban đầu để trả thông báo kiểm soát. */ }
     }
     if (!extraction.ok) {
       throw new Error(extraction.error);
@@ -332,28 +330,15 @@ ${raw.slice(0, 12000)}
 
 Extracted TikZ:
 ${extraction.tikzCode.slice(0, 12000)}`;
-      const repairResponse = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: repairPrompt }] }],
-          generationConfig: {
-            temperature: 0.05,
-            maxOutputTokens: maxTokens,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
-      if (repairResponse.ok) {
-        const repairData = await repairResponse.json() as GeminiImageResponse;
-        const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+      try {
+        const repairRaw = await requester.request(repairPrompt, false);
         const repaired = extractTikzFromAIOutput(repairRaw);
         if (repaired.ok && validateGenericGeometryTikz(repaired.tikzCode).ok) {
           extraction = repaired;
         } else {
           applyPresetIfAvailable("generic TikZ repair");
         }
-      } else {
+      } catch {
         applyPresetIfAvailable("generic TikZ validation");
       }
     }
@@ -380,36 +365,15 @@ ${extraction.tikzCode.slice(0, 12000)}
 
 Validation issues:
 ${schoolValidation.reasons.join(", ")}`;
-        const repairResponse = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [
-                  { text: repairPrompt },
-                  { inlineData: { mimeType, data: imageBase64 } },
-                ],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.05,
-              maxOutputTokens: maxTokens,
-              responseMimeType: "application/json",
-            },
-          }),
-        });
-        if (repairResponse.ok) {
-          const repairData = await repairResponse.json() as GeminiImageResponse;
-          const repairRaw = repairData.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n").trim() || "";
+        try {
+          const repairRaw = await requester.request(repairPrompt, true);
           const repaired = extractTikzFromAIOutput(repairRaw);
           if (repaired.ok && validateKnownSchoolDiagramTikz(repaired.tikzCode).ok) {
             extraction = repaired;
           } else {
             applyPresetIfAvailable("school diagram regression validation");
           }
-        } else {
+        } catch {
           applyPresetIfAvailable("school diagram regression validation");
         }
       }
@@ -423,7 +387,7 @@ ${schoolValidation.reasons.join(", ")}`;
       explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
       confidence: normalizeConfidence(parsed?.confidence),
       warnings: [...normalizeWarnings(parsed?.warnings), ...extraction.warnings],
-      provider: "gemini",
+      provider,
       model,
     };
   }
@@ -437,7 +401,7 @@ ${schoolValidation.reasons.join(", ")}`;
     explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
     confidence: normalizeConfidence(parsed?.confidence),
     warnings: normalizeWarnings(parsed?.warnings),
-    provider: "gemini",
+    provider,
     model,
   };
 }

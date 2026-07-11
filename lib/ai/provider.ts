@@ -2,11 +2,13 @@ import { geminiProvider } from "@/lib/ai/providers/gemini-provider";
 import { localProvider } from "@/lib/ai/providers/local-provider";
 import { openAIProvider } from "@/lib/ai/providers/openai-provider";
 import type { AIProvider, AIProviderName } from "@/lib/ai/types";
+import { grokProvider } from "@/lib/ai/providers/grok";
 
-export function normalizeProviderName(value = process.env.AI_PROVIDER || "local"): AIProviderName {
+export function normalizeProviderName(value = process.env.AI_TEXT_PROVIDER || process.env.AI_PROVIDER || "local"): AIProviderName {
   const normalized = value.toLowerCase();
   if (normalized === "openai") return "openai";
   if (normalized === "gemini" || normalized === "google") return "gemini";
+  if (normalized === "grok" || normalized === "xai") return "grok";
   return "local";
 }
 
@@ -14,6 +16,7 @@ export function getConfiguredProvider(): AIProvider {
   const name = normalizeProviderName();
   if (name === "openai" && openAIProvider.isConfigured()) return openAIProvider;
   if (name === "gemini" && geminiProvider.isConfigured()) return geminiProvider;
+  if (name === "grok" && grokProvider.isConfigured()) return grokProvider;
   return localProvider;
 }
 

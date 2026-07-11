@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateLatexFromImage, type ImageToLatexMode } from "@/lib/ai/image-to-latex";
+import { generateLatexFromImage, VisionCapabilityError, type ImageToLatexMode } from "@/lib/ai/image-to-latex";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
@@ -44,16 +44,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Ảnh quá lớn. Vui lòng dùng ảnh tối đa 5MB." }, { status: 400 });
     }
 
-    if ((process.env.AI_PROVIDER || "local").toLowerCase() !== "gemini") {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Công cụ nhận diện ảnh chưa sẵn sàng trong môi trường hiện tại. Vui lòng thử lại sau.",
-        },
-        { status: 400 },
-      );
-    }
-
     const buffer = Buffer.from(await file.arrayBuffer());
     const result = await generateLatexFromImage({
       imageBase64: buffer.toString("base64"),
@@ -72,7 +62,10 @@ export async function POST(request: Request) {
       confidence: result.confidence,
       warnings: result.warnings,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof VisionCapabilityError) {
+      return NextResponse.json({ ok: false, error: "API hiện tại chưa hỗ trợ nhận diện ảnh. Vui lòng kiểm tra gói API hoặc model được cung cấp." }, { status: 422 });
+    }
     return NextResponse.json(
       {
         ok: false,

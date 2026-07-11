@@ -5,7 +5,7 @@ import { globSync } from "node:fs";
 const clientFiles = globSync("{app,components,lib}/**/*.{ts,tsx}").filter((file) => readFileSync(file, "utf8").trimStart().startsWith('"use client"'));
 for (const file of clientFiles) {
   const source = readFileSync(file, "utf8");
-  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY|OPENAI_API_KEY|GEMINI_API_KEY/, `Không được dùng secret trong client: ${file}`);
+  assert.doesNotMatch(source, /SUPABASE_SERVICE_ROLE_KEY|OPENAI_API_KEY|GEMINI_API_KEY|GROK_API_KEY/, `Không được dùng secret trong client: ${file}`);
 }
 
 const schema = readFileSync("supabase/schema.sql", "utf8");

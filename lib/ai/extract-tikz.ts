@@ -60,7 +60,7 @@ function extractTikzPicture(text: string): string {
 }
 
 function hasRawJsonKeys(text: string): boolean {
-  return /"type"\s*:|"tikzCode"\s*:|"standaloneLatex"\s*:/.test(text);
+  return /"type"\s*:|"tikz(?:Code)?"\s*:|"standalone(?:Latex)?"\s*:/.test(text);
 }
 
 export function validateTikzCode(tikzCode: string) {
@@ -85,9 +85,9 @@ function stringValue(value: unknown): string {
 
 export function extractTikzFromAIOutput(raw: string): TikzExtractionResult {
   const parsed = parseJsonObject(raw);
-  const parsedTikz = stringValue(parsed?.tikzCode);
+  const parsedTikz = stringValue(parsed?.tikzCode) || stringValue(parsed?.tikz);
   const parsedLatex = stringValue(parsed?.latex);
-  const parsedStandalone = stringValue(parsed?.standaloneLatex);
+  const parsedStandalone = stringValue(parsed?.standaloneLatex) || stringValue(parsed?.standalone);
 
   const candidates = [
     parsedTikz,

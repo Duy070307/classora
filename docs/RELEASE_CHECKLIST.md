@@ -25,7 +25,7 @@
 - [ ] Tạo đề kiểm tra có lựa chọn nguồn câu hỏi: Soạn Lab, của tôi, cả hai, hoặc tự tạo bằng AI.
 - [ ] Admin có thể chạy “Thêm câu hỏi mẫu Kết nối tri thức”; chạy lại không tạo trùng.
 - [ ] Command palette, favorites và recent tools hoạt động.
-- [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX hoặc TikZ qua Gemini khi được cấu hình; copy LaTeX/TikZ, copy standalone, tải `.tex`/TXT/Markdown và lưu lịch sử hoạt động.
+- [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX hoặc TikZ qua vision provider được cấu hình; copy LaTeX/TikZ, copy standalone, tải `.tex`/TXT/Markdown và lưu lịch sử hoạt động.
 
 ## Export
 
