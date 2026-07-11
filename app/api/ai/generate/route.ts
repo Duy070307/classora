@@ -5,13 +5,14 @@ import { localProvider } from "@/lib/ai/providers/local-provider";
 import type { AIRefinementAction, AIGenerateMode } from "@/lib/ai";
 import { validateStructuredExam } from "@/lib/exam/validate-structured-exam";
 import type { ExamInput } from "@/lib/types";
-import type { AIResponse } from "@/lib/ai/types";
+import type { AIProvider, AIResponse } from "@/lib/ai/types";
 import { createGenerationRequestContext } from "@/lib/generation/request-context";
 import { filterStructuredExamByTopic } from "@/lib/generation/topic-validator";
 import { structuredExamToText } from "@/lib/mock-exam-generator";
 import { getCurrentUser } from "@/lib/auth/user";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { calculateExamStructure, sanitizeExamStructure } from "@/lib/exam/exam-structure";
+import { collectExamSections, isUsableExamCount, minimumUsableExamCount } from "@/lib/exam/section-generation";
 
 const actions = new Set<AIRefinementAction>([
   "regenerate",
@@ -44,14 +45,15 @@ function validateBody(body: unknown) {
 }
 
 function validateTopicSafeExam(result: AIResponse, input: Record<string, unknown>) {
-  const structural = validateStructuredExam(result.structuredExam, input as unknown as Partial<ExamInput>, { allowPartial: true });
-  if (!structural.ok || !result.structuredExam) return { ok: false as const, reason: structural.ok ? "empty_exam_content" : structural.reason };
+  if (!result.structuredExam) return { ok: false as const, reason: "empty_exam_content" };
   const context = createGenerationRequestContext(input, "exam");
   const filtered = context.topic ? filterStructuredExamByTopic(result.structuredExam, context) : { exam: result.structuredExam, rejected: [], validCount: result.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0) };
   if (!filtered.validCount) return { ok: false as const, reason: "topic_mismatch", rejectedCount: filtered.rejected.length };
   const examInput = input as unknown as ExamInput;
   const sanitized = sanitizeExamStructure(filtered.exam, input);
   if (!sanitized.finalCount) return { ok: false as const, reason: "no_valid_questions", rejectedCount: filtered.rejected.length + sanitized.invalidRemovedCount + sanitized.duplicateRemovedCount };
+  const structural = validateStructuredExam(sanitized.exam, input as unknown as Partial<ExamInput>, { allowPartial: true });
+  if (!structural.ok) return { ok: false as const, reason: structural.reason, rejectedCount: filtered.rejected.length + sanitized.invalidRemovedCount + sanitized.duplicateRemovedCount };
   const safeResult: AIResponse = {
     ...result,
     structuredExam: sanitized.exam,
@@ -115,6 +117,45 @@ function missingSectionInput(input: Record<string, unknown>, result: AIResponse 
   };
 }
 
+async function generateExamSectionBySection(
+  provider: AIProvider,
+  requestData: { tool: string; input: Record<string, unknown>; mode?: AIGenerateMode; currentContent?: string; action?: AIRefinementAction },
+) {
+  const request = calculateExamStructure(requestData.input as Partial<ExamInput> & Record<string, unknown>);
+  const collected = await collectExamSections(requestData.input, async ({ type, input, prompt }) => {
+    const generated = await provider.generate({ ...requestData, input, prompt });
+    const rawCount = generated.structuredExam?.parts.find((part) => part.type === type)?.questions.length || 0;
+    const checked = validateTopicSafeExam(generated, input);
+    if (!checked.ok) return { questions: [], rawCount };
+    return {
+      questions: checked.result.structuredExam?.parts.find((part) => part.type === type)?.questions || [],
+      rawCount,
+      warnings: checked.result.warnings,
+    };
+  });
+  const { audit: finalAudit, diagnostics, warnings } = collected;
+  if (process.env.NODE_ENV === "development") console.info("[exam-generation]", diagnostics);
+  const result: AIResponse = {
+    ok: true,
+    title: finalAudit.exam.metadata.title,
+    content: structuredExamToText(finalAudit.exam, requestData.input as unknown as ExamInput),
+    structuredExam: finalAudit.exam,
+    warnings: [
+      ...new Set(warnings),
+      finalAudit.complete
+        ? `Đã tạo ${finalAudit.finalCount}/${request.requestedQuestionCount} câu theo đúng cấu trúc.`
+        : `SOẠN LAB đã tạo được ${finalAudit.finalCount}/${request.requestedQuestionCount} câu đúng cấu trúc. Thầy cô nên rà soát trước khi dùng.`,
+    ],
+    requestedCount: request.requestedQuestionCount,
+    finalCount: finalAudit.finalCount,
+    isPartial: !finalAudit.complete,
+    requestedSectionCounts: request.sectionCounts,
+    generatedSectionCounts: finalAudit.generated,
+    duplicateRemovedCount: diagnostics.duplicateRemoved,
+  };
+  return { result, diagnostics, complete: finalAudit.complete };
+}
+
 function publicAIResult(result: AIResponse) {
   const safe = { ...result } as Partial<AIResponse>;
   delete safe.provider;
@@ -146,6 +187,27 @@ export async function POST(request: Request) {
     const provider = getConfiguredProvider();
     const isExam = validated.tool === "exam" || validated.tool === "exam-generator";
     try {
+      if (isExam && validated.mode !== "refine" && !validated.action) {
+        const requested = requestedExamCount(validated.input);
+        if (requested <= 0) return NextResponse.json({ ok: false, error: "Vui lòng chọn ít nhất một câu hỏi cho đề kiểm tra." }, { status: 400 });
+        const sectioned = await generateExamSectionBySection(provider, validated);
+        const finalCount = examQuestionCount(sectioned.result);
+        if (!isUsableExamCount(requested, finalCount)) {
+          return NextResponse.json({
+            ok: false,
+            error: "SOẠN LAB chưa tạo đủ đề theo cấu trúc yêu cầu. Vui lòng bấm Tạo lại hoặc giảm số câu.",
+            requestedCount: requested,
+            finalCount,
+            minimumUsableCount: process.env.NODE_ENV === "development" ? minimumUsableExamCount(requested) : undefined,
+            generationDiagnostics: process.env.NODE_ENV === "development" ? sectioned.diagnostics : undefined,
+          }, { status: 422 });
+        }
+        return NextResponse.json({
+          ...publicAIResult(sectioned.result),
+          warnings: [...(sectioned.result.warnings || []), "Nội dung là bản nháp hỗ trợ giáo viên. Giáo viên cần kiểm tra trước khi sử dụng chính thức."],
+          generationDiagnostics: process.env.NODE_ENV === "development" ? sectioned.diagnostics : undefined,
+        });
+      }
       const result = await provider.generate({ ...validated, prompt });
       if (isExam) {
         const requested = requestedExamCount(validated.input);

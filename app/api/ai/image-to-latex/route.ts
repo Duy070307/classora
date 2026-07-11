@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       mimeType: file.type,
       mode,
     });
+    const developmentDiagnostics = process.env.NODE_ENV === "development";
 
     return NextResponse.json({
       ok: true,
@@ -61,24 +62,48 @@ export async function POST(request: Request) {
       explanation: result.explanation,
       confidence: result.confidence,
       warnings: result.warnings,
-      geometryDiagnostic: process.env.NODE_ENV === "development" ? result.geometryDiagnostic : undefined,
-      geometryStructure: process.env.NODE_ENV === "development" ? result.geometryStructure : undefined,
+      geometryDiagnostic: developmentDiagnostics ? result.geometryDiagnostic : undefined,
+      geometryStructure: developmentDiagnostics ? result.geometryStructure : undefined,
       diagramType: result.diagramType,
       diagramConfidence: result.diagramConfidence,
-      detectedStructure: process.env.NODE_ENV === "development" ? result.detectedStructure : undefined,
-      diagramValidation: result.diagramValidation,
+      diagramStatus: result.diagramStatus,
+      detectedStructure: developmentDiagnostics ? result.detectedStructure : undefined,
+      diagramValidation: developmentDiagnostics ? result.diagramValidation : undefined,
+      retryCount: developmentDiagnostics ? result.retryCount : undefined,
+      fallbackUsed: developmentDiagnostics ? result.fallbackUsed : undefined,
     });
   } catch (error) {
     if (error instanceof DiagramIncompleteError) {
-      return NextResponse.json({ ok: false, error: "Không thể dựng lại đầy đủ hình từ ảnh này. Vui lòng cắt ảnh rõ hơn hoặc kiểm tra mã TikZ thủ công." }, { status: 422 });
+      if (process.env.NODE_ENV === "development") {
+        const validation = error.diagnostics?.validation;
+        console.warn("[image-to-tikz]", {
+          reason: error.reason,
+          diagramType: error.diagnostics?.diagramType,
+          classificationConfidence: error.diagnostics?.classificationConfidence,
+          detected: validation?.detected,
+          generated: validation?.generated,
+          validationStatus: validation?.status,
+          validationFailureReasons: validation?.failureReasons,
+          missingComponents: validation?.missingComponents,
+          retryCount: error.diagnostics?.retryCount,
+          fallbackUsed: error.diagnostics?.fallbackUsed,
+        });
+      }
+      const message = error.reason === "classification_failed"
+        ? "SOẠN LAB chưa phân loại được dạng hình trong ảnh. Vui lòng cắt ảnh rõ phần hình chính."
+        : error.reason === "output_too_small"
+          ? "SOẠN LAB chỉ nhận được một phần rất nhỏ của hình, chưa đủ để dựng TikZ hoàn chỉnh."
+          : "SOẠN LAB đã thử tạo bản nháp TikZ nhưng chưa xác nhận được các thành phần hình học chính.";
+      return NextResponse.json({ ok: false, error: message }, { status: 422 });
     }
     if (error instanceof VisionCapabilityError) {
-      return NextResponse.json({ ok: false, error: "API hiện tại chưa hỗ trợ nhận diện ảnh. Vui lòng kiểm tra gói API hoặc model được cung cấp." }, { status: 422 });
+      return NextResponse.json({ ok: false, error: "Tính năng nhận diện ảnh hiện chưa sẵn sàng. Vui lòng thử lại sau." }, { status: 422 });
     }
+    if (process.env.NODE_ENV === "development") console.warn("[image-to-tikz]", { reason: error instanceof Error ? error.name : "unknown_error" });
     return NextResponse.json(
       {
         ok: false,
-        error: "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh đã cắt gọn và rõ nét hơn.",
+        error: "SOẠN LAB chưa xử lý được ảnh lúc này. Vui lòng thử lại sau.",
       },
       { status: 400 },
     );

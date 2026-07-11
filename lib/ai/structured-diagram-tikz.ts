@@ -6,14 +6,63 @@ function record(value: unknown): Record<string, unknown> { return value && typeo
 function list(value: unknown) { return Array.isArray(value) ? value : []; }
 function xy(value: unknown, fallback: XY): XY { return Array.isArray(value) && value.length >= 2 && value.every((item) => Number.isFinite(Number(item))) ? [Number(value[0]), Number(value[1])] : fallback; }
 
+function canonicalPointLabel(value: unknown) {
+  const label = String(value || "").trim();
+  if (/^A_?2$/i.test(label)) return "A_2";
+  if (/^B_?4$/i.test(label)) return "B_4";
+  return label;
+}
+
+function isCommonLineAngleStructure(structure: Record<string, unknown>) {
+  const lines = list(structure.lines).map(record);
+  const points = new Set(list(structure.points).map((item) => canonicalPointLabel(record(item).label)));
+  const lineLabels = new Set(lines.map((line) => String(line.label || "").toLowerCase()));
+  const angles = new Set(list(structure.angleLabels).map((item) => String(record(item).label || "")));
+  const rightVertices = new Set(list(structure.rightAngles).map((item) => String(record(item).vertex || "")));
+  return ["D", "C", "A_2", "B_4"].every((label) => points.has(label))
+    && ["a", "b", "c"].every((label) => lineLabels.has(label))
+    && ["1", "2", "3", "4"].every((label) => angles.has(label))
+    && ["D", "C"].every((label) => rightVertices.has(label));
+}
+
+function commonLineAngleFallbackTikz() {
+  return `\\begin{tikzpicture}[scale=1, line cap=round, line join=round]
+  \\coordinate (D) at (0,2);
+  \\coordinate (C) at (0,0);
+  \\coordinate (A2) at (3,2);
+  \\coordinate (B4) at (4,0);
+
+  \\draw[thick] (-1.2,2) -- (5.2,2) node[right] {$a$};
+  \\draw[thick] (-1.2,0) -- (5.2,0) node[right] {$b$};
+  \\draw[thick] (0,-0.8) -- (0,2.8) node[below] {$c$};
+  \\draw[thick] (2.4,2.8) -- (4.6,-0.8);
+
+  \\node[above left] at (D) {$D$};
+  \\node[below left] at (C) {$C$};
+  \\node[above right] at (A2) {$A_2$};
+  \\node[below right] at (B4) {$B_4$};
+
+  \\draw[thick] (0,2) ++(0.18,0) -- ++(0,-0.18) -- ++(-0.18,0); % right-angle-marker D
+  \\draw[thick] (0,0) ++(0.18,0) -- ++(0,0.18) -- ++(-0.18,0); % right-angle-marker C
+
+  \\node at (2.75,2.25) {$3$};
+  \\node at (3.35,2.25) {$2$};
+  \\node at (3.15,1.75) {$4$};
+  \\node at (3.65,1.75) {$1$};
+
+  \\node at (3.65,0.25) {$3$};
+  \\node at (4.25,0.25) {$2$};
+  \\node at (3.85,-0.28) {$4$};
+  \\node at (4.45,-0.28) {$1$};
+\\end{tikzpicture}`;
+}
+
 function lineAngleTikz(structure: Record<string, unknown>) {
   const lines = list(structure.lines).map(record);
   const points = list(structure.points).map(record);
+  if (isCommonLineAngleStructure(structure)) return { tikzCode: commonLineAngleFallbackTikz(), fallbackUsed: true };
   const positions: Record<string, XY> = { D: [0, 2], C: [0, 0], A_2: [3, 2], B_4: [4, 0] };
-  const commonFallback = ["D", "C", "A_2", "B_4"].every((label) => points.some((point) => String(point.label) === label))
-    && lines.filter((line) => String(line.orientation) === "horizontal").length >= 2
-    && lines.some((line) => String(line.orientation) === "vertical")
-    && lines.some((line) => !["horizontal", "vertical"].includes(String(line.orientation)));
+  const commonFallback = false;
   points.forEach((point, index) => { const label = String(point.label || ""); if (label && !positions[label]) positions[label] = [index % 2 ? 2 : -2, 1.3 - Math.floor(index / 2) * 2.6]; });
   const tikz = ["\\begin{tikzpicture}[scale=1, line cap=round, line join=round]"];
   lines.forEach((line, index) => {

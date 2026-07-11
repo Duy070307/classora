@@ -64,10 +64,12 @@ export function validateTopicItem(context: GenerationRequestContext, item: Topic
     const allowedMatches = node.allowedTerms.filter((term) => termPresent(combined, term));
     const relatedMatches = (node.relatedTerms || []).filter((term) => termPresent(combined, term));
     const forbiddenMatches = node.forbiddenTerms.filter((term) => termPresent(combined, term));
+    const declaredTopicMatches = Boolean(item.topic && canonicalizeTopic(item.topic) === context.canonicalTopic);
+    const allowDeclaredFunctionTopic = context.subject === "Toán" && context.grade === "12" && context.canonicalTopic === canonicalizeTopic("hàm số") && declaredTopicMatches;
     score += Math.min(0.25, allowedMatches.length * 0.13);
     score += Math.min(0.05, relatedMatches.length * 0.025);
     score -= Math.min(0.7, forbiddenMatches.length * 0.35);
-    if (!allowedMatches.length) reasons.push("Không có khái niệm cốt lõi của chủ đề");
+    if (!allowedMatches.length && !allowDeclaredFunctionTopic) reasons.push("Không có khái niệm cốt lõi của chủ đề");
     if (forbiddenMatches.length) reasons.push(`Có khái niệm ngoài phạm vi: ${forbiddenMatches.join(", ")}`);
   } else if (termPresent(combined, context.topic)) {
     score += 0.25;
@@ -118,7 +120,8 @@ export function validateGeneratedTopicText(context: GenerationRequestContext, co
 }
 
 function examQuestionToItem(question: ExamQuestion, subject: string, grade: string): TopicValidationItem {
-  return { id: question.id, content: question.stem, options: question.options, answer: question.answer, explanation: question.explanation, topic: question.topic, subject, grade, questionType: question.part };
+  const statementText = question.trueFalseItems?.map((item) => `${item.label}) ${item.text}`).join(" ") || "";
+  return { id: question.id, content: [question.stem, statementText].filter(Boolean).join(" "), options: question.options, answer: question.answer, explanation: question.explanation, topic: question.topic, subject, grade, questionType: question.part };
 }
 
 export function filterStructuredExamByTopic(exam: StructuredExam, context: GenerationRequestContext) {

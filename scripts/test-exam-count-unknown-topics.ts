@@ -4,6 +4,7 @@ import { createGenerationRequestContext } from "../lib/generation/request-contex
 import { validateTopicItem } from "../lib/generation/topic-validator";
 import { buildExamPrompt } from "../lib/ai/prompts";
 import { calculateExamStructure, sanitizeExamStructure } from "../lib/exam/exam-structure";
+import { assembleSectionedExam, buildExamSectionPrompt, buildSectionOnlyInput, isUsableExamCount, minimumUsableExamCount, sectionCounts } from "../lib/exam/section-generation";
 import type { ExamInput } from "../lib/types";
 
 const input = { schoolName: "", teacherName: "", subject: "Toán", grade: "12", bookSeries: "Kết nối tri thức", topic: "hàm số", duration: "45 phút", examType: "Trắc nghiệm", examStyle: "Kiểm tra thường", trueFalseCount: 0, shortAnswerCount: 0, examCode: "101", multipleChoiceCount: 10, essayCount: 0, totalScore: 10, level: "Trung bình", recognitionRate: 30, understandingRate: 40, applicationRate: 20, advancedRate: 10, includeAnswers: true, includeRubric: true, includeMatrix: true, includeSpecification: true, extraRequirements: "" } as ExamInput;
@@ -44,6 +45,27 @@ if (fullParsed.ok) {
   assert.match(audit.exam.parts.find((part) => part.type === "true_false")?.title || "", /CÂU 4/);
   assert.match(audit.exam.parts.find((part) => part.type === "short_answer")?.title || "", /CÂU 6/);
 }
+const tfSectionInput = buildSectionOnlyInput(thptInput as unknown as Record<string, unknown>, "true_false", 4, []) as unknown as ExamInput;
+const tfWithoutTopAnswer = tf.map(({ answer, ...item }) => { assert.ok(answer); return item; });
+const parsedTfArray = normalizeAIExamOutput(JSON.stringify(tfWithoutTopAnswer), tfSectionInput);
+assert.equal(parsedTfArray.ok, true, "Parser phải suy ra đáp án Đúng/Sai từ bốn mệnh đề");
+if (parsedTfArray.ok) assert.equal(parsedTfArray.structuredExam.parts.find((part) => part.type === "true_false")?.questions.length, 4);
+const shortSectionInput = buildSectionOnlyInput(thptInput as unknown as Record<string, unknown>, "short_answer", 6, []) as unknown as ExamInput;
+const parsedShortArray = normalizeAIExamOutput(JSON.stringify(short.map(({ answer, ...item }) => ({ ...item, shortAnswer: answer }))), shortSectionInput);
+assert.equal(parsedShortArray.ok, true, "Parser phải nhận shortAnswer làm đáp án PHẦN III");
+if (parsedShortArray.ok) assert.equal(parsedShortArray.structuredExam.parts.find((part) => part.type === "short_answer")?.questions.length, 6);
+if (fullParsed.ok) {
+  const byType = Object.fromEntries(fullParsed.structuredExam.parts.map((part) => [part.type, part.questions]));
+  const assembled = assembleSectionedExam(thptInput as unknown as Record<string, unknown>, byType);
+  assert.deepEqual(sectionCounts(assembled), { partI: 12, partII: 4, partIII: 6 });
+  assert.equal(assembled.parts.flatMap((part) => part.questions).length, 22);
+}
+assert.equal(minimumUsableExamCount(22), 18);
+assert.equal(isUsableExamCount(22, 1), false, "Không được hiển thị đề 1/22 như kết quả sử dụng được");
+assert.equal(isUsableExamCount(22, 18), true);
+const missingPartIInput = buildSectionOnlyInput(thptInput as unknown as Record<string, unknown>, "multiple_choice", 10, mc.slice(0, 2).map((item) => item.stem));
+assert.deepEqual([missingPartIInput.multipleChoiceCount, missingPartIInput.trueFalseCount, missingPartIInput.shortAnswerCount], [10, 0, 0]);
+assert.match(buildExamSectionPrompt(thptInput as unknown as Record<string, unknown>, "multiple_choice", 10, mc.slice(0, 2).map((item) => item.stem)), /Tạo đúng 10 câu/);
 const incompleteRaw = JSON.stringify({ metadata: { title: "Thiếu", subject: "Toán", grade: "12" }, sections: [{ type: "multiple_choice", questions: mc.slice(0, 2) }, { type: "true_false", questions: tf.slice(0, 2) }], teacherOnly: { scoringGuide: "Đáp án tạm." } });
 const incomplete = normalizeAIExamOutput(incompleteRaw, thptInput);
 assert.equal(incomplete.ok, true);
@@ -53,8 +75,9 @@ if (repeatedExam) assert.ok(sanitizeExamStructure(repeatedExam, thptInput as Exa
 
 const mathContext = createGenerationRequestContext({ subject: "Toán", grade: "12", topic: "hàm số", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(mathContext, { content: "Hàm số y=x^3-3x đồng biến trên khoảng nào?", options: { A: "(-∞;-1)", B: "(-1;1)", C: "(1;+∞)", D: "R" }, answer: "A", explanation: "Xét đạo hàm.", topic: "hàm số", subject: "Toán", grade: "12" }).valid, true);
+assert.equal(validateTopicItem(mathContext, { content: "Cho y=x^3-2x+1. Chọn kết quả đúng.", options: { A: "1", B: "2", C: "3", D: "4" }, answer: "A", explanation: "Biến đổi biểu thức đã cho.", topic: "hàm số", subject: "Toán", grade: "12" }).valid, true);
 const thermalContext = createGenerationRequestContext({ subject: "Vật lý", grade: "10", topic: "nhiệt học", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(thermalContext, { content: "Một vật nhận nhiệt lượng 8400 J. Đại lượng nào quyết định độ tăng nhiệt độ?", options: { A: "Khối lượng và nhiệt dung riêng", B: "Điện trở", C: "Từ thông", D: "Tiêu cự" }, answer: "A", explanation: "Áp dụng Q=mcΔt.", topic: "nhiệt học", subject: "Vật lí", grade: "10" }).valid, true);
 const unknownContext = createGenerationRequestContext({ subject: "Vật lí", grade: "10", topic: "chuyển pha nâng cao", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(unknownContext, { content: "Trong quá trình nóng chảy, nhiệt độ của chất kết tinh thay đổi thế nào?", options: { A: "Không đổi", B: "Tăng", C: "Giảm", D: "Bằng 0" }, answer: "A", explanation: "Nhiệt cung cấp dùng cho chuyển pha.", topic: "chuyển pha nâng cao", subject: "Vật lí", grade: "10" }).valid, true);
-console.log("Exam structure: 12/4/6 = 22 câu, parser đủ ba phần, missing 10/2/6, chống trùng và chủ đề hàm số/nhiệt đều đạt.");
+console.log("Exam structure: parser từng phần, lắp ráp 12/4/6 = 22, ngưỡng 18/22, missing 10/2/6, chống trùng và chủ đề đều đạt.");

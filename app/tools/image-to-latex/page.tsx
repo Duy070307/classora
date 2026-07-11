@@ -36,11 +36,16 @@ type ApiResult = {
   geometryStructure?: unknown;
   diagramType?: string;
   diagramConfidence?: number;
+  diagramStatus?: "valid" | "draft_with_warnings" | "invalid";
+  retryCount?: number;
+  fallbackUsed?: boolean;
   detectedStructure?: unknown;
   diagramValidation?: {
     valid: boolean;
+    status: "valid" | "draft_with_warnings" | "invalid";
     warnings: string[];
     missingComponents: string[];
+    failureReasons: string[];
     detected: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
     generated: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
   };
@@ -77,7 +82,7 @@ export default function ImageToLatexPage() {
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
   const [geometryDiagnostic, setGeometryDiagnostic] = useState<GeometryDiagnosticUi>();
   const [geometryStructure, setGeometryStructure] = useState<unknown>();
-  const [diagramDiagnostic, setDiagramDiagnostic] = useState<{ type?: string; confidence?: number; structure?: unknown; validation?: Extract<ApiResult, { ok: true }>["diagramValidation"] }>({});
+  const [diagramDiagnostic, setDiagramDiagnostic] = useState<{ type?: string; confidence?: number; status?: "valid" | "draft_with_warnings" | "invalid"; retryCount?: number; fallbackUsed?: boolean; structure?: unknown; validation?: Extract<ApiResult, { ok: true }>["diagramValidation"] }>({});
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -111,9 +116,9 @@ export default function ImageToLatexPage() {
 
   function friendlyError(raw: string) {
     if (/gemini|openai|provider|model|api|key|supabase|database|fallback|local/i.test(raw)) {
-      return "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn, đã cắt gọn và chỉ chứa công thức hoặc hình cần nhận diện.";
+      return "SOẠN LAB chưa xử lý được ảnh lúc này. Vui lòng thử lại sau.";
     }
-    return raw || "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn và đã cắt gọn.";
+    return raw || "SOẠN LAB chưa xử lý được ảnh lúc này. Vui lòng thử lại sau.";
   }
 
   function pickFile(nextFile: File | null) {
@@ -168,11 +173,13 @@ export default function ImageToLatexPage() {
       setConfidence(result.confidence || "medium");
       setGeometryDiagnostic(result.geometryDiagnostic);
       setGeometryStructure(result.geometryStructure);
-      setDiagramDiagnostic({ type: result.diagramType, confidence: result.diagramConfidence, structure: result.detectedStructure, validation: result.diagramValidation });
+      setDiagramDiagnostic({ type: result.diagramType, confidence: result.diagramConfidence, status: result.diagramStatus, retryCount: result.retryCount, fallbackUsed: result.fallbackUsed, structure: result.detectedStructure, validation: result.diagramValidation });
       saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
-      showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
+      showMessage(mode === "geometry"
+        ? result.diagramStatus === "draft_with_warnings" ? "Đã tạo bản nháp TikZ cần rà soát." : "Đã chuyển ảnh thành TikZ."
+        : "Đã chuyển ảnh thành LaTeX.");
     } catch {
-      setError("Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh rõ hơn và đã cắt gọn.");
+      setError("SOẠN LAB chưa xử lý được ảnh lúc này. Vui lòng thử lại sau.");
     } finally {
       setBusy(false);
     }
@@ -469,8 +476,10 @@ export default function ImageToLatexPage() {
                   <p className="mt-3">Loại: {diagramDiagnostic.type} · Độ tin cậy: {Math.round((diagramDiagnostic.confidence || 0) * 100)}%</p>
                   <p>Phát hiện: {JSON.stringify(diagramDiagnostic.validation?.detected || {})}</p>
                   <p>Đã sinh: {JSON.stringify(diagramDiagnostic.validation?.generated || {})}</p>
-                  <p>Trạng thái: {diagramDiagnostic.validation?.valid ? "Đạt" : "Thiếu thành phần"}</p>
+                  <p>Trạng thái: {diagramDiagnostic.status === "valid" ? "Đạt" : diagramDiagnostic.status === "draft_with_warnings" ? "Bản nháp cần rà soát" : "Không hợp lệ"}</p>
+                  <p>Số lần thử lại: {diagramDiagnostic.retryCount || 0} · Fallback: {diagramDiagnostic.fallbackUsed ? "Có" : "Không"}</p>
                   {diagramDiagnostic.validation?.missingComponents.length ? <p>Thiếu: {diagramDiagnostic.validation.missingComponents.join(", ")}</p> : null}
+                  {diagramDiagnostic.validation?.failureReasons.length ? <p>Lý do chặn: {diagramDiagnostic.validation.failureReasons.join(", ")}</p> : null}
                   {diagramDiagnostic.structure ? <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-slate-900 p-3 text-xs text-slate-100">{JSON.stringify(diagramDiagnostic.structure, null, 2)}</pre> : null}
                 </details>
               ) : null}

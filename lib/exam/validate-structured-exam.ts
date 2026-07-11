@@ -70,7 +70,7 @@ export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>
     if (!question.trueFalseItems || question.trueFalseItems.length !== 4) return { ok: false, reason: "invalid_true_false_items" };
   }
 
-  if (repeatedAnswers(mc) || repeatedAnswers(short)) return { ok: false, reason: "repeated_placeholder_answers" };
+  if (!options?.allowPartial && (repeatedAnswers(mc) || repeatedAnswers(short))) return { ok: false, reason: "repeated_placeholder_answers" };
   if (!candidate.teacherOnly || !hasText(candidate.teacherOnly.scoringGuide)) return { ok: false, reason: "missing_teacher_key" };
 
   if (input && isMath12Probability(input)) {

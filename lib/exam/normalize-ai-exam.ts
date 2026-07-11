@@ -26,11 +26,16 @@ function normalizeDifficulty(value: unknown): QuestionDifficulty {
   return ["Nhận biết", "Thông hiểu", "Vận dụng", "Vận dụng cao"].includes(String(value)) ? value as QuestionDifficulty : difficultyFallback;
 }
 
-function normalizeQuestion(value: unknown, part: ExamPartType, index: number): ExamQuestion | null {
+function normalizeBoolean(value: unknown) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") return /^(true|đúng|dung|1)$/i.test(value.trim());
+  return Boolean(value);
+}
+
+function normalizeQuestion(value: unknown, part: ExamPartType, index: number, fallbackTopic = "Nội dung kiểm tra"): ExamQuestion | null {
   if (!isRecord(value)) return null;
   const stem = text(value.stem ?? value.question ?? value.prompt ?? value.content);
-  const answer = text(value.answer ?? value.correctAnswer ?? value.correct_answer);
-  if (!stem || !answer) return null;
+  if (!stem) return null;
 
   const optionsValue = value.options;
   let options: ExamQuestion["options"];
@@ -52,10 +57,15 @@ function normalizeQuestion(value: unknown, part: ExamPartType, index: number): E
         return {
           label,
           text: text(sourceRecord.text ?? sourceRecord.statement ?? sourceRecord.content ?? source),
-          answer: Boolean(sourceRecord.answer ?? sourceRecord.correct ?? sourceRecord.isTrue)
+          answer: normalizeBoolean(sourceRecord.answer ?? sourceRecord.correct ?? sourceRecord.isTrue)
         };
       })
     : undefined;
+  const explicitAnswer = text(value.answer ?? value.correctAnswer ?? value.correct_answer ?? value.shortAnswer ?? value.short_answer);
+  const answer = explicitAnswer || (part === "true_false" && trueFalseItems?.every((item) => item.text)
+    ? trueFalseItems.map((item) => `${item.label} ${item.answer ? "Đúng" : "Sai"}`).join("; ")
+    : "");
+  if (!answer) return null;
 
   return {
     id: text(value.id, `${part}-${index + 1}`),
@@ -68,11 +78,11 @@ function normalizeQuestion(value: unknown, part: ExamPartType, index: number): E
     explanation: text(value.explanation ?? value.scoringNote ?? value.rationale, "Giáo viên rà soát đáp án và cách chấm."),
     score: number(value.score, part === "multiple_choice" ? 0.25 : 1),
     difficulty: normalizeDifficulty(value.difficulty),
-    topic: text(value.topic, "Nội dung kiểm tra")
+    topic: text(value.topic, fallbackTopic)
   };
 }
 
-function normalizeParts(value: unknown): StructuredExam["parts"] {
+function normalizeParts(value: unknown, fallbackTopic: string): StructuredExam["parts"] {
   if (!Array.isArray(value)) return [];
   const normalized = value.map((partValue) => {
     if (!isRecord(partValue)) return null;
@@ -83,7 +93,7 @@ function normalizeParts(value: unknown): StructuredExam["parts"] {
         ? "short_answer"
         : "multiple_choice";
     const questions = Array.isArray(partValue.questions)
-      ? partValue.questions.map((question, index) => normalizeQuestion(question, type, index)).filter((question): question is ExamQuestion => Boolean(question))
+      ? partValue.questions.map((question, index) => normalizeQuestion(question, type, index, fallbackTopic)).filter((question): question is ExamQuestion => Boolean(question))
       : [];
     return {
       type,
@@ -108,20 +118,26 @@ function pickStructuredCandidate(value: unknown): unknown {
 
 function normalizeObjectToStructured(value: unknown, input: ExamInput): StructuredExam | null {
   const candidate = pickStructuredCandidate(value);
+  const directPart: ExamPartType = Number(input.trueFalseCount || 0) > 0 && Number(input.multipleChoiceCount || 0) === 0 && Number(input.shortAnswerCount || 0) === 0
+    ? "true_false"
+    : Number(input.shortAnswerCount || 0) > 0 && Number(input.multipleChoiceCount || 0) === 0 && Number(input.trueFalseCount || 0) === 0
+      ? "short_answer"
+      : "multiple_choice";
   const directQuestions = Array.isArray(candidate)
     ? candidate
-    : isRecord(candidate) && Array.isArray(candidate.questions) ? candidate.questions : null;
+    : isRecord(candidate) && Array.isArray(candidate.questions) ? candidate.questions
+      : isRecord(candidate) && Array.isArray(candidate.items) ? candidate.items : null;
   if (directQuestions) {
-    const questions = directQuestions.map((question, index) => normalizeQuestion(question, "multiple_choice", index)).filter((question): question is ExamQuestion => Boolean(question));
+    const questions = directQuestions.map((question, index) => normalizeQuestion(question, directPart, index, input.topic)).filter((question): question is ExamQuestion => Boolean(question));
     return questions.length ? {
       metadata: { title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade, duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName },
-      parts: [{ type: "multiple_choice", title: "PHẦN I", instruction: "Chọn phương án đúng nhất.", questions }],
+      parts: [{ type: directPart, title: directPart === "multiple_choice" ? "PHẦN I" : directPart === "true_false" ? "PHẦN II" : "PHẦN III", instruction: directPart === "multiple_choice" ? "Chọn phương án đúng nhất." : directPart === "true_false" ? "Chọn Đúng hoặc Sai cho từng ý." : "Trả lời ngắn gọn.", questions }],
       teacherOnly: { scoringGuide: questions.map((question) => `Câu ${question.number}: ${question.answer}`).join("\n"), matrix: "", specification: "", notes: "Nội dung là bản nháp hỗ trợ giáo viên." },
     } : null;
   }
   if (!isRecord(candidate)) return null;
   const metadata = isRecord(candidate.metadata) ? candidate.metadata : candidate;
-  const parts = normalizeParts(candidate.parts ?? candidate.sections);
+  const parts = normalizeParts(candidate.parts ?? candidate.sections, input.topic);
   const teacher = isRecord(candidate.teacherOnly) ? candidate.teacherOnly : isRecord(candidate.teacher) ? candidate.teacher : {};
   return {
     metadata: {

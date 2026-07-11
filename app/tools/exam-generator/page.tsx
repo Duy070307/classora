@@ -26,6 +26,7 @@ import { formatQuestionOptions, isValidMultipleChoice } from "@/lib/question-ban
 import { bankQuestionScope, canonicalSubject, filterStrictBankQuestions, normalizeBankText } from "@/lib/exam/question-bank-filter";
 import { bankSourceCounts, buildSupplementStatus, missingDifficultyInstruction, uniqueBankQuestions, uniqueSupplementQuestions } from "@/lib/exam/bank-supplement";
 import { sanitizeExamStructure } from "@/lib/exam/exam-structure";
+import { isUsableExamCount } from "@/lib/exam/section-generation";
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import { canonicalizeTopic, createGenerationRequestContext } from "@/lib/generation/request-context";
 import { validateTopicItem } from "@/lib/generation/topic-validator";
@@ -241,6 +242,7 @@ export default function ExamGeneratorPage() {
     if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
     setLoading(true);
     setMessage("");
+    setDocument(null);
     try {
     if (useBank && bankSource !== "ai" && input.trueFalseCount === 0 && input.shortAnswerCount === 0 && input.essayCount === 0) {
       const requestedCount = Math.min(Math.max(bankCount || 1, 1), 50);
@@ -389,6 +391,9 @@ export default function ExamGeneratorPage() {
       }
     }
     const structureAudit = sanitizeExamStructure(aiResult.structuredExam, input as unknown as ExamInput & Record<string, unknown>);
+    if (!isUsableExamCount(structureAudit.request.requestedQuestionCount, structureAudit.finalCount)) {
+      throw new Error("SOẠN LAB chưa tạo đủ đề theo cấu trúc yêu cầu. Vui lòng bấm Tạo lại hoặc giảm số câu.");
+    }
     const sectionedBankIds = new Set(sectionedBankQuestions.map((item) => item.id));
     const validatedSectionedBankCount = structureAudit.exam.parts.flatMap((part) => part.questions).filter((question) => sectionedBankIds.has(question.id)).length;
     aiResult.structuredExam = structureAudit.exam;
@@ -468,7 +473,7 @@ export default function ExamGeneratorPage() {
     incrementUsage();
     setMessage(bankWarning || (!structureAudit.complete
       ? `SOẠN LAB chỉ tạo được ${structureAudit.finalCount}/${structureAudit.request.requestedQuestionCount} câu đúng cấu trúc. Một số câu chưa đạt yêu cầu đã được loại. Thầy cô nên bấm Tạo lại hoặc giảm yêu cầu.`
-      : "Đã tạo đề kiểm tra thành công."));
+      : `Đã tạo ${structureAudit.finalCount}/${structureAudit.request.requestedQuestionCount} câu theo đúng cấu trúc.`));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
     }

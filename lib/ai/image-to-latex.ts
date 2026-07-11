@@ -4,7 +4,7 @@ import { GrokRequestError, requestGrokVision } from "@/lib/ai/providers/grok";
 import { OpenAICompatibleError, requestOpenAICompatibleVision } from "@/lib/ai/providers/openai-provider";
 import { generateValidatedTikz, parseGeometryStructure, type GeometryDiagnostic } from "@/lib/ai/geometry-validator";
 import { generateStructuredDiagramTikz } from "@/lib/ai/structured-diagram-tikz";
-import type { DiagramValidation } from "@/lib/ai/diagram-completeness-validator";
+import { validateDiagramCompleteness, type DiagramValidation } from "@/lib/ai/diagram-completeness-validator";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -25,6 +25,9 @@ export type ImageToLatexResult = {
   diagramConfidence?: number;
   detectedStructure?: unknown;
   diagramValidation?: DiagramValidation;
+  diagramStatus?: DiagramValidation["status"];
+  retryCount?: number;
+  fallbackUsed?: boolean;
 };
 
 export class VisionCapabilityError extends Error {
@@ -35,7 +38,19 @@ export class VisionCapabilityError extends Error {
 }
 
 export class DiagramIncompleteError extends Error {
-  constructor() { super("diagram_incomplete"); this.name = "DiagramIncompleteError"; }
+  constructor(
+    public readonly reason: "classification_failed" | "output_too_small" | "validation_incomplete" = "validation_incomplete",
+    public readonly diagnostics?: {
+      diagramType?: string;
+      classificationConfidence?: number;
+      validation?: DiagramValidation;
+      retryCount: number;
+      fallbackUsed: boolean;
+    },
+  ) {
+    super(reason);
+    this.name = "DiagramIncompleteError";
+  }
 }
 
 type GeminiImageResponse = {
@@ -322,44 +337,68 @@ Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hi
   const parsed = extractJson(raw);
   if (wantsTikz) {
     let specializedRaw = raw;
+    let retryCount = 0;
+    let lastValidation: DiagramValidation | undefined;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const specializedStructure = extractJson(specializedRaw);
       const specialized = specializedStructure ? generateStructuredDiagramTikz(specializedStructure) : null;
       if (!specialized) break;
-      if (specialized.validation.valid) {
+      lastValidation = specialized.validation;
+      if (specialized.validation.status !== "invalid") {
+        const isDraft = specialized.validation.status === "draft_with_warnings";
         return {
           type: "tikz", latex: specialized.tikzCode, tikzCode: specialized.tikzCode, standaloneLatex: specialized.standaloneLatex,
-          explanation: "SOẠN LAB đã kiểm tra độ đầy đủ của các thành phần trong hình trước khi tạo TikZ.", confidence: normalizeConfidence(specialized.confidence),
-          warnings: [...(specialized.fallbackUsed ? ["SOẠN LAB đã dùng bố cục dựng lại để giữ đủ cấu trúc hình."] : []), "Bản vẽ là bản nháp TikZ, thầy cô nên rà soát lại trước khi sử dụng."], provider, model,
+          explanation: isDraft
+            ? "SOẠN LAB đã tạo bản nháp TikZ nhưng một số quan hệ hình học chưa được xác nhận."
+            : "SOẠN LAB đã kiểm tra độ đầy đủ của các thành phần trong hình trước khi tạo TikZ.",
+          confidence: normalizeConfidence(specialized.confidence),
+          warnings: [...(specialized.fallbackUsed ? ["SOẠN LAB đã dùng bố cục dựng lại để giữ đủ cấu trúc hình."] : []), ...specialized.validation.warnings, "Bản vẽ là bản nháp TikZ, thầy cô nên rà soát lại trước khi sử dụng."], provider, model,
           diagramType: specialized.diagramType, diagramConfidence: specialized.confidence, detectedStructure: specializedStructure, diagramValidation: specialized.validation,
+          diagramStatus: specialized.validation.status, retryCount, fallbackUsed: specialized.fallbackUsed,
         };
       }
-      if (attempt === 2) throw new DiagramIncompleteError();
+      if (attempt === 2) break;
+      retryCount += 1;
       specializedRaw = await requester.request(`Phân tích lại toàn bộ ảnh. Lần trước thiếu: ${specialized.validation.missingComponents.join(", ")}.
 Detected ${specialized.diagramType}, nhưng cấu trúc/TikZ dự kiến chưa đầy đủ. Hãy trả JSON cấu trúc hoàn chỉnh với mọi lines, points, intersections, rightAngles, angleLabels, axes, ticks, curves, segments, guides và labels nhìn thấy. Không trả TikZ, không markdown fence.`, true);
     }
-    const structure = parseGeometryStructure(raw);
+    const structure = parseGeometryStructure(specializedRaw);
     if (structure) {
       const generated = generateValidatedTikz(structure);
+      const diagramValidation = validateDiagramCompleteness("geometry_diagram", {
+        diagramType: "geometry_diagram",
+        points: structure.points,
+        visibleLabels: structure.visibleLabels,
+        segments: structure.segments,
+      }, generated.tikzCode);
+      lastValidation = diagramValidation;
       const accuracyNotice = generated.diagnostic.valid
         ? "SOẠN LAB đã kiểm tra các quan hệ điểm thẳng hàng và vuông góc phát hiện được. Với hình phức tạp, thầy cô vẫn nên rà soát lại mã TikZ trước khi sử dụng."
         : "Bản vẽ đã được tạo, nhưng một số quan hệ hình học chưa được xác nhận chính xác.";
-      return {
-        type: "tikz",
-        latex: generated.tikzCode,
-        tikzCode: generated.tikzCode,
-        standaloneLatex: generated.standaloneLatex,
-        explanation: accuracyNotice,
-        confidence: generated.diagnostic.valid ? "high" : "low",
-        warnings: [...generated.diagnostic.warnings, "Bản vẽ là bản nháp TikZ, thầy cô nên kiểm tra trước khi dùng chính thức."],
-        provider,
-        model,
-        geometryDiagnostic: generated.diagnostic,
-        geometryStructure: structure,
-      };
+      if (diagramValidation.status !== "invalid") {
+        return {
+          type: "tikz",
+          latex: generated.tikzCode,
+          tikzCode: generated.tikzCode,
+          standaloneLatex: generated.standaloneLatex,
+          explanation: accuracyNotice,
+          confidence: generated.diagnostic.valid && diagramValidation.valid ? "high" : "low",
+          warnings: [...generated.diagnostic.warnings, ...diagramValidation.warnings, "Bản vẽ là bản nháp TikZ, thầy cô nên kiểm tra trước khi dùng chính thức."],
+          provider,
+          model,
+          geometryDiagnostic: generated.diagnostic,
+          geometryStructure: structure,
+          diagramType: "geometry_diagram",
+          diagramConfidence: parsed && typeof parsed.confidence === "number" ? parsed.confidence : 0.65,
+          detectedStructure: structure,
+          diagramValidation,
+          diagramStatus: diagramValidation.status,
+          retryCount,
+          fallbackUsed: false,
+        };
+      }
     }
-    throw new Error("geometry_structure_parse_failed");
-    let extraction = extractTikzFromAIOutput(raw);
+    let extraction = extractTikzFromAIOutput(specializedRaw);
     if (!extraction.ok) {
       const repairPrompt = `Convert the following output into valid TikZ only.
 Return JSON only with this shape:
@@ -376,14 +415,21 @@ Do not put JSON inside LaTeX.
 tikzCode must contain only a complete tikzpicture block.
 
 Provider output to repair:
-${raw.slice(0, 12000)}`;
+${specializedRaw.slice(0, 12000)}`;
       try {
         const repairRaw = await requester.request(repairPrompt, false);
         extraction = extractTikzFromAIOutput(repairRaw);
       } catch { /* Giữ lỗi parse ban đầu để trả thông báo kiểm soát. */ }
     }
     if (!extraction.ok) {
-      throw new Error("geometry_structure_parse_failed");
+      const failedStructure = extractJson(specializedRaw);
+      throw new DiagramIncompleteError(failedStructure ? "output_too_small" : "classification_failed", {
+        diagramType: typeof failedStructure?.diagramType === "string" ? failedStructure.diagramType : undefined,
+        classificationConfidence: typeof failedStructure?.confidence === "number" ? failedStructure.confidence : undefined,
+        validation: lastValidation,
+        retryCount,
+        fallbackUsed: false,
+      });
     }
 
     const patternText = [
@@ -400,7 +446,7 @@ ${raw.slice(0, 12000)}`;
         ok: true,
         tikzCode: preset.tikzCode,
         standaloneLatex: preset.standaloneLatex,
-        warnings: [...preset.warnings, `So?n Lab ?? d?ng b? c?c TikZ g?i ? (${preset.name}) sau khi ki?m tra ${reason}.`],
+        warnings: [...preset.warnings, `SOẠN LAB đã dùng bố cục TikZ gợi ý (${preset.name}) sau khi kiểm tra ${reason}.`],
       };
       return true;
     };
@@ -481,6 +527,23 @@ ${schoolValidation.reasons.join(", ")}`;
       }
     }
 
+    const finalGenericValidation = validateGenericGeometryTikz(extraction.tikzCode);
+    const detectedStructure = extractJson(specializedRaw) || {};
+    const detectedType = String(detectedStructure.diagramType || "geometry_diagram");
+    const normalizedType = ["line_angle_diagram", "coordinate_graph", "function_graph", "geometry_diagram"].includes(detectedType)
+      ? detectedType
+      : "geometry_diagram";
+    const diagramValidation = validateDiagramCompleteness(normalizedType, detectedStructure, extraction.tikzCode);
+    lastValidation = diagramValidation;
+    if (!finalGenericValidation.ok || diagramValidation.status === "invalid") {
+      throw new DiagramIncompleteError(lastValidation.failureReasons.includes("classification_failed") ? "classification_failed" : "output_too_small", {
+        diagramType: normalizedType,
+        classificationConfidence: typeof detectedStructure.confidence === "number" ? detectedStructure.confidence : undefined,
+        validation: lastValidation,
+        retryCount,
+        fallbackUsed: false,
+      });
+    }
     return {
       type: "tikz",
       latex: extraction.tikzCode,
@@ -488,9 +551,16 @@ ${schoolValidation.reasons.join(", ")}`;
       standaloneLatex: extraction.standaloneLatex,
       explanation: typeof parsed?.explanation === "string" ? String(parsed?.explanation).trim() : "",
       confidence: normalizeConfidence(parsed?.confidence),
-      warnings: [...normalizeWarnings(parsed?.warnings), ...extraction.warnings],
+      warnings: [...normalizeWarnings(parsed?.warnings), ...extraction.warnings, ...diagramValidation.warnings, "Bản vẽ là bản nháp TikZ, thầy cô nên rà soát trước khi sử dụng."],
       provider,
       model,
+      diagramType: normalizedType,
+      diagramConfidence: typeof detectedStructure.confidence === "number" ? detectedStructure.confidence : 0.5,
+      detectedStructure,
+      diagramValidation,
+      diagramStatus: diagramValidation.status,
+      retryCount,
+      fallbackUsed: extraction.warnings.some((warning) => /bố cục|gợi ý/i.test(warning)),
     };
   }
 

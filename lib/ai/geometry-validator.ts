@@ -66,8 +66,7 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
   });
   const visibleLabels = (Array.isArray(parsed.visibleLabels) ? parsed.visibleLabels : []).map(cleanLabel).filter(Boolean);
   const pointLabels = points.map((point) => point.label);
-  if (visibleLabels.length !== new Set(visibleLabels).size || pointLabels.length !== new Set(pointLabels).size) return null;
-  const labels = [...new Set(visibleLabels.length ? visibleLabels : pointLabels)];
+  const labels = [...new Set([...visibleLabels, ...pointLabels])];
   if (!labels.length) return null;
   const labelSet = new Set(labels);
 
@@ -108,8 +107,25 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
     const point = cleanLabel(value.point); const first = pair(value.lines[0]); const second = pair(value.lines[1]);
     return point && first && second && labelSet.has(point) && [...first, ...second].every((label) => labelSet.has(label)) ? [{ point, lines: [first, second] as [[string, string], [string, string]] }] : [];
   });
+  const figureType = typeof parsed.figureType === "string" ? parsed.figureType : "unknown";
+  if (figureType === "pyramid" && ["S", "A", "B", "C", "D"].every((label) => labelSet.has(label))) {
+    const defaults: Array<GeometrySegment & { style: "solid" | "dashed" }> = [
+      { from: "S", to: "A", style: "solid" }, { from: "S", to: "B", style: "solid" },
+      { from: "S", to: "C", style: "solid" }, { from: "S", to: "D", style: "solid" },
+      { from: "A", to: "B", style: "solid" }, { from: "B", to: "C", style: "solid" },
+      { from: "A", to: "D", style: "solid" }, { from: "C", to: "D", style: "dashed" },
+    ];
+    const edgeKeys = new Set(segments.map((item) => [item.from, item.to].sort().join("|")));
+    for (const edge of defaults) {
+      const key = [edge.from, edge.to].sort().join("|");
+      if (!edgeKeys.has(key)) { segments.push(edge); edgeKeys.add(key); }
+    }
+    if (labelSet.has("O") && !intersections.some((item) => item.point === "O")) {
+      intersections.push({ point: "O", lines: [["A", "C"], ["B", "D"]] });
+    }
+  }
   return {
-    figureType: typeof parsed.figureType === "string" ? parsed.figureType : "unknown",
+    figureType,
     visualHints: parsed.visualHints && typeof parsed.visualHints === "object" && !Array.isArray(parsed.visualHints) ? parsed.visualHints as GeometryStructure["visualHints"] : {},
     points: labels.map((label) => points.find((point) => point.label === label) || { label }),
     segments: [...new Map(segments.map((item) => [[item.from, item.to].sort().join("|"), item])).values()], pointOnSegment, perpendicularRelations, intersections,
