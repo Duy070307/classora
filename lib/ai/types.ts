@@ -36,6 +36,9 @@ export type AIResponse = {
   requestedCount?: number;
   finalCount?: number;
   isPartial?: boolean;
+  requestedSectionCounts?: { partI: number; partII: number; partIII: number };
+  generatedSectionCounts?: { partI: number; partII: number; partIII: number };
+  duplicateRemovedCount?: number;
 };
 
 export type AIErrorResponse = {

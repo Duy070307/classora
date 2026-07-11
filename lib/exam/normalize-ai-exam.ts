@@ -154,7 +154,7 @@ export function normalizeAIExamOutput(rawText: string, input: ExamInput): Normal
   const value = extraction.value;
   const structuredExam = normalizeObjectToStructured(value, input);
   if (!structuredExam) return { ok: false, reason: "missing_structured_exam", cleanContent: "" };
-  const validation = validateStructuredExam(structuredExam, input);
+  const validation = validateStructuredExam(structuredExam, input, { allowPartial: true });
   if (!validation.ok) {
     const content = isRecord(value) ? text(value.content ?? value.studentContent) : "";
     return { ok: false, reason: validation.reason, cleanContent: looksLikeRawJson(content) ? "" : content };

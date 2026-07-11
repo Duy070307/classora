@@ -35,7 +35,7 @@ function repeatedAnswers(questions: ExamQuestion[]) {
   return new Set(answers).size === 1;
 }
 
-export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>): ExamValidationResult {
+export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>, options?: { allowPartial?: boolean }): ExamValidationResult {
   if (!exam || typeof exam !== "object" || Array.isArray(exam)) return { ok: false, reason: "not_object" };
   const candidate = exam as StructuredExam;
   if (!candidate.metadata || typeof candidate.metadata !== "object") return { ok: false, reason: "missing_metadata" };
@@ -51,9 +51,9 @@ export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>
   const requestedMc = Number(input?.multipleChoiceCount ?? 0);
   const requestedTf = Number(input?.trueFalseCount ?? 0);
   const requestedShort = Number(input?.shortAnswerCount ?? 0);
-  if (requestedMc > 0 && mc.length === 0) return { ok: false, reason: "missing_part_i" };
-  if (requestedTf > 0 && tf.length === 0) return { ok: false, reason: "missing_part_ii" };
-  if (requestedShort > 0 && short.length === 0) return { ok: false, reason: "missing_part_iii" };
+  if (!options?.allowPartial && requestedMc > 0 && mc.length === 0) return { ok: false, reason: "missing_part_i" };
+  if (!options?.allowPartial && requestedTf > 0 && tf.length === 0) return { ok: false, reason: "missing_part_ii" };
+  if (!options?.allowPartial && requestedShort > 0 && short.length === 0) return { ok: false, reason: "missing_part_iii" };
 
   for (const question of [...mc, ...tf, ...short]) {
     if (!isQuestion(question)) return { ok: false, reason: "invalid_question" };
@@ -85,9 +85,9 @@ export function validateStructuredExam(exam: unknown, input?: Partial<ExamInput>
     const positiveMatches = studentText.match(new RegExp(probabilityPositive.source, "gi"))?.length ?? 0;
     if (forbiddenMatches > 0) return { ok: false, reason: "topic_mismatch" };
     if (positiveMatches < Math.max(4, Math.floor((mc.length + tf.length + short.length) / 3))) return { ok: false, reason: "topic_mismatch" };
-    if (mc.length !== Number(input.multipleChoiceCount ?? mc.length)) return { ok: false, reason: "answer_key_invalid" };
-    if (tf.length !== Number(input.trueFalseCount ?? tf.length)) return { ok: false, reason: "answer_key_invalid" };
-    if (short.length !== Number(input.shortAnswerCount ?? short.length)) return { ok: false, reason: "answer_key_invalid" };
+    if (!options?.allowPartial && mc.length !== Number(input.multipleChoiceCount ?? mc.length)) return { ok: false, reason: "answer_key_invalid" };
+    if (!options?.allowPartial && tf.length !== Number(input.trueFalseCount ?? tf.length)) return { ok: false, reason: "answer_key_invalid" };
+    if (!options?.allowPartial && short.length !== Number(input.shortAnswerCount ?? short.length)) return { ok: false, reason: "answer_key_invalid" };
   }
 
   return { ok: true };

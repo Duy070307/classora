@@ -3,6 +3,7 @@ import { normalizeAIExamOutput } from "../lib/exam/normalize-ai-exam";
 import { createGenerationRequestContext } from "../lib/generation/request-context";
 import { validateTopicItem } from "../lib/generation/topic-validator";
 import { buildExamPrompt } from "../lib/ai/prompts";
+import { calculateExamStructure, sanitizeExamStructure } from "../lib/exam/exam-structure";
 import type { ExamInput } from "../lib/types";
 
 const input = { schoolName: "", teacherName: "", subject: "Toán", grade: "12", bookSeries: "Kết nối tri thức", topic: "hàm số", duration: "45 phút", examType: "Trắc nghiệm", examStyle: "Kiểm tra thường", trueFalseCount: 0, shortAnswerCount: 0, examCode: "101", multipleChoiceCount: 10, essayCount: 0, totalScore: 10, level: "Trung bình", recognitionRate: 30, understandingRate: 40, applicationRate: 20, advancedRate: 10, includeAnswers: true, includeRubric: true, includeMatrix: true, includeSpecification: true, extraRequirements: "" } as ExamInput;
@@ -18,10 +19,37 @@ const prompt = buildExamPrompt(input);
 assert.match(prompt, /đủ chính xác 10 câu/i);
 assert.match(prompt, /Nhận biết 3, Thông hiểu 4, Vận dụng 2, Vận dụng cao 1/);
 
+const thptInput = { ...input, examStyle: "THPTQG / tốt nghiệp", multipleChoiceCount: 12, trueFalseCount: 4, shortAnswerCount: 6, totalScore: 10 } as ExamInput;
+assert.deepEqual(calculateExamStructure(thptInput as ExamInput & Record<string, unknown>), { sectionCounts: { partI: 12, partII: 4, partIII: 6 }, requestedQuestionCount: 22, totalScore: 10, difficultyDistribution: { recognition: 30, comprehension: 40, application: 20, highApplication: 10 } });
+const mc = Array.from({ length: 12 }, (_, index) => ({ ...question(index), stem: `Câu hàm số số ${index + 1}: xét biểu thức y=x^3-${index + 1}x.`, correctAnswer: ["A", "B", "C", "D"][index % 4] }));
+const tfSkills = ["đơn điệu của đa thức bậc ba", "tiệm cận của hàm phân thức", "cực trị từ bảng biến thiên", "tương giao giữa đồ thị và đường thẳng"];
+const tf = Array.from({ length: 4 }, (_, index) => ({ id: `tf${index}`, stem: `Xét các khẳng định về ${tfSkills[index]}.`, statements: [0, 1, 2, 3].map((item) => ({ text: `Khẳng định ${item + 1} liên quan đến ${tfSkills[index]}.`, answer: item % 2 === 0 })), answer: `a Đúng; b Sai; c Đúng; d Sai ${index}`, explanation: `Phân tích ${tfSkills[index]} bằng công cụ phù hợp.`, score: 1, difficulty: "Thông hiểu", topic: "hàm số" }));
+const shortSkills = ["cực trị của y=x^4-4x^2", "GTLN của y=-x^2+4x", "tiệm cận của y=(2x+1)/(x-1)", "nghiệm của phương trình logarit", "giao điểm với trục hoành", "hệ số góc tiếp tuyến"];
+const short = Array.from({ length: 6 }, (_, index) => ({ id: `sa${index}`, stem: `Tìm ${shortSkills[index]}.`, answer: `${index + 1}`, explanation: `Thực hiện các bước giải cho ${shortSkills[index]}.`, score: 0.5, difficulty: "Vận dụng", topic: "hàm số" }));
+const fullRaw = JSON.stringify({ metadata: { title: "Đề THPTQG", subject: "Toán", grade: "12" }, sections: [{ type: "multiple_choice", questions: mc }, { type: "true_false", questions: tf }, { type: "short_answer", questions: short }], teacherOnly: { scoringGuide: "Đáp án đủ 22 câu." } });
+const fullParsed = normalizeAIExamOutput(fullRaw, thptInput);
+assert.equal(fullParsed.ok, true);
+if (fullParsed.ok) {
+  const audit = sanitizeExamStructure(fullParsed.structuredExam, thptInput as ExamInput & Record<string, unknown>);
+  assert.deepEqual(audit.generated, { partI: 12, partII: 4, partIII: 6 });
+  assert.equal(audit.finalCount, 22);
+  assert.equal(audit.complete, true);
+  assert.equal(audit.exam.teacherOnly.scoringGuide.split("\n").length, 22);
+  assert.match(audit.exam.parts.find((part) => part.type === "multiple_choice")?.title || "", /CÂU 12/);
+  assert.match(audit.exam.parts.find((part) => part.type === "true_false")?.title || "", /CÂU 4/);
+  assert.match(audit.exam.parts.find((part) => part.type === "short_answer")?.title || "", /CÂU 6/);
+}
+const incompleteRaw = JSON.stringify({ metadata: { title: "Thiếu", subject: "Toán", grade: "12" }, sections: [{ type: "multiple_choice", questions: mc.slice(0, 2) }, { type: "true_false", questions: tf.slice(0, 2) }], teacherOnly: { scoringGuide: "Đáp án tạm." } });
+const incomplete = normalizeAIExamOutput(incompleteRaw, thptInput);
+assert.equal(incomplete.ok, true);
+if (incomplete.ok) assert.deepEqual(sanitizeExamStructure(incomplete.structuredExam, thptInput as ExamInput & Record<string, unknown>).missing, { partI: 10, partII: 2, partIII: 6 });
+const repeatedExam = fullParsed.ok ? { ...fullParsed.structuredExam, parts: fullParsed.structuredExam.parts.map((part) => part.type === "multiple_choice" ? { ...part, questions: part.questions.map((item) => ({ ...item, stem: "Hàm số y=x^3-3x đồng biến trên khoảng nào?" })) } : part) } : null;
+if (repeatedExam) assert.ok(sanitizeExamStructure(repeatedExam, thptInput as ExamInput & Record<string, unknown>).duplicateRemovedCount >= 11);
+
 const mathContext = createGenerationRequestContext({ subject: "Toán", grade: "12", topic: "hàm số", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(mathContext, { content: "Hàm số y=x^3-3x đồng biến trên khoảng nào?", options: { A: "(-∞;-1)", B: "(-1;1)", C: "(1;+∞)", D: "R" }, answer: "A", explanation: "Xét đạo hàm.", topic: "hàm số", subject: "Toán", grade: "12" }).valid, true);
 const thermalContext = createGenerationRequestContext({ subject: "Vật lý", grade: "10", topic: "nhiệt học", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(thermalContext, { content: "Một vật nhận nhiệt lượng 8400 J. Đại lượng nào quyết định độ tăng nhiệt độ?", options: { A: "Khối lượng và nhiệt dung riêng", B: "Điện trở", C: "Từ thông", D: "Tiêu cự" }, answer: "A", explanation: "Áp dụng Q=mcΔt.", topic: "nhiệt học", subject: "Vật lí", grade: "10" }).valid, true);
 const unknownContext = createGenerationRequestContext({ subject: "Vật lí", grade: "10", topic: "chuyển pha nâng cao", questionType: "Trắc nghiệm" }, "exam");
 assert.equal(validateTopicItem(unknownContext, { content: "Trong quá trình nóng chảy, nhiệt độ của chất kết tinh thay đổi thế nào?", options: { A: "Không đổi", B: "Tăng", C: "Giảm", D: "Bằng 0" }, answer: "A", explanation: "Nhiệt cung cấp dùng cho chuyển pha.", topic: "chuyển pha nâng cao", subject: "Vật lí", grade: "10" }).valid, true);
-console.log("Exam count/unknown topics: parser giữ 10 câu qua nhiều sections; Toán hàm số, Vật lí nhiệt và chủ đề giáo viên nhập đều đạt.");
+console.log("Exam structure: 12/4/6 = 22 câu, parser đủ ba phần, missing 10/2/6, chống trùng và chủ đề hàm số/nhiệt đều đạt.");

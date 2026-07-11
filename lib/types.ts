@@ -69,6 +69,9 @@ export type GeneratedDocument = {
     rejectedCount?: number;
     isPartial?: boolean;
     bankQuestionIds?: string[];
+    requestedSectionCounts?: { partI: number; partII: number; partIII: number };
+    generatedSectionCounts?: { partI: number; partII: number; partIII: number };
+    duplicateRemovedCount?: number;
     allowAiSupplement?: boolean;
     questionType?: string;
     requestContext?: import("@/lib/generation/request-context").GenerationRequestContext;

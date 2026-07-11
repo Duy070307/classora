@@ -25,6 +25,7 @@ import { structuredExamToText } from "@/lib/mock-exam-generator";
 import { formatQuestionOptions, isValidMultipleChoice } from "@/lib/question-bank";
 import { bankQuestionScope, canonicalSubject, filterStrictBankQuestions, normalizeBankText } from "@/lib/exam/question-bank-filter";
 import { bankSourceCounts, buildSupplementStatus, missingDifficultyInstruction, uniqueBankQuestions, uniqueSupplementQuestions } from "@/lib/exam/bank-supplement";
+import { sanitizeExamStructure } from "@/lib/exam/exam-structure";
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import { canonicalizeTopic, createGenerationRequestContext } from "@/lib/generation/request-context";
 import { validateTopicItem } from "@/lib/generation/topic-validator";
@@ -210,7 +211,7 @@ export default function ExamGeneratorPage() {
       setDocument(null);
       setMessage("");
     });
-  }, [input.subject, input.grade, input.topic, input.bookSeries, input.examType, input.multipleChoiceCount, input.trueFalseCount, input.shortAnswerCount, input.essayCount, input.extraRequirements, useBank, bankSource, bankCount, bankDifficulty, bankOnly, allowRelatedTopics]);
+  }, [input.subject, input.grade, input.topic, input.bookSeries, input.examType, input.multipleChoiceCount, input.trueFalseCount, input.shortAnswerCount, input.essayCount, input.totalScore, input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate, input.extraRequirements, useBank, bankSource, bankCount, bankDifficulty, bankOnly, allowRelatedTopics]);
 
   useEffect(() => {
     const sampleId = getCurrentSampleId();
@@ -372,7 +373,9 @@ export default function ExamGeneratorPage() {
     }
     const aiResult = await generateToolContent({ tool: "exam", input: input as unknown as Record<string, unknown> });
     if (!aiResult.structuredExam) throw new Error("SOẠN LAB chưa tạo được nội dung phù hợp lúc này. Vui lòng thử lại sau hoặc mô tả chủ đề cụ thể hơn.");
-    const generatedRaw = aiResult.content;
+    const structureAudit = sanitizeExamStructure(aiResult.structuredExam, input as unknown as ExamInput & Record<string, unknown>);
+    aiResult.structuredExam = structureAudit.exam;
+    const generatedRaw = structuredExamToText(structureAudit.exam, input);
     const generated = withSourceAlignmentNote(generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
       .replace(/\nIII\.\s+/i, "\nPHẦN DÀNH CHO GIÁO VIÊN\n\nIII. "), input as unknown as Record<string, unknown>);
@@ -432,17 +435,20 @@ export default function ExamGeneratorPage() {
       grade: input.grade,
       topic: input.topic,
       questionCount: aiResult.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0),
-      requestedCount: aiResult.requestedCount ?? (input.multipleChoiceCount + input.trueFalseCount + input.shortAnswerCount + input.essayCount),
-      finalCount: aiResult.finalCount ?? aiResult.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0),
-      isPartial: aiResult.isPartial ?? false,
+      requestedCount: structureAudit.request.requestedQuestionCount,
+      finalCount: structureAudit.finalCount,
+      isPartial: !structureAudit.complete,
+      requestedSectionCounts: structureAudit.request.sectionCounts,
+      generatedSectionCounts: structureAudit.generated,
+      duplicateRemovedCount: structureAudit.duplicateRemovedCount,
       warnings: [...(aiResult.warnings || []), "Nội dung đã được kiểm tra độ bám chủ đề."],
       questionType: input.examType,
       requestContext: createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowAiSupplement, allowRelatedTopics }, "exam"),
     };
     setDocument(next);
     incrementUsage();
-    setMessage(bankWarning || (aiResult.isPartial
-      ? `SOẠN LAB đã tạo được ${aiResult.finalCount}/${aiResult.requestedCount} câu bám sát chủ đề. Một số câu chưa đạt yêu cầu đã được loại.`
+    setMessage(bankWarning || (!structureAudit.complete
+      ? `SOẠN LAB chỉ tạo được ${structureAudit.finalCount}/${structureAudit.request.requestedQuestionCount} câu đúng cấu trúc. Một số câu chưa đạt yêu cầu đã được loại. Thầy cô nên bấm Tạo lại hoặc giảm yêu cầu.`
       : "Đã tạo đề kiểm tra thành công."));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
@@ -614,7 +620,7 @@ export default function ExamGeneratorPage() {
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
             <div className="tool-tip-card"><p className="font-bold text-blue-800">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>
-            {message ? <p className="text-sm font-medium text-mint">{message}</p> : null}
+            {message ? <p className={`rounded-xl p-2 text-sm font-medium ${document?.generationMeta?.isPartial ? "bg-amber-50 text-amber-800" : "text-mint"}`}>{message}</p> : null}
           </form>
           }
           output={
@@ -625,7 +631,7 @@ export default function ExamGeneratorPage() {
                   <div className="grid gap-1 sm:grid-cols-2"><p><strong>Môn:</strong> {document.generationMeta?.subject || input.subject}</p><p><strong>Lớp:</strong> {document.generationMeta?.grade || input.grade}</p><p><strong>Chủ đề:</strong> {document.generationMeta?.topic || input.topic}</p><p><strong>Độ bám chủ đề:</strong> Đã kiểm tra</p></div>
                   <p className="mt-2 text-xs text-blue-800">SOẠN LAB đã loại các nội dung ngoài chủ đề trước khi hiển thị.</p>
                 </div>
-                {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo kiểm tra chủ đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Số câu hợp lệ: {document.generationMeta?.questionCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
+                {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo cấu trúc đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Phần yêu cầu: I {document.generationMeta?.requestedSectionCounts?.partI ?? input.multipleChoiceCount} · II {document.generationMeta?.requestedSectionCounts?.partII ?? input.trueFalseCount} · III {document.generationMeta?.requestedSectionCounts?.partIII ?? input.shortAnswerCount}</p><p>Phần hợp lệ: I {document.generationMeta?.generatedSectionCounts?.partI ?? 0} · II {document.generationMeta?.generatedSectionCounts?.partII ?? 0} · III {document.generationMeta?.generatedSectionCounts?.partIII ?? 0}</p><p>Tổng: {document.generationMeta?.finalCount ?? document.generationMeta?.questionCount ?? 0}/{document.generationMeta?.requestedCount ?? 0}</p><p>Đã loại trùng: {document.generationMeta?.duplicateRemovedCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />

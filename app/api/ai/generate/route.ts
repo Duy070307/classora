@@ -11,6 +11,7 @@ import { filterStructuredExamByTopic } from "@/lib/generation/topic-validator";
 import { structuredExamToText } from "@/lib/mock-exam-generator";
 import { getCurrentUser } from "@/lib/auth/user";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
+import { calculateExamStructure, sanitizeExamStructure } from "@/lib/exam/exam-structure";
 
 const actions = new Set<AIRefinementAction>([
   "regenerate",
@@ -43,23 +44,31 @@ function validateBody(body: unknown) {
 }
 
 function validateTopicSafeExam(result: AIResponse, input: Record<string, unknown>) {
-  const structural = validateStructuredExam(result.structuredExam, input as unknown as Partial<ExamInput>);
+  const structural = validateStructuredExam(result.structuredExam, input as unknown as Partial<ExamInput>, { allowPartial: true });
   if (!structural.ok || !result.structuredExam) return { ok: false as const, reason: structural.ok ? "empty_exam_content" : structural.reason };
   const context = createGenerationRequestContext(input, "exam");
-  if (!context.topic) return { ok: true as const, result, rejectedCount: 0 };
-  const filtered = filterStructuredExamByTopic(result.structuredExam, context);
+  const filtered = context.topic ? filterStructuredExamByTopic(result.structuredExam, context) : { exam: result.structuredExam, rejected: [], validCount: result.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0) };
   if (!filtered.validCount) return { ok: false as const, reason: "topic_mismatch", rejectedCount: filtered.rejected.length };
   const examInput = input as unknown as ExamInput;
+  const sanitized = sanitizeExamStructure(filtered.exam, input);
+  if (!sanitized.finalCount) return { ok: false as const, reason: "no_valid_questions", rejectedCount: filtered.rejected.length + sanitized.invalidRemovedCount + sanitized.duplicateRemovedCount };
   const safeResult: AIResponse = {
     ...result,
-    structuredExam: filtered.exam,
-    content: structuredExamToText(filtered.exam, examInput),
+    structuredExam: sanitized.exam,
+    content: structuredExamToText(sanitized.exam, examInput),
     warnings: [
       ...(result.warnings || []),
       ...(filtered.rejected.length ? [`Đã loại ${filtered.rejected.length} câu không bám sát chủ đề.`] : []),
+      ...(sanitized.duplicateRemovedCount ? [`Đã loại ${sanitized.duplicateRemovedCount} câu trùng hoặc lặp biểu thức.`] : []),
     ],
+    requestedCount: sanitized.request.requestedQuestionCount,
+    finalCount: sanitized.finalCount,
+    isPartial: !sanitized.complete,
+    requestedSectionCounts: sanitized.request.sectionCounts,
+    generatedSectionCounts: sanitized.generated,
+    duplicateRemovedCount: sanitized.duplicateRemovedCount,
   };
-  return { ok: true as const, result: safeResult, rejectedCount: filtered.rejected.length };
+  return { ok: true as const, result: safeResult, rejectedCount: filtered.rejected.length + sanitized.invalidRemovedCount + sanitized.duplicateRemovedCount };
 }
 
 function mergeSafeExamResults(base: AIResponse, addition: AIResponse, input: Record<string, unknown>): AIResponse {
@@ -81,11 +90,12 @@ function mergeSafeExamResults(base: AIResponse, addition: AIResponse, input: Rec
     parts.push({ ...part, questions: part.questions.slice(0, limits[part.type] || part.questions.length) });
   }
   const structuredExam = { ...base.structuredExam, parts };
-  return { ...addition, structuredExam, content: structuredExamToText(structuredExam, input as unknown as ExamInput), warnings: [...(base.warnings || []), ...(addition.warnings || [])] };
+  const sanitized = sanitizeExamStructure(structuredExam, input);
+  return { ...addition, structuredExam: sanitized.exam, content: structuredExamToText(sanitized.exam, input as unknown as ExamInput), requestedCount: sanitized.request.requestedQuestionCount, finalCount: sanitized.finalCount, isPartial: !sanitized.complete, requestedSectionCounts: sanitized.request.sectionCounts, generatedSectionCounts: sanitized.generated, duplicateRemovedCount: sanitized.duplicateRemovedCount, warnings: [...(base.warnings || []), ...(addition.warnings || []), ...(sanitized.duplicateRemovedCount ? [`Đã loại ${sanitized.duplicateRemovedCount} câu trùng.`] : [])] };
 }
 
 function requestedExamCount(input: Record<string, unknown>) {
-  return Number(input.multipleChoiceCount ?? 0) + Number(input.trueFalseCount ?? 0) + Number(input.shortAnswerCount ?? 0) + Number(input.essayCount ?? 0);
+  return calculateExamStructure(input as Partial<ExamInput> & Record<string, unknown>).requestedQuestionCount;
 }
 
 function examQuestionCount(result: AIResponse | undefined) {
@@ -94,11 +104,14 @@ function examQuestionCount(result: AIResponse | undefined) {
 
 function missingSectionInput(input: Record<string, unknown>, result: AIResponse | undefined) {
   const current = Object.fromEntries((result?.structuredExam?.parts || []).map((part) => [part.type, part.questions.length]));
+  const existingQuestionStems = result?.structuredExam?.parts.flatMap((part) => part.questions.map((question) => question.stem)).slice(0, 40) || [];
   return {
     ...input,
     multipleChoiceCount: Math.max(0, Number(input.multipleChoiceCount ?? 0) - Number(current.multiple_choice ?? 0)),
     trueFalseCount: Math.max(0, Number(input.trueFalseCount ?? 0) - Number(current.true_false ?? 0)),
     shortAnswerCount: Math.max(0, Number(input.shortAnswerCount ?? 0) - Number(current.short_answer ?? 0)),
+    existingQuestionStems,
+    extraRequirements: `${String(input.extraRequirements || "")}\nKhông lặp lại các câu/biểu thức đã có:\n${existingQuestionStems.map((stem, index) => `${index + 1}. ${stem}`).join("\n")}`.trim(),
   };
 }
 
@@ -137,7 +150,7 @@ export async function POST(request: Request) {
       if (isExam) {
         const requested = requestedExamCount(validated.input);
         let checked = validateTopicSafeExam(result, validated.input);
-        if (checked.ok && checked.rejectedCount === 0 && checked.result.content.trim() && examQuestionCount(checked.result) >= requested) {
+        if (checked.ok && checked.result.content.trim() && checked.result.structuredExam && sanitizeExamStructure(checked.result.structuredExam, validated.input).complete) {
           return NextResponse.json({ ...publicAIResult(checked.result), warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
         }
         let accumulated = checked.ok ? checked.result : undefined;

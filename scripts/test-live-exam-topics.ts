@@ -12,17 +12,18 @@ for (const file of [".env.local", ".env"]) {
 
 const base = { schoolName: "", teacherName: "", bookSeries: "Kết nối tri thức", duration: "45 phút", examType: "Trắc nghiệm", examStyle: "Kiểm tra thường", trueFalseCount: 0, shortAnswerCount: 0, essayCount: 0, examCode: "101", multipleChoiceCount: 10, totalScore: 10, level: "Trung bình", recognitionRate: 30, understandingRate: 40, applicationRate: 20, advancedRate: 10, includeAnswers: true, includeRubric: true, includeMatrix: true, includeSpecification: true, extraRequirements: "" };
 
-async function runCase(subject: string, grade: string, topic: string) {
-  const input = { ...base, subject, grade, topic };
+async function runCase(subject: string, grade: string, topic: string, counts = { multipleChoiceCount: 10, trueFalseCount: 0, shortAnswerCount: 0 }) {
+  const input = { ...base, ...counts, subject, grade, topic, examStyle: counts.trueFalseCount || counts.shortAnswerCount ? "THPTQG / tốt nghiệp" : base.examStyle };
   const result = await openAIProvider.generate({ tool: "exam", input, prompt: buildExamPrompt(input) });
   const count = result.structuredExam?.parts.reduce((sum, part) => sum + part.questions.length, 0) ?? 0;
-  if (count < 8) throw new Error(`${subject} ${topic}: insufficient_count_${count}`);
-  console.log(`${subject} ${grade} ${topic}: ${count}/10 câu có cấu trúc.`);
+  const expected = counts.multipleChoiceCount + counts.trueFalseCount + counts.shortAnswerCount;
+  if (count < Math.ceil(expected * 0.8)) throw new Error(`${subject} ${topic}: insufficient_count_${count}`);
+  console.log(`${subject} ${grade} ${topic}: ${count}/${expected} câu có cấu trúc.`);
 }
 
 async function main() {
   if (!process.env.OPENAI_API_KEY) return console.log("SKIP: chưa cấu hình khóa máy chủ.");
-  await runCase("Toán", "12", "hàm số");
+  await runCase("Toán", "12", "hàm số", { multipleChoiceCount: 12, trueFalseCount: 4, shortAnswerCount: 6 });
   await runCase("Vật lí", "10", "nhiệt học");
 }
 
