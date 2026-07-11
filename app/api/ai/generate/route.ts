@@ -84,6 +84,24 @@ function mergeSafeExamResults(base: AIResponse, addition: AIResponse, input: Rec
   return { ...addition, structuredExam, content: structuredExamToText(structuredExam, input as unknown as ExamInput), warnings: [...(base.warnings || []), ...(addition.warnings || [])] };
 }
 
+function requestedExamCount(input: Record<string, unknown>) {
+  return Number(input.multipleChoiceCount ?? 0) + Number(input.trueFalseCount ?? 0) + Number(input.shortAnswerCount ?? 0) + Number(input.essayCount ?? 0);
+}
+
+function examQuestionCount(result: AIResponse | undefined) {
+  return result?.structuredExam?.parts.reduce((sum, part) => sum + part.questions.length, 0) ?? 0;
+}
+
+function missingSectionInput(input: Record<string, unknown>, result: AIResponse | undefined) {
+  const current = Object.fromEntries((result?.structuredExam?.parts || []).map((part) => [part.type, part.questions.length]));
+  return {
+    ...input,
+    multipleChoiceCount: Math.max(0, Number(input.multipleChoiceCount ?? 0) - Number(current.multiple_choice ?? 0)),
+    trueFalseCount: Math.max(0, Number(input.trueFalseCount ?? 0) - Number(current.true_false ?? 0)),
+    shortAnswerCount: Math.max(0, Number(input.shortAnswerCount ?? 0) - Number(current.short_answer ?? 0)),
+  };
+}
+
 function publicAIResult(result: AIResponse) {
   const safe = { ...result } as Partial<AIResponse>;
   delete safe.provider;
@@ -117,29 +135,34 @@ export async function POST(request: Request) {
     try {
       const result = await provider.generate({ ...validated, prompt });
       if (isExam) {
+        const requested = requestedExamCount(validated.input);
         let checked = validateTopicSafeExam(result, validated.input);
-        if (checked.ok && checked.rejectedCount === 0 && checked.result.content.trim()) {
+        if (checked.ok && checked.rejectedCount === 0 && checked.result.content.trim() && examQuestionCount(checked.result) >= requested) {
           return NextResponse.json({ ...publicAIResult(checked.result), warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
         }
         let accumulated = checked.ok ? checked.result : undefined;
         let rejectionReason = checked.ok ? `${checked.rejectedCount} câu chưa đủ độ bám chủ đề` : checked.reason;
         for (let retry = 1; retry <= 2; retry += 1) {
-          const repairPrompt = `${prompt}
+          const missingInput = missingSectionInput(validated.input, accumulated);
+          const missing = Math.max(0, requested - examQuestionCount(accumulated));
+          const repairPrompt = `${buildPrompt(validated.tool, missingInput, validated.action, validated.currentContent)}
 
-Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejectionReason}. Hãy tạo lại chỉ thuộc chủ đề "${String(validated.input.topic || "")}", đúng môn ${String(validated.input.subject || "")}, lớp ${String(validated.input.grade || "")}. Không dùng khái niệm từ chương hoặc môn khác. Trả về đúng JSON schema, không markdown fence.`;
+Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejectionReason}. Hãy tạo đúng ${missing} câu còn thiếu, chỉ thuộc chủ đề "${String(validated.input.topic || "")}", đúng môn ${String(validated.input.subject || "")}, lớp ${String(validated.input.grade || "")}. Giữ nguyên yêu cầu giáo viên, không đổi chương, không lặp cách hỏi trước và không tạo câu meta/chung chung. Trả về đúng JSON schema, không markdown fence.`;
           try {
-            const repaired = await provider.generate({ ...validated, prompt: repairPrompt });
-            checked = validateTopicSafeExam(repaired, validated.input);
+            const repaired = await provider.generate({ ...validated, input: missingInput, prompt: repairPrompt });
+            checked = validateTopicSafeExam(repaired, missingInput);
             if (checked.ok && checked.result.content.trim()) {
               accumulated = accumulated ? mergeSafeExamResults(accumulated, checked.result, validated.input) : checked.result;
-              const requested = Number(validated.input.multipleChoiceCount ?? 0) + Number(validated.input.trueFalseCount ?? 0) + Number(validated.input.shortAnswerCount ?? 0);
-              const accumulatedCount = accumulated.structuredExam?.parts.reduce((sum, part) => sum + part.questions.length, 0) ?? 0;
+              const accumulatedCount = examQuestionCount(accumulated);
               if (accumulatedCount < requested && retry < 2) {
                 rejectionReason = `còn thiếu ${requested - accumulatedCount} câu hợp lệ`;
                 continue;
               }
               return NextResponse.json({
                 ...publicAIResult(accumulated),
+                requestedCount: requested,
+                finalCount: accumulatedCount,
+                isPartial: accumulatedCount < requested,
                 warnings: [...(accumulated.warnings || []), accumulatedCount < requested || checked.rejectedCount ? "Kết quả được giới hạn để bảo toàn độ bám chủ đề." : "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."],
               });
             }
@@ -147,6 +170,10 @@ Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejection
           } catch {
             rejectionReason = "lần tạo lại không hoàn tất";
           }
+        }
+        if (accumulated && examQuestionCount(accumulated) > 0) {
+          const finalCount = examQuestionCount(accumulated);
+          return NextResponse.json({ ...publicAIResult(accumulated), requestedCount: requested, finalCount, isPartial: finalCount < requested, warnings: [...(accumulated.warnings || []), `SOẠN LAB đã tạo được ${finalCount}/${requested} câu bám sát chủ đề. Một số câu chưa đạt yêu cầu đã được loại.`] });
         }
         return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được nội dung phù hợp lúc này. Vui lòng thử lại sau hoặc mô tả chủ đề cụ thể hơn." }, { status: 422 });
       }

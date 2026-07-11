@@ -25,7 +25,10 @@ const genericPlaceholderPatterns = [
 ];
 
 function termPresent(text: string, term: string) {
-  return searchText(text).includes(searchText(term));
+  const haystack = searchText(text);
+  const needle = searchText(term);
+  if (needle.length <= 3 && /^[a-z0-9]+$/.test(needle)) return new RegExp(`(?:^|\\s)${needle}(?:$|\\s|[.,;:!?=()])`, "i").test(haystack);
+  return haystack.includes(needle);
 }
 
 export function validateTopicItem(context: GenerationRequestContext, item: TopicValidationItem) {
@@ -71,7 +74,17 @@ export function validateTopicItem(context: GenerationRequestContext, item: Topic
   } else if (item.topic && canonicalizeTopic(item.topic) === context.canonicalTopic) {
     score += 0.15;
   } else {
-    reasons.push("Không xác định được liên hệ với chủ đề yêu cầu");
+    const teacherTerms = searchText(context.topic).split(/\s+/).filter((term) => term.length >= 3);
+    const matchedTerms = teacherTerms.filter((term) => searchText(combined).includes(term));
+    const obviouslyUnrelated = context.subject === "Vật lí"
+      ? ["xác suất", "đạo hàm", "ester", "pH", "phản ứng hóa học"].filter((term) => termPresent(combined, term))
+      : context.subject === "Toán"
+        ? ["định luật newton", "định luật ohm", "phản ứng hóa học", "nhiệt lượng"].filter((term) => termPresent(combined, term))
+        : [];
+    if (matchedTerms.length) score += Math.min(0.25, matchedTerms.length * 0.12);
+    else if (obviouslyUnrelated.length) reasons.push(`Nội dung rõ ràng ngoài môn/chủ đề: ${obviouslyUnrelated.join(", ")}`);
+    else if (item.topic && canonicalizeTopic(item.topic) === context.canonicalTopic) score += 0.15;
+    else reasons.push("Không xác định được liên hệ với chủ đề giáo viên nhập");
   }
 
   if (/trắc nghiệm/i.test(context.questionType)) {

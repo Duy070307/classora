@@ -432,13 +432,18 @@ export default function ExamGeneratorPage() {
       grade: input.grade,
       topic: input.topic,
       questionCount: aiResult.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0),
+      requestedCount: aiResult.requestedCount ?? (input.multipleChoiceCount + input.trueFalseCount + input.shortAnswerCount + input.essayCount),
+      finalCount: aiResult.finalCount ?? aiResult.structuredExam.parts.reduce((sum, part) => sum + part.questions.length, 0),
+      isPartial: aiResult.isPartial ?? false,
       warnings: [...(aiResult.warnings || []), "Nội dung đã được kiểm tra độ bám chủ đề."],
       questionType: input.examType,
       requestContext: createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowAiSupplement, allowRelatedTopics }, "exam"),
     };
     setDocument(next);
     incrementUsage();
-    setMessage(bankWarning || "Đã tạo đề kiểm tra thành công.");
+    setMessage(bankWarning || (aiResult.isPartial
+      ? `SOẠN LAB đã tạo được ${aiResult.finalCount}/${aiResult.requestedCount} câu bám sát chủ đề. Một số câu chưa đạt yêu cầu đã được loại.`
+      : "Đã tạo đề kiểm tra thành công."));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
     }

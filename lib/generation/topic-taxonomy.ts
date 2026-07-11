@@ -15,6 +15,13 @@ export type TopicNode = {
 const crossSubject = ["xác suất", "phương trình bậc hai", "phản ứng hóa học"];
 
 export const topicTaxonomy: TopicNode[] = [
+  ...["10", "11", "12"].map((grade) => ({
+    subject: "Vật lí", grade, topic: "Nhiệt học",
+    aliases: ["nhiệt", "vật lí nhiệt", "nhiệt lượng", "nhiệt độ", "nội năng", "truyền nhiệt", "cân bằng nhiệt", "khí lí tưởng", "phương trình trạng thái khí lí tưởng", "định luật Boyle", "định luật Charles", "định luật Gay-Lussac", "nguyên lí I nhiệt động lực học", "nhiệt dung riêng", "sự nở vì nhiệt", "biến đổi trạng thái", "đẳng nhiệt", "đẳng áp", "đẳng tích"],
+    allowedTerms: ["nhiệt độ", "nhiệt lượng", "nội năng", "truyền nhiệt", "cân bằng nhiệt", "khối lượng", "nhiệt dung riêng", "Q = mcΔt", "khí lí tưởng", "áp suất", "thể tích", "nhiệt độ tuyệt đối", "pV = nRT", "đẳng nhiệt", "đẳng áp", "đẳng tích", "nguyên lí I nhiệt động lực học"],
+    forbiddenTerms: ["định luật newton", "từ trường", "cảm ứng điện từ", "dao động điều hòa", "sóng cơ", "giao thoa ánh sáng", "hạt nhân nguyên tử", "xác suất", "đạo hàm", "ester", "pH"],
+  })),
+  { subject: "Toán", grade: "12", topic: "Hàm số", aliases: ["khảo sát hàm số", "tính đơn điệu", "cực trị", "giá trị lớn nhất nhỏ nhất", "tiệm cận", "đồ thị hàm số", "đạo hàm và hàm số", "hàm số bậc nhất", "hàm số bậc hai", "hàm số mũ", "hàm số logarit"], allowedTerms: ["hàm số", "tập xác định", "đạo hàm", "đồng biến", "nghịch biến", "cực trị", "bảng biến thiên", "tiệm cận", "đồ thị", "tương giao", "giá trị lớn nhất", "giá trị nhỏ nhất", "GTLN", "GTNN"], forbiddenTerms: ["xác suất", "hình học không gian", "số phức", "ester", "pH", "định luật newton", "định luật ohm"] },
   { subject: "Vật lí", grade: "10", topic: "Chuyển động thẳng", allowedTerms: ["quãng đường", "vận tốc", "tốc độ", "chuyển động thẳng"], forbiddenTerms: ["điện trường", "phản ứng hóa học", "xác suất"] },
   { subject: "Vật lí", grade: "10", topic: "Gia tốc", allowedTerms: ["gia tốc", "vận tốc", "chuyển động biến đổi"], forbiddenTerms: ["điện trường", "quang học", "phản ứng hóa học"] },
   { subject: "Vật lí", grade: "10", topic: "Ba định luật Newton", aliases: ["định luật Newton", "dinh luat newton"], subtopics: ["Định luật I Newton", "Định luật II Newton", "Định luật III Newton"], allowedTerms: ["quán tính", "hợp lực", "gia tốc", "khối lượng", "lực và phản lực", "F = ma", "newton"], relatedTerms: ["lực", "ma sát"], forbiddenTerms: ["công và năng lượng", "điện trường", "dòng điện", "quang học", "phản ứng hóa học", "xác suất"] },

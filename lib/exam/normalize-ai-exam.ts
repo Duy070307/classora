@@ -74,7 +74,7 @@ function normalizeQuestion(value: unknown, part: ExamPartType, index: number): E
 
 function normalizeParts(value: unknown): StructuredExam["parts"] {
   if (!Array.isArray(value)) return [];
-  return value.map((partValue) => {
+  const normalized = value.map((partValue) => {
     if (!isRecord(partValue)) return null;
     const rawType = text(partValue.type);
     const type: ExamPartType = rawType === "true_false" || /II/i.test(text(partValue.title))
@@ -92,6 +92,13 @@ function normalizeParts(value: unknown): StructuredExam["parts"] {
       questions
     };
   }).filter((part): part is StructuredExam["parts"][number] => Boolean(part));
+  const merged = new Map<ExamPartType, StructuredExam["parts"][number]>();
+  for (const part of normalized) {
+    const existing = merged.get(part.type);
+    if (!existing) merged.set(part.type, part);
+    else existing.questions.push(...part.questions.map((question, index) => ({ ...question, number: existing.questions.length + index + 1 })));
+  }
+  return [...merged.values()];
 }
 
 function pickStructuredCandidate(value: unknown): unknown {
@@ -101,6 +108,17 @@ function pickStructuredCandidate(value: unknown): unknown {
 
 function normalizeObjectToStructured(value: unknown, input: ExamInput): StructuredExam | null {
   const candidate = pickStructuredCandidate(value);
+  const directQuestions = Array.isArray(candidate)
+    ? candidate
+    : isRecord(candidate) && Array.isArray(candidate.questions) ? candidate.questions : null;
+  if (directQuestions) {
+    const questions = directQuestions.map((question, index) => normalizeQuestion(question, "multiple_choice", index)).filter((question): question is ExamQuestion => Boolean(question));
+    return questions.length ? {
+      metadata: { title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade, duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName },
+      parts: [{ type: "multiple_choice", title: "PHẦN I", instruction: "Chọn phương án đúng nhất.", questions }],
+      teacherOnly: { scoringGuide: questions.map((question) => `Câu ${question.number}: ${question.answer}`).join("\n"), matrix: "", specification: "", notes: "Nội dung là bản nháp hỗ trợ giáo viên." },
+    } : null;
+  }
   if (!isRecord(candidate)) return null;
   const metadata = isRecord(candidate.metadata) ? candidate.metadata : candidate;
   const parts = normalizeParts(candidate.parts ?? candidate.sections);

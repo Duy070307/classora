@@ -78,6 +78,17 @@ ${baseRules}`;
 }
 
 export function buildExamPrompt(input: unknown) {
+  const examInput = input && typeof input === "object" ? input as Record<string, unknown> : {};
+  const requestedCount = Number(examInput.multipleChoiceCount ?? 0) + Number(examInput.trueFalseCount ?? 0) + Number(examInput.shortAnswerCount ?? 0) + Number(examInput.essayCount ?? 0);
+  const rates = [Number(examInput.recognitionRate ?? 30), Number(examInput.understandingRate ?? 40), Number(examInput.applicationRate ?? 20), Number(examInput.advancedRate ?? 10)];
+  const rateTotal = rates.reduce((sum, value) => sum + Math.max(0, value), 0) || 100;
+  const rawTargets = rates.map((value) => requestedCount * Math.max(0, value) / rateTotal);
+  const targets = rawTargets.map(Math.floor);
+  for (let remainder = requestedCount - targets.reduce((sum, value) => sum + value, 0); remainder > 0; remainder -= 1) {
+    const index = rawTargets.map((value, itemIndex) => ({ itemIndex, fraction: value - targets[itemIndex] })).sort((a, b) => b.fraction - a.fraction)[0].itemIndex;
+    targets[index] += 1;
+    rawTargets[index] = targets[index];
+  }
   return prompt(
     "So?n ?? ki?m tra theo ??c tr?ng m?n h?c",
     input,
@@ -169,6 +180,10 @@ Schema b?t bu?c:
 }
 
 Y?u c?u ri?ng:
+- Bạn phải tạo đủ chính xác ${requestedCount} câu hỏi theo số lượng từng phần trong dữ liệu đầu vào. Không được tự rút gọn còn 1–2 câu.
+- Phân bố mức độ sau khi chuẩn hóa và làm tròn phải có tổng đúng ${requestedCount}: Nhận biết ${targets[0]}, Thông hiểu ${targets[1]}, Vận dụng ${targets[2]}, Vận dụng cao ${targets[3]}.
+- Mỗi câu phải đúng môn ${String(examInput.subject || "")}, lớp ${String(examInput.grade || "")}, chủ đề “${String(examInput.topic || "")}”. Nếu chủ đề chưa có trong danh mục, bám sát nguyên văn chủ đề giáo viên nhập và không tự đổi sang chương khác.
+- Không tạo câu hỏi meta/chung chung kiểu “kiến thức nào thuộc chủ đề”; phải dùng dữ kiện hoặc khái niệm cụ thể.
 - Mỗi câu hỏi phải tự khai báo thêm các trường kiểm tra: "subject", "grade", "topic", "relevanceReason", "confidence" (high/medium/low) và "conceptsUsed" (mảng khái niệm). Các trường này phục vụ kiểm tra nội bộ; nội dung thực tế của câu hỏi vẫn nằm trong stem/options/answer/explanation.
 - T?ch tuy?t ??i ?? h?c sinh v? ??p ?n gi?o vi?n: kh?ng ??a ??p ?n/thang ?i?m v?o stem/options.
 - N?u l? To?n 12 THPTQG: PH?N I c? 12 c?u A/B/C/D, PH?N II c? 4 nh?m ??ng/sai v?i a,b,c,d, PH?N III c? 6 c?u tr? l?i ng?n, tr? khi input y?u c?u s? kh?c.

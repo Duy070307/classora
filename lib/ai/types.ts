@@ -33,6 +33,9 @@ export type AIResponse = {
   providerRequested?: AIProviderName;
   retryCount?: number;
   providerFallbackReason?: string;
+  requestedCount?: number;
+  finalCount?: number;
+  isPartial?: boolean;
 };
 
 export type AIErrorResponse = {

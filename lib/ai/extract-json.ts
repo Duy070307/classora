@@ -23,8 +23,12 @@ function extractFenced(text: string) {
 }
 
 function extractBalancedObject(text: string) {
-  const start = text.indexOf("{");
+  const objectStart = text.indexOf("{");
+  const arrayStart = text.indexOf("[");
+  const start = objectStart < 0 ? arrayStart : arrayStart < 0 ? objectStart : Math.min(objectStart, arrayStart);
   if (start < 0) return "";
+  const opening = text[start];
+  const closing = opening === "[" ? "]" : "}";
   let depth = 0;
   let inString = false;
   let escaped = false;
@@ -43,8 +47,8 @@ function extractBalancedObject(text: string) {
       continue;
     }
     if (inString) continue;
-    if (char === "{") depth += 1;
-    if (char === "}") depth -= 1;
+    if (char === opening) depth += 1;
+    if (char === closing) depth -= 1;
     if (depth === 0) return text.slice(start, index + 1);
   }
   return "";
