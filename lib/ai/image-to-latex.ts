@@ -2,6 +2,7 @@ import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
 import { getGeometryPreset, isKnownSchoolDiagramPattern, validateGenericGeometryTikz, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
 import { GrokRequestError, requestGrokVision } from "@/lib/ai/providers/grok";
 import { OpenAICompatibleError, requestOpenAICompatibleVision } from "@/lib/ai/providers/openai-provider";
+import { generateValidatedTikz, parseGeometryStructure, type GeometryDiagnostic } from "@/lib/ai/geometry-validator";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -16,6 +17,7 @@ export type ImageToLatexResult = {
   warnings?: string[];
   provider: "openai" | "gemini" | "grok";
   model: string;
+  geometryDiagnostic?: GeometryDiagnostic;
 };
 
 export class VisionCapabilityError extends Error {
@@ -214,7 +216,7 @@ export async function generateLatexFromImage({
   const requester = createVisionRequester(imageBase64, mimeType);
   const { provider, model } = requester;
   const wantsTikz = mode === "geometry";
-  const prompt = wantsTikz ? `Bạn là trợ lý vẽ lại hình học bằng TikZ/LaTeX cho giáo viên Việt Nam.
+  const legacyPrompt = wantsTikz ? `Bạn là trợ lý vẽ lại hình học bằng TikZ/LaTeX cho giáo viên Việt Nam.
 
 Nhiệm vụ:
 - Phân tích ảnh như một hình vẽ hình học đã được cắt gọn.
@@ -273,10 +275,49 @@ Trả về đúng JSON:
   "warnings": ["cảnh báo nếu có"]
 }`;
 
+  const structurePrompt = `Phân tích ảnh hình học đã cắt gọn và chỉ trả về JSON cấu trúc, không tạo TikZ, không giải bài toán.
+Ưu tiên tính đúng đắn hình học hơn độ giống trực quan.
+Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi tên, không thêm điểm.
+Chỉ ghi quan hệ vuông góc khi có ký hiệu vuông góc nhìn thấy rõ; nếu mơ hồ, đặt certain=false và thêm warning.
+Giữ đúng nét solid/dashed của từng đoạn nhìn thấy. Không suy diễn cạnh ẩn.
+
+Trả về JSON theo đúng dạng:
+{
+  "points": [{"label":"A","approximatePosition":"left|right|top|bottom|center"}],
+  "segments": [{"from":"A","to":"B","style":"solid|dashed"}],
+  "pointOnSegment": [{"point":"I","segment":["B","C"],"between":true}],
+  "perpendicularRelations": [{"segment1":["A","I"],"segment2":["B","C"],"vertex":"I","certain":true}],
+  "parallelRelations": [],
+  "equalLengthRelations": [],
+  "visibleLabels": ["A","B","C"],
+  "warnings": []
+}
+Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hiện quan hệ đó.`;
+  const prompt = wantsTikz ? structurePrompt : legacyPrompt;
   const raw = await requester.request(prompt, true);
 
   const parsed = extractJson(raw);
   if (wantsTikz) {
+    const structure = parseGeometryStructure(raw);
+    if (structure) {
+      const generated = generateValidatedTikz(structure);
+      const accuracyNotice = generated.diagnostic.valid
+        ? "SOẠN LAB đã kiểm tra các quan hệ điểm thẳng hàng và vuông góc phát hiện được. Với hình phức tạp, thầy cô vẫn nên rà soát lại mã TikZ trước khi sử dụng."
+        : "Bản vẽ đã được tạo, nhưng một số quan hệ hình học chưa được xác nhận chính xác.";
+      return {
+        type: "tikz",
+        latex: generated.tikzCode,
+        tikzCode: generated.tikzCode,
+        standaloneLatex: generated.standaloneLatex,
+        explanation: accuracyNotice,
+        confidence: generated.diagnostic.valid ? "high" : "low",
+        warnings: generated.diagnostic.warnings,
+        provider,
+        model,
+        geometryDiagnostic: generated.diagnostic,
+      };
+    }
+    throw new Error("geometry_structure_parse_failed");
     let extraction = extractTikzFromAIOutput(raw);
     if (!extraction.ok) {
       const repairPrompt = `Convert the following output into valid TikZ only.
@@ -301,14 +342,14 @@ ${raw.slice(0, 12000)}`;
       } catch { /* Giữ lỗi parse ban đầu để trả thông báo kiểm soát. */ }
     }
     if (!extraction.ok) {
-      throw new Error(extraction.error);
+      throw new Error("geometry_structure_parse_failed");
     }
 
     const patternText = [
       raw,
       extraction.tikzCode,
-      typeof parsed?.diagramType === "string" ? parsed.diagramType : "",
-      typeof parsed?.explanation === "string" ? parsed.explanation : "",
+      typeof parsed?.diagramType === "string" ? parsed?.diagramType : "",
+      typeof parsed?.explanation === "string" ? parsed?.explanation : "",
     ].join("\n");
 
     const applyPresetIfAvailable = (reason: string) => {
@@ -404,7 +445,7 @@ ${schoolValidation.reasons.join(", ")}`;
       latex: extraction.tikzCode,
       tikzCode: extraction.tikzCode,
       standaloneLatex: extraction.standaloneLatex,
-      explanation: typeof parsed?.explanation === "string" ? parsed.explanation.trim() : "",
+      explanation: typeof parsed?.explanation === "string" ? String(parsed?.explanation).trim() : "",
       confidence: normalizeConfidence(parsed?.confidence),
       warnings: [...normalizeWarnings(parsed?.warnings), ...extraction.warnings],
       provider,

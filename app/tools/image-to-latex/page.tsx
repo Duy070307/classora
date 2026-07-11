@@ -12,6 +12,14 @@ import { saveRecentTool } from "@/lib/recent-tools";
 
 type Mode = "auto" | "formula" | "geometry";
 
+type GeometryDiagnosticUi = {
+  labels: string[];
+  pointOnSegment: Array<{ relation: string; passed: boolean }>;
+  perpendicular: Array<{ relation: string; passed: boolean }>;
+  warnings: string[];
+  valid: boolean;
+};
+
 type ApiResult = {
   ok: true;
   type?: "latex" | "tikz";
@@ -22,6 +30,7 @@ type ApiResult = {
   explanation?: string;
   confidence?: "high" | "medium" | "low";
   warnings?: string[];
+  geometryDiagnostic?: GeometryDiagnosticUi;
 } | {
   ok: false;
   error: string;
@@ -53,6 +62,7 @@ export default function ImageToLatexPage() {
   const [explanation, setExplanation] = useState("");
   const [warnings, setWarnings] = useState<string[]>([]);
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
+  const [geometryDiagnostic, setGeometryDiagnostic] = useState<GeometryDiagnosticUi>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -141,6 +151,7 @@ export default function ImageToLatexPage() {
       setExplanation(result.explanation || "");
       setWarnings(result.warnings || []);
       setConfidence(result.confidence || "medium");
+      setGeometryDiagnostic(result.geometryDiagnostic);
       saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
       showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
     } catch {
@@ -167,6 +178,7 @@ export default function ImageToLatexPage() {
     setExplanation("");
     setWarnings([]);
     setConfidence("");
+    setGeometryDiagnostic(undefined);
     setError("");
     setMessage("");
   }
@@ -418,6 +430,17 @@ export default function ImageToLatexPage() {
                     </ul>
                   ) : null}
                 </div>
+              ) : null}
+
+              {geometryDiagnostic ? (
+                <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                  <summary className="cursor-pointer font-bold text-slate-900">Kiểm tra quan hệ hình học</summary>
+                  <p className="mt-3"><span className="font-semibold">Nhãn phát hiện:</span> {geometryDiagnostic.labels.join(", ")}</p>
+                  {[...geometryDiagnostic.pointOnSegment, ...geometryDiagnostic.perpendicular].map((item) => (
+                    <p key={item.relation} className="mt-1">{item.passed ? "✓" : "✕"} {item.relation}</p>
+                  ))}
+                  {geometryDiagnostic.warnings.map((warning) => <p key={warning} className="mt-1 text-amber-700">• {warning}</p>)}
+                </details>
               ) : null}
 
               <div>

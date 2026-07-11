@@ -6,6 +6,8 @@ export type TikzExtractionResult = {
 } | {
   ok: false;
   error: string;
+  tikzCode: string;
+  standaloneLatex: string;
   warnings: string[];
 };
 
@@ -110,5 +112,5 @@ export function extractTikzFromAIOutput(raw: string): TikzExtractionResult {
     }
   }
 
-  return { ok: false, error: invalidTikzMessage, warnings: [invalidTikzMessage] };
+  return { ok: false, error: invalidTikzMessage, tikzCode: "", standaloneLatex: "", warnings: [invalidTikzMessage] };
 }

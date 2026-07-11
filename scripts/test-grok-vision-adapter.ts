@@ -15,9 +15,9 @@ globalThis.fetch = async (_input, init) => {
   const body = JSON.parse(String(init?.body || "{}")) as Record<string, unknown>;
   requests.push(body);
   const messages = body.messages as Array<{ content?: Array<{ type?: string }> }>;
-  const isGeometry = JSON.stringify(messages).includes("tikzCode");
+  const isGeometry = JSON.stringify(messages).includes("pointOnSegment");
   const content = isGeometry
-    ? JSON.stringify({ mode: "geometry", tikz: "\\begin{tikzpicture}\\draw (0,0)--(1,1);\\end{tikzpicture}", standalone: "\\documentclass[tikz]{standalone}\\begin{document}\\begin{tikzpicture}\\draw (0,0)--(1,1);\\end{tikzpicture}\\end{document}", warnings: [] })
+    ? JSON.stringify({ points: [{ label: "A" }, { label: "B" }, { label: "C" }], segments: [{ from: "A", to: "B", style: "solid" }, { from: "B", to: "C", style: "solid" }, { from: "C", to: "A", style: "solid" }], pointOnSegment: [], perpendicularRelations: [], parallelRelations: [], equalLengthRelations: [], visibleLabels: ["A", "B", "C"], warnings: [] })
     : `\`\`\`json\n${JSON.stringify({ mode: "formula", latex: "\\frac{1}{\\sqrt{x}}", confidence: 0.95, warnings: [] })}\n\`\`\``;
   return new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200, headers: { "content-type": "application/json" } });
 };
