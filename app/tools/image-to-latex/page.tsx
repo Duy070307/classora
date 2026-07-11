@@ -34,6 +34,16 @@ type ApiResult = {
   warnings?: string[];
   geometryDiagnostic?: GeometryDiagnosticUi;
   geometryStructure?: unknown;
+  diagramType?: string;
+  diagramConfidence?: number;
+  detectedStructure?: unknown;
+  diagramValidation?: {
+    valid: boolean;
+    warnings: string[];
+    missingComponents: string[];
+    detected: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
+    generated: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
+  };
 } | {
   ok: false;
   error: string;
@@ -67,6 +77,7 @@ export default function ImageToLatexPage() {
   const [confidence, setConfidence] = useState<"high" | "medium" | "low" | "">("");
   const [geometryDiagnostic, setGeometryDiagnostic] = useState<GeometryDiagnosticUi>();
   const [geometryStructure, setGeometryStructure] = useState<unknown>();
+  const [diagramDiagnostic, setDiagramDiagnostic] = useState<{ type?: string; confidence?: number; structure?: unknown; validation?: Extract<ApiResult, { ok: true }>["diagramValidation"] }>({});
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -157,6 +168,7 @@ export default function ImageToLatexPage() {
       setConfidence(result.confidence || "medium");
       setGeometryDiagnostic(result.geometryDiagnostic);
       setGeometryStructure(result.geometryStructure);
+      setDiagramDiagnostic({ type: result.diagramType, confidence: result.diagramConfidence, structure: result.detectedStructure, validation: result.diagramValidation });
       saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
       showMessage(mode === "geometry" ? "Đã chuyển ảnh thành TikZ." : "Đã chuyển ảnh thành LaTeX.");
     } catch {
@@ -185,6 +197,7 @@ export default function ImageToLatexPage() {
     setConfidence("");
     setGeometryDiagnostic(undefined);
     setGeometryStructure(undefined);
+    setDiagramDiagnostic({});
     setError("");
     setMessage("");
   }
@@ -447,6 +460,18 @@ export default function ImageToLatexPage() {
                   ))}
                   {geometryDiagnostic.warnings.map((warning) => <p key={warning} className="mt-1 text-amber-700">• {warning}</p>)}
                   {geometryStructure ? <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-slate-900 p-3 text-xs text-slate-100">{JSON.stringify(geometryStructure, null, 2)}</pre> : null}
+                </details>
+              ) : null}
+
+              {process.env.NODE_ENV === "development" && diagramDiagnostic.type ? (
+                <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                  <summary className="cursor-pointer font-bold text-slate-900">Chẩn đoán cấu trúc sơ đồ</summary>
+                  <p className="mt-3">Loại: {diagramDiagnostic.type} · Độ tin cậy: {Math.round((diagramDiagnostic.confidence || 0) * 100)}%</p>
+                  <p>Phát hiện: {JSON.stringify(diagramDiagnostic.validation?.detected || {})}</p>
+                  <p>Đã sinh: {JSON.stringify(diagramDiagnostic.validation?.generated || {})}</p>
+                  <p>Trạng thái: {diagramDiagnostic.validation?.valid ? "Đạt" : "Thiếu thành phần"}</p>
+                  {diagramDiagnostic.validation?.missingComponents.length ? <p>Thiếu: {diagramDiagnostic.validation.missingComponents.join(", ")}</p> : null}
+                  {diagramDiagnostic.structure ? <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-slate-900 p-3 text-xs text-slate-100">{JSON.stringify(diagramDiagnostic.structure, null, 2)}</pre> : null}
                 </details>
               ) : null}
 

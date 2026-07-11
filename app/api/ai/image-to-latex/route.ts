@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateLatexFromImage, VisionCapabilityError, type ImageToLatexMode } from "@/lib/ai/image-to-latex";
+import { DiagramIncompleteError, generateLatexFromImage, VisionCapabilityError, type ImageToLatexMode } from "@/lib/ai/image-to-latex";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
@@ -63,8 +63,15 @@ export async function POST(request: Request) {
       warnings: result.warnings,
       geometryDiagnostic: process.env.NODE_ENV === "development" ? result.geometryDiagnostic : undefined,
       geometryStructure: process.env.NODE_ENV === "development" ? result.geometryStructure : undefined,
+      diagramType: result.diagramType,
+      diagramConfidence: result.diagramConfidence,
+      detectedStructure: process.env.NODE_ENV === "development" ? result.detectedStructure : undefined,
+      diagramValidation: result.diagramValidation,
     });
   } catch (error) {
+    if (error instanceof DiagramIncompleteError) {
+      return NextResponse.json({ ok: false, error: "Không thể dựng lại đầy đủ hình từ ảnh này. Vui lòng cắt ảnh rõ hơn hoặc kiểm tra mã TikZ thủ công." }, { status: 422 });
+    }
     if (error instanceof VisionCapabilityError) {
       return NextResponse.json({ ok: false, error: "API hiện tại chưa hỗ trợ nhận diện ảnh. Vui lòng kiểm tra gói API hoặc model được cung cấp." }, { status: 422 });
     }

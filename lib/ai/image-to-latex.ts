@@ -3,6 +3,8 @@ import { getGeometryPreset, isKnownSchoolDiagramPattern, validateGenericGeometry
 import { GrokRequestError, requestGrokVision } from "@/lib/ai/providers/grok";
 import { OpenAICompatibleError, requestOpenAICompatibleVision } from "@/lib/ai/providers/openai-provider";
 import { generateValidatedTikz, parseGeometryStructure, type GeometryDiagnostic } from "@/lib/ai/geometry-validator";
+import { generateStructuredDiagramTikz } from "@/lib/ai/structured-diagram-tikz";
+import type { DiagramValidation } from "@/lib/ai/diagram-completeness-validator";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -19,6 +21,10 @@ export type ImageToLatexResult = {
   model: string;
   geometryDiagnostic?: GeometryDiagnostic;
   geometryStructure?: unknown;
+  diagramType?: string;
+  diagramConfidence?: number;
+  detectedStructure?: unknown;
+  diagramValidation?: DiagramValidation;
 };
 
 export class VisionCapabilityError extends Error {
@@ -26,6 +32,10 @@ export class VisionCapabilityError extends Error {
     super("vision_not_supported");
     this.name = "VisionCapabilityError";
   }
+}
+
+export class DiagramIncompleteError extends Error {
+  constructor() { super("diagram_incomplete"); this.name = "DiagramIncompleteError"; }
 }
 
 type GeminiImageResponse = {
@@ -276,7 +286,8 @@ Trả về đúng JSON:
   "warnings": ["cảnh báo nếu có"]
 }`;
 
-  const structurePrompt = `Phân tích topology của ảnh hình học đã cắt gọn và chỉ trả về JSON cấu trúc. Không tạo TikZ, không giải bài toán cho đến khi cấu trúc hình học đã rõ.
+  const structurePrompt = `Trước khi tạo TikZ, hãy phân loại ảnh thành một trong: geometry_diagram, line_angle_diagram, coordinate_graph, function_graph, statistical_chart, formula_or_text, unknown. Sau đó liệt kê đầy đủ mọi thành phần nhìn thấy: đường thẳng, trục, đường cong, đoạn thẳng, điểm, giao điểm, nét gióng đứt, marker góc vuông và nhãn. Chỉ trả JSON cấu trúc; không tạo TikZ, không giải bài toán cho đến khi cấu trúc đã rõ.
+Nếu ảnh là đồ thị tọa độ, tuyệt đối không chỉ trả điểm O. Nếu ảnh có nhiều đường thẳng, tuyệt đối không chỉ trả một đoạn. Giữ nhãn đúng như ảnh và phân biệt nhãn điểm, nhãn đường, nhãn góc.
 Ưu tiên tính đúng đắn hình học hơn độ giống pixel. Nhận diện figureType như triangle, quadrilateral, parallelogram, trapezoid, rectangle, square, circle, pyramid, prism, cuboid hoặc unknown.
 Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi O thành 0, H thành M, I thành U; không thêm điểm thay thế.
 Phân loại riêng solidEdges và dashedEdges theo đúng ảnh; hidden/auxiliary edge dùng dashedEdges. Không suy diễn cạnh ẩn.
@@ -284,6 +295,8 @@ Phân tích base/apex, intersection, pointOnSegment và perpendicular trước k
 
 Trả về JSON theo đúng dạng:
 {
+  "diagramType": "geometry_diagram|line_angle_diagram|coordinate_graph|function_graph|unknown",
+  "confidence": 0.82,
   "figureType": "pyramid|triangle|circle|quadrilateral|unknown",
   "points": [{"label":"A","relativePosition":"left-lower|bottom|lower-right|right-upper|left-upper|top|center"}],
   "solidEdges": [["A","B"]],
@@ -300,12 +313,31 @@ Trả về JSON theo đúng dạng:
   "visibleLabels": ["A","B","C"],
   "warnings": []
 }
+Với line_angle_diagram, thay phần hình học bằng các trường: lines[{id,label,orientation,style,passesThrough}], points[{label,type}], intersections[{point,lines}], rightAngles[{vertex,between}], angleLabels[{label,near}], solidPaths, dashedPaths.
+Với coordinate_graph/function_graph, dùng: axes{xAxis,yAxis,origin,xLabel,yLabel,hasArrowheads}, ticks[{axis,value,label}], curves[{id,label,kind,approximatePoints}], segments[{id,from,to,style}], points[{label,coordinate}], guides[{style,from,to}], labels[{text,near}].
 Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hiện quan hệ đó.`;
   const prompt = wantsTikz ? structurePrompt : legacyPrompt;
   const raw = await requester.request(prompt, true);
 
   const parsed = extractJson(raw);
   if (wantsTikz) {
+    let specializedRaw = raw;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const specializedStructure = extractJson(specializedRaw);
+      const specialized = specializedStructure ? generateStructuredDiagramTikz(specializedStructure) : null;
+      if (!specialized) break;
+      if (specialized.validation.valid) {
+        return {
+          type: "tikz", latex: specialized.tikzCode, tikzCode: specialized.tikzCode, standaloneLatex: specialized.standaloneLatex,
+          explanation: "SOẠN LAB đã kiểm tra độ đầy đủ của các thành phần trong hình trước khi tạo TikZ.", confidence: normalizeConfidence(specialized.confidence),
+          warnings: ["Bản vẽ là bản nháp TikZ, thầy cô nên rà soát lại trước khi sử dụng."], provider, model,
+          diagramType: specialized.diagramType, diagramConfidence: specialized.confidence, detectedStructure: specializedStructure, diagramValidation: specialized.validation,
+        };
+      }
+      if (attempt === 2) throw new DiagramIncompleteError();
+      specializedRaw = await requester.request(`Phân tích lại toàn bộ ảnh. Lần trước thiếu: ${specialized.validation.missingComponents.join(", ")}.
+Detected ${specialized.diagramType}, nhưng cấu trúc/TikZ dự kiến chưa đầy đủ. Hãy trả JSON cấu trúc hoàn chỉnh với mọi lines, points, intersections, rightAngles, angleLabels, axes, ticks, curves, segments, guides và labels nhìn thấy. Không trả TikZ, không markdown fence.`, true);
+    }
     const structure = parseGeometryStructure(raw);
     if (structure) {
       const generated = generateValidatedTikz(structure);
