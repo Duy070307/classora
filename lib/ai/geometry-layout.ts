@@ -24,6 +24,23 @@ function lineIntersection(a: Point2D, b: Point2D, c: Point2D, d: Point2D): Point
   };
 }
 
+export function slopeAngleDegrees(a: Point2D, b: Point2D) {
+  return Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+}
+
+export function pyramidVisualQualityScore(coordinates: Record<string, Point2D>, hasComputedIntersection: boolean) {
+  const required = ["A", "B", "C", "D", "S", "O"];
+  if (!required.every((label) => coordinates[label])) return 0;
+  const baseCenter = { x: (coordinates.A.x + coordinates.B.x + coordinates.C.x + coordinates.D.x) / 4, y: (coordinates.A.y + coordinates.B.y + coordinates.C.y + coordinates.D.y) / 4 };
+  const distinct = new Set(required.map((label) => `${coordinates[label].x.toFixed(3)},${coordinates[label].y.toFixed(3)}`)).size === required.length;
+  const segmentsPositive = [["A", "B"], ["B", "C"], ["C", "D"], ["D", "A"]].every(([a, b]) => Math.hypot(coordinates[a].x - coordinates[b].x, coordinates[a].y - coordinates[b].y) > 0.1);
+  return Number(Math.abs(slopeAngleDegrees(coordinates.A, coordinates.B)) <= 8)
+    + Number(Math.abs(slopeAngleDegrees(coordinates.D, coordinates.C)) <= 10)
+    + Number(Math.hypot(coordinates.O.x - baseCenter.x, coordinates.O.y - baseCenter.y) <= 1.25)
+    + Number(coordinates.S.y > Math.max(coordinates.A.y, coordinates.B.y, coordinates.C.y, coordinates.D.y))
+    + Number(distinct) + Number(segmentsPositive) + Number(hasComputedIntersection);
+}
+
 function enforceDistinct(coordinates: Record<string, Point2D>, labels: string[]) {
   const fixed: string[] = [];
   labels.forEach((label, index) => {
@@ -43,15 +60,10 @@ export function createGeometryLayout(structure: GeometryStructure, forcePyramidT
   const coordinates = Object.fromEntries(structure.points.map((point, index) => [point.label, initialPosition(point.approximatePosition || "", index, structure.points.length)]));
   const pyramidBase = ["A", "B", "C", "D"].every((label) => labels.includes(label)) && labels.includes("S") && structure.figureType === "pyramid";
   if (pyramidBase) {
-    const hints = Object.fromEntries(structure.points.map((point) => [point.label, (point.approximatePosition || "").toLowerCase()]));
     Object.assign(coordinates, {
-      A: !forcePyramidTemplate && /right/.test(hints.A) ? { x: 4.8, y: 0 } : { x: 0, y: 0 },
-      B: !forcePyramidTemplate && /left/.test(hints.B) ? { x: 1.2, y: -1.6 } : { x: 2.7, y: -1.6 },
-      C: !forcePyramidTemplate && /left/.test(hints.C) ? { x: 0.8, y: 1.2 } : { x: 5.4, y: 0.2 },
-      D: !forcePyramidTemplate && /right/.test(hints.D) && !/left/.test(hints.D) ? { x: 3.8, y: 1.45 } : { x: 1.4, y: 1.45 },
-      S: !forcePyramidTemplate && /left/.test(hints.S) ? { x: 1.6, y: 3.9 } : !forcePyramidTemplate && /right/.test(hints.S) ? { x: 3.8, y: 3.9 } : { x: 2.8, y: 3.9 },
+      A: { x: 0, y: 0 }, B: { x: 5.6, y: 0.05 }, D: { x: 1.25, y: 1.65 }, C: { x: 5.75, y: 1.75 }, S: { x: 3.1, y: 4.25 },
     });
-    structure.warnings.push("SOẠN LAB đã ưu tiên giữ đúng quan hệ hình học và bố cục tương đối của hình.");
+    structure.warnings.push("SOẠN LAB đã ưu tiên giữ đúng quan hệ hình học và bố cục phối cảnh của đáy.");
   }
   const fixed = enforceDistinct(coordinates, labels.filter((label) => !structure.intersections.some((item) => item.point === label)));
   if (fixed.length) structure.warnings.push(`Đã phát hiện và sửa điểm trùng tọa độ: ${fixed.join(", ")}.`);
@@ -74,6 +86,9 @@ export function createGeometryLayout(structure: GeometryStructure, forcePyramidT
       const point = lineIntersection(coordinates[relation.lines[0][0]], coordinates[relation.lines[0][1]], coordinates[relation.lines[1][0]], coordinates[relation.lines[1][1]]);
       if (point) coordinates[relation.point] = point;
     }
+  }
+  if (pyramidBase && pyramidVisualQualityScore(coordinates, structure.intersections.some((item) => item.point === "O")) < 6 && !forcePyramidTemplate) {
+    return createGeometryLayout(structure, true);
   }
   return coordinates;
 }

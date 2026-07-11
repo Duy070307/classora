@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { generateValidatedTikz, layoutGeometry, parseGeometryStructure, perpendicular, pointOnSegment } from "../lib/ai/geometry-validator";
+import { pyramidVisualQualityScore, slopeAngleDegrees } from "../lib/ai/geometry-layout";
 
 function structure(value: Record<string, unknown>) {
   const parsed = parseGeometryStructure(JSON.stringify(value));
@@ -58,6 +59,7 @@ const pyramid = structure({
   visibleLabels: ["S", "A", "B", "C", "D", "O"],
   solidEdges: [["A", "B"], ["A", "D"], ["B", "C"], ["S", "A"], ["S", "B"], ["S", "C"], ["S", "D"]],
   dashedEdges: [["D", "C"], ["A", "C"], ["B", "D"], ["S", "O"]],
+  visualHints: { AB: "nearly-horizontal", DC: "nearly-horizontal", basePerspective: "quadrilateral", baseOrder: ["A", "B", "C", "D"] },
   relations: [{ type: "base", points: ["A", "B", "C", "D"] }, { type: "intersection", point: "O", lines: [["A", "C"], ["B", "D"]] }],
   warnings: [],
 });
@@ -69,20 +71,23 @@ for (const left of ["S", "A", "B", "C", "D", "O"]) for (const right of ["S", "A"
 assert.ok(pointOnSegment(pyramidCoordinates.O, pyramidCoordinates.A, pyramidCoordinates.C));
 assert.ok(pointOnSegment(pyramidCoordinates.O, pyramidCoordinates.B, pyramidCoordinates.D));
 assert.ok(pyramidCoordinates.D.x < pyramidCoordinates.O.x);
-assert.equal(pyramidCoordinates.D.x, 1.4);
-assert.equal(pyramidCoordinates.D.y, 1.45);
+assert.equal(pyramidCoordinates.D.x, 1.25);
+assert.equal(pyramidCoordinates.D.y, 1.65);
+assert.ok(Math.abs(slopeAngleDegrees(pyramidCoordinates.A, pyramidCoordinates.B)) <= 8);
+assert.ok(Math.abs(slopeAngleDegrees(pyramidCoordinates.D, pyramidCoordinates.C)) <= 10);
+assert.ok(pyramidVisualQualityScore(pyramidCoordinates, true) >= 6);
 assert.ok(Math.abs(pyramidCoordinates.B.x - pyramidCoordinates.D.x) >= 0.8);
 assert.ok(pyramidCoordinates.S.y > Math.max(pyramidCoordinates.A.y, pyramidCoordinates.B.y, pyramidCoordinates.C.y, pyramidCoordinates.D.y));
 const pyramidResult = generateValidatedTikz(pyramid);
 assert.equal(pyramidResult.diagnostic.valid, true);
 assert.equal(pyramidResult.inspection.ok, true);
-assert.match(pyramidResult.tikzCode, /name intersections=\{of=line0a and line0b, by=O\}/);
+assert.match(pyramidResult.tikzCode, /name intersections=\{of=AC and BD, by=O\}/);
 assert.match(pyramidResult.tikzCode, /\\draw\[blue, thick\] \(A\) -- \(B\)/);
 assert.match(pyramidResult.tikzCode, /\\draw\[blue, thick, dashed\] \(A\) -- \(C\)/);
 assert.doesNotMatch(pyramidResult.tikzCode, /\\coordinate \(O\) at/);
 assert.match(pyramidResult.standaloneLatex, /\\usetikzlibrary\{[^}]*intersections/);
 assert.match(pyramidResult.tikzCode, /\\node\[below left\] at \(A\)/);
-assert.match(pyramidResult.tikzCode, /\\node\[below\] at \(B\)/);
+assert.match(pyramidResult.tikzCode, /\\node\[below right\] at \(B\)/);
 assert.match(pyramidResult.tikzCode, /\\node\[right\] at \(C\)/);
 assert.match(pyramidResult.tikzCode, /\\node\[above left\] at \(D\)/);
 assert.match(pyramidResult.tikzCode, /\\node\[below right\] at \(O\)/);

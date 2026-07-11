@@ -288,6 +288,7 @@ Trả về JSON theo đúng dạng:
   "points": [{"label":"A","relativePosition":"left-lower|bottom|lower-right|right-upper|left-upper|top|center"}],
   "solidEdges": [["A","B"]],
   "dashedEdges": [["A","C"]],
+  "visualHints": {"AB":"nearly-horizontal","DC":"nearly-horizontal","basePerspective":"quadrilateral","baseOrder":["A","B","C","D"]},
   "relations": [
     {"type":"base","points":["A","B","C","D"]},
     {"type":"intersection","point":"O","lines":[["A","C"],["B","D"]]},

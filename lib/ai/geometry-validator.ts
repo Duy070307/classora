@@ -9,6 +9,7 @@ export type PointOnSegmentConstraint = { point: string; segment: [string, string
 export type PerpendicularConstraint = { segment1: [string, string]; segment2: [string, string]; vertex: string; certain?: boolean };
 export type GeometryStructure = {
   figureType: string;
+  visualHints: { AB?: string; DC?: string; basePerspective?: string; baseOrder?: string[] };
   points: GeometryPoint[];
   segments: GeometrySegment[];
   pointOnSegment: PointOnSegmentConstraint[];
@@ -109,6 +110,7 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
   });
   return {
     figureType: typeof parsed.figureType === "string" ? parsed.figureType : "unknown",
+    visualHints: parsed.visualHints && typeof parsed.visualHints === "object" && !Array.isArray(parsed.visualHints) ? parsed.visualHints as GeometryStructure["visualHints"] : {},
     points: labels.map((label) => points.find((point) => point.label === label) || { label }),
     segments: [...new Map(segments.map((item) => [[item.from, item.to].sort().join("|"), item])).values()], pointOnSegment, perpendicularRelations, intersections,
     parallelRelations: Array.isArray(parsed.parallelRelations) ? parsed.parallelRelations : [],
@@ -164,14 +166,22 @@ export function validateGeometry(structure: GeometryStructure, coordinates: Reco
     basic.push({ relation: "Đỉnh S nằm phía trên đáy ABCD", passed: apexPassed });
     if (!apexPassed) warnings.push("Chưa xác nhận vị trí đỉnh S so với đáy ABCD.");
     const visualChecks = [
+      { relation: "B nằm bên phải A", passed: coordinates.B.x > coordinates.A.x },
+      { relation: "AB gần nằm ngang", passed: Math.abs(coordinates.B.y - coordinates.A.y) <= 0.25 },
       { relation: "D nằm bên trái C", passed: coordinates.D.x < coordinates.C.x },
+      { relation: "DC gần nằm ngang", passed: Math.abs(coordinates.C.y - coordinates.D.y) <= 0.35 },
       { relation: "A nằm bên trái C", passed: coordinates.A.x < coordinates.C.x },
       { relation: "D nằm phía trên A", passed: coordinates.D.y > coordinates.A.y },
-      { relation: "C không thấp đáng kể hơn A", passed: coordinates.C.y >= coordinates.A.y - 0.35 },
+      { relation: "C nằm phía trên B", passed: coordinates.C.y > coordinates.B.y },
       { relation: "BD là đường chéo, không gần thẳng đứng", passed: Math.abs(coordinates.B.x - coordinates.D.x) >= 0.8 },
       { relation: "Đáy ABCD không bị co thành tam giác mảnh", passed: baseArea >= 3 },
     ];
-    if (coordinates.O) visualChecks.push({ relation: "B nằm dưới tâm O", passed: coordinates.B.y < coordinates.O.y });
+    if (coordinates.O) visualChecks.push(
+      { relation: "B nằm dưới tâm O", passed: coordinates.B.y < coordinates.O.y },
+      { relation: "D nằm trái O", passed: coordinates.D.x < coordinates.O.x },
+      { relation: "C nằm phải O", passed: coordinates.C.x > coordinates.O.x },
+      { relation: "O không quá gần đỉnh đáy", passed: Math.min(...base.map((point) => Math.hypot(point.x - coordinates.O.x, point.y - coordinates.O.y))) >= 1 },
+    );
     visualChecks.forEach((check) => { basic.push(check); if (!check.passed) warnings.push(`Bố cục hình chóp cần rà soát: ${check.relation}.`); });
   }
   const pointChecks = structure.pointOnSegment.map((item) => {
@@ -213,9 +223,11 @@ export function generateValidatedTikz(structure: GeometryStructure) {
     lines.push(`  \\coordinate (${label}) at (${point.x.toFixed(3)},${point.y.toFixed(3)});`);
   }
   structure.intersections.forEach((relation, index) => {
-    lines.push(`  \\path[name path=line${index}a] (${relation.lines[0][0]}) -- (${relation.lines[0][1]});`);
-    lines.push(`  \\path[name path=line${index}b] (${relation.lines[1][0]}) -- (${relation.lines[1][1]});`);
-    lines.push(`  \\path[name intersections={of=line${index}a and line${index}b, by=${relation.point}}];`);
+    const firstName = `${relation.lines[0][0]}${relation.lines[0][1]}${index || ""}`;
+    const secondName = `${relation.lines[1][0]}${relation.lines[1][1]}${index || ""}`;
+    lines.push(`  \\path[name path=${firstName}] (${relation.lines[0][0]}) -- (${relation.lines[0][1]});`);
+    lines.push(`  \\path[name path=${secondName}] (${relation.lines[1][0]}) -- (${relation.lines[1][1]});`);
+    lines.push(`  \\path[name intersections={of=${firstName} and ${secondName}, by=${relation.point}}];`);
   });
   for (const segment of structure.segments) {
     const a = coordinates[segment.from]; const b = coordinates[segment.to];
@@ -223,7 +235,7 @@ export function generateValidatedTikz(structure: GeometryStructure) {
     lines.push(`  \\draw[${structure.figureType === "pyramid" ? "blue, " : ""}thick${segment.style === "dashed" ? ", dashed" : ""}] (${segment.from}) -- (${segment.to});`);
   }
   const labelAnchor = (label: string) => {
-    const defaults: Record<string, string> = { S: "above", A: "below left", B: "below", C: "right", D: "above left", O: "below right", H: "below left", I: "below right" };
+    const defaults: Record<string, string> = { S: "above", A: "below left", B: "below right", C: "right", D: "above left", O: "below right", H: "below left", I: "below right" };
     return defaults[label] || "above right";
   };
   for (const label of structure.visibleLabels) {
