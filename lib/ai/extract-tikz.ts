@@ -85,7 +85,7 @@ function stringValue(value: unknown): string {
 
 export function extractTikzFromAIOutput(raw: string): TikzExtractionResult {
   const parsed = parseJsonObject(raw);
-  const parsedTikz = stringValue(parsed?.tikzCode) || stringValue(parsed?.tikz);
+  const parsedTikz = stringValue(parsed?.tikzCode) || stringValue(parsed?.tikz) || stringValue(parsed?.code);
   const parsedLatex = stringValue(parsed?.latex);
   const parsedStandalone = stringValue(parsed?.standaloneLatex) || stringValue(parsed?.standalone);
 

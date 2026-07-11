@@ -5,7 +5,7 @@ Soạn Lab hỗ trợ tạo nội dung qua server-side AI provider. Chế độ 
 ## Providers
 
 - `local`: tạo nội dung bằng logic cục bộ hiện có, dùng làm fallback an toàn.
-- `openai`: gọi OpenAI từ server route.
+- `openai`: gọi API tương thích OpenAI từ server route; hỗ trợ base URL cấu hình riêng cho text và vision.
 - `gemini`: gọi Gemini từ server route.
 - `grok`: gọi endpoint OpenAI-compatible từ server route; hỗ trợ text và vision khi model/gói API cho phép.
 
@@ -16,12 +16,14 @@ Không gọi provider AI trực tiếp từ frontend và không hiển thị API
 Tạo `.env.local` khi chạy local nếu muốn dùng provider thật:
 
 ```env
-AI_PROVIDER=local
-AI_TEXT_PROVIDER=local
-AI_VISION_PROVIDER=local
+AI_PROVIDER=openai
+AI_TEXT_PROVIDER=openai
+AI_VISION_PROVIDER=openai
 
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4.1-mini
+OPENAI_BASE_URL=https://api.nghimmo.com/v1
+OPENAI_MODEL=nghi/gpt-5.5
+OPENAI_VISION_MODEL=nghi/gpt-5.5
 
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-2.5-flash
@@ -42,7 +44,9 @@ Trong Vercel Project Settings → Environment Variables, có thể thêm:
 
 - `AI_PROVIDER`
 - `OPENAI_API_KEY`
+- `OPENAI_BASE_URL`
 - `OPENAI_MODEL`
+- `OPENAI_VISION_MODEL`
 - `GEMINI_API_KEY`
 - `GEMINI_MODEL`
 - `AI_TEXT_PROVIDER`
@@ -67,11 +71,11 @@ Redeploy sau khi đổi biến môi trường. Nếu chưa cấu hình provider 
 
 Các tool khác vẫn dùng logic cục bộ hiện có.
 
-Ảnh công thức → LaTeX và Hình học → TikZ chọn adapter qua `AI_VISION_PROVIDER`. Khi đặt `grok`, server gửi ảnh dạng data URL trong message multimodal OpenAI-compatible. Không tự chuyển sang Gemini nếu endpoint Grok không hỗ trợ ảnh; hệ thống trả lỗi capability được kiểm soát.
+Ảnh công thức → LaTeX và Hình học → TikZ chọn adapter qua `AI_VISION_PROVIDER`. Khi đặt `openai`, server gửi ảnh dạng data URL trong message multimodal OpenAI-compatible và dùng `OPENAI_VISION_MODEL` (fallback sang `OPENAI_MODEL`). Luồng này không tự chuyển sang Grok hoặc Gemini nếu endpoint không hỗ trợ ảnh.
 
 ## Fallback behavior
 
-`app/api/ai/generate` chọn text provider theo `AI_TEXT_PROVIDER` rồi `AI_PROVIDER`. Metadata provider/fallback không được trả ra response công khai. Vision dùng provider riêng và không fallback chéo sang Gemini.
+`app/api/ai/generate` chọn text provider theo `AI_TEXT_PROVIDER` rồi `AI_PROVIDER`. Metadata provider/fallback không được trả ra response công khai. Vision dùng provider riêng; khi chọn `openai`, luồng active không fallback chéo sang Grok hoặc Gemini.
 
 ## Cost and limits
 

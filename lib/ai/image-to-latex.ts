@@ -1,6 +1,7 @@
 import { extractTikzFromAIOutput } from "@/lib/ai/extract-tikz";
 import { getGeometryPreset, isKnownSchoolDiagramPattern, validateGenericGeometryTikz, validateKnownSchoolDiagramTikz } from "@/lib/ai/geometry-tikz-presets";
 import { GrokRequestError, requestGrokVision } from "@/lib/ai/providers/grok";
+import { OpenAICompatibleError, requestOpenAICompatibleVision } from "@/lib/ai/providers/openai-provider";
 
 export type ImageToLatexMode = "auto" | "formula" | "geometry";
 
@@ -13,7 +14,7 @@ export type ImageToLatexResult = {
   explanation?: string;
   confidence?: "high" | "medium" | "low";
   warnings?: string[];
-  provider: "gemini" | "grok";
+  provider: "openai" | "gemini" | "grok";
   model: string;
 };
 
@@ -138,7 +139,26 @@ function normalizeConfidence(value: unknown): "high" | "medium" | "low" {
 
 function createVisionRequester(imageBase64: string, mimeType: string) {
   const provider = (process.env.AI_VISION_PROVIDER || process.env.AI_PROVIDER || "local").trim().toLowerCase();
-  const model = provider === "grok" ? process.env.GROK_MODEL || "grok-4.3" : process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = provider === "openai"
+    ? process.env.OPENAI_VISION_MODEL || process.env.OPENAI_MODEL || "gpt-4.1-mini"
+    : provider === "grok" ? process.env.GROK_MODEL || "grok-4.3" : process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  if (provider === "openai") {
+    if (!process.env.OPENAI_API_KEY) throw new VisionCapabilityError();
+    return {
+      provider: "openai" as const,
+      model,
+      request: async (prompt: string, includeImage = true) => {
+        try {
+          return await requestOpenAICompatibleVision({ prompt, imageBase64, mimeType, includeImage });
+        } catch (error) {
+          if (error instanceof OpenAICompatibleError && error.diagnostic === "unsupported_vision") {
+            throw new VisionCapabilityError();
+          }
+          throw error;
+        }
+      },
+    };
+  }
   if (provider === "grok") {
     return {
       provider: "grok" as const,

@@ -11,13 +11,16 @@
     "tikz:import-test": "tsx scripts/test-tikz-import-compat.ts",
     "exam:bank-test": "tsx scripts/test-exam-bank-filter.ts",
     "topic:fidelity-test": "tsx scripts/test-topic-fidelity.ts",
-    "test": "npm run topic:fidelity-test && npm run exam:bank-test && npm run tikz:import-test && npm run export:reliability-test && npm run security:test && npm run ai:test-grok-vision-adapter && npm run ai:test-grok-vision-errors",
+    "test": "npm run topic:fidelity-test && npm run exam:bank-test && npm run tikz:import-test && npm run export:reliability-test && npm run security:test && npm run ai:test-grok-vision-adapter && npm run ai:test-grok-vision-errors && npm run ai:test-openai-adapter",
     "tikz:validate": "npm run tikz:import-test",
     "export:reliability-test": "tsx scripts/test-export-history-reliability.ts",
     "security:test": "tsx scripts/test-production-security.ts",
     "ai:test-grok-vision": "tsx scripts/test-grok-vision.ts",
     "ai:test-grok-vision-adapter": "tsx scripts/test-grok-vision-adapter.ts",
-    "ai:test-grok-vision-errors": "tsx scripts/test-grok-vision-errors.ts"
+    "ai:test-grok-vision-errors": "tsx scripts/test-grok-vision-errors.ts",
+    "ai:test-openai-text": "tsx scripts/test-openai-compatible-text.ts",
+    "ai:test-openai-vision": "tsx scripts/test-openai-compatible-vision.ts",
+    "ai:test-openai-adapter": "tsx scripts/test-openai-compatible-adapter.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

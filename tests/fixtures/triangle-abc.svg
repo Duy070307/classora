@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <rect width="640" height="480" fill="white"/>
+  <path d="M320 70 L90 400 L550 400 Z" fill="none" stroke="black" stroke-width="8"/>
+  <text x="307" y="55" font-family="Arial, sans-serif" font-size="42" font-weight="700">A</text>
+  <text x="48" y="432" font-family="Arial, sans-serif" font-size="42" font-weight="700">B</text>
+  <text x="558" y="432" font-family="Arial, sans-serif" font-size="42" font-weight="700">C</text>
+</svg>
