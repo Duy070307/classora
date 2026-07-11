@@ -3,9 +3,10 @@ import type { GeometryStructure, Point2D } from "@/lib/ai/geometry-validator";
 function initialPosition(hint: string, index: number, total: number): Point2D {
   const value = hint.toLowerCase();
   const offsets: Record<string, Point2D> = {
-    "left-bottom": { x: -2.8, y: 0 }, "lower-left": { x: -2.8, y: 0 },
+    "left-bottom": { x: -2.8, y: 0 }, "left-lower": { x: -2.8, y: 0 }, "lower-left": { x: -2.8, y: 0 },
     bottom: { x: 0, y: -1.2 }, "right-bottom": { x: 2.8, y: 0 },
-    right: { x: 2.8, y: 1 }, "upper-right": { x: 1.7, y: 2 },
+    "lower-right": { x: 2.8, y: 0 }, right: { x: 2.8, y: 1 }, "upper-right": { x: 1.7, y: 2 },
+    "right-upper": { x: 1.7, y: 2 }, "upper-left": { x: -1.7, y: 2 }, "left-upper": { x: -1.7, y: 2 },
     top: { x: 0, y: 4 }, center: { x: 0, y: 1 }, left: { x: -2.8, y: 1 },
   };
   if (offsets[value]) return { ...offsets[value] };
@@ -37,12 +38,20 @@ function enforceDistinct(coordinates: Record<string, Point2D>, labels: string[])
   return fixed;
 }
 
-export function createGeometryLayout(structure: GeometryStructure): Record<string, Point2D> {
+export function createGeometryLayout(structure: GeometryStructure, forcePyramidTemplate = false): Record<string, Point2D> {
   const labels = structure.visibleLabels;
   const coordinates = Object.fromEntries(structure.points.map((point, index) => [point.label, initialPosition(point.approximatePosition || "", index, structure.points.length)]));
   const pyramidBase = ["A", "B", "C", "D"].every((label) => labels.includes(label)) && labels.includes("S") && structure.figureType === "pyramid";
   if (pyramidBase) {
-    Object.assign(coordinates, { A: { x: 0, y: 0 }, B: { x: 2.5, y: -1.4 }, C: { x: 5.2, y: 0.1 }, D: { x: 2.8, y: 1.25 }, S: { x: 2.6, y: 3.8 } });
+    const hints = Object.fromEntries(structure.points.map((point) => [point.label, (point.approximatePosition || "").toLowerCase()]));
+    Object.assign(coordinates, {
+      A: !forcePyramidTemplate && /right/.test(hints.A) ? { x: 4.8, y: 0 } : { x: 0, y: 0 },
+      B: !forcePyramidTemplate && /left/.test(hints.B) ? { x: 1.2, y: -1.6 } : { x: 2.7, y: -1.6 },
+      C: !forcePyramidTemplate && /left/.test(hints.C) ? { x: 0.8, y: 1.2 } : { x: 5.4, y: 0.2 },
+      D: !forcePyramidTemplate && /right/.test(hints.D) && !/left/.test(hints.D) ? { x: 3.8, y: 1.45 } : { x: 1.4, y: 1.45 },
+      S: !forcePyramidTemplate && /left/.test(hints.S) ? { x: 1.6, y: 3.9 } : !forcePyramidTemplate && /right/.test(hints.S) ? { x: 3.8, y: 3.9 } : { x: 2.8, y: 3.9 },
+    });
+    structure.warnings.push("SOẠN LAB đã ưu tiên giữ đúng quan hệ hình học và bố cục tương đối của hình.");
   }
   const fixed = enforceDistinct(coordinates, labels.filter((label) => !structure.intersections.some((item) => item.point === label)));
   if (fixed.length) structure.warnings.push(`Đã phát hiện và sửa điểm trùng tọa độ: ${fixed.join(", ")}.`);

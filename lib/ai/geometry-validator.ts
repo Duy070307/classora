@@ -155,10 +155,24 @@ export function validateGeometry(structure: GeometryStructure, coordinates: Reco
     if (!passed) warnings.push(`Đã loại đoạn ${segment.from}${segment.to} có độ dài bằng 0.`);
   });
   if (structure.figureType === "pyramid" && ["S", "A", "B", "C", "D"].every((label) => coordinates[label])) {
-    const baseY = ["A", "B", "C", "D"].reduce((sum, label) => sum + coordinates[label].y, 0) / 4;
-    const apexPassed = coordinates.S.y > baseY + 0.5;
+    const base = [coordinates.A, coordinates.B, coordinates.C, coordinates.D];
+    const baseArea = Math.abs(base.reduce((sum, point, index) => {
+      const next = base[(index + 1) % base.length];
+      return sum + point.x * next.y - point.y * next.x;
+    }, 0)) / 2;
+    const apexPassed = coordinates.S.y > Math.max(...base.map((point) => point.y)) + 0.5;
     basic.push({ relation: "Đỉnh S nằm phía trên đáy ABCD", passed: apexPassed });
     if (!apexPassed) warnings.push("Chưa xác nhận vị trí đỉnh S so với đáy ABCD.");
+    const visualChecks = [
+      { relation: "D nằm bên trái C", passed: coordinates.D.x < coordinates.C.x },
+      { relation: "A nằm bên trái C", passed: coordinates.A.x < coordinates.C.x },
+      { relation: "D nằm phía trên A", passed: coordinates.D.y > coordinates.A.y },
+      { relation: "C không thấp đáng kể hơn A", passed: coordinates.C.y >= coordinates.A.y - 0.35 },
+      { relation: "BD là đường chéo, không gần thẳng đứng", passed: Math.abs(coordinates.B.x - coordinates.D.x) >= 0.8 },
+      { relation: "Đáy ABCD không bị co thành tam giác mảnh", passed: baseArea >= 3 },
+    ];
+    if (coordinates.O) visualChecks.push({ relation: "B nằm dưới tâm O", passed: coordinates.B.y < coordinates.O.y });
+    visualChecks.forEach((check) => { basic.push(check); if (!check.passed) warnings.push(`Bố cục hình chóp cần rà soát: ${check.relation}.`); });
   }
   const pointChecks = structure.pointOnSegment.map((item) => {
     const passed = pointOnSegment(coordinates[item.point], coordinates[item.segment[0]], coordinates[item.segment[1]]);
@@ -185,8 +199,13 @@ export function validateGeometry(structure: GeometryStructure, coordinates: Reco
 }
 
 export function generateValidatedTikz(structure: GeometryStructure) {
-  const coordinates = layoutGeometry(structure);
-  const diagnostic = validateGeometry(structure, coordinates);
+  let coordinates = layoutGeometry(structure);
+  let diagnostic = validateGeometry(structure, coordinates);
+  if (structure.figureType === "pyramid" && !diagnostic.valid) {
+    structure.warnings.push("Đã tự động hiệu chỉnh bố cục đáy ABCD theo quan hệ topology.");
+    coordinates = createGeometryLayout(structure, true);
+    diagnostic = validateGeometry(structure, coordinates);
+  }
   const lines = ["\\begin{tikzpicture}[scale=1, line cap=round, line join=round]"];
   for (const label of structure.visibleLabels) {
     if (structure.intersections.some((item) => item.point === label)) continue;
@@ -201,9 +220,16 @@ export function generateValidatedTikz(structure: GeometryStructure) {
   for (const segment of structure.segments) {
     const a = coordinates[segment.from]; const b = coordinates[segment.to];
     if (!a || !b || Math.hypot(a.x - b.x, a.y - b.y) < 0.05) continue;
-    lines.push(`  \\draw[thick${segment.style === "dashed" ? ", dashed" : ""}] (${segment.from}) -- (${segment.to});`);
+    lines.push(`  \\draw[${structure.figureType === "pyramid" ? "blue, " : ""}thick${segment.style === "dashed" ? ", dashed" : ""}] (${segment.from}) -- (${segment.to});`);
   }
-  for (const label of structure.visibleLabels) lines.push(`  \\fill (${label}) circle (1.4pt) node[above right] {$${label}$};`);
+  const labelAnchor = (label: string) => {
+    const defaults: Record<string, string> = { S: "above", A: "below left", B: "below", C: "right", D: "above left", O: "below right", H: "below left", I: "below right" };
+    return defaults[label] || "above right";
+  };
+  for (const label of structure.visibleLabels) {
+    lines.push(`  \\fill (${label}) circle (1.4pt);`);
+    lines.push(`  \\node[${labelAnchor(label)}] at (${label}) {$${label}$};`);
+  }
   structure.perpendicularRelations.forEach((relation, index) => {
     if (!diagnostic.perpendicular[index]?.passed) return;
     const firstOther = relation.segment1.find((label) => label !== relation.vertex);
@@ -212,8 +238,9 @@ export function generateValidatedTikz(structure: GeometryStructure) {
   });
   lines.push("\\end{tikzpicture}");
   const tikzCode = lines.join("\n");
-  const inspection = inspectGeometryTikz(tikzCode, structure, coordinates);
+  const standaloneLatex = buildStandaloneTikzDocument(tikzCode);
+  const inspection = inspectGeometryTikz(tikzCode, structure, coordinates, standaloneLatex);
   if (!inspection.ok) diagnostic.warnings.push("Một số quan hệ hình học chưa được xác nhận chính xác.", ...inspection.issues);
   diagnostic.valid = diagnostic.valid && inspection.ok;
-  return { tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), diagnostic, inspection };
+  return { tikzCode, standaloneLatex, diagnostic, inspection };
 }

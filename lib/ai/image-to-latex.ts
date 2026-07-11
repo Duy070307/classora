@@ -285,7 +285,7 @@ Phân tích base/apex, intersection, pointOnSegment và perpendicular trước k
 Trả về JSON theo đúng dạng:
 {
   "figureType": "pyramid|triangle|circle|quadrilateral|unknown",
-  "points": [{"label":"A","relativePosition":"left-bottom|bottom|right|upper-right|top|center"}],
+  "points": [{"label":"A","relativePosition":"left-lower|bottom|lower-right|right-upper|left-upper|top|center"}],
   "solidEdges": [["A","B"]],
   "dashedEdges": [["A","C"]],
   "relations": [

@@ -52,8 +52,8 @@ const pyramid = structure({
   figureType: "pyramid",
   points: [
     { label: "S", relativePosition: "top" }, { label: "A", relativePosition: "left-bottom" },
-    { label: "B", relativePosition: "bottom" }, { label: "C", relativePosition: "right" },
-    { label: "D", relativePosition: "upper-right" }, { label: "O", relativePosition: "center" },
+    { label: "B", relativePosition: "bottom" }, { label: "C", relativePosition: "right-upper" },
+    { label: "D", relativePosition: "left-upper" }, { label: "O", relativePosition: "center" },
   ],
   visibleLabels: ["S", "A", "B", "C", "D", "O"],
   solidEdges: [["A", "B"], ["A", "D"], ["B", "C"], ["S", "A"], ["S", "B"], ["S", "C"], ["S", "D"]],
@@ -68,13 +68,24 @@ for (const left of ["S", "A", "B", "C", "D", "O"]) for (const right of ["S", "A"
 }
 assert.ok(pointOnSegment(pyramidCoordinates.O, pyramidCoordinates.A, pyramidCoordinates.C));
 assert.ok(pointOnSegment(pyramidCoordinates.O, pyramidCoordinates.B, pyramidCoordinates.D));
+assert.ok(pyramidCoordinates.D.x < pyramidCoordinates.O.x);
+assert.equal(pyramidCoordinates.D.x, 1.4);
+assert.equal(pyramidCoordinates.D.y, 1.45);
+assert.ok(Math.abs(pyramidCoordinates.B.x - pyramidCoordinates.D.x) >= 0.8);
+assert.ok(pyramidCoordinates.S.y > Math.max(pyramidCoordinates.A.y, pyramidCoordinates.B.y, pyramidCoordinates.C.y, pyramidCoordinates.D.y));
 const pyramidResult = generateValidatedTikz(pyramid);
 assert.equal(pyramidResult.diagnostic.valid, true);
 assert.equal(pyramidResult.inspection.ok, true);
 assert.match(pyramidResult.tikzCode, /name intersections=\{of=line0a and line0b, by=O\}/);
-assert.match(pyramidResult.tikzCode, /\\draw\[thick\] \(A\) -- \(B\)/);
-assert.match(pyramidResult.tikzCode, /\\draw\[thick, dashed\] \(A\) -- \(C\)/);
+assert.match(pyramidResult.tikzCode, /\\draw\[blue, thick\] \(A\) -- \(B\)/);
+assert.match(pyramidResult.tikzCode, /\\draw\[blue, thick, dashed\] \(A\) -- \(C\)/);
 assert.doesNotMatch(pyramidResult.tikzCode, /\\coordinate \(O\) at/);
+assert.match(pyramidResult.standaloneLatex, /\\usetikzlibrary\{[^}]*intersections/);
+assert.match(pyramidResult.tikzCode, /\\node\[below left\] at \(A\)/);
+assert.match(pyramidResult.tikzCode, /\\node\[below\] at \(B\)/);
+assert.match(pyramidResult.tikzCode, /\\node\[right\] at \(C\)/);
+assert.match(pyramidResult.tikzCode, /\\node\[above left\] at \(D\)/);
+assert.match(pyramidResult.tikzCode, /\\node\[below right\] at \(O\)/);
 
 const duplicateSource = structure({ figureType: "triangle", points: [{ label: "A", relativePosition: "bottom" }, { label: "B", relativePosition: "bottom" }, { label: "C", relativePosition: "top" }], visibleLabels: ["A", "B", "C"], solidEdges: [["A", "B"], ["B", "C"], ["C", "A"]], relations: [], warnings: [] });
 const duplicateFixed = layoutGeometry(duplicateSource);

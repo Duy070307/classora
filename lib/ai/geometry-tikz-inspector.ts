@@ -1,6 +1,6 @@
 import type { GeometryStructure, Point2D } from "@/lib/ai/geometry-validator";
 
-export function inspectGeometryTikz(tikz: string, structure: GeometryStructure, coordinates: Record<string, Point2D>) {
+export function inspectGeometryTikz(tikz: string, structure: GeometryStructure, coordinates: Record<string, Point2D>, standaloneLatex = "") {
   const issues: string[] = [];
   for (const label of structure.visibleLabels) {
     const hasPoint = new RegExp(`\\\\coordinate \\(${label}\\)|by=${label}\\}`).test(tikz);
@@ -26,5 +26,6 @@ export function inspectGeometryTikz(tikz: string, structure: GeometryStructure, 
   for (const relation of structure.intersections) {
     if (!new RegExp(`name intersections=\\{of=.*by=${relation.point}\\}`).test(tikz)) issues.push(`missing_computed_intersection_${relation.point}`);
   }
+  if (/name intersections=/.test(tikz) && !/\\usetikzlibrary\{[^}]*intersections[^}]*\}/.test(standaloneLatex)) issues.push("missing_intersections_library");
   return { ok: issues.length === 0, issues };
 }
