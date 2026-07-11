@@ -1,3 +1,5 @@
+import { tikzSafetyError } from "@/lib/tikz-bank/import-validation";
+
 export const tikzCategories = [
   "Hình học phẳng",
   "Hình học không gian",
@@ -89,13 +91,15 @@ export function validateTikzSnippetInput(value: unknown):
 
   if (!data.title) return { ok: false, error: "Vui lòng nhập tiêu đề." };
   if (!data.tikz_code) return { ok: false, error: "Vui lòng nhập mã TikZ." };
+  const safetyError = tikzSafetyError(data.tikz_code, data.full_latex);
+  if (safetyError) return { ok: false, error: safetyError };
   for (const [key, max] of Object.entries(limits) as Array<[keyof typeof limits, number]>) {
     const current = data[key];
     if (typeof current === "string" && current.length > max) return { ok: false, error: `Trường “${key}” không được dài quá ${max} ký tự.` };
   }
-  const hasPicture = /\\begin\s*\{tikzpicture\}/i.test(data.tikz_code);
+  const hasPicture = /\\begin\s*\{(?:tikzpicture|circuitikz)\}/i.test(data.tikz_code);
   const hasCommand = /\\(?:draw|path|node|coordinate|fill|filldraw)\b/.test(data.tikz_code);
-  if (!hasPicture && !hasCommand) return { ok: false, error: "Mã chưa có môi trường tikzpicture hoặc lệnh vẽ TikZ hợp lệ." };
+  if (!hasPicture && !hasCommand) return { ok: false, error: "Mã chưa có môi trường tikzpicture/circuitikz hoặc lệnh vẽ TikZ hợp lệ." };
   return { ok: true, data, warnings: hasPicture ? [] : ["Mã chưa có môi trường tikzpicture. Hãy kiểm tra lại trước khi biên dịch."] };
 }
 

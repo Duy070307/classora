@@ -61,14 +61,22 @@ export async function POST(request: Request) {
       mode,
     });
 
-    return NextResponse.json({ ok: true, ...result });
-  } catch (error) {
+    return NextResponse.json({
+      ok: true,
+      type: result.type,
+      latex: result.latex,
+      displayLatex: result.displayLatex,
+      tikzCode: result.tikzCode,
+      standaloneLatex: result.standaloneLatex,
+      explanation: result.explanation,
+      confidence: result.confidence,
+      warnings: result.warnings,
+    });
+  } catch {
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error
-          ? error.message
-          : "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh đã cắt gọn và rõ nét hơn.",
+        error: "Soạn Lab chưa nhận diện được ảnh này. Vui lòng thử ảnh đã cắt gọn và rõ nét hơn.",
       },
       { status: 400 },
     );

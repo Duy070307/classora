@@ -24,7 +24,7 @@ export type AIRequest = {
 
 export type AIResponse = {
   ok: true;
-  provider: AIProviderName;
+  provider?: AIProviderName;
   title: string;
   content: string;
   structuredExam?: StructuredExam;

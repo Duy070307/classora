@@ -4,6 +4,8 @@ import { getConfiguredProvider } from "@/lib/ai/provider";
 import { buildThreeDAnimationPrompt } from "@/lib/ai/prompts/three-d-animation";
 import { detectGeometryShapeIntent } from "@/lib/geometry/shape-intent";
 import { buildGeometryTemplate, hasGeometryTemplateMismatch } from "@/lib/geometry/three-templates";
+import { getCurrentUser } from "@/lib/auth/user";
+import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 type AnimationResult = {
   title: string;
@@ -289,6 +291,7 @@ async function buildResult(input: { prompt: string; subject: string; grade: stri
 
 export async function POST(request: NextRequest) {
   try {
+    if (isSupabaseConfigured() && !await getCurrentUser()) return json({ ok: false, error: "Vui lòng đăng nhập để tạo mô phỏng." }, 401);
     const body = await request.json() as Record<string, unknown>;
     const prompt = asText(body.prompt);
     if (prompt.length < 8) return json({ ok: false, error: "Vui lòng nhập mô tả mô phỏng rõ hơn." }, 400);

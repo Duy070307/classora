@@ -10,7 +10,11 @@
     "smoke": "node scripts/smoke-test-routes.mjs",
     "tikz:import-test": "tsx scripts/test-tikz-import-compat.ts",
     "exam:bank-test": "tsx scripts/test-exam-bank-filter.ts",
-    "topic:fidelity-test": "tsx scripts/test-topic-fidelity.ts"
+    "topic:fidelity-test": "tsx scripts/test-topic-fidelity.ts",
+    "test": "npm run topic:fidelity-test && npm run exam:bank-test && npm run tikz:import-test && npm run export:reliability-test && npm run security:test",
+    "tikz:validate": "npm run tikz:import-test",
+    "export:reliability-test": "tsx scripts/test-export-history-reliability.ts",
+    "security:test": "tsx scripts/test-production-security.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

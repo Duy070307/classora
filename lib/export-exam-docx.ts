@@ -166,10 +166,12 @@ function teacherBlocks(text: string) {
 function teacherContent(document: GeneratedDocument) {
   const content = document.content;
   const answer = section(content, /^III\.\s*ĐÁP ÁN/i, /^IV\./i);
-  const scoring = section(content, /^IV\.\s*THANG ĐIỂM/i, /^V\./i);
-  const matrix = section(content, /^V\.\s*MA TRẬN/i, /^VI\./i);
-  const specification = section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^(YÊU CẦU THÊM|GHI CHÚ GIÁO VIÊN)/i);
+  const scoring = section(content, /^IV\.\s*THANG ĐIỂM/i, /^V\./i) || document.structuredExam?.teacherOnly.scoringGuide || "";
+  const matrix = section(content, /^V\.\s*MA TRẬN/i, /^VI\./i) || document.structuredExam?.teacherOnly.matrix || "";
+  const specification = section(content, /^VI\.\s*BẢN ĐẶC TẢ/i, /^(YÊU CẦU THÊM|GHI CHÚ GIÁO VIÊN)/i) || document.structuredExam?.teacherOnly.specification || "";
+  const structuredMultipleChoice = document.structuredExam?.parts.find((part) => part.type === "multiple_choice")?.questions ?? [];
   const structuredTrueFalse = document.structuredExam?.parts.find((part) => part.type === "true_false")?.questions ?? [];
+  const structuredShortAnswer = document.structuredExam?.parts.find((part) => part.type === "short_answer")?.questions ?? [];
   const children: (Paragraph | Table)[] = [
     paragraph("PHẦN DÀNH CHO GIÁO VIÊN", { bold: true, center: true, size: 30, after: 80 }),
     paragraph("ĐÁP ÁN VÀ THANG ĐIỂM", { bold: true, center: true, size: 30, after: 220 })
@@ -203,6 +205,20 @@ function teacherContent(document: GeneratedDocument) {
       }));
     }
     children.push(...teacherBlocks(remainingAnswer.replace(/^PHẦN III:\s*/im, "").trim()));
+  } else if (structuredMultipleChoice.length || structuredTrueFalse.length || structuredShortAnswer.length) {
+    children.push(paragraph("I. ĐÁP ÁN", { bold: true, before: 80, after: 90 }));
+    if (structuredMultipleChoice.length) children.push(docxTable({
+      headers: ["Câu", "Đáp án", "Giải thích ngắn"],
+      rows: structuredMultipleChoice.map((question) => [String(question.number), question.answer, question.explanation || "Giáo viên rà soát."])
+    }));
+    if (structuredTrueFalse.length) children.push(paragraph("PHẦN II", { bold: true, before: 100, after: 60 }), docxTable({
+      headers: ["Câu", "a", "b", "c", "d"],
+      rows: structuredTrueFalse.map((question) => [String(question.number), ...(question.trueFalseItems ?? []).map((item) => item.answer ? "Đúng" : "Sai")])
+    }));
+    if (structuredShortAnswer.length) children.push(paragraph("PHẦN III", { bold: true, before: 100, after: 60 }), docxTable({
+      headers: ["Câu", "Đáp án", "Gợi ý chấm"],
+      rows: structuredShortAnswer.map((question) => [String(question.number), question.answer, question.explanation || "Giáo viên rà soát."])
+    }));
   }
   if (scoring) {
     children.push(paragraph("II. HƯỚNG DẪN CHẤM", { bold: true, before: 180, after: 90 }), ...teacherBlocks(scoring));

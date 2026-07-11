@@ -3,6 +3,7 @@ import { File } from "node:buffer";
 import JSZip from "jszip";
 import { readManifest } from "../components/tikz/TikzBankImportModal";
 import { validateTikzImportItem } from "../lib/tikz-bank/import-validation";
+import { validateTikzSnippetInput } from "../lib/tikz-bank";
 
 const tikzCode = "\\begin{tikzpicture}\\draw (0,0)--(1,1);\\end{tikzpicture}";
 const fullLatex = `\\documentclass{standalone}\n\\usepackage{tikz}\n\\begin{document}\n${tikzCode}\n\\end{document}`;
@@ -50,6 +51,9 @@ async function run() {
   assert.equal(wrappedZipResult.items.length, 60);
   assert.equal(items.filter((item, index) => validateTikzImportItem(item, index).status === "error").length, 0);
   assert.equal(validateTikzImportItem({ slug: "unsafe", title: "Unsafe", tikz_code: `\\begin{tikzpicture}\\write18{bad}\\end{tikzpicture}` }, 11).status, "error");
+  assert.equal(validateTikzSnippetInput({ title: "Unsafe", tikz_code: `\\begin{tikzpicture}\\write18{bad}\\end{tikzpicture}` }).ok, false);
+  assert.equal(validateTikzSnippetInput({ title: "Traversal", tikz_code: `\\begin{tikzpicture}\\input{../secret}\\end{tikzpicture}` }).ok, false);
+  assert.equal(validateTikzSnippetInput({ title: "Circuit", tikz_code: `\\begin{circuitikz}\\draw (0,0)--(1,0);\\end{circuitikz}` }).ok, true);
   assert.notEqual(validateTikzImportItem({ slug: "safe", title: "Safe", tikz_code: "\\begin{tikzpicture}\\foreach \\x in {1,2}{\\draw (\\x,0)--(\\x,1);}\\end{tikzpicture}" }).status, "error");
   assert.equal(validateTikzImportItem({ slug: "missing-title", tikz_code: tikzCode }, 11).message, "Mục số 12 thiếu title.");
   console.log("Manifest JSON: 60/60; Raw array JSON: 60/60; ZIP root manifest: 60/60; ZIP one-level manifest: 60/60; aliases: đạt; safety: đạt; precise errors: đạt.");

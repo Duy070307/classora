@@ -34,6 +34,14 @@ const unsafeCommandPattern = /\\(?:write18|openin|openout|read|input|include|imm
 const unsafeResourcePattern = /\.\.[/\\]|https?:\/\/|shell[ -]?escape/i;
 const supportedEnvironment = /\\begin\s*\{(?:tikzpicture|circuitikz)\}/i;
 
+export function tikzSafetyError(...values: Array<string | null | undefined>) {
+  const source = values.filter(Boolean).join("\n");
+  if (unsafeCommandPattern.test(source) || unsafeResourcePattern.test(source)) {
+    return "Mã TikZ chứa lệnh hoặc tài nguyên không được hỗ trợ vì lý do an toàn.";
+  }
+  return "";
+}
+
 function clean(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().replace(/\r\n?/g, "\n").slice(0, max) : "";
 }
@@ -74,7 +82,7 @@ export function validateTikzImportItem(value: unknown, index?: number): TikzImpo
   if (!tikzCode) return { status: "error", message: `${prefix} thiếu tikz_code.`, item: null };
   if (!supportedEnvironment.test(tikzCode)) return { status: "error", message: `${prefix} chưa có môi trường tikzpicture hoặc circuitikz.`, item: null };
   const fullLatex = clean(alias(source, "full_latex", "fullLatex"), 50000) || null;
-  if (unsafeCommandPattern.test(`${tikzCode}\n${fullLatex || ""}`) || unsafeResourcePattern.test(`${tikzCode}\n${fullLatex || ""}`)) {
+  if (tikzSafetyError(tikzCode, fullLatex)) {
     return { status: "error", message: `${prefix}: Mã TikZ chứa lệnh không được hỗ trợ vì lý do an toàn.`, item: null };
   }
   const category = clean(source.category, 100) || null;

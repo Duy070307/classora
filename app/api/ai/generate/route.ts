@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildPrompt } from "@/lib/ai/prompts";
-import { getConfiguredProvider, getProviderStatus } from "@/lib/ai/provider";
+import { getConfiguredProvider } from "@/lib/ai/provider";
 import { localProvider } from "@/lib/ai/providers/local-provider";
 import type { AIRefinementAction, AIGenerateMode } from "@/lib/ai";
 import { validateStructuredExam } from "@/lib/exam/validate-structured-exam";
@@ -9,6 +9,8 @@ import type { AIResponse } from "@/lib/ai/types";
 import { createGenerationRequestContext } from "@/lib/generation/request-context";
 import { filterStructuredExamByTopic } from "@/lib/generation/topic-validator";
 import { structuredExamToText } from "@/lib/mock-exam-generator";
+import { getCurrentUser } from "@/lib/auth/user";
+import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 const actions = new Set<AIRefinementAction>([
   "regenerate",
@@ -82,21 +84,28 @@ function mergeSafeExamResults(base: AIResponse, addition: AIResponse, input: Rec
   return { ...addition, structuredExam, content: structuredExamToText(structuredExam, input as unknown as ExamInput), warnings: [...(base.warnings || []), ...(addition.warnings || [])] };
 }
 
+function publicAIResult(result: AIResponse) {
+  const safe = { ...result } as Partial<AIResponse>;
+  delete safe.provider;
+  delete safe.providerRequested;
+  delete safe.providerFallbackReason;
+  delete safe.fallbackUsed;
+  delete safe.retryCount;
+  return safe;
+}
+
 export async function GET() {
-  const status = getProviderStatus();
   return NextResponse.json({
     ok: true,
-    provider: status.active,
-    requestedProvider: status.requested,
-    openaiKeyConfigured: status.openaiKeyConfigured,
-    geminiKeyConfigured: status.geminiKeyConfigured,
-    dailyLimit: status.dailyLimit,
-    maxOutputTokens: status.maxOutputTokens,
+    generationAvailable: true,
   });
 }
 
 export async function POST(request: Request) {
   try {
+    if (isSupabaseConfigured() && !await getCurrentUser()) {
+      return NextResponse.json({ ok: false, error: "Vui lòng đăng nhập để tạo nội dung." }, { status: 401 });
+    }
     const validated = validateBody(await request.json());
     if ("error" in validated) {
       return NextResponse.json({ ok: false, error: validated.error }, { status: 400 });
@@ -110,7 +119,7 @@ export async function POST(request: Request) {
       if (isExam) {
         let checked = validateTopicSafeExam(result, validated.input);
         if (checked.ok && checked.rejectedCount === 0 && checked.result.content.trim()) {
-          return NextResponse.json({ ...checked.result, providerRequested: provider.name, retryCount: 0, warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
+          return NextResponse.json({ ...publicAIResult(checked.result), warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
         }
         let accumulated = checked.ok ? checked.result : undefined;
         let rejectionReason = checked.ok ? `${checked.rejectedCount} câu chưa đủ độ bám chủ đề` : checked.reason;
@@ -130,9 +139,7 @@ Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejection
                 continue;
               }
               return NextResponse.json({
-                ...accumulated,
-                providerRequested: provider.name,
-                retryCount: retry,
+                ...publicAIResult(accumulated),
                 warnings: [...(accumulated.warnings || []), accumulatedCount < requested || checked.rejectedCount ? "Kết quả được giới hạn để bảo toàn độ bám chủ đề." : "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."],
               });
             }
@@ -143,17 +150,16 @@ Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejection
         }
         return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu." }, { status: 422 });
       }
-      return NextResponse.json({ ...result, providerRequested: provider.name, retryCount: 0 });
+      return NextResponse.json(publicAIResult(result));
     } catch {
       const fallback = await localProvider.generate({ ...validated, prompt });
       if (isExam) {
         const checked = validateTopicSafeExam(fallback, validated.input);
         if (!checked.ok) return NextResponse.json({ ok: false, error: "SOẠN LAB chưa tạo được đủ nội dung bám sát chủ đề này. Thầy cô có thể mô tả cụ thể hơn hoặc giảm số lượng yêu cầu." }, { status: 422 });
-        return NextResponse.json({ ...checked.result, fallbackUsed: true, retryCount: 0, warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
+        return NextResponse.json({ ...publicAIResult(checked.result), warnings: [...(checked.result.warnings || []), "Soạn Lab đã kiểm tra chủ đề trước khi hiển thị đề."] });
       }
       return NextResponse.json({
-        ...fallback,
-        fallbackUsed: true,
+        ...publicAIResult(fallback),
         warnings: [
           ...(fallback.warnings || []),
           "Soạn Lab đã tạo bản nháp bằng quy trình dự phòng. Vui lòng rà soát trước khi sử dụng.",
@@ -164,7 +170,6 @@ Yêu cầu sửa nghiêm ngặt: nội dung trước bị loại vì ${rejection
     return NextResponse.json({
       ok: false,
       error: "Không thể tạo nội dung lúc này. Vui lòng thử lại hoặc dùng nội dung đã lưu trong lịch sử.",
-      fallbackUsed: false,
     }, { status: 400 });
   }
 }

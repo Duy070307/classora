@@ -5,7 +5,7 @@ import { isRegistrationEnabled, isSupabaseConfigured } from "@/lib/supabase/is-c
 export async function GET() {
   const user = await getCurrentUser();
   return NextResponse.json({
-    supabaseConfigured: isSupabaseConfigured(),
+    authenticationReady: isSupabaseConfigured(),
     registrationEnabled: isRegistrationEnabled(),
     user
   });

@@ -21,7 +21,7 @@ const toolOptions = [
 ];
 
 type AuthState = {
-  supabaseConfigured: boolean;
+  authenticationReady: boolean;
   user: { email?: string; role?: string } | null;
 };
 
@@ -39,7 +39,7 @@ export function FeedbackWidget() {
   const [sending, setSending] = useState(false);
 
   const detectedTool = useMemo(() => detectToolFromPath(pathname || ""), [pathname]);
-  const visible = auth ? (!auth.supabaseConfigured || Boolean(auth.user)) : false;
+  const visible = auth ? (!auth.authenticationReady || Boolean(auth.user)) : false;
 
   useEffect(() => {
     let mounted = true;
@@ -48,11 +48,11 @@ export function FeedbackWidget() {
       .then((data) => {
         if (!mounted) return;
         setAuth({
-          supabaseConfigured: Boolean(data?.supabaseConfigured),
+          authenticationReady: Boolean(data?.authenticationReady),
           user: data?.user || null,
         });
       })
-      .catch(() => setAuth({ supabaseConfigured: true, user: null }));
+      .catch(() => setAuth({ authenticationReady: true, user: null }));
     return () => {
       mounted = false;
     };
@@ -110,7 +110,7 @@ export function FeedbackWidget() {
 
     setSending(true);
     try {
-      if (auth && !auth.supabaseConfigured) {
+      if (auth && !auth.authenticationReady) {
         const current = JSON.parse(localStorage.getItem(LOCAL_FEEDBACK_KEY) || "[]") as unknown[];
         localStorage.setItem(LOCAL_FEEDBACK_KEY, JSON.stringify([{ ...payload, createdAt: new Date().toISOString() }, ...current].slice(0, 100)));
       } else {
@@ -143,7 +143,7 @@ export function FeedbackWidget() {
           setStatus("");
           setError("");
         }}
-        className="fixed bottom-3 right-3 z-40 inline-flex min-h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 sm:bottom-5 sm:right-5 sm:min-h-11 sm:px-4 sm:text-sm"
+        className="fixed bottom-20 right-3 z-40 inline-flex min-h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-2 text-xs font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 sm:bottom-5 sm:right-5 sm:min-h-11 sm:px-4 sm:text-sm"
         aria-label="Góp ý cho Soạn Lab"
       >
         <MessageCircle size={17} />
