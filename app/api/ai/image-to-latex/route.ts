@@ -62,6 +62,7 @@ export async function POST(request: Request) {
       confidence: result.confidence,
       warnings: result.warnings,
       geometryDiagnostic: process.env.NODE_ENV === "development" ? result.geometryDiagnostic : undefined,
+      geometryStructure: process.env.NODE_ENV === "development" ? result.geometryStructure : undefined,
     });
   } catch (error) {
     if (error instanceof VisionCapabilityError) {

@@ -18,6 +18,7 @@ export type ImageToLatexResult = {
   provider: "openai" | "gemini" | "grok";
   model: string;
   geometryDiagnostic?: GeometryDiagnostic;
+  geometryStructure?: unknown;
 };
 
 export class VisionCapabilityError extends Error {
@@ -275,18 +276,24 @@ Trả về đúng JSON:
   "warnings": ["cảnh báo nếu có"]
 }`;
 
-  const structurePrompt = `Phân tích ảnh hình học đã cắt gọn và chỉ trả về JSON cấu trúc, không tạo TikZ, không giải bài toán.
-Ưu tiên tính đúng đắn hình học hơn độ giống trực quan.
-Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi tên, không thêm điểm.
-Chỉ ghi quan hệ vuông góc khi có ký hiệu vuông góc nhìn thấy rõ; nếu mơ hồ, đặt certain=false và thêm warning.
-Giữ đúng nét solid/dashed của từng đoạn nhìn thấy. Không suy diễn cạnh ẩn.
+  const structurePrompt = `Phân tích topology của ảnh hình học đã cắt gọn và chỉ trả về JSON cấu trúc. Không tạo TikZ, không giải bài toán cho đến khi cấu trúc hình học đã rõ.
+Ưu tiên tính đúng đắn hình học hơn độ giống pixel. Nhận diện figureType như triangle, quadrilateral, parallelogram, trapezoid, rectangle, square, circle, pyramid, prism, cuboid hoặc unknown.
+Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi O thành 0, H thành M, I thành U; không thêm điểm thay thế.
+Phân loại riêng solidEdges và dashedEdges theo đúng ảnh; hidden/auxiliary edge dùng dashedEdges. Không suy diễn cạnh ẩn.
+Phân tích base/apex, intersection, pointOnSegment và perpendicular trước khi vẽ. Chỉ ghi vuông góc khi có ký hiệu rõ; nếu mơ hồ đặt certain=false và thêm warning.
 
 Trả về JSON theo đúng dạng:
 {
-  "points": [{"label":"A","approximatePosition":"left|right|top|bottom|center"}],
-  "segments": [{"from":"A","to":"B","style":"solid|dashed"}],
-  "pointOnSegment": [{"point":"I","segment":["B","C"],"between":true}],
-  "perpendicularRelations": [{"segment1":["A","I"],"segment2":["B","C"],"vertex":"I","certain":true}],
+  "figureType": "pyramid|triangle|circle|quadrilateral|unknown",
+  "points": [{"label":"A","relativePosition":"left-bottom|bottom|right|upper-right|top|center"}],
+  "solidEdges": [["A","B"]],
+  "dashedEdges": [["A","C"]],
+  "relations": [
+    {"type":"base","points":["A","B","C","D"]},
+    {"type":"intersection","point":"O","lines":[["A","C"],["B","D"]]},
+    {"type":"pointOnSegment","point":"I","segment":["B","C"],"between":true},
+    {"type":"perpendicular","segment1":["A","I"],"segment2":["B","C"],"vertex":"I","certain":true}
+  ],
   "parallelRelations": [],
   "equalLengthRelations": [],
   "visibleLabels": ["A","B","C"],
@@ -311,10 +318,11 @@ Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hi
         standaloneLatex: generated.standaloneLatex,
         explanation: accuracyNotice,
         confidence: generated.diagnostic.valid ? "high" : "low",
-        warnings: generated.diagnostic.warnings,
+        warnings: [...generated.diagnostic.warnings, "Bản vẽ là bản nháp TikZ, thầy cô nên kiểm tra trước khi dùng chính thức."],
         provider,
         model,
         geometryDiagnostic: generated.diagnostic,
+        geometryStructure: structure,
       };
     }
     throw new Error("geometry_structure_parse_failed");

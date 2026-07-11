@@ -1,4 +1,6 @@
 import { buildStandaloneTikzDocument } from "@/lib/ai/extract-tikz";
+import { createGeometryLayout } from "@/lib/ai/geometry-layout";
+import { inspectGeometryTikz } from "@/lib/ai/geometry-tikz-inspector";
 
 export type Point2D = { x: number; y: number };
 export type GeometryPoint = { label: string; approximatePosition?: string };
@@ -6,10 +8,12 @@ export type GeometrySegment = { from: string; to: string; style?: "solid" | "das
 export type PointOnSegmentConstraint = { point: string; segment: [string, string]; between?: boolean };
 export type PerpendicularConstraint = { segment1: [string, string]; segment2: [string, string]; vertex: string; certain?: boolean };
 export type GeometryStructure = {
+  figureType: string;
   points: GeometryPoint[];
   segments: GeometrySegment[];
   pointOnSegment: PointOnSegmentConstraint[];
   perpendicularRelations: PerpendicularConstraint[];
+  intersections: Array<{ point: string; lines: [[string, string], [string, string]] }>;
   parallelRelations: unknown[];
   equalLengthRelations: unknown[];
   visibleLabels: string[];
@@ -20,6 +24,8 @@ export type GeometryDiagnostic = {
   labels: string[];
   pointOnSegment: Array<{ relation: string; passed: boolean }>;
   perpendicular: Array<{ relation: string; passed: boolean }>;
+  intersections: Array<{ relation: string; passed: boolean }>;
+  basic: Array<{ relation: string; passed: boolean }>;
   warnings: string[];
   valid: boolean;
 };
@@ -54,7 +60,8 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
     if (!item || typeof item !== "object") return [];
     const value = item as Record<string, unknown>;
     const label = cleanLabel(value.label ?? value.name);
-    return label ? [{ label, approximatePosition: typeof value.approximatePosition === "string" ? value.approximatePosition : undefined }] : [];
+    const position = value.relativePosition ?? value.approximatePosition;
+    return label ? [{ label, approximatePosition: typeof position === "string" ? position : undefined }] : [];
   });
   const visibleLabels = (Array.isArray(parsed.visibleLabels) ? parsed.visibleLabels : []).map(cleanLabel).filter(Boolean);
   const pointLabels = points.map((point) => point.label);
@@ -63,27 +70,47 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
   if (!labels.length) return null;
   const labelSet = new Set(labels);
 
-  const segments = (Array.isArray(parsed.segments) ? parsed.segments : []).flatMap((item) => {
+  const rawSegments = [
+    ...(Array.isArray(parsed.segments) ? parsed.segments : []),
+    ...(Array.isArray(parsed.solidEdges) ? parsed.solidEdges.map((edge) => ({ edge, style: "solid" })) : []),
+    ...(Array.isArray(parsed.visibleEdges) ? parsed.visibleEdges.map((edge) => ({ edge, style: "solid" })) : []),
+    ...(Array.isArray(parsed.dashedEdges) ? parsed.dashedEdges.map((edge) => ({ edge, style: "dashed" })) : []),
+    ...(Array.isArray(parsed.hiddenEdges) ? parsed.hiddenEdges.map((edge) => ({ edge, style: "dashed" })) : []),
+    ...(Array.isArray(parsed.auxiliaryEdges) ? parsed.auxiliaryEdges.map((edge) => ({ edge, style: "dashed" })) : []),
+  ];
+  const segments = rawSegments.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const value = item as Record<string, unknown>;
-    const from = cleanLabel(value.from); const to = cleanLabel(value.to);
+    const edge = pair(value.edge);
+    const from = edge?.[0] || cleanLabel(value.from); const to = edge?.[1] || cleanLabel(value.to);
     if (!labelSet.has(from) || !labelSet.has(to) || from === to) return [];
     return [{ from, to, style: value.style === "dashed" ? "dashed" as const : "solid" as const }];
   });
-  const pointOnSegment = (Array.isArray(parsed.pointOnSegment) ? parsed.pointOnSegment : []).flatMap((item) => {
+  const relations = Array.isArray(parsed.relations) ? parsed.relations : [];
+  const pointOnInputs = [...(Array.isArray(parsed.pointOnSegment) ? parsed.pointOnSegment : []), ...relations.filter((item) => item && typeof item === "object" && (item as Record<string, unknown>).type === "pointOnSegment")];
+  const pointOnSegment = pointOnInputs.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const value = item as Record<string, unknown>; const point = cleanLabel(value.point); const segment = pair(value.segment);
     return point && segment && labelSet.has(point) && segment.every((label) => labelSet.has(label)) ? [{ point, segment, between: value.between !== false }] : [];
   });
-  const perpendicularRelations = (Array.isArray(parsed.perpendicularRelations) ? parsed.perpendicularRelations : []).flatMap((item) => {
+  const perpendicularInputs = [...(Array.isArray(parsed.perpendicularRelations) ? parsed.perpendicularRelations : []), ...relations.filter((item) => item && typeof item === "object" && (item as Record<string, unknown>).type === "perpendicular")];
+  const perpendicularRelations = perpendicularInputs.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const value = item as Record<string, unknown>; const segment1 = pair(value.segment1); const segment2 = pair(value.segment2); const vertex = cleanLabel(value.vertex);
     return segment1 && segment2 && vertex && [...segment1, ...segment2].every((label) => labelSet.has(label))
       ? [{ segment1, segment2, vertex, certain: value.certain !== false }] : [];
   });
+  const intersections = relations.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const value = item as Record<string, unknown>;
+    if (value.type !== "intersection" || !Array.isArray(value.lines) || value.lines.length !== 2) return [];
+    const point = cleanLabel(value.point); const first = pair(value.lines[0]); const second = pair(value.lines[1]);
+    return point && first && second && labelSet.has(point) && [...first, ...second].every((label) => labelSet.has(label)) ? [{ point, lines: [first, second] as [[string, string], [string, string]] }] : [];
+  });
   return {
+    figureType: typeof parsed.figureType === "string" ? parsed.figureType : "unknown",
     points: labels.map((label) => points.find((point) => point.label === label) || { label }),
-    segments, pointOnSegment, perpendicularRelations,
+    segments: [...new Map(segments.map((item) => [[item.from, item.to].sort().join("|"), item])).values()], pointOnSegment, perpendicularRelations, intersections,
     parallelRelations: Array.isArray(parsed.parallelRelations) ? parsed.parallelRelations : [],
     equalLengthRelations: Array.isArray(parsed.equalLengthRelations) ? parsed.equalLengthRelations : [],
     visibleLabels: labels,
@@ -91,38 +118,8 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
   };
 }
 
-function initialPosition(point: GeometryPoint, index: number, total: number): Point2D {
-  const hint = (point.approximatePosition || "").toLowerCase();
-  if (/top|above|trên/.test(hint)) return { x: 0, y: 4 };
-  if (/bottom|below|dưới/.test(hint)) return { x: 0, y: 0 };
-  if (/left|trái/.test(hint)) return { x: -3, y: 1 };
-  if (/right|phải/.test(hint)) return { x: 3, y: 1 };
-  const angle = Math.PI / 2 + (index * Math.PI * 2) / Math.max(total, 3);
-  return { x: 2.8 * Math.cos(angle), y: 2.8 * Math.sin(angle) + 2 };
-}
-
-function midpoint(a: Point2D, b: Point2D, ratio = 0.5): Point2D {
-  return { x: a.x + (b.x - a.x) * ratio, y: a.y + (b.y - a.y) * ratio };
-}
-
 export function layoutGeometry(structure: GeometryStructure): Record<string, Point2D> {
-  const coordinates = Object.fromEntries(structure.points.map((point, index) => [point.label, initialPosition(point, index, structure.points.length)]));
-  for (let iteration = 0; iteration < 4; iteration += 1) {
-    for (const constraint of structure.pointOnSegment) {
-      coordinates[constraint.point] = midpoint(coordinates[constraint.segment[0]], coordinates[constraint.segment[1]]);
-    }
-    for (const relation of structure.perpendicularRelations.filter((item) => item.certain !== false)) {
-      const firstHasVertex = relation.segment1.includes(relation.vertex);
-      const perpendicular = firstHasVertex ? relation.segment1 : relation.segment2;
-      const reference = firstHasVertex ? relation.segment2 : relation.segment1;
-      const moving = perpendicular.find((label) => label !== relation.vertex);
-      if (!moving || !coordinates[relation.vertex]) continue;
-      const a = coordinates[reference[0]]; const b = coordinates[reference[1]];
-      const dx = b.x - a.x; const dy = b.y - a.y; const length = Math.max(Math.hypot(dx, dy), 1);
-      coordinates[moving] = { x: coordinates[relation.vertex].x - (dy / length) * 2.6, y: coordinates[relation.vertex].y + (dx / length) * 2.6 };
-    }
-  }
-  return coordinates;
+  return createGeometryLayout(structure);
 }
 
 export function pointOnSegment(point: Point2D, a: Point2D, b: Point2D, tolerance = TOLERANCE) {
@@ -141,6 +138,28 @@ export function perpendicular(a: Point2D, b: Point2D, c: Point2D, d: Point2D, to
 
 export function validateGeometry(structure: GeometryStructure, coordinates: Record<string, Point2D>): GeometryDiagnostic {
   const warnings = [...structure.warnings];
+  if (structure.figureType === "unknown") warnings.push("Chưa xác định chắc chắn loại hình; bản vẽ được dựng theo hướng bảo thủ.");
+  const basic: Array<{ relation: string; passed: boolean }> = [];
+  for (let index = 0; index < structure.visibleLabels.length; index += 1) {
+    const label = structure.visibleLabels[index];
+    for (let previous = 0; previous < index; previous += 1) {
+      const other = structure.visibleLabels[previous];
+      const passed = Math.hypot(coordinates[label].x - coordinates[other].x, coordinates[label].y - coordinates[other].y) >= 0.05;
+      basic.push({ relation: `${label} khác tọa độ ${other}`, passed });
+      if (!passed) warnings.push(`Đã phát hiện điểm ${label} và ${other} trùng tọa độ.`);
+    }
+  }
+  structure.segments.forEach((segment) => {
+    const passed = Boolean(coordinates[segment.from] && coordinates[segment.to]) && Math.hypot(coordinates[segment.from].x - coordinates[segment.to].x, coordinates[segment.from].y - coordinates[segment.to].y) >= 0.05;
+    basic.push({ relation: `Đoạn ${segment.from}${segment.to} có độ dài dương`, passed });
+    if (!passed) warnings.push(`Đã loại đoạn ${segment.from}${segment.to} có độ dài bằng 0.`);
+  });
+  if (structure.figureType === "pyramid" && ["S", "A", "B", "C", "D"].every((label) => coordinates[label])) {
+    const baseY = ["A", "B", "C", "D"].reduce((sum, label) => sum + coordinates[label].y, 0) / 4;
+    const apexPassed = coordinates.S.y > baseY + 0.5;
+    basic.push({ relation: "Đỉnh S nằm phía trên đáy ABCD", passed: apexPassed });
+    if (!apexPassed) warnings.push("Chưa xác nhận vị trí đỉnh S so với đáy ABCD.");
+  }
   const pointChecks = structure.pointOnSegment.map((item) => {
     const passed = pointOnSegment(coordinates[item.point], coordinates[item.segment[0]], coordinates[item.segment[1]]);
     if (!passed) warnings.push(`Chưa xác nhận chính xác điểm ${item.point} thuộc đoạn ${item.segment.join("")}.`);
@@ -154,7 +173,15 @@ export function validateGeometry(structure: GeometryStructure, coordinates: Reco
     if (!passed) warnings.push(`Chưa xác nhận chính xác quan hệ vuông góc tại điểm ${item.vertex}.`);
     return { relation: `${item.segment1.join("")} ⟂ ${item.segment2.join("")} tại ${item.vertex}`, passed };
   });
-  return { labels: structure.visibleLabels, pointOnSegment: pointChecks, perpendicular: perpendicularChecks, warnings: [...new Set(warnings)], valid: [...pointChecks, ...perpendicularChecks].every((item) => item.passed) };
+  const intersectionChecks = structure.intersections.map((item) => {
+    const point = coordinates[item.point]; const first = item.lines[0]; const second = item.lines[1];
+    const passed = pointOnSegment(point, coordinates[first[0]], coordinates[first[1]], 0.06) && pointOnSegment(point, coordinates[second[0]], coordinates[second[1]], 0.06);
+    if (!passed) warnings.push(`Chưa xác nhận chính xác giao điểm ${item.point}.`);
+    else warnings.push(`Đã tính ${item.point} là giao điểm của ${first.join("")} và ${second.join("")}.`);
+    return { relation: `${item.point} = ${first.join("")} ∩ ${second.join("")}`, passed };
+  });
+  const checks = [...basic, ...pointChecks, ...perpendicularChecks, ...intersectionChecks];
+  return { labels: structure.visibleLabels, basic, pointOnSegment: pointChecks, perpendicular: perpendicularChecks, intersections: intersectionChecks, warnings: [...new Set(warnings)], valid: checks.every((item) => item.passed) };
 }
 
 export function generateValidatedTikz(structure: GeometryStructure) {
@@ -162,10 +189,20 @@ export function generateValidatedTikz(structure: GeometryStructure) {
   const diagnostic = validateGeometry(structure, coordinates);
   const lines = ["\\begin{tikzpicture}[scale=1, line cap=round, line join=round]"];
   for (const label of structure.visibleLabels) {
+    if (structure.intersections.some((item) => item.point === label)) continue;
     const point = coordinates[label];
     lines.push(`  \\coordinate (${label}) at (${point.x.toFixed(3)},${point.y.toFixed(3)});`);
   }
-  for (const segment of structure.segments) lines.push(`  \\draw[${segment.style === "dashed" ? "dashed" : "solid"}] (${segment.from}) -- (${segment.to});`);
+  structure.intersections.forEach((relation, index) => {
+    lines.push(`  \\path[name path=line${index}a] (${relation.lines[0][0]}) -- (${relation.lines[0][1]});`);
+    lines.push(`  \\path[name path=line${index}b] (${relation.lines[1][0]}) -- (${relation.lines[1][1]});`);
+    lines.push(`  \\path[name intersections={of=line${index}a and line${index}b, by=${relation.point}}];`);
+  });
+  for (const segment of structure.segments) {
+    const a = coordinates[segment.from]; const b = coordinates[segment.to];
+    if (!a || !b || Math.hypot(a.x - b.x, a.y - b.y) < 0.05) continue;
+    lines.push(`  \\draw[thick${segment.style === "dashed" ? ", dashed" : ""}] (${segment.from}) -- (${segment.to});`);
+  }
   for (const label of structure.visibleLabels) lines.push(`  \\fill (${label}) circle (1.4pt) node[above right] {$${label}$};`);
   structure.perpendicularRelations.forEach((relation, index) => {
     if (!diagnostic.perpendicular[index]?.passed) return;
@@ -175,5 +212,8 @@ export function generateValidatedTikz(structure: GeometryStructure) {
   });
   lines.push("\\end{tikzpicture}");
   const tikzCode = lines.join("\n");
-  return { tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), diagnostic };
+  const inspection = inspectGeometryTikz(tikzCode, structure, coordinates);
+  if (!inspection.ok) diagnostic.warnings.push("Một số quan hệ hình học chưa được xác nhận chính xác.", ...inspection.issues);
+  diagnostic.valid = diagnostic.valid && inspection.ok;
+  return { tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), diagnostic, inspection };
 }
