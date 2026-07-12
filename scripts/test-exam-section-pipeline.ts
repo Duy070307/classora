@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import type { ExamPartType, ExamQuestion } from "../lib/exam-types";
 import { collectExamSections, isUsableExamCount } from "../lib/exam/section-generation";
+import { validateShortAnswerNumeric, validateVisualDependency } from "../lib/exam/exam-quality";
 
 const input = {
   schoolName: "THPT ND", teacherName: "", subject: "Toán", grade: "12", topic: "hàm số", duration: "45 phút",
@@ -45,11 +46,23 @@ async function main() {
   assert.equal(collected.audit.finalCount, 22);
   assert.equal(collected.audit.complete, true);
   assert.equal(isUsableExamCount(22, collected.audit.finalCount), true);
+  assert.equal(isUsableExamCount(22, 17), false, "Không được coi đề dưới 18/22 là thành công bình thường");
+  const finalPartI = collected.audit.exam.parts.find((part) => part.type === "multiple_choice")?.questions || [];
+  const answerCounts = Object.fromEntries(["A", "B", "C", "D"].map((letter) => [letter, finalPartI.filter((question) => question.answer === letter).length]));
+  assert.deepEqual(answerCounts, { A: 3, B: 3, C: 3, D: 3 });
+  const finalPartII = collected.audit.exam.parts.find((part) => part.type === "true_false")?.questions || [];
+  const truthPatterns = finalPartII.map((question) => question.trueFalseItems?.map((item) => item.answer ? "T" : "F").join(""));
+  assert.equal(new Set(truthPatterns).size, 4);
+  const finalPartIII = collected.audit.exam.parts.find((part) => part.type === "short_answer")?.questions || [];
+  assert.ok(finalPartIII.every((question) => validateShortAnswerNumeric(question).valid));
+  assert.ok(collected.audit.exam.parts.flatMap((part) => part.questions).every((question) => validateVisualDependency(question).valid));
   const partIRequests = requests.filter((item) => item.type === "multiple_choice");
   assert.deepEqual(partIRequests.slice(0, 2).map((item) => item.count), [6, 6]);
   assert.ok(partIRequests.slice(2).every((item) => item.count <= 6));
   assert.equal(partIRequests[1].remaining, 10, "Sau lần đầu chỉ có 2 câu, pipeline phải phát hiện còn thiếu 10 câu");
   assert.equal(collected.diagnostics.finalTotal, 22);
+  assert.ok(Object.values(collected.diagnostics.parsed).reduce((sum, count) => sum + count, 0) >= 22, "Chẩn đoán phải giữ số câu parse, kể cả mục bị loại trước khi đủ 22 câu");
+  assert.deepEqual(collected.diagnostics.rejectedReasons, {});
   assert.ok(collected.diagnostics.regeneratedCount >= 10);
   console.log("Exam section pipeline: lần đầu 2/12, phát hiện thiếu 10, sinh tiếp theo chunk và lắp đủ 12/4/6 = 22 câu.");
 }

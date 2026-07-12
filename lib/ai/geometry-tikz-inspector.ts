@@ -27,5 +27,6 @@ export function inspectGeometryTikz(tikz: string, structure: GeometryStructure, 
     if (!new RegExp(`name intersections=\\{of=.*by=${relation.point}\\}`).test(tikz)) issues.push(`missing_computed_intersection_${relation.point}`);
   }
   if (/name intersections=/.test(tikz) && !/\\usetikzlibrary\{[^}]*intersections[^}]*\}/.test(standaloneLatex)) issues.push("missing_intersections_library");
+  if (structure.figureType === "pyramid" && structure.rightAngleVertices?.includes("O") && !/right-angle-marker O|right angle=[^;]*--O--/i.test(tikz)) issues.push("missing_right_angle_marker_O");
   return { ok: issues.length === 0, issues };
 }

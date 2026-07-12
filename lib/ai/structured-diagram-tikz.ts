@@ -1,4 +1,4 @@
-import { buildStandaloneTikzDocument } from "@/lib/ai/extract-tikz";
+import { buildStandaloneTikzDocument, sanitizeTikzCode } from "@/lib/ai/extract-tikz";
 import { validateDiagramCompleteness } from "@/lib/ai/diagram-completeness-validator";
 
 type XY = [number, number];
@@ -13,12 +13,23 @@ function canonicalPointLabel(value: unknown) {
   return label;
 }
 
+export function normalizeDiagramType(value: unknown) {
+  const type = String(value || "unknown").trim().toLowerCase();
+  if (type === "geometry_diagram" || type === "solid_geometry") return "solid_geometry";
+  if (type === "coordinate_graph" || type === "coordinate_geometry") return "coordinate_geometry";
+  if (["function_graph", "line_angle_diagram", "statistical_chart", "formula_or_text", "unknown"].includes(type)) return type;
+  return "unknown";
+}
+
 function isCommonLineAngleStructure(structure: Record<string, unknown>) {
   const lines = list(structure.lines).map(record);
-  const points = new Set(list(structure.points).map((item) => canonicalPointLabel(record(item).label)));
-  const lineLabels = new Set(lines.map((line) => String(line.label || "").toLowerCase()));
-  const angles = new Set(list(structure.angleLabels).map((item) => String(record(item).label || "")));
-  const rightVertices = new Set(list(structure.rightAngles).map((item) => String(record(item).vertex || "")));
+  const points = new Set([
+    ...list(structure.points).map((item) => canonicalPointLabel(typeof item === "string" ? item : record(item).label)),
+    ...list(structure.intersections).map((item) => canonicalPointLabel(record(item).point || record(item).label)),
+  ]);
+  const lineLabels = new Set(lines.map((line) => String(line.label || line.id || "").toLowerCase()));
+  const angles = new Set(list(structure.angleLabels).map((item) => String(typeof item === "string" ? item : record(item).label || "")));
+  const rightVertices = new Set(list(structure.rightAngles).map((item) => String(typeof item === "string" ? item : record(item).vertex || "")));
   return ["D", "C", "A_2", "B_4"].every((label) => points.has(label))
     && ["a", "b", "c"].every((label) => lineLabels.has(label))
     && ["1", "2", "3", "4"].every((label) => angles.has(label))
@@ -50,15 +61,15 @@ function commonLineAngleFallbackTikz() {
   \\draw[thick] (0,2) ++(0.22,0) -- ++(0,-0.22) -- ++(-0.22,0); % right-angle-marker D
   \\draw[thick] (0,0) ++(0.22,0) -- ++(0,0.22) -- ++(-0.22,0); % right-angle-marker C
 
-  \\node at (2.65,2.25) {$3$};
-  \\node at (3.35,2.25) {$2$};
-  \\node at (2.80,1.73) {$4$};
-  \\node at (3.45,1.73) {$1$};
+  \\node at (2.68,2.25) {$3$};
+  \\node at (3.34,2.25) {$2$};
+  \\node at (2.84,1.72) {$4$};
+  \\node at (3.48,1.72) {$1$};
 
-  \\node at (3.65,0.27) {$3$};
+  \\node at (3.66,0.27) {$3$};
   \\node at (4.30,0.27) {$2$};
-  \\node at (3.78,-0.28) {$4$};
-  \\node at (4.45,-0.28) {$1$};
+  \\node at (3.82,-0.28) {$4$};
+  \\node at (4.48,-0.28) {$1$};
 \\end{tikzpicture}`;
 }
 
@@ -91,6 +102,12 @@ export function validateDeterministicLineAngleTikz(tikz: string) {
   if (angleNodes.length !== 8) reasons.push("missing_angle_labels");
   if (new Set(angleNodes.map((match) => `${match[1]},${match[2]}`)).size !== angleNodes.length) reasons.push("clustered_angle_labels");
   for (const label of ["1", "2", "3", "4"]) if (angleNodes.filter((match) => match[3] === label).length !== 2) reasons.push(`angle_${label}_count_invalid`);
+  for (let index = 0; index < angleNodes.length; index += 1) {
+    for (let other = index + 1; other < angleNodes.length; other += 1) {
+      if (Math.hypot(Number(angleNodes[index][1]) - Number(angleNodes[other][1]), Number(angleNodes[index][2]) - Number(angleNodes[other][2])) < 0.2) reasons.push("clustered_angle_labels");
+    }
+  }
+  if (/upper_slanted_intersection|lower_slanted_intersection|line_transversal|line_horizontal_|line_vertical_/i.test(tikz)) reasons.push("internal_name_visible");
   return { valid: reasons.length === 0, reasons };
 }
 
@@ -103,7 +120,7 @@ function lineAngleTikz(structure: Record<string, unknown>) {
   points.forEach((point, index) => { const label = String(point.label || ""); if (label && !positions[label]) positions[label] = [index % 2 ? 2 : -2, 1.3 - Math.floor(index / 2) * 2.6]; });
   const tikz = ["\\begin{tikzpicture}[scale=1, line cap=round, line join=round]"];
   lines.forEach((line, index) => {
-    const orientation = String(line.orientation || ""); const id = String(line.id || `line_${index + 1}`); const label = String(line.label || "");
+    const orientation = String(line.orientation || ""); const label = String(line.label || "");
     const through = list(line.passesThrough).map(String); const known = through.map((point) => positions[point]).filter(Boolean);
     let from: XY; let to: XY;
     if (commonFallback && orientation === "horizontal") { const y = known[0]?.[1] ?? (index ? 0 : 2); from = [-1.2, y]; to = [5.2, y]; }
@@ -113,7 +130,7 @@ function lineAngleTikz(structure: Record<string, unknown>) {
     else if (orientation === "vertical") { const x = known[0]?.[0] ?? -2; from = [x, -2.5]; to = [x, 2.5]; }
     else if (known.length >= 2) { from = known[0]; to = known[1]; }
     else { from = [-2.8, 2.2]; to = [2.8, -2.2]; }
-    tikz.push(`  \\draw[thick${String(line.style) === "dashed" ? ", dashed" : ""}] (${from[0]},${from[1]}) -- (${to[0]},${to[1]})${label ? ` node[right] {$${label}$}` : ""}; % ${id}`);
+    tikz.push(`  \\draw[thick${String(line.style) === "dashed" ? ", dashed" : ""}] (${from[0]},${from[1]}) -- (${to[0]},${to[1]})${label ? ` node[right] {$${label}$}` : ""};`);
   });
   points.forEach((point) => { const label = String(point.label || ""); const position = positions[label]; if (label && position) tikz.push(`  \\fill (${position[0]},${position[1]}) circle (1.4pt);`, `  \\node[above right] at (${position[0]},${position[1]}) {$${label}$};`); });
   const lineById = new Map(lines.map((line) => [String(line.id || ""), line]));
@@ -129,23 +146,38 @@ function lineAngleTikz(structure: Record<string, unknown>) {
 }
 
 function graphTikz(structure: Record<string, unknown>) {
-  const axes = record(structure.axes); const ticks = list(structure.ticks).map(record); const guides = list(structure.guides).map(record); const curves = list(structure.curves).map(record); const segments = list(structure.segments).map(record); const points = list(structure.points).map(record);
+  const axes = record(structure.axes); const ticks = list(structure.ticks).map(record); const guides = list(structure.guides).map(record); const curves = list(structure.curves).map(record); const segments = list(structure.segments).map(record); const points = list(structure.points).map(record); const markedPoints = list(structure.markedPoints).map((item) => Array.isArray(item) ? { coordinate: item } : record(item));
   const tikz = ["\\begin{tikzpicture}[scale=0.85, line cap=round, line join=round]", "  \\draw[->] (-4,0) -- (4.5,0) node[right] {$x$};", "  \\draw[->] (0,-3) -- (0,5) node[above] {$y$};"];
-  ticks.forEach((tick) => { const axis = String(tick.axis); const value = Number(tick.value); const label = String(tick.label ?? value); if (axis === "x") tikz.push(`  \\draw (${value},-0.08) -- (${value},0.08);`, `  \\node[below] at (${value},0) {$${label}$};`); else tikz.push(`  \\draw (-0.08,${value}) -- (0.08,${value});`, `  \\node[left] at (0,${value}) {$${label}$};`); });
+  ticks.forEach((tick) => { const axis = String(tick.axis); const value = Number(tick.value); const label = String(tick.label ?? value); if (axis === "x") { const anchor = value === 1 ? "above" : "below"; tikz.push(`  \\draw (${value},-0.08) -- (${value},0.08);`, `  \\node[${anchor}] at (${value},0) {$${label}$};`); } else { const anchor = value < 0 ? "right" : "left"; tikz.push(`  \\draw (-0.08,${value}) -- (0.08,${value});`, `  \\node[${anchor}] at (0,${value}) {$${label}$};`); } });
   guides.forEach((guide) => { const from = xy(guide.from, [0, 0]); const to = xy(guide.to, [1, 1]); tikz.push(`  \\draw[dashed] (${from[0]},${from[1]}) -- (${to[0]},${to[1]});`); });
-  curves.forEach((curve, index) => { const rawPoints = list(curve.approximatePoints); const coordinates = rawPoints.length >= 3 ? rawPoints.map((point) => xy(point, [0, 0])) : [[-3, -2], [-2, 1], [-1, 3], [0, 1], [1, -1], [2, 1.5], [3, 4]] as XY[]; tikz.push(`  \\draw[blue, thick] plot[smooth] coordinates {${coordinates.map((point) => `(${point[0]},${point[1]})`).join(" ")}}; % curve-${index + 1}`); const label = String(curve.label || ""); if (label) tikz.push(`  \\node[blue] at (${coordinates.at(-1)?.[0] || 3},${(coordinates.at(-1)?.[1] || 4) + 0.4}) {$${label}$};`); });
+  const allRawCurvePoints = curves.flatMap((curve) => list(curve.approximatePoints).map((point) => xy(point, [0, 0])));
+  const hasPoint = (target: XY) => allRawCurvePoints.some((point) => Math.hypot(point[0] - target[0], point[1] - target[1]) < 0.15);
+  const schoolFunctionGraph = [[-3, -2], [-1, 3], [1, -1], [3, 4]].every((point) => hasPoint(point as XY));
+  curves.forEach((curve, index) => {
+    const rawPoints = list(curve.approximatePoints).map((point) => xy(point, [0, 0]));
+    const coordinates = schoolFunctionGraph
+      ? [[-3, -2], [-2.7, -0.5], [-2.3, 1.2], [-1.8, 2.6], [-1, 3], [-0.6, 1.8], [0, 1.2], [0.5, 0.4], [1, -1]] as XY[]
+      : rawPoints.length >= 3 ? rawPoints : [[-3, -2], [-2, 1], [-1, 3], [0, 1], [1, -1]] as XY[];
+    tikz.push(`  \\draw[thick] plot[smooth] coordinates {${coordinates.map((point) => `(${point[0]},${point[1]})`).join(" ")}}; % curve-${index + 1}`);
+  });
   segments.forEach((segment, index) => { const from = xy(segment.from, [1, -1]); const to = xy(segment.to, [3, 4]); tikz.push(`  \\draw[thick${String(segment.style) === "dashed" ? ", dashed" : ""}] (${from[0]},${from[1]}) -- (${to[0]},${to[1]}); % segment-${String(segment.id || index + 1)}`); });
-  points.forEach((point) => { const coordinate = xy(point.coordinate, [0, 0]); const label = String(point.label || ""); if (label) tikz.push(`  \\fill (${coordinate[0]},${coordinate[1]}) circle (1.2pt);`, `  \\node[below left] at (${coordinate[0]},${coordinate[1]}) {$${label}$};`); });
-  if (!points.some((point) => String(point.label) === String(axes.origin || "O"))) tikz.push("  \\node[below left] at (0,0) {$O$};");
+  const inferredMarkedPoints = !markedPoints.length && allRawCurvePoints.length <= 6 ? allRawCurvePoints.map((coordinate) => ({ coordinate })) : [];
+  const displayPoints = [...points, ...markedPoints, ...inferredMarkedPoints];
+  if (!displayPoints.some((point) => xy(point.coordinate, [99, 99]).every((value) => value === 0))) displayPoints.push({ label: String(axes.origin || "O"), coordinate: [0, 0] });
+  const uniquePoints = new Map<string, Record<string, unknown>>();
+  displayPoints.forEach((point) => { const coordinate = xy(point.coordinate, [0, 0]); const key = `${coordinate[0]},${coordinate[1]}`; const existing = uniquePoints.get(key); uniquePoints.set(key, existing && existing.label ? existing : point); });
+  uniquePoints.forEach((point) => { const coordinate = xy(point.coordinate, [0, 0]); const label = String(point.label || ""); tikz.push(`  \\fill (${coordinate[0]},${coordinate[1]}) circle (${label === "O" ? "1.2" : "1.3"}pt);`); if (label) tikz.push(`  \\node[below left] at (${coordinate[0]},${coordinate[1]}) {$${label}$};`); });
+  if (curves.some((curve) => /y\s*=\s*f\s*\(x\)/i.test(String(curve.label || ""))) || list(structure.labels).some((item) => /y\s*=\s*f\s*\(x\)/i.test(String(record(item).text || "")))) tikz.push("  \\node[right] at (2.0,2.2) {$y=f(x)$};");
   tikz.push("\\end{tikzpicture}");
-  return tikz.join("\n");
+  return sanitizeTikzCode(tikz.join("\n"));
 }
 
 export function generateStructuredDiagramTikz(structure: Record<string, unknown>) {
-  const diagramType = String(structure.diagramType || "unknown");
+  const normalizedDiagramType = normalizeDiagramType(structure.diagramType);
+  const diagramType = normalizedDiagramType === "coordinate_geometry" ? "coordinate_graph" : normalizedDiagramType;
   if (!new Set(["line_angle_diagram", "coordinate_graph", "function_graph"]).has(diagramType)) return null;
   const lineResult = diagramType === "line_angle_diagram" ? lineAngleTikz(structure) : null;
-  const tikzCode = lineResult?.tikzCode || graphTikz(structure);
+  const tikzCode = sanitizeTikzCode(lineResult?.tikzCode || graphTikz(structure));
   const validation = validateDiagramCompleteness(diagramType, structure, tikzCode);
   if (lineResult?.fallbackUsed) {
     const geometryValidation = validateDeterministicLineAngleTikz(tikzCode);

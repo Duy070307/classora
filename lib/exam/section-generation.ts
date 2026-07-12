@@ -131,8 +131,12 @@ export function sectionCounts(exam: StructuredExam) {
 export type ExamSectionCollectionDiagnostics = {
   requested: { partI: number; partII: number; partIII: number };
   generatedRaw: { partI: number; partII: number; partIII: number };
+  parsed: { partI: number; partII: number; partIII: number };
   valid: { partI: number; partII: number; partIII: number };
   duplicateRemoved: number;
+  rejectedReasons: Record<string, number>;
+  numericShortAnswerRejectedCount: number;
+  visualDependencyRejectedCount: number;
   regeneratedCount: number;
   attempts: { partI: number; partII: number; partIII: number };
   final: { partI: number; partII: number; partIII: number };
@@ -167,8 +171,12 @@ export async function collectExamSections(
   const diagnostics: ExamSectionCollectionDiagnostics = {
     requested,
     generatedRaw: { partI: 0, partII: 0, partIII: 0 },
+    parsed: { partI: 0, partII: 0, partIII: 0 },
     valid: { partI: 0, partII: 0, partIII: 0 },
     duplicateRemoved: 0,
+    rejectedReasons: {},
+    numericShortAnswerRejectedCount: 0,
+    visualDependencyRejectedCount: 0,
     regeneratedCount: 0,
     attempts: { partI: 0, partII: 0, partIII: 0 },
     final: { partI: 0, partII: 0, partIII: 0 },
@@ -180,7 +188,7 @@ export async function collectExamSections(
     if (!target) continue;
     const key = partKey(type);
     const preferredChunk = sectionChunkSize(type, target) || 1;
-    const maxAttempts = Math.ceil(target / preferredChunk) + 2;
+    const maxAttempts = Math.ceil(target / preferredChunk) + 4;
     for (let attempt = 0; attempt < maxAttempts && (sections[type]?.length || 0) < target; attempt += 1) {
       diagnostics.attempts[key] += 1;
       const existingStems = examSectionTypes.flatMap((sectionType) => (sections[sectionType] || []).map((question) => question.stem));
@@ -188,9 +196,14 @@ export async function collectExamSections(
       const count = sectionChunkSize(type, remaining);
       const sectionInput = buildSectionOnlyInput(input, type, count, existingStems);
       try {
-        const generated = await generateChunk({ type, count, remaining, attempt, existingStems, input: sectionInput, prompt: buildExamSectionPrompt(input, type, count, existingStems) });
+        const basePrompt = buildExamSectionPrompt(input, type, count, existingStems);
+        const prompt = attempt >= 2
+          ? `${basePrompt}\nLần thử bổ sung ${attempt + 1}: chỉ trả một JSON array đơn giản gồm đúng ${count} câu của phần đang thiếu. Không tạo đáp án tổng hợp, ma trận, đặc tả hoặc văn bản ngoài mảng JSON.`
+          : basePrompt;
+        const generated = await generateChunk({ type, count, remaining, attempt, existingStems, input: sectionInput, prompt });
         if (!generated) continue;
         diagnostics.generatedRaw[key] += generated.rawCount ?? generated.questions.length;
+        diagnostics.parsed[key] += generated.questions.length;
         if (!generated.questions.length) continue;
         if (attempt > 0) diagnostics.regeneratedCount += generated.questions.length;
         warnings.push(...(generated.warnings || []));
@@ -203,6 +216,9 @@ export async function collectExamSections(
         }));
         const audit = sanitizeExamStructure(assembleSectionedExam(input, { ...sections, [type]: [...existing, ...candidates] }), input);
         diagnostics.duplicateRemoved += audit.duplicateRemovedCount;
+        Object.entries(audit.rejectionReasons).forEach(([reason, amount]) => { diagnostics.rejectedReasons[reason] = (diagnostics.rejectedReasons[reason] || 0) + amount; });
+        diagnostics.numericShortAnswerRejectedCount += ["non_numeric_short_answer", "non_numeric_question_type", "missing_numeric_intent", "numeric_answer_not_supported_by_explanation"].reduce((sum, reason) => sum + (audit.rejectionReasons[reason] || 0), 0);
+        diagnostics.visualDependencyRejectedCount += audit.rejectionReasons.missing_visual_asset || 0;
         for (const sectionType of examSectionTypes) sections[sectionType] = audit.exam.parts.find((part) => part.type === sectionType)?.questions || [];
         diagnostics.valid[key] = sections[type]?.length || 0;
       } catch {

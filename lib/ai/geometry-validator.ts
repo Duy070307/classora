@@ -1,4 +1,4 @@
-import { buildStandaloneTikzDocument } from "@/lib/ai/extract-tikz";
+import { buildStandaloneTikzDocument, sanitizeTikzCode } from "@/lib/ai/extract-tikz";
 import { createGeometryLayout } from "@/lib/ai/geometry-layout";
 import { inspectGeometryTikz } from "@/lib/ai/geometry-tikz-inspector";
 
@@ -15,6 +15,7 @@ export type GeometryStructure = {
   pointOnSegment: PointOnSegmentConstraint[];
   perpendicularRelations: PerpendicularConstraint[];
   intersections: Array<{ point: string; lines: [[string, string], [string, string]] }>;
+  rightAngleVertices?: string[];
   parallelRelations: unknown[];
   equalLengthRelations: unknown[];
   visibleLabels: string[];
@@ -100,6 +101,10 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
     return segment1 && segment2 && vertex && [...segment1, ...segment2].every((label) => labelSet.has(label))
       ? [{ segment1, segment2, vertex, certain: value.certain !== false }] : [];
   });
+  const rightAngleVertices = [...new Set([
+    ...(Array.isArray(parsed.rightAngles) ? parsed.rightAngles : []).map((item) => cleanLabel(typeof item === "string" ? item : item && typeof item === "object" ? (item as Record<string, unknown>).vertex : "")),
+    ...perpendicularRelations.map((item) => item.vertex),
+  ].filter(Boolean))];
   const intersections = relations.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const value = item as Record<string, unknown>;
@@ -128,7 +133,7 @@ export function parseGeometryStructure(raw: string): GeometryStructure | null {
     figureType,
     visualHints: parsed.visualHints && typeof parsed.visualHints === "object" && !Array.isArray(parsed.visualHints) ? parsed.visualHints as GeometryStructure["visualHints"] : {},
     points: labels.map((label) => points.find((point) => point.label === label) || { label }),
-    segments: [...new Map(segments.map((item) => [[item.from, item.to].sort().join("|"), item])).values()], pointOnSegment, perpendicularRelations, intersections,
+    segments: [...new Map(segments.map((item) => [[item.from, item.to].sort().join("|"), item])).values()], pointOnSegment, perpendicularRelations, intersections, rightAngleVertices,
     parallelRelations: Array.isArray(parsed.parallelRelations) ? parsed.parallelRelations : [],
     equalLengthRelations: Array.isArray(parsed.equalLengthRelations) ? parsed.equalLengthRelations : [],
     visibleLabels: labels,
@@ -258,14 +263,22 @@ export function generateValidatedTikz(structure: GeometryStructure) {
     lines.push(`  \\fill (${label}) circle (1.4pt);`);
     lines.push(`  \\node[${labelAnchor(label)}] at (${label}) {$${label}$};`);
   }
+  const markedRightAngleVertices = new Set<string>();
   structure.perpendicularRelations.forEach((relation, index) => {
     if (!diagnostic.perpendicular[index]?.passed) return;
     const firstOther = relation.segment1.find((label) => label !== relation.vertex);
     const secondOther = relation.segment2.find((label) => label !== relation.vertex);
-    if (firstOther && secondOther) lines.push(`  \\pic[draw,angle radius=5mm] {right angle=${firstOther}--${relation.vertex}--${secondOther}};`);
+    if (firstOther && secondOther) {
+      lines.push(`  \\pic[draw,angle radius=5mm] {right angle=${firstOther}--${relation.vertex}--${secondOther}}; % right-angle-marker ${relation.vertex}`);
+      markedRightAngleVertices.add(relation.vertex);
+    }
   });
+  if (structure.figureType === "pyramid" && coordinates.O && structure.rightAngleVertices?.includes("O") && !markedRightAngleVertices.has("O")) {
+    lines.push("  \\draw[blue, thick] (O) ++(0.12,0.12) -- ++(0.15,-0.12) -- ++(-0.12,-0.15); % right-angle-marker O draft");
+    diagnostic.warnings.push("Dấu góc vuông tại O cần được rà soát.");
+  }
   lines.push("\\end{tikzpicture}");
-  const tikzCode = lines.join("\n");
+  const tikzCode = sanitizeTikzCode(lines.join("\n"));
   const standaloneLatex = buildStandaloneTikzDocument(tikzCode);
   const inspection = inspectGeometryTikz(tikzCode, structure, coordinates, standaloneLatex);
   if (!inspection.ok) diagnostic.warnings.push("Một số quan hệ hình học chưa được xác nhận chính xác.", ...inspection.issues);

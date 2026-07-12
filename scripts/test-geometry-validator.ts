@@ -61,6 +61,7 @@ const pyramid = structure({
   dashedEdges: [["D", "C"], ["A", "C"], ["B", "D"], ["S", "O"]],
   visualHints: { AB: "nearly-horizontal", DC: "nearly-horizontal", basePerspective: "quadrilateral", baseOrder: ["A", "B", "C", "D"] },
   relations: [{ type: "base", points: ["A", "B", "C", "D"] }, { type: "intersection", point: "O", lines: [["A", "C"], ["B", "D"]] }],
+  rightAngles: [{ vertex: "O", certain: false }],
   warnings: [],
 });
 const pyramidCoordinates = layoutGeometry(pyramid);

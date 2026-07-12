@@ -13,14 +13,51 @@ export type TikzExtractionResult = {
 
 const invalidTikzMessage = "Chưa tạo được mã TikZ hợp lệ. Vui lòng thử lại với ảnh rõ hơn và cắt sát phần hình.";
 
+const internalVisibleNamePattern = /\b(?:upper_slanted_intersection|lower_slanted_intersection|line_transversal|line_horizontal_top|line_horizontal_bottom|line_vertical_left)\b/i;
+
+function canonicalTikzElement(line: string) {
+  return line.trim().replace(/\s+/g, " ").replace(/\s*%.*$/, "");
+}
+
+export function dedupeTikzElements(tikzCode: string) {
+  const seen = new Set<string>();
+  return tikzCode.split(/\r?\n/).filter((line) => {
+    const canonical = canonicalTikzElement(line);
+    if (!/^\\(?:node|fill|draw|path)\b/.test(canonical) || !canonical.endsWith(";")) return true;
+    if (seen.has(canonical)) return false;
+    seen.add(canonical);
+    return true;
+  }).join("\n");
+}
+
+export function sanitizeTikzCode(tikzCode: string) {
+  const withoutInternalLabels = tikzCode.split(/\r?\n/).filter((line) => {
+    if (/\\node\b/.test(line) && internalVisibleNamePattern.test(line)) return false;
+    return true;
+  }).map((line) => internalVisibleNamePattern.test(line) && /%/.test(line) ? line.replace(/\s*%.*$/, "") : line);
+  return dedupeTikzElements(withoutInternalLabels.join("\n")).trim();
+}
+
+export function requiredTikzLibraries(tikzCode: string) {
+  const libraries = new Set<string>();
+  if (/name intersections|name path/.test(tikzCode)) libraries.add("intersections");
+  if (/\\pic\b|right angle\s*=|angle\s*=/.test(tikzCode)) { libraries.add("angles"); libraries.add("quotes"); }
+  if (/\$\([^)]*\)\$|\\(?:coordinate|node)\b[^;]*\bat\s*\(\$|\\pgfmath|\\path\s+let\b/.test(tikzCode)) libraries.add("calc");
+  if (/\bpattern\s*=/.test(tikzCode)) libraries.add("patterns");
+  if (/\bdecoration\s*=|decorate\b/.test(tikzCode)) libraries.add("decorations.pathreplacing");
+  return [...libraries];
+}
+
 export function buildStandaloneTikzDocument(tikzCode: string) {
+  const cleanTikz = sanitizeTikzCode(tikzCode);
+  const libraries = requiredTikzLibraries(cleanTikz);
   return [
     "\\documentclass[tikz,border=5pt]{standalone}",
     "\\usepackage{tikz}",
-    "\\usetikzlibrary{calc,angles,quotes,intersections,patterns,decorations.pathreplacing}",
+    ...(libraries.length ? [`\\usetikzlibrary{${libraries.join(",")}}`] : []),
     "",
     "\\begin{document}",
-    tikzCode.trim(),
+    cleanTikz,
     "\\end{document}",
   ].join("\n");
 }
@@ -66,7 +103,7 @@ function hasRawJsonKeys(text: string): boolean {
 }
 
 export function validateTikzCode(tikzCode: string) {
-  const code = stripMarkdownFence(tikzCode);
+  const code = sanitizeTikzCode(stripMarkdownFence(tikzCode));
   const warnings: string[] = [];
   if (!code.includes("\\begin{tikzpicture}")) return { ok: false, warnings: [invalidTikzMessage] };
   if (!code.includes("\\end{tikzpicture}")) return { ok: false, warnings: [invalidTikzMessage] };
@@ -101,12 +138,13 @@ export function extractTikzFromAIOutput(raw: string): TikzExtractionResult {
 
   for (const candidate of candidates) {
     const tikzCode = extractTikzPicture(candidate) || candidate.trim();
-    const validation = validateTikzCode(tikzCode);
+    const cleanTikzCode = sanitizeTikzCode(tikzCode);
+    const validation = validateTikzCode(cleanTikzCode);
     if (validation.ok) {
       return {
         ok: true,
-        tikzCode,
-        standaloneLatex: buildStandaloneTikzDocument(tikzCode),
+        tikzCode: cleanTikzCode,
+        standaloneLatex: buildStandaloneTikzDocument(cleanTikzCode),
         warnings: validation.warnings,
       };
     }

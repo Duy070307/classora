@@ -31,12 +31,14 @@ function hasTikzLabel(tikz: string, label: string) {
 }
 
 export function validateDiagramCompleteness(diagramType: string, structure: Record<string, unknown>, tikz: string): DiagramValidation {
+  if (diagramType === "solid_geometry") diagramType = "geometry_diagram";
+  if (diagramType === "coordinate_geometry") diagramType = "coordinate_graph";
   const detectedLines = array(structure.lines).length
     || array(structure.segments).length
     || array(structure.solidEdges).length + array(structure.dashedEdges).length;
   const detected = {
     lines: detectedLines,
-    points: array(structure.points).length || array(structure.visibleLabels).length,
+    points: Math.max(array(structure.points).length, array(structure.markedPoints).length, array(structure.visibleLabels).length),
     axes: structure.axes && typeof structure.axes === "object"
       ? Number(Boolean(record(structure.axes).xAxis)) + Number(Boolean(record(structure.axes).yAxis))
       : 0,
@@ -55,6 +57,9 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
   };
   const missingComponents: string[] = [];
   const hardFailures: string[] = [];
+  const commandLines = tikz.split(/\r?\n/).map((line) => line.trim().replace(/\s+/g, " ").replace(/\s*%.*$/, "")).filter((line) => /^\\(?:node|fill|draw|path)\b/.test(line));
+  if (new Set(commandLines).size !== commandLines.length) hardFailures.push("duplicate_tikz_elements");
+  if (/upper_slanted_intersection|lower_slanted_intersection|line_transversal|line_horizontal_|line_vertical_/i.test(tikz)) hardFailures.push("internal_name_visible");
 
   if (diagramType === "function_graph" || diagramType === "coordinate_graph") {
     const hasCurveOrSegment = generated.curves > 0 || /%\s*segment-|\\draw[^;]*--/i.test(tikz) && draws > generated.axes;
@@ -64,6 +69,14 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     if (array(structure.segments).length && !/%\s*segment-/.test(tikz)) missingComponents.push("segments");
     if (detected.guides && generated.guides < detected.guides) missingComponents.push("guide_lines");
     if (!/\{\$?[Oxy]\$?\}|y\s*=\s*f\(x\)/i.test(tikz)) missingComponents.push("axis_or_function_labels");
+    const expectedMarkedPoints = [...array(structure.points), ...array(structure.markedPoints)].map((item) => record(item)).filter((item) => Array.isArray(item.coordinate));
+    for (const point of expectedMarkedPoints) {
+      const coordinate = point.coordinate as unknown[];
+      const x = Number(coordinate[0]); const y = Number(coordinate[1]);
+      if (Number.isFinite(x) && Number.isFinite(y) && !new RegExp(`\\\\fill\\s*\\(${x}(?:\\.0+)?,${y}(?:\\.0+)?\\)`).test(tikz)) missingComponents.push(`marked_point_${x}_${y}`);
+    }
+    const expectsFunctionLabel = array(structure.curves).some((item) => /y\s*=\s*f\s*\(x\)/i.test(String(record(item).label || ""))) || array(structure.labels).some((item) => /y\s*=\s*f\s*\(x\)/i.test(String(record(item).text || "")));
+    if (expectsFunctionLabel && !/\{\$y=f\(x\)\$\}/.test(tikz)) missingComponents.push("function_label");
     if (generated.axes < 2) hardFailures.push("missing_axes");
     if (!hasCurveOrSegment) hardFailures.push("missing_curve_or_segment");
     if (draws < 3) hardFailures.push("output_too_small");
@@ -87,7 +100,9 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
         }
       }
     }
-    if (array(structure.rightAngles).length && !/right angle|right-angle-marker/i.test(tikz)) missingComponents.push("right_angles");
+    const expectedRightAngles = array(structure.rightAngles).length;
+    const generatedRightAngles = (tikz.match(/right angle|right-angle-marker/gi) || []).length;
+    if (expectedRightAngles && generatedRightAngles < expectedRightAngles) missingComponents.push("right_angles");
     for (const item of array(structure.angleLabels)) {
       const label = String(record(item).label || "");
       if (label && !hasTikzLabel(tikz, label)) missingComponents.push(`angle_${label}`);
@@ -102,6 +117,8 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     for (const label of expectedLabels) {
       if (label && !hasTikzLabel(tikz, label)) missingComponents.push(`point_${label}`);
     }
+    const expectedRightAngles = array(structure.rightAngles).length || array(structure.perpendicularRelations).length;
+    if (expectedRightAngles && !/right angle|right-angle-marker/i.test(tikz)) missingComponents.push("right_angles");
     if (meaningfulPoints < 3) hardFailures.push("too_few_points");
     if (generated.lines < 2) hardFailures.push("too_few_edges");
   } else {

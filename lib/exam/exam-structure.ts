@@ -51,13 +51,26 @@ function nearDuplicate(left: string, right: string) {
   return overlap / Math.max(a.size, b.size) >= 0.9;
 }
 
-function validQuestion(question: ExamQuestion, type: ExamPartType, thptStyle: boolean) {
-  if (!question.stem.trim() || !question.answer.trim() || !question.explanation.trim()) return false;
-  if (!validateVisualDependency(question).valid) return false;
-  if (type === "multiple_choice") return validateMultipleChoiceOptions(question).valid;
-  if (type === "true_false") return Boolean(question.trueFalseItems?.length === 4 && question.trueFalseItems.every((item) => item.text.trim() && typeof item.answer === "boolean")) && (!thptStyle || validateTrueFalseQuality(question).valid);
-  if (thptStyle) return validateShortAnswerNumeric(question).valid;
-  return true;
+function questionInvalidReason(question: ExamQuestion, type: ExamPartType, thptStyle: boolean) {
+  if (!question.stem.trim() || !question.answer.trim() || !question.explanation.trim()) return "missing_required_content";
+  const visual = validateVisualDependency(question);
+  if (!visual.valid) return visual.reason;
+  if (type === "multiple_choice") {
+    const options = validateMultipleChoiceOptions(question);
+    return options.valid ? "" : options.reason;
+  }
+  if (type === "true_false") {
+    if (!(question.trueFalseItems?.length === 4 && question.trueFalseItems.every((item) => item.text.trim() && typeof item.answer === "boolean"))) return "invalid_true_false_items";
+    if (thptStyle) {
+      const quality = validateTrueFalseQuality(question);
+      return quality.valid ? "" : quality.reason;
+    }
+  }
+  if (thptStyle && type === "short_answer") {
+    const numeric = validateShortAnswerNumeric(question);
+    return numeric.valid ? "" : numeric.reason;
+  }
+  return "";
 }
 
 export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamInput> & Record<string, unknown>) {
@@ -68,10 +81,12 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
   const trueFalseSignatures = new Set<string>();
   let duplicateRemovedCount = 0;
   let invalidRemovedCount = 0;
+  const rejectionReasons: Record<string, number> = {};
   const thptStyle = /THPTQG|tốt nghiệp/i.test(String(input.examStyle || ""));
   const parts = exam.parts.map((part) => {
     let questions = part.questions.map(normalizeExamQuestionMath).filter((question) => {
-      if (!validQuestion(question, part.type, thptStyle)) { invalidRemovedCount += 1; return false; }
+      const invalidReason = questionInvalidReason(question, part.type, thptStyle);
+      if (invalidReason) { invalidRemovedCount += 1; rejectionReasons[invalidReason] = (rejectionReasons[invalidReason] || 0) + 1; return false; }
       const stem = normalizedStem(question.stem);
       const expression = coreExpression(question.stem);
       const statementSignature = part.type === "true_false" ? question.trueFalseItems?.map((item) => normalizedStem(item.text)).join("|") || "" : "";
@@ -114,5 +129,5 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
   const finalCount = generated.partI + generated.partII + generated.partIII;
   const countSummary = `Cấu trúc đã kiểm tra: PHẦN I ${generated.partI}/${request.sectionCounts.partI}; PHẦN II ${generated.partII}/${request.sectionCounts.partII}; PHẦN III ${generated.partIII}/${request.sectionCounts.partIII}; tổng ${finalCount}/${request.requestedQuestionCount}.`;
   const sanitized = { ...exam, parts, teacherOnly: { ...exam.teacherOnly, scoringGuide, matrix: [normalizeTeacherMathNotation(exam.teacherOnly.matrix), countSummary].filter(Boolean).join("\n"), specification: [normalizeTeacherMathNotation(exam.teacherOnly.specification), countSummary].filter(Boolean).join("\n"), notes: [normalizeTeacherMathNotation(exam.teacherOnly.notes), countSummary].filter(Boolean).join("\n") } };
-  return { exam: sanitized, request, generated, missing, finalCount, complete: missing.partI + missing.partII + missing.partIII === 0, duplicateRemovedCount, invalidRemovedCount };
+  return { exam: sanitized, request, generated, missing, finalCount, complete: missing.partI + missing.partII + missing.partIII === 0, duplicateRemovedCount, invalidRemovedCount, rejectionReasons };
 }

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { generateStructuredDiagramTikz, validateDeterministicLineAngleTikz } from "../lib/ai/structured-diagram-tikz";
 import { validateDiagramCompleteness } from "../lib/ai/diagram-completeness-validator";
 import { generateValidatedTikz, parseGeometryStructure } from "../lib/ai/geometry-validator";
+import { buildStandaloneTikzDocument, dedupeTikzElements, requiredTikzLibraries } from "../lib/ai/extract-tikz";
 
 const lineAngle = {
   diagramType: "line_angle_diagram", confidence: 0.9,
@@ -33,6 +34,9 @@ assert.deepEqual(validateDeterministicLineAngleTikz(lineResult?.tikzCode || ""),
 const angleCoordinates = [...(lineResult?.tikzCode || "").matchAll(/\\node at \(([-\d.]+),([-\d.]+)\) \{\$[1-4]\$\}/g)].map((match) => `${match[1]},${match[2]}`);
 assert.equal(angleCoordinates.length, 8);
 assert.equal(new Set(angleCoordinates).size, 8);
+assert.doesNotMatch(lineResult?.tikzCode || "", /upper_slanted_intersection|lower_slanted_intersection|line_transversal|line_horizontal_|line_vertical_/i);
+assert.match(lineResult?.tikzCode || "", /\\node at \(2\.68,2\.25\) \{\$3\$\}/);
+assert.match(lineResult?.tikzCode || "", /\\node at \(4\.48,-0\.28\) \{\$1\$\}/);
 
 const graph = {
   diagramType: "function_graph", confidence: 0.86,
@@ -41,6 +45,7 @@ const graph = {
   curves: [{ id: "curve_1", label: "y=f(x)", kind: "smooth_curve", approximatePoints: [[-3, -2], [-1, 3], [1, -1], [3, 4]] }],
   segments: [{ id: "segment_1", from: [1, -1], to: [3, 4], style: "solid" }],
   points: [{ label: "O", coordinate: [0, 0] }],
+  markedPoints: [[-3, -2], [-1, 3], [1, -1], [3, 4], [0, 0]],
   guides: [{ style: "dashed", from: [-3, 0], to: [-3, -2] }, { style: "dashed", from: [3, 0], to: [3, 4] }, { style: "dashed", from: [0, 4], to: [3, 4] }],
   labels: [{ text: "y=f(x)", near: "curve_1" }],
 };
@@ -51,6 +56,17 @@ assert.match(graphResult?.tikzCode || "", /plot\[smooth\]/);
 assert.equal((graphResult?.tikzCode.match(/\\draw\[dashed\]/g) || []).length, 3);
 assert.match(graphResult?.tikzCode || "", /\$y=f\(x\)\$/);
 assert.match(graphResult?.tikzCode || "", /\$O\$/);
+for (const point of ["-3,-2", "-1,3", "1,-1", "3,4", "0,0"]) assert.ok((graphResult?.tikzCode || "").includes(`\\fill (${point}) circle`), `Thiếu điểm đánh dấu (${point})`);
+assert.equal((graphResult?.tikzCode.match(/\$O\$/g) || []).length, 1);
+assert.equal((graphResult?.tikzCode.match(/\\fill \(0,0\)/g) || []).length, 1);
+assert.match(graphResult?.tikzCode || "", /\\node\[right\] at \(2\.0,2\.2\) \{\$y=f\(x\)\$\}/);
+assert.doesNotMatch(graphResult?.tikzCode || "", /\\node\[blue\].*y=f\(x\)/);
+for (const sample of ["(-2.7,-0.5)", "(-1.8,2.6)", "(0.5,0.4)"]) assert.ok((graphResult?.tikzCode || "").includes(sample), `Thiếu điểm làm mượt ${sample}`);
+
+const duplicated = "\\begin{tikzpicture}\n  \\fill (0,0) circle (1pt);\n  \\fill (0,0) circle (1pt);\n  \\node at (0,0) {$O$};\n  \\node at (0,0) {$O$};\n\\end{tikzpicture}";
+const deduplicated = dedupeTikzElements(duplicated);
+assert.equal((deduplicated.match(/\\fill/g) || []).length, 1);
+assert.equal((deduplicated.match(/\$O\$/g) || []).length, 1);
 
 const incompleteGraph = validateDiagramCompleteness("function_graph", graph, "\\begin{tikzpicture}\\coordinate (O) at (0,0);\\node at (O) {$O$};\\end{tikzpicture}");
 assert.equal(incompleteGraph.valid, false);
@@ -74,6 +90,7 @@ const pyramidStructure = parseGeometryStructure(JSON.stringify({
   solidEdges: [["S", "A"], ["S", "B"], ["S", "C"], ["S", "D"], ["A", "B"], ["B", "C"]],
   dashedEdges: [["C", "D"], ["A", "C"], ["B", "D"]],
   relations: [{ type: "intersection", point: "O", lines: [["A", "C"], ["B", "D"]] }],
+  rightAngles: [{ vertex: "O", certain: false }],
 }));
 assert.ok(pyramidStructure, "Nhãn OCR lặp không được làm hỏng toàn bộ cấu trúc hình chóp");
 if (pyramidStructure) {
@@ -82,5 +99,10 @@ if (pyramidStructure) {
   assert.notEqual(pyramidValidation.status, "invalid");
   for (const label of ["S", "A", "B", "C", "D", "O"]) assert.match(pyramidResult.tikzCode, new RegExp(`\\$${label}\\$`));
   assert.match(pyramidResult.tikzCode, /name intersections=\{of=AC and BD, by=O\}/);
+  assert.match(pyramidResult.tikzCode, /right-angle-marker O/);
+  assert.match(pyramidResult.standaloneLatex, /\\usetikzlibrary\{[^}]*intersections/);
+  assert.ok(requiredTikzLibraries(pyramidResult.tikzCode).includes("intersections"));
+  assert.equal((pyramidResult.tikzCode.match(/\$O\$/g) || []).length, 1);
 }
+assert.doesNotMatch(buildStandaloneTikzDocument("\\begin{tikzpicture}\n\\draw (0,0)--(1,1);\n\\end{tikzpicture}"), /intersections/);
 console.log("Diagram structure: valid/draft/invalid, line-angle fallback, function graph và pyramid đều đạt; output chỉ O hoặc D--C bị chặn.");
