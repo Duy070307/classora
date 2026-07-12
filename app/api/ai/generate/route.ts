@@ -192,7 +192,8 @@ export async function POST(request: Request) {
         if (requested <= 0) return NextResponse.json({ ok: false, error: "Vui lòng chọn ít nhất một câu hỏi cho đề kiểm tra." }, { status: 400 });
         const sectioned = await generateExamSectionBySection(provider, validated);
         const finalCount = examQuestionCount(sectioned.result);
-        if (!isUsableExamCount(requested, finalCount)) {
+        const requiresCompleteSections = /THPTQG|tốt nghiệp/i.test(String(validated.input.examStyle || ""));
+        if (!isUsableExamCount(requested, finalCount) || (requiresCompleteSections && !sectioned.complete)) {
           return NextResponse.json({
             ok: false,
             error: "SOẠN LAB chưa tạo đủ đề theo cấu trúc yêu cầu. Vui lòng bấm Tạo lại hoặc giảm số câu.",

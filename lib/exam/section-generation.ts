@@ -1,5 +1,6 @@
 import type { ExamPartType, ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import { sanitizeExamStructure } from "@/lib/exam/exam-structure";
+import { targetTrueFalsePatterns } from "@/lib/exam/exam-quality";
 
 export const examSectionTypes = ["multiple_choice", "true_false", "short_answer"] as const;
 
@@ -57,6 +58,12 @@ export function buildExamSectionPrompt(
   const diversity = /toán/i.test(String(input.subject || "")) && /hàm số/i.test(String(input.topic || ""))
     ? "Phân tán câu hỏi qua tập xác định, đạo hàm, đồng biến/nghịch biến, cực trị, GTLN/GTNN, tiệm cận, bảng biến thiên, đồ thị và tương giao; không lặp cùng biểu thức hàm số."
     : "Mỗi câu phải kiểm tra một khái niệm cụ thể và không lặp cách hỏi.";
+  const truthPatterns = type === "true_false"
+    ? `Mẫu đáp án bắt buộc theo thứ tự câu: ${targetTrueFalsePatterns(count).map((pattern, index) => `Câu ${index + 1} [${pattern.map((answer) => answer ? "Đúng" : "Sai").join(", ")}]`).join("; ")}. Hãy viết nội dung mệnh đề sao cho đúng chính xác các mẫu này.`
+    : "";
+  const numericShortAnswerRule = type === "short_answer" && /THPTQG|tốt nghiệp/i.test(String(input.examStyle || ""))
+    ? "Đáp án shortAnswer bắt buộc là duy nhất một số: số nguyên, số thập phân hoặc phân số a/b. Không hỏi tập xác định, khoảng đồng biến/nghịch biến, phương trình, nhận xét hoặc câu cần đáp án dạng chữ/tập hợp."
+    : "";
   return `Tạo đúng ${count} câu cho ${partName} của đề ${String(input.subject || "")} lớp ${String(input.grade || "")}, chủ đề “${String(input.topic || "")}”.
 Chỉ trả về MỘT JSON array, không markdown fence, không văn bản ngoài JSON.
 Schema chính xác: ${schema}
@@ -65,6 +72,11 @@ Yêu cầu:
 - Mức độ chung: ${String(input.level || "Trung bình")}. Phân bố toàn đề: Nhận biết ${Number(input.recognitionRate ?? 30)}%, Thông hiểu ${Number(input.understandingRate ?? 40)}%, Vận dụng ${Number(input.applicationRate ?? 20)}%, Vận dụng cao ${Number(input.advancedRate ?? 10)}%.
 - Yêu cầu bổ sung của giáo viên: ${String(input.extraRequirements || "Không có")}.
 - ${diversity}
+- ${truthPatterns || "Không lặp máy móc vị trí đáp án."}
+- ${numericShortAnswerRule || "Đáp án phải đúng kiểu dữ liệu của phần."}
+- Không tạo câu phụ thuộc vào đồ thị, hình vẽ, bảng biến thiên, bảng hoặc biểu đồ không được cung cấp. Có thể gọi đồ thị (C) của một công thức hàm số đã ghi đầy đủ trong stem.
+- Dùng ký hiệu toán học sạch; không ghi raw sqrt(...), +infinity hoặc -infinity.
+- Với trắc nghiệm, bốn phương án phải khác nhau, không để trống và không dùng “Tất cả các đáp án trên”.
 - Không tạo câu meta/chung chung; đáp án và giải thích phải cụ thể.
 - Trường topic của từng câu phải là “${String(input.topic || "")}”.
 - Không lặp các câu hoặc biểu thức đã có sau đây:

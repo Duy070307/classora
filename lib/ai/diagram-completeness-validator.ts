@@ -76,6 +76,16 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     for (const line of array(structure.lines)) {
       const label = String(record(line).label || "");
       if (label && !hasTikzLabel(tikz, label)) missingComponents.push(`line_${label}`);
+      if (label && /^[abc]$/i.test(label)) {
+        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const match = tikz.match(new RegExp(`\\\\draw(?:\\[[^\\]]*\\])?\\s*\\(([-\\d.]+),([-\\d.]+)\\)\\s*--\\s*\\(([-\\d.]+),([-\\d.]+)\\)[^;]*\\{\\$${escaped}\\$\\}`));
+        if (match) {
+          const [, x1, y1, x2, y2] = match.map(Number);
+          const orientation = String(record(line).orientation || "");
+          if (orientation === "horizontal" && Math.abs(y1 - y2) > 1e-6) hardFailures.push(`line_${label}_orientation_invalid`);
+          if (orientation === "vertical" && Math.abs(x1 - x2) > 1e-6) hardFailures.push(`line_${label}_orientation_invalid`);
+        }
+      }
     }
     if (array(structure.rightAngles).length && !/right angle|right-angle-marker/i.test(tikz)) missingComponents.push("right_angles");
     for (const item of array(structure.angleLabels)) {

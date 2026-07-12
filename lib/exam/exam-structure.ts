@@ -1,5 +1,6 @@
 import type { ExamQuestion, ExamPartType, StructuredExam } from "@/lib/exam-types";
 import type { ExamInput } from "@/lib/types";
+import { balanceMultipleChoiceAnswers, balanceTrueFalsePatterns, normalizeExamQuestionMath, normalizeTeacherMathNotation, validateMultipleChoiceOptions, validateShortAnswerNumeric, validateTrueFalseQuality, validateVisualDependency } from "@/lib/exam/exam-quality";
 
 export type ExamStructureRequest = {
   sectionCounts: { partI: number; partII: number; partIII: number };
@@ -50,10 +51,12 @@ function nearDuplicate(left: string, right: string) {
   return overlap / Math.max(a.size, b.size) >= 0.9;
 }
 
-function validQuestion(question: ExamQuestion, type: ExamPartType) {
+function validQuestion(question: ExamQuestion, type: ExamPartType, thptStyle: boolean) {
   if (!question.stem.trim() || !question.answer.trim() || !question.explanation.trim()) return false;
-  if (type === "multiple_choice") return Boolean(question.options && ["A", "B", "C", "D"].every((key) => question.options?.[key as "A"]?.trim()) && ["A", "B", "C", "D"].includes(question.answer.trim().toUpperCase()));
-  if (type === "true_false") return Boolean(question.trueFalseItems?.length === 4 && question.trueFalseItems.every((item) => item.text.trim() && typeof item.answer === "boolean"));
+  if (!validateVisualDependency(question).valid) return false;
+  if (type === "multiple_choice") return validateMultipleChoiceOptions(question).valid;
+  if (type === "true_false") return Boolean(question.trueFalseItems?.length === 4 && question.trueFalseItems.every((item) => item.text.trim() && typeof item.answer === "boolean")) && (!thptStyle || validateTrueFalseQuality(question).valid);
+  if (thptStyle) return validateShortAnswerNumeric(question).valid;
   return true;
 }
 
@@ -62,24 +65,31 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
   const limits: Record<ExamPartType, number> = { multiple_choice: request.sectionCounts.partI, true_false: request.sectionCounts.partII, short_answer: request.sectionCounts.partIII };
   const seen: string[] = [];
   const expressions = new Map<string, number>();
+  const trueFalseSignatures = new Set<string>();
   let duplicateRemovedCount = 0;
   let invalidRemovedCount = 0;
+  const thptStyle = /THPTQG|tốt nghiệp/i.test(String(input.examStyle || ""));
   const parts = exam.parts.map((part) => {
-    const questions = part.questions.filter((question) => {
-      if (!validQuestion(question, part.type)) { invalidRemovedCount += 1; return false; }
+    let questions = part.questions.map(normalizeExamQuestionMath).filter((question) => {
+      if (!validQuestion(question, part.type, thptStyle)) { invalidRemovedCount += 1; return false; }
       const stem = normalizedStem(question.stem);
       const expression = coreExpression(question.stem);
+      const statementSignature = part.type === "true_false" ? question.trueFalseItems?.map((item) => normalizedStem(item.text)).join("|") || "" : "";
+      if (statementSignature && trueFalseSignatures.has(statementSignature)) { duplicateRemovedCount += 1; return false; }
       if (seen.some((existing) => existing === stem || nearDuplicate(existing, stem)) || (expression && (expressions.get(expression) || 0) >= 1)) { duplicateRemovedCount += 1; return false; }
       seen.push(stem);
+      if (statementSignature) trueFalseSignatures.add(statementSignature);
       if (expression) expressions.set(expression, (expressions.get(expression) || 0) + 1);
       return true;
     }).slice(0, limits[part.type]).map((question, index) => ({ ...question, number: index + 1 }));
+    if (part.type === "multiple_choice") questions = balanceMultipleChoiceAnswers(questions);
+    if (part.type === "true_false" && thptStyle) questions = balanceTrueFalsePatterns(questions);
     return { ...part, questions };
   }).filter((part) => part.questions.length || limits[part.type] > 0);
   for (const type of ["multiple_choice", "true_false", "short_answer"] as ExamPartType[]) {
     if (limits[type] > 0 && !parts.some((part) => part.type === type)) parts.push({ type, title: type === "multiple_choice" ? "PHẦN I" : type === "true_false" ? "PHẦN II" : "PHẦN III", instruction: "", questions: [] });
   }
-  if (/THPTQG|tốt nghiệp/i.test(String(input.examStyle || ""))) {
+  if (thptStyle) {
     for (const part of parts) {
       const count = limits[part.type];
       if (part.type === "multiple_choice") {
@@ -103,6 +113,6 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
   const missing = { partI: Math.max(0, request.sectionCounts.partI - generated.partI), partII: Math.max(0, request.sectionCounts.partII - generated.partII), partIII: Math.max(0, request.sectionCounts.partIII - generated.partIII) };
   const finalCount = generated.partI + generated.partII + generated.partIII;
   const countSummary = `Cấu trúc đã kiểm tra: PHẦN I ${generated.partI}/${request.sectionCounts.partI}; PHẦN II ${generated.partII}/${request.sectionCounts.partII}; PHẦN III ${generated.partIII}/${request.sectionCounts.partIII}; tổng ${finalCount}/${request.requestedQuestionCount}.`;
-  const sanitized = { ...exam, parts, teacherOnly: { ...exam.teacherOnly, scoringGuide, matrix: [exam.teacherOnly.matrix, countSummary].filter(Boolean).join("\n"), specification: [exam.teacherOnly.specification, countSummary].filter(Boolean).join("\n"), notes: [exam.teacherOnly.notes, countSummary].filter(Boolean).join("\n") } };
+  const sanitized = { ...exam, parts, teacherOnly: { ...exam.teacherOnly, scoringGuide, matrix: [normalizeTeacherMathNotation(exam.teacherOnly.matrix), countSummary].filter(Boolean).join("\n"), specification: [normalizeTeacherMathNotation(exam.teacherOnly.specification), countSummary].filter(Boolean).join("\n"), notes: [normalizeTeacherMathNotation(exam.teacherOnly.notes), countSummary].filter(Boolean).join("\n") } };
   return { exam: sanitized, request, generated, missing, finalCount, complete: missing.partI + missing.partII + missing.partIII === 0, duplicateRemovedCount, invalidRemovedCount };
 }

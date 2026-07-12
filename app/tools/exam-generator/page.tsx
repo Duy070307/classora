@@ -27,6 +27,7 @@ import { bankQuestionScope, canonicalSubject, filterStrictBankQuestions, normali
 import { bankSourceCounts, buildSupplementStatus, missingDifficultyInstruction, uniqueBankQuestions, uniqueSupplementQuestions } from "@/lib/exam/bank-supplement";
 import { sanitizeExamStructure } from "@/lib/exam/exam-structure";
 import { isUsableExamCount } from "@/lib/exam/section-generation";
+import { balanceMultipleChoiceAnswers } from "@/lib/exam/exam-quality";
 import type { ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import { canonicalizeTopic, createGenerationRequestContext } from "@/lib/generation/request-context";
 import { validateTopicItem } from "@/lib/generation/topic-validator";
@@ -310,9 +311,9 @@ export default function ExamGeneratorPage() {
         answer: item.answer.trim().toUpperCase(), explanation: item.explanation || "",
         score: Number((input.totalScore / requestedCount).toFixed(2)), difficulty: item.difficulty, topic: item.topic,
       }));
-      const allStructuredQuestions = [...bankStructuredQuestions, ...aiQuestions]
+      const allStructuredQuestions = balanceMultipleChoiceAnswers([...bankStructuredQuestions, ...aiQuestions]
         .sort(() => Math.random() - 0.5)
-        .map((question, index) => ({ ...question, number: index + 1, score: Number((input.totalScore / Math.max(status.finalCount, 1)).toFixed(2)) }));
+        .map((question, index) => ({ ...question, number: index + 1, score: Number((input.totalScore / Math.max(status.finalCount, 1)).toFixed(2)) })));
       const sourceCounts = bankSourceCounts(selected);
       const structuredExam: StructuredExam = {
         metadata: { title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade, duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName },
@@ -391,7 +392,7 @@ export default function ExamGeneratorPage() {
       }
     }
     const structureAudit = sanitizeExamStructure(aiResult.structuredExam, input as unknown as ExamInput & Record<string, unknown>);
-    if (!isUsableExamCount(structureAudit.request.requestedQuestionCount, structureAudit.finalCount)) {
+    if (!isUsableExamCount(structureAudit.request.requestedQuestionCount, structureAudit.finalCount) || (/THPTQG|tốt nghiệp/i.test(input.examStyle) && !structureAudit.complete)) {
       throw new Error("SOẠN LAB chưa tạo đủ đề theo cấu trúc yêu cầu. Vui lòng bấm Tạo lại hoặc giảm số câu.");
     }
     const sectionedBankIds = new Set(sectionedBankQuestions.map((item) => item.id));

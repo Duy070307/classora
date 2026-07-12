@@ -26,7 +26,7 @@ function makeQuestion(type: ExamPartType, index: number): ExamQuestion {
     ...(type === "multiple_choice" ? { options: { A: "Kết quả A", B: "Kết quả B", C: "Kết quả C", D: "Kết quả D" } } : {}),
     ...(type === "true_false" ? { trueFalseItems: ["a", "b", "c", "d"].map((label, itemIndex) => ({ label: label as "a" | "b" | "c" | "d", text: `Mệnh đề ${label} về ${skills[type][index]}.`, answer: itemIndex % 2 === 0 })) } : {}),
     answer: type === "multiple_choice" ? ["A", "B", "C", "D"][index % 4] : type === "true_false" ? "a Đúng; b Sai; c Đúng; d Sai" : String(index + 1),
-    explanation: `Giải thích bằng ${skills[type][index]}.`, score: 0.5,
+    explanation: `Giải thích bằng ${skills[type][index]} và thu được kết quả ${index + 1}.`, score: 0.5,
     difficulty: index % 3 === 0 ? "Nhận biết" : index % 3 === 1 ? "Thông hiểu" : "Vận dụng", topic: "hàm số",
   };
 }

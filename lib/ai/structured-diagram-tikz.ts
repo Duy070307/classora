@@ -32,29 +32,66 @@ function commonLineAngleFallbackTikz() {
   \\coordinate (A2) at (3,2);
   \\coordinate (B4) at (4,0);
 
-  \\draw[thick] (-1.2,2) -- (5.2,2) node[right] {$a$};
-  \\draw[thick] (-1.2,0) -- (5.2,0) node[right] {$b$};
+  \\draw[thick] (-1.3,2) -- (5.2,2) node[right] {$a$};
+  \\draw[thick] (-1.3,0) -- (5.2,0) node[right] {$b$};
   \\draw[thick] (0,-0.8) -- (0,2.8) node[below] {$c$};
-  \\draw[thick] (2.4,2.8) -- (4.6,-0.8);
+  \\draw[thick] (2.6,2.8) -- (4.4,-0.8);
+
+  \\fill (D) circle (1.3pt);
+  \\fill (C) circle (1.3pt);
+  \\fill (A2) circle (1.3pt);
+  \\fill (B4) circle (1.3pt);
 
   \\node[above left] at (D) {$D$};
   \\node[below left] at (C) {$C$};
   \\node[above right] at (A2) {$A_2$};
   \\node[below right] at (B4) {$B_4$};
 
-  \\draw[thick] (0,2) ++(0.18,0) -- ++(0,-0.18) -- ++(-0.18,0); % right-angle-marker D
-  \\draw[thick] (0,0) ++(0.18,0) -- ++(0,0.18) -- ++(-0.18,0); % right-angle-marker C
+  \\draw[thick] (0,2) ++(0.22,0) -- ++(0,-0.22) -- ++(-0.22,0); % right-angle-marker D
+  \\draw[thick] (0,0) ++(0.22,0) -- ++(0,0.22) -- ++(-0.22,0); % right-angle-marker C
 
-  \\node at (2.75,2.25) {$3$};
+  \\node at (2.65,2.25) {$3$};
   \\node at (3.35,2.25) {$2$};
-  \\node at (3.15,1.75) {$4$};
-  \\node at (3.65,1.75) {$1$};
+  \\node at (2.80,1.73) {$4$};
+  \\node at (3.45,1.73) {$1$};
 
-  \\node at (3.65,0.25) {$3$};
-  \\node at (4.25,0.25) {$2$};
-  \\node at (3.85,-0.28) {$4$};
+  \\node at (3.65,0.27) {$3$};
+  \\node at (4.30,0.27) {$2$};
+  \\node at (3.78,-0.28) {$4$};
   \\node at (4.45,-0.28) {$1$};
 \\end{tikzpicture}`;
+}
+
+export function validateDeterministicLineAngleTikz(tikz: string) {
+  const reasons: string[] = [];
+  const coordinates = new Map<string, XY>();
+  for (const match of tikz.matchAll(/\\coordinate\s+\(([^)]+)\)\s+at\s+\(([-\d.]+),([-\d.]+)\)/g)) {
+    coordinates.set(match[1], [Number(match[2]), Number(match[3])]);
+  }
+  const segments = [...tikz.matchAll(/\\draw\[thick\]\s*\(([-\d.]+),([-\d.]+)\)\s*--\s*\(([-\d.]+),([-\d.]+)\)/g)]
+    .map((match) => [[Number(match[1]), Number(match[2])], [Number(match[3]), Number(match[4])]] as [XY, XY]);
+  const [lineA, lineB, lineC, slanted] = segments;
+  const close = (left: number, right: number) => Math.abs(left - right) <= 1e-6;
+  const onLine = (point: XY | undefined, line: [XY, XY] | undefined) => {
+    if (!point || !line) return false;
+    const [[x1, y1], [x2, y2]] = line;
+    return Math.abs((point[0] - x1) * (y2 - y1) - (point[1] - y1) * (x2 - x1)) <= 1e-6;
+  };
+  if (!lineA || !close(lineA[0][1], lineA[1][1])) reasons.push("line_a_not_horizontal");
+  if (!lineB || !close(lineB[0][1], lineB[1][1])) reasons.push("line_b_not_horizontal");
+  if (!lineC || !close(lineC[0][0], lineC[1][0])) reasons.push("line_c_not_vertical");
+  const expectedPoints = { D: coordinates.get("D"), C: coordinates.get("C"), A2: coordinates.get("A2"), B4: coordinates.get("B4") };
+  if (!onLine(expectedPoints.D, lineA) || !onLine(expectedPoints.D, lineC)) reasons.push("D_not_on_a_and_c");
+  if (!onLine(expectedPoints.C, lineB) || !onLine(expectedPoints.C, lineC)) reasons.push("C_not_on_b_and_c");
+  if (!onLine(expectedPoints.A2, lineA) || !onLine(expectedPoints.A2, slanted)) reasons.push("A2_not_on_a_and_slanted");
+  if (!onLine(expectedPoints.B4, lineB) || !onLine(expectedPoints.B4, slanted)) reasons.push("B4_not_on_b_and_slanted");
+  for (const label of ["a", "b", "c", "D", "C", "A_2", "B_4"]) if (!tikz.includes(`$${label}$`)) reasons.push(`missing_label_${label}`);
+  if (!/right-angle-marker D/.test(tikz) || !/right-angle-marker C/.test(tikz)) reasons.push("missing_right_angle_markers");
+  const angleNodes = [...tikz.matchAll(/\\node\s+at\s+\(([-\d.]+),([-\d.]+)\)\s+\{\$([1-4])\$\}/g)];
+  if (angleNodes.length !== 8) reasons.push("missing_angle_labels");
+  if (new Set(angleNodes.map((match) => `${match[1]},${match[2]}`)).size !== angleNodes.length) reasons.push("clustered_angle_labels");
+  for (const label of ["1", "2", "3", "4"]) if (angleNodes.filter((match) => match[3] === label).length !== 2) reasons.push(`angle_${label}_count_invalid`);
+  return { valid: reasons.length === 0, reasons };
 }
 
 function lineAngleTikz(structure: Record<string, unknown>) {
@@ -110,5 +147,14 @@ export function generateStructuredDiagramTikz(structure: Record<string, unknown>
   const lineResult = diagramType === "line_angle_diagram" ? lineAngleTikz(structure) : null;
   const tikzCode = lineResult?.tikzCode || graphTikz(structure);
   const validation = validateDiagramCompleteness(diagramType, structure, tikzCode);
+  if (lineResult?.fallbackUsed) {
+    const geometryValidation = validateDeterministicLineAngleTikz(tikzCode);
+    if (!geometryValidation.valid) {
+      validation.valid = false;
+      validation.status = "invalid";
+      validation.failureReasons.push(...geometryValidation.reasons);
+      validation.warnings.push("Bố cục dựng lại chưa vượt qua kiểm tra quan hệ hình học.");
+    }
+  }
   return { diagramType, confidence: Number(structure.confidence ?? 0.7), tikzCode, standaloneLatex: buildStandaloneTikzDocument(tikzCode), validation, fallbackUsed: lineResult?.fallbackUsed || false };
 }

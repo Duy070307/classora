@@ -182,6 +182,11 @@ Schema b?t bu?c:
 Y?u c?u ri?ng:
 - Bạn phải tạo đủ chính xác ${requestedCount} câu hỏi theo số lượng từng phần trong dữ liệu đầu vào. Không được tự rút gọn còn 1–2 câu.
 - PHẦN I phải có đúng ${Number(examInput.multipleChoiceCount ?? 0)} câu trắc nghiệm A/B/C/D; PHẦN II đúng ${Number(examInput.trueFalseCount ?? 0)} câu, mỗi câu có bốn ý a/b/c/d kèm đúng-sai; PHẦN III đúng ${Number(examInput.shortAnswerCount ?? 0)} câu trả lời ngắn có đáp án và giải thích. Không được bỏ PHẦN III.
+- PHẦN I phải phân bố đáp án A/B/C/D cân bằng, không lặp một chữ cái kéo dài; bốn options khác nhau, không để trống và không dùng “Tất cả các đáp án trên”.
+- PHẦN II phải dùng các mẫu đúng/sai khác nhau giữa các câu và ưu tiên đúng 2 ý, sai 2 ý trong mỗi câu; không lặp máy móc Đúng-Sai-Đúng-Sai.
+- Nếu là cấu trúc THPTQG/tốt nghiệp, đáp án PHẦN III phải là duy nhất một số nguyên, thập phân hoặc phân số a/b. Không tạo câu trả lời bằng khoảng, tập hợp, “x = ...”, câu chữ hoặc nhiều giá trị.
+- Không tạo câu phụ thuộc vào đồ thị, hình, bảng biến thiên, bảng hoặc biểu đồ chưa được cung cấp và chưa thể xuất đồng nhất sang Word/PDF. Câu gọi đồ thị (C) của công thức hàm số đã ghi đầy đủ vẫn được phép.
+- Không dùng raw programming notation sqrt(...), +infinity, -infinity trong nội dung hiển thị; dùng ký hiệu toán học sạch.
 - Phân bố mức độ sau khi chuẩn hóa và làm tròn phải có tổng đúng ${requestedCount}: Nhận biết ${targets[0]}, Thông hiểu ${targets[1]}, Vận dụng ${targets[2]}, Vận dụng cao ${targets[3]}.
 - Không lặp cùng stem hoặc cùng biểu thức/hàm số quá một lần. Với Toán 12 chủ đề hàm số, phân tán câu hỏi qua tập xác định, đạo hàm, đơn điệu, cực trị, GTLN/GTNN, tiệm cận, bảng biến thiên, đồ thị, tương giao và hàm mũ/logarit khi phù hợp.
 - Mỗi câu phải đúng môn ${String(examInput.subject || "")}, lớp ${String(examInput.grade || "")}, chủ đề “${String(examInput.topic || "")}”. Nếu chủ đề chưa có trong danh mục, bám sát nguyên văn chủ đề giáo viên nhập và không tự đổi sang chương khác.

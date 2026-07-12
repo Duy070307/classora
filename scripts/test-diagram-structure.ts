@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { generateStructuredDiagramTikz } from "../lib/ai/structured-diagram-tikz";
+import { generateStructuredDiagramTikz, validateDeterministicLineAngleTikz } from "../lib/ai/structured-diagram-tikz";
 import { validateDiagramCompleteness } from "../lib/ai/diagram-completeness-validator";
 import { generateValidatedTikz, parseGeometryStructure } from "../lib/ai/geometry-validator";
 
@@ -26,8 +26,13 @@ assert.match(lineResult?.tikzCode || "", /\(0,2\)/);
 assert.match(lineResult?.tikzCode || "", /\(0,0\)/);
 assert.match(lineResult?.tikzCode || "", /\(3,2\)/);
 assert.match(lineResult?.tikzCode || "", /\(4,0\)/);
-assert.match(lineResult?.tikzCode || "", /\(-1\.2,2\) -- \(5\.2,2\)/);
-assert.match(lineResult?.tikzCode || "", /\(2\.4,2\.8\) -- \(4\.6,-0\.8\)/);
+assert.match(lineResult?.tikzCode || "", /\(-1\.3,2\) -- \(5\.2,2\)/);
+assert.match(lineResult?.tikzCode || "", /\(-1\.3,0\) -- \(5\.2,0\)/);
+assert.match(lineResult?.tikzCode || "", /\(2\.6,2\.8\) -- \(4\.4,-0\.8\)/);
+assert.deepEqual(validateDeterministicLineAngleTikz(lineResult?.tikzCode || ""), { valid: true, reasons: [] });
+const angleCoordinates = [...(lineResult?.tikzCode || "").matchAll(/\\node at \(([-\d.]+),([-\d.]+)\) \{\$[1-4]\$\}/g)].map((match) => `${match[1]},${match[2]}`);
+assert.equal(angleCoordinates.length, 8);
+assert.equal(new Set(angleCoordinates).size, 8);
 
 const graph = {
   diagramType: "function_graph", confidence: 0.86,
@@ -58,6 +63,9 @@ assert.equal(incompleteLine.status, "invalid");
 assert.ok(incompleteLine.missingComponents.includes("major_lines"));
 const lineDraft = validateDiagramCompleteness("line_angle_diagram", lineAngle, "\\begin{tikzpicture}\\draw (-2,1)--(2,1);\\draw (-2,-1)--(2,-1);\\draw (0,-2)--(0,2);\\node at (0,1) {$D$};\\node at (0,-1) {$C$};\\end{tikzpicture}");
 assert.equal(lineDraft.status, "draft_with_warnings");
+const brokenOrientation = validateDiagramCompleteness("line_angle_diagram", lineAngle, "\\begin{tikzpicture}\\draw[thick] (0,0)--(2,1) node[right] {$a$};\\draw[thick] (-2,0)--(2,0) node[right] {$b$};\\draw[thick] (0,-2)--(0,2) node[right] {$c$};\\draw[thick] (1,2)--(2,-2);\\node at (0,1) {$D$};\\node at (0,0) {$C$};\\node at (1,1) {$A_2$};\\node at (2,0) {$B_4$};\\end{tikzpicture}");
+assert.equal(brokenOrientation.status, "invalid");
+assert.ok(brokenOrientation.failureReasons.includes("line_a_orientation_invalid"));
 
 const pyramidStructure = parseGeometryStructure(JSON.stringify({
   diagramType: "geometry_diagram", figureType: "pyramid",
