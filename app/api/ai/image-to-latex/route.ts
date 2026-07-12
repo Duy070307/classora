@@ -1,29 +1,24 @@
 import { NextResponse } from "next/server";
 import { DiagramIncompleteError, generateLatexFromImage, VisionCapabilityError, type ImageToLatexMode } from "@/lib/ai/image-to-latex";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
+import { getCurrentUser } from "@/lib/auth/user";
+import { getMaintenanceBlockForUser } from "@/lib/maintenance";
 
 const allowedMimeTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
 const allowedModes = new Set<ImageToLatexMode>(["auto", "formula", "geometry"]);
 const maxSize = 5 * 1024 * 1024;
 
-async function requireUserIfConfigured() {
-  if (!isSupabaseConfigured()) return true;
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) return true;
-  const { data } = await supabase.auth.getUser();
-  return Boolean(data.user);
-}
-
 export async function POST(request: Request) {
   try {
-    const authenticated = await requireUserIfConfigured();
-    if (!authenticated) {
+    const currentUser = await getCurrentUser();
+    if (isSupabaseConfigured() && !currentUser) {
       return NextResponse.json(
         { ok: false, error: "Vui lòng đăng nhập để dùng công cụ Ảnh công thức → LaTeX." },
         { status: 401 },
       );
     }
+    const maintenance = await getMaintenanceBlockForUser(currentUser);
+    if (maintenance) return NextResponse.json({ ok: false, maintenance: true, message: maintenance.message }, { status: 503 });
 
     const formData = await request.formData();
     const file = formData.get("image");

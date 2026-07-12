@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { maintenanceAccessDecision } from "@/lib/maintenance-access";
-import { DEFAULT_MAINTENANCE_MESSAGE } from "@/lib/maintenance-shared";
+import { getMaintenanceSettings, isMaintenanceBypassed } from "@/lib/maintenance";
 
 const protectedPrefixes = [
   "/admin",
@@ -60,24 +60,16 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/admin" || pathname.startsWith("/admin/") || pathname.startsWith("/api/admin/")) return response;
 
   if (data.user) {
-    const [{ data: profile }, { data: setting }] = await Promise.all([
+    const [{ data: profile }, maintenance] = await Promise.all([
       supabase.from("profiles").select("role").eq("id", data.user.id).maybeSingle(),
-      supabase.from("system_settings").select("value").eq("key", "maintenance").maybeSingle(),
+      getMaintenanceSettings(),
     ]);
-    const storedValue = setting?.value && typeof setting.value === "object" && !Array.isArray(setting.value)
-      ? setting.value as Record<string, unknown>
-      : null;
-    const enabled = storedValue
-      ? storedValue.enabled === true
-      : /^(?:1|true|on)$/i.test(process.env.MAINTENANCE_MODE || "");
-    const message = storedValue && typeof storedValue.message === "string" && storedValue.message.trim()
-      ? storedValue.message.trim()
-      : process.env.MAINTENANCE_MESSAGE?.trim() || DEFAULT_MAINTENANCE_MESSAGE;
+    const identity = { email: data.user.email || "", role: profile?.role === "admin" ? "admin" as const : "teacher" as const };
     const decision = maintenanceAccessDecision({
       pathname,
-      enabled,
+      enabled: maintenance.enabled,
       authenticated: true,
-      role: profile?.role === "admin" ? "admin" : "teacher",
+      role: isMaintenanceBypassed(identity) ? "admin" : "teacher",
     });
     if (decision === "redirect") {
       const maintenanceUrl = request.nextUrl.clone();
@@ -86,7 +78,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(maintenanceUrl);
     }
     if (decision === "block_api") {
-      return NextResponse.json({ ok: false, maintenance: true, message }, { status: 503 });
+      return NextResponse.json({ ok: false, maintenance: true, message: maintenance.message }, { status: 503 });
     }
   }
 

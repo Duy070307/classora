@@ -60,6 +60,7 @@ export function MaintenanceAdminPanel() {
       </div>
 
       <div className="mt-5 space-y-4">
+        <p className="rounded-2xl bg-blue-50 px-4 py-3 text-sm font-semibold leading-6 text-blue-900">Giáo viên sẽ được chuyển đến trang bảo trì ở lần tải trang hoặc gọi API tiếp theo.</p>
         <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <span className="font-bold text-slate-900">Bật chế độ bảo trì</span>
           <input type="checkbox" className="h-5 w-5 accent-blue-600" checked={settings.enabled} disabled={loading || saving} onChange={(event) => setSettings((current) => ({ ...current, enabled: event.target.checked }))} />

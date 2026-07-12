@@ -3,11 +3,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogOut, Settings } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/user";
-import { getMaintenanceSettings } from "@/lib/maintenance";
+import { getMaintenanceSettings, isMaintenanceBypassed } from "@/lib/maintenance";
 
 export default async function MaintenancePage() {
   const [user, maintenance] = await Promise.all([getCurrentUser(), getMaintenanceSettings()]);
-  if (!maintenance.enabled) redirect(user ? user.role === "admin" ? "/admin" : "/dashboard" : "/login");
+  const adminBypass = isMaintenanceBypassed(user);
+  if (!maintenance.enabled) redirect(user ? adminBypass ? "/admin" : "/dashboard" : "/login");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-blue-50 via-white to-slate-50 p-4 sm:p-6">
@@ -20,7 +21,7 @@ export default async function MaintenancePage() {
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           {user ? <form action="/api/auth/logout" method="post"><button type="submit" className="btn-primary"><LogOut size={17} />Đăng xuất</button></form> : null}
           <Link href="/login" className="btn-secondary">Về trang đăng nhập</Link>
-          {user?.role === "admin" ? <Link href="/admin" className="btn-secondary"><Settings size={17} />Vào trang quản trị</Link> : null}
+          {adminBypass ? <Link href="/admin" className="btn-secondary"><Settings size={17} />Vào trang quản trị</Link> : null}
         </div>
       </section>
     </main>

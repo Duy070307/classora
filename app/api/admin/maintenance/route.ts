@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/user";
-import { getMaintenanceSettings, setMaintenanceSettings } from "@/lib/maintenance";
+import { getMaintenanceSettings, isMaintenanceBypassed, setMaintenanceSettings } from "@/lib/maintenance";
 import { validateMaintenanceUpdate } from "@/lib/maintenance-shared";
 
 async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user) return { error: NextResponse.json({ ok: false, error: "Vui lòng đăng nhập." }, { status: 401 }) };
-  if (user.role !== "admin") return { error: NextResponse.json({ ok: false, error: "Bạn không có quyền thực hiện thao tác này." }, { status: 403 }) };
+  if (!isMaintenanceBypassed(user)) return { error: NextResponse.json({ ok: false, error: "Bạn không có quyền thực hiện thao tác này." }, { status: 403 }) };
   return { user };
 }
 

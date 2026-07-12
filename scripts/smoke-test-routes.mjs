@@ -52,6 +52,7 @@ const requiredFiles = [
   "app/api/beta-request/route.ts",
   "app/api/admin/beta-requests/[id]/route.ts",
   "app/api/admin/maintenance/route.ts",
+  "app/api/maintenance/route.ts",
   "app/api/tikz-bank/route.ts",
   "app/api/tikz-bank/[id]/route.ts",
   "app/api/tikz-bank/copy/route.ts",

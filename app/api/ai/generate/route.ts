@@ -13,6 +13,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { calculateExamStructure, sanitizeExamStructure } from "@/lib/exam/exam-structure";
 import { collectExamSections, isUsableExamCount, minimumUsableExamCount } from "@/lib/exam/section-generation";
+import { getMaintenanceBlockForUser } from "@/lib/maintenance";
 
 const actions = new Set<AIRefinementAction>([
   "regenerate",
@@ -175,9 +176,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (isSupabaseConfigured() && !await getCurrentUser()) {
+    const currentUser = await getCurrentUser();
+    if (isSupabaseConfigured() && !currentUser) {
       return NextResponse.json({ ok: false, error: "Vui lòng đăng nhập để tạo nội dung." }, { status: 401 });
     }
+    const maintenance = await getMaintenanceBlockForUser(currentUser);
+    if (maintenance) return NextResponse.json({ ok: false, maintenance: true, message: maintenance.message }, { status: 503 });
     const validated = validateBody(await request.json());
     if ("error" in validated) {
       return NextResponse.json({ ok: false, error: validated.error }, { status: 400 });

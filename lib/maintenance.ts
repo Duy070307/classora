@@ -29,6 +29,19 @@ export async function getMaintenanceSettings(): Promise<MaintenanceSettings> {
   return normalizeRow(data as Record<string, unknown>) || envSettings();
 }
 
+export function isMaintenanceBypassed(user: Pick<SafeUser, "email" | "role"> | null | undefined) {
+  if (!user) return false;
+  if (user.role === "admin") return true;
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  return Boolean(adminEmail && user.email.trim().toLowerCase() === adminEmail);
+}
+
+export async function getMaintenanceBlockForUser(user: Pick<SafeUser, "email" | "role"> | null | undefined) {
+  if (!user || isMaintenanceBypassed(user)) return null;
+  const settings = await getMaintenanceSettings();
+  return settings.enabled ? settings : null;
+}
+
 export async function setMaintenanceSettings(input: { enabled: boolean; message: string }, adminUser: SafeUser): Promise<MaintenanceSettings> {
   const admin = createSupabaseAdminClient();
   if (!admin) throw new Error("maintenance_storage_unavailable");

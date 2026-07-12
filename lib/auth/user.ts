@@ -22,11 +22,17 @@ export async function getCurrentUser(): Promise<SafeUser | null> {
     .eq("id", user.id)
     .maybeSingle();
 
+  const email = user.email ?? "";
+  const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const role = normalizeRole(profile?.role) === "admin" || Boolean(configuredAdminEmail && email.trim().toLowerCase() === configuredAdminEmail)
+    ? "admin"
+    : "teacher";
+
   return {
     id: user.id,
-    email: user.email ?? "",
+    email,
     fullName: typeof profile?.full_name === "string" ? profile.full_name : "",
-    role: normalizeRole(profile?.role)
+    role,
   };
 }
 

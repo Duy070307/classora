@@ -5,6 +5,7 @@ import { extractJson } from "@/lib/ai/extract-json";
 import { getConfiguredProvider } from "@/lib/ai/provider";
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { getCurrentUser } from "@/lib/auth/user";
+import { getMaintenanceBlockForUser } from "@/lib/maintenance";
 
 const maxFileSize = 5 * 1024 * 1024;
 const supportedExtensions = [".txt", ".md", ".csv", ".tsv", ".xlsx", ".docx"];
@@ -297,10 +298,13 @@ async function extractFile(file: File, extension: string) {
 }
 
 export async function POST(request: NextRequest) {
+  let currentUser: Awaited<ReturnType<typeof getCurrentUser>> = null;
   if (isSupabaseConfigured()) {
-    const user = await getCurrentUser();
-    if (!user) return jsonResponse({ ok: false, error: "Vui lòng đăng nhập để sử dụng chức năng nhận diện file." }, 401);
+    currentUser = await getCurrentUser();
+    if (!currentUser) return jsonResponse({ ok: false, error: "Vui lòng đăng nhập để sử dụng chức năng nhận diện file." }, 401);
   }
+  const maintenance = await getMaintenanceBlockForUser(currentUser);
+  if (maintenance) return jsonResponse({ ok: false, maintenance: true, message: maintenance.message }, 503);
 
   const formData = await request.formData();
   const file = formData.get("file");

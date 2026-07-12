@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isRegistrationEnabled, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { MaintenanceAdminPanel } from "@/components/admin/MaintenanceAdminPanel";
+import { isMaintenanceBypassed } from "@/lib/maintenance";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -17,7 +18,7 @@ export default async function AdminPage() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || !isMaintenanceBypassed(user)) {
     return (
       <AppShell title="Quản trị">
         <PageHeader title="Không có quyền truy cập" description="Khu vực này chỉ dành cho quản trị viên." />
