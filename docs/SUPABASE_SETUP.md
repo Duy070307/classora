@@ -35,3 +35,16 @@ AI_MAX_OUTPUT_TOKENS=4000
 9. Kiểm tra `/login`, `/dashboard`, `/history`, `/data`, `/admin`.
 
 Nếu thiếu env Supabase, Soạn Lab tự chạy ở chế độ dữ liệu cục bộ trên trình duyệt.
+
+## Chế độ bảo trì
+
+Chạy migration `supabase/migrations/20260712_add_system_settings.sql` trên Supabase trước khi sử dụng nút bật/tắt tại `/admin`. Migration tạo bảng `system_settings`; tài khoản đã đăng nhập chỉ được đọc trạng thái, còn cập nhật đi qua API quản trị server-side.
+
+Hai biến sau chỉ là fallback khi hàng cấu hình trong cơ sở dữ liệu chưa tồn tại:
+
+```env
+MAINTENANCE_MODE=false
+MAINTENANCE_MESSAGE=SOẠN LAB đang bảo trì để nâng cấp hệ thống. Tài khoản dùng thử tạm thời chưa thể sử dụng. Thầy cô vui lòng quay lại sau.
+```
+
+Sau khi hàng `maintenance` tồn tại, giá trị trong cơ sở dữ liệu luôn được ưu tiên. Không cần redeploy khi admin bật hoặc tắt chế độ bảo trì.

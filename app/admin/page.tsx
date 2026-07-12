@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { getCurrentUser } from "@/lib/auth/user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isRegistrationEnabled, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/is-configured";
+import { MaintenanceAdminPanel } from "@/components/admin/MaintenanceAdminPanel";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -55,6 +56,8 @@ export default async function AdminPage() {
         <StatCard icon={LockKeyhole} label="Đăng ký" value={isRegistrationEnabled() ? "Đang mở" : "Đang khóa"} />
         <StatCard icon={UserPlus} label="Yêu cầu chờ duyệt" value={String(betaRequests?.count ?? "—")} />
       </div>
+
+      <MaintenanceAdminPanel />
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
