@@ -3,6 +3,7 @@ export const draftToolNames: Record<string, string> = {
   "/tools/matrix-generator": "Tạo ma trận đề",
   "/tools/answer-key-generator": "Tạo đáp án và thang điểm",
   "/tools/exam-shuffler": "Trộn mã đề",
+  "/tools/exam-mixer": "Trộn mã đề",
   "/tools/worksheet-generator": "Tạo phiếu học tập",
   "/tools/lesson-plan-generator": "Tạo giáo án",
   "/tools/student-comments": "Tạo nhận xét học sinh",

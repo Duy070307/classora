@@ -1,8 +1,7 @@
 "use client";
 
-import { ToolFormLayout } from "@/components/ToolFormLayout";
-import { getToolConfig } from "@/lib/tool-configs";
+import { redirect } from "next/navigation";
 
 export default function ExamShufflerPage() {
-  return <ToolFormLayout config={getToolConfig("/tools/exam-shuffler")!} />;
+  redirect("/tools/exam-mixer");
 }

@@ -19,6 +19,7 @@ import { createDocument, saveDocument } from "@/lib/history";
 import { structuredExamToText } from "@/lib/mock-exam-generator";
 import type { ExamPartType, ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
+import { openExamMixer } from "@/lib/exam-mixer/session";
 
 type ParseResponse = { ok: true; source: ParsedExamSource; blueprint: ExamBlueprint } | { ok: false; error: string; maintenance?: boolean; message?: string };
 
@@ -313,7 +314,7 @@ export function FileExamGenerator() {
         {message ? <p className="rounded-xl bg-slate-50 p-3 text-sm font-semibold leading-6 text-slate-700">{message}</p> : null}
       </section>
       <ToolOutputPanel loading={loading && Boolean(blueprint)} loadingTitle="Đang tạo đề theo cấu trúc..." loadingDescription="SOẠN LAB đang tạo từng phần, bổ sung phần thiếu và rà soát chất lượng." hasOutput={Boolean(document)} showWarning={false}>
-        {document ? <><div className="mb-3 rounded-2xl border border-blue-200 bg-blue-50 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-black uppercase text-blue-700">{blueprint && blueprint.sourceType !== "unknown" ? sourceHistoryLabels[blueprint.sourceType] : "Tạo từ file"}</p><p className="mt-1 text-sm font-bold text-slate-950">Rà soát chất lượng: {document.auditMeta?.errorCount ? `${document.auditMeta.errorCount} lỗi cần kiểm tra` : "Đã hoàn tất kiểm tra cấu trúc"}</p></div><button type="button" className="btn-primary" onClick={openAudit}>Mở công cụ Kiểm tra đề</button></div></div><ToolOutputActions document={document} onSave={() => { saveDocument(document); setMessage("Đã lưu đề và cấu trúc nguồn vào lịch sử."); }} onGenerateAgain={generateFromBlueprint} /><OutputPreview document={document} /></> : null}
+        {document ? <><div className="mb-3 rounded-2xl border border-blue-200 bg-blue-50 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-black uppercase text-blue-700">{blueprint && blueprint.sourceType !== "unknown" ? sourceHistoryLabels[blueprint.sourceType] : "Tạo từ file"}</p><p className="mt-1 text-sm font-bold text-slate-950">Rà soát chất lượng: {document.auditMeta?.errorCount ? `${document.auditMeta.errorCount} lỗi cần kiểm tra` : "Đã hoàn tất kiểm tra cấu trúc"}</p></div><div className="flex flex-wrap gap-2"><button type="button" className="btn-primary" onClick={openAudit}>Mở công cụ Kiểm tra đề</button><button type="button" className="btn-secondary" onClick={() => openExamMixer(document)}>Trộn mã đề</button></div></div></div><ToolOutputActions document={document} onSave={() => { saveDocument(document); setMessage("Đã lưu đề và cấu trúc nguồn vào lịch sử."); }} onGenerateAgain={generateFromBlueprint} /><OutputPreview document={document} /></> : null}
       </ToolOutputPanel>
     </div>
   );

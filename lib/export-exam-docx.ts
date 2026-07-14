@@ -151,6 +151,7 @@ function structuredSectionText(document: GeneratedDocument, type: "multiple_choi
   const questions = document.structuredExam?.parts.find((part) => part.type === type)?.questions ?? [];
   return questions.map((question) => {
     const lines = [`Câu ${question.number}. ${question.stem}`];
+    if (question.visuals?.length) for (const visual of question.visuals) lines.push(`[Hình vẽ minh họa]${visual.alt ? ` ${visual.alt}` : ""}`);
     if (question.options) for (const key of ["A", "B", "C", "D"] as const) lines.push(`${key}. ${question.options[key]}`);
     if (question.trueFalseItems) for (const item of question.trueFalseItems) lines.push(`${item.label}) ${item.text}`);
     return lines.join("\n");
@@ -232,7 +233,7 @@ function teacherContent(document: GeneratedDocument) {
   return children;
 }
 
-export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
+export async function buildOfficialExamDocxBlob(document: GeneratedDocument, options: { includeTeacher?: boolean; preserveExamCode?: boolean } = {}) {
   document = normalizeGeneratedDocument(document);
   const settings = getDocumentSettings();
   const meta = document.examMeta ?? {};
@@ -242,7 +243,8 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
   const schoolName = meta.schoolName || settings.schoolName || "TRƯỜNG THPT ...";
   const department = settings.department || "SỞ GIÁO DỤC VÀ ĐÀO TẠO";
   const schoolYear = settings.schoolYear ? `NĂM HỌC ${settings.schoolYear}` : "";
-  const examCode = (meta.examCode || document.content.match(/Mã đề:\s*(\d+)/i)?.[1] || "0101").padStart(4, "0");
+  const rawExamCode = meta.examCode || document.content.match(/Mã đề:\s*(\d+)/i)?.[1] || "0101";
+  const examCode = options.preserveExamCode ? rawExamCode : rawExamCode.padStart(4, "0");
   const explicitPart1 = cleanStudentBody(section(document.content, /^PHẦN I\./i, /^PHẦN II\./i));
   const explicitPart2 = cleanStudentBody(section(document.content, /^PHẦN II\./i, /^PHẦN III\./i));
   const explicitPart3 = cleanStudentBody(section(document.content, /^PHẦN III\./i, /^(PHẦN DÀNH CHO GIÁO VIÊN|III\.\s*ĐÁP ÁN)/i));
@@ -331,7 +333,7 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
       },
         children: studentChildren
       },
-      {
+      ...(options.includeTeacher === false ? [] : [{
         footers: { default: new Footer({ children: [paragraph("", { after: 0 })] }) },
         properties: {
           type: SectionType.NEXT_PAGE,
@@ -346,7 +348,7 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument) {
           }
         },
         children: teacherContent(document)
-      }
+      }])
     ]
   });
   return Packer.toBlob(docx);

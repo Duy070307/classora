@@ -37,7 +37,7 @@ export function OutputPreview({ document }: { document: GeneratedDocument }) {
               <div><p className="font-bold">SỞ GIÁO DỤC VÀ ĐÀO TẠO</p><p className="font-bold">{(examMeta?.schoolName || "TRƯỜNG THPT ...").toUpperCase()}</p><p className="text-xs italic">(Đề có .... trang)</p></div>
               <div><p className="font-bold">ĐỀ THI THỬ</p><p className="font-bold">KỲ THI TỐT NGHIỆP THPT</p><p className="font-bold">MÔN: {(examMeta?.subject || "...").toUpperCase()} {examMeta?.grade || "..."}</p><p className="text-xs italic">Thời gian: {examMeta?.duration || "... phút"}, không kể thời gian phát đề</p></div>
             </div>
-            <div className="mt-5 flex items-end justify-between gap-3 border-b border-slate-900 pb-2"><p>Họ và tên thí sinh: .................................... Số báo danh: ...................</p><p className="shrink-0 border border-slate-900 px-3 py-2 font-bold">Mã đề: {(examMeta?.examCode || "0101").padStart(4, "0")}</p></div>
+            <div className="mt-5 flex items-end justify-between gap-3 border-b border-slate-900 pb-2"><p>Họ và tên thí sinh: .................................... Số báo danh: ...................</p><p className="shrink-0 border border-slate-900 px-3 py-2 font-bold">Mã đề: {document.generationMeta?.mode === "exam-mixer" ? (examMeta?.examCode || "101") : (examMeta?.examCode || "0101").padStart(4, "0")}</p></div>
           </div> : null}
           {header.length ? <header className="mb-6 border-b border-slate-200 pb-3 text-sm leading-6 text-slate-700">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
           {document.type !== "exam" ? <GenericDocumentContent content={document.content} /> : lines.map((line, index) => {

@@ -43,6 +43,7 @@ export type GeneratedDocument = {
     examStyle?: string;
   };
   structuredExam?: import("@/lib/exam-types").StructuredExam;
+  examVariantSet?: import("@/lib/exam-mixer/types").ExamVariantSet;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

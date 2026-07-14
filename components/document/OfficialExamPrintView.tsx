@@ -44,14 +44,14 @@ function structuredToPrintQuestion(question: ExamQuestion): ExamPrintQuestion {
     stem: question.stem,
     options: question.options ? (["A", "B", "C", "D"] as const).map((label) => ({ label, text: question.options?.[label] ?? "" })) : [],
     subItems: question.trueFalseItems?.map((item) => ({ label: item.label, text: item.text })) ?? [],
-    extra: []
+    extra: question.visuals?.map((visual) => `[Hình vẽ minh họa]${visual.alt ? ` ${visual.alt}` : ""}`) ?? []
   };
 }
 
 export function OfficialExamPrintView({ document, settings }: { document: GeneratedDocument; settings: DocumentSettings }) {
   const parsed = parseExamForPrint(document);
   const meta = document.examMeta ?? {};
-  const code = (meta.examCode || "0101").padStart(4, "0");
+  const code = document.generationMeta?.mode === "exam-mixer" ? (meta.examCode || "101") : (meta.examCode || "0101").padStart(4, "0");
   const year = settings.schoolYear.match(/\d{4}/)?.[0] || new Date().getFullYear();
   const structuredMultipleChoice = document.structuredExam?.parts.find((part) => part.type === "multiple_choice")?.questions ?? [];
   const structuredTrueFalse = document.structuredExam?.parts.find((part) => part.type === "true_false")?.questions ?? [];
@@ -60,6 +60,7 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
   const part2 = parsed.part2.length ? parsed.part2 : structuredTrueFalse.map(structuredToPrintQuestion);
   const part3 = parsed.part3.length ? parsed.part3 : structuredShortAnswer.map(structuredToPrintQuestion);
   const hasStructuredAnswers = structuredMultipleChoice.length + structuredTrueFalse.length + structuredShortAnswer.length > 0;
+  const includeTeacherPages = document.generationMeta?.mode !== "exam-mixer";
   return <article className="official-exam-print">
     <section className="exam-student-pages">
       <header className="exam-print-header">
@@ -86,7 +87,7 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
       <p className="exam-end">------ HẾT ------</p>
       <div className="exam-print-footer"><span>Mã đề {code}</span><span>Trang ...</span></div>
     </section>
-    <section className="exam-teacher-pages">
+    {includeTeacherPages ? <section className="exam-teacher-pages">
       <h2>PHẦN DÀNH CHO GIÁO VIÊN</h2>
       <h2>ĐÁP ÁN VÀ THANG ĐIỂM</h2>
       <h3>I. ĐÁP ÁN</h3>
@@ -107,6 +108,6 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
       <Matrix text={parsed.matrix} />
       <TextSection title="IV. BẢN ĐẶC TẢ" text={parsed.specification} />
       {document.structuredExam?.teacherOnly.notes ? <TextSection title="GHI CHÚ GIÁO VIÊN" text={document.structuredExam.teacherOnly.notes} /> : null}
-    </section>
+    </section> : null}
   </article>;
 }

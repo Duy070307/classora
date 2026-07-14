@@ -86,6 +86,7 @@ function makeQuestions(input: ExamInput, part: ExamQuestion["part"], count: numb
 
 function renderQuestion(question: ExamQuestion) {
   const lines = [`Câu ${question.number}. ${question.stem}`];
+  if (question.visuals?.length) for (const visual of question.visuals) lines.push(`[Hình vẽ minh họa]${visual.alt ? ` ${visual.alt}` : ""}`);
   if (question.options) for (const key of answerOrder) lines.push(`${key}. ${question.options[key]}`);
   if (question.trueFalseItems) for (const item of question.trueFalseItems) lines.push(`${item.label}) ${item.text}`);
   return lines.join("\n");

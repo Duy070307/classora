@@ -122,7 +122,7 @@ export const toolRegistry: ToolMeta[] = [
   {
     title: "Trộn mã đề",
     description: "Trộn câu hỏi, đáp án và tạo bảng đáp án theo mã đề.",
-    href: "/tools/exam-shuffler",
+    href: "/tools/exam-mixer",
     category: "exam-assessment",
     popular: true,
     badge: "Mới",
