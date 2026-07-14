@@ -35,6 +35,7 @@ import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sa
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
 import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EXAM_AUDIT_SESSION_RESULT } from "@/lib/exam-audit/document";
+import { FileExamGenerator } from "@/components/exam-generator/FileExamGenerator";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -135,6 +136,7 @@ const quickExamPresets: Array<{ label: string; values: Partial<ExamInput>; bank?
 ];
 
 export default function ExamGeneratorPage() {
+  const [creationMode, setCreationMode] = useState<"manual" | "file">("manual");
   const [input, setInput] = useState(initialInput);
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
@@ -188,6 +190,7 @@ export default function ExamGeneratorPage() {
   }, [allowAiSupplement, allowRelatedTopics, bankCount, bankDifficulty, bankQuestions, bankSource, difficultyMode, input]);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "file") queueMicrotask(() => setCreationMode("file"));
     queueMicrotask(() => {
       const settings = getDocumentSettings();
       setInput((current) => ({
@@ -549,6 +552,11 @@ export default function ExamGeneratorPage() {
   return (
     <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
+        <div className="mb-5 grid max-w-2xl grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
+          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề bằng cấu hình</button>
+          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề từ file</button>
+        </div>
+        {creationMode === "file" ? <FileExamGenerator /> : (
         <ToolWorkspaceLayout
           form={
           <form onSubmit={handleSubmit} className="tool-form-card">
@@ -706,6 +714,7 @@ export default function ExamGeneratorPage() {
             </ToolOutputPanel>
           }
         />
+        )}
     </AppShell>
   );
 }

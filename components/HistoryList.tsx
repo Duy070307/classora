@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, ClipboardCheck, Download, Eye, FolderOpen, Search, Trash2 } from "lucide-react";
+import { CalendarDays, ClipboardCheck, Download, Eye, FolderOpen, RefreshCw, Search, Trash2 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { deleteCloudDocument, listCloudDocuments, updateCloudDocumentFolder } from "@/lib/data/documents-store";
@@ -10,6 +10,9 @@ import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history"
 import { removeStored, STORAGE_KEYS } from "@/lib/storage";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
 import { auditStatusLabel } from "@/lib/exam-audit/document";
+import { EXAM_BLUEPRINT_SESSION_KEY } from "@/lib/exam-blueprints";
+
+const creationLabels = { matrix: "Tạo từ ma trận", specification: "Tạo từ bảng đặc tả", previous_exam: "Tạo từ đề cũ", lesson_material: "Tạo từ tài liệu" } as const;
 
 const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
@@ -216,6 +219,7 @@ export function HistoryList() {
                     <FolderOpen size={13} /> {item.folder || "Khác"}
                   </span>
                   {item.type === "exam" ? <span className={`rounded-full px-3 py-1 text-xs font-black ${item.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : item.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(item)}</span> : null}
+                  {item.generationMeta?.creationMode && item.generationMeta.creationMode !== "manual" ? <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700">{creationLabels[item.generationMeta.creationMode]}</span> : null}
                 </div>
                 <h3 className="mt-3 line-clamp-2 font-black text-slate-900">{item.title}</h3>
                 <p className="mt-1 flex items-center gap-1 text-xs font-medium text-slate-500">
@@ -249,6 +253,7 @@ export function HistoryList() {
                 <Eye size={16} /> Xem
               </Link>
               {item.type === "exam" ? <Link href={`/tools/exam-audit?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><ClipboardCheck size={16} />Kiểm tra lại</Link> : null}
+              {item.type === "exam" && item.generationMeta?.normalizedBlueprint ? <button type="button" className="btn-secondary min-h-9 px-3 py-1.5 text-xs" onClick={() => { sessionStorage.setItem(EXAM_BLUEPRINT_SESSION_KEY, JSON.stringify(item.generationMeta?.normalizedBlueprint)); window.location.assign("/tools/exam-generator?mode=file"); }}><RefreshCw size={16} />Tạo đề mới theo cấu trúc này</button> : null}
               <DocumentExportMenu document={item} compact />
             </div>
           </article>

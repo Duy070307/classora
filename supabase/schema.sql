@@ -35,6 +35,19 @@ create table if not exists public.templates (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.exam_blueprints (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  description text,
+  subject text,
+  grade text,
+  source_type text not null check (source_type in ('matrix', 'specification', 'previous_exam', 'lesson_material')),
+  blueprint jsonb not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.question_bank (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
@@ -197,6 +210,12 @@ with check (user_id = auth.uid() or public.is_admin());
 
 drop policy if exists "templates_own_all" on public.templates;
 create policy "templates_own_all" on public.templates
+for all using (user_id = auth.uid() or public.is_admin())
+with check (user_id = auth.uid() or public.is_admin());
+
+alter table public.exam_blueprints enable row level security;
+drop policy if exists "exam_blueprints_own_or_admin" on public.exam_blueprints;
+create policy "exam_blueprints_own_or_admin" on public.exam_blueprints
 for all using (user_id = auth.uid() or public.is_admin())
 with check (user_id = auth.uid() or public.is_admin());
 

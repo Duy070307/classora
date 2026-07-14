@@ -92,6 +92,13 @@ export type GeneratedDocument = {
       application: number;
       advanced: number;
     };
+    creationMode?: "manual" | "matrix" | "specification" | "previous_exam" | "lesson_material";
+    sourceFileName?: string;
+    sourceType?: "matrix" | "specification" | "previous_exam" | "lesson_material" | "unknown";
+    normalizedBlueprint?: import("@/lib/exam-source/types").ExamBlueprint;
+    sourceContentHash?: string;
+    generatedAt?: string;
+    auditStatus?: "failed" | "review" | "ready";
   };
 };
 
