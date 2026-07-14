@@ -7,15 +7,18 @@ import { downloadMarkdown, downloadTxt } from "@/lib/export-text";
 import { printGeneratedDocument } from "@/lib/print-document";
 import type { GeneratedDocument } from "@/lib/types";
 import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
+import { confirmExamExport } from "@/lib/exam-audit/document";
 
 export function DocumentExportMenu({
   document,
   onSave,
   compact = false,
+  beforeExport,
 }: {
   document: GeneratedDocument;
   onSave?: () => void;
   compact?: boolean;
+  beforeExport?: () => boolean;
 }) {
   const [message, setMessage] = useState("");
   const [exporting, setExporting] = useState(false);
@@ -33,6 +36,7 @@ export function DocumentExportMenu({
 
   async function word() {
     if (exporting) return;
+    if (!(beforeExport?.() ?? confirmExamExport(document))) return;
     setExporting(true);
       setMessage("Đang xuất Word…");
     try {
@@ -59,7 +63,9 @@ export function DocumentExportMenu({
       <button type="button" aria-label="Xuất tài liệu Word" disabled={exporting} className={buttonClass} onClick={word}>
         <Download size={16} /> {exporting ? "Đang xuất Word…" : document.type === "exam" ? "Xuất Word dạng đề thi" : "Xuất Word"}
       </button>
-      <button type="button" aria-label="Mở bản in hoặc lưu PDF" className={buttonClass} onClick={() => printGeneratedDocument(normalizeGeneratedDocument(document))}>
+      <button type="button" aria-label="Mở bản in hoặc lưu PDF" className={buttonClass} onClick={() => {
+        if (beforeExport?.() ?? confirmExamExport(document)) printGeneratedDocument(normalizeGeneratedDocument(document));
+      }}>
         <Printer size={16} /> Xuất PDF
       </button>
       <button type="button" aria-label="Tải tài liệu Markdown" className={buttonClass} onClick={() => downloadMarkdown(normalizeGeneratedDocument(document))}>

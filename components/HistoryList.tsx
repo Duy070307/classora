@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, Download, Eye, FolderOpen, Search, Trash2 } from "lucide-react";
+import { CalendarDays, ClipboardCheck, Download, Eye, FolderOpen, Search, Trash2 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { deleteCloudDocument, listCloudDocuments, updateCloudDocumentFolder } from "@/lib/data/documents-store";
 import { deleteDocument, getHistory, updateDocumentFolder } from "@/lib/history";
 import { removeStored, STORAGE_KEYS } from "@/lib/storage";
 import type { DocumentFolder, GeneratedDocument } from "@/lib/types";
+import { auditStatusLabel } from "@/lib/exam-audit/document";
 
 const folders: DocumentFolder[] = ["Đề kiểm tra", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Khác"];
 
@@ -24,6 +25,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "question-bank": "Ngân hàng câu hỏi",
   "question-variant": "Biến thể câu hỏi",
   "exam-checker": "Kiểm tra lỗi đề",
+  "exam-audit": "Kiểm tra đề",
   activity: "Hoạt động lớp học",
   "differentiated-exercises": "Bài tập phân hóa",
   "exam-shuffler": "Trộn mã đề",
@@ -213,6 +215,7 @@ export function HistoryList() {
                   <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
                     <FolderOpen size={13} /> {item.folder || "Khác"}
                   </span>
+                  {item.type === "exam" ? <span className={`rounded-full px-3 py-1 text-xs font-black ${item.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : item.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(item)}</span> : null}
                 </div>
                 <h3 className="mt-3 line-clamp-2 font-black text-slate-900">{item.title}</h3>
                 <p className="mt-1 flex items-center gap-1 text-xs font-medium text-slate-500">
@@ -245,6 +248,7 @@ export function HistoryList() {
               <Link href={`/history/${item.id}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs">
                 <Eye size={16} /> Xem
               </Link>
+              {item.type === "exam" ? <Link href={`/tools/exam-audit?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><ClipboardCheck size={16} />Kiểm tra lại</Link> : null}
               <DocumentExportMenu document={item} compact />
             </div>
           </article>

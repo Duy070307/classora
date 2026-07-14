@@ -10,6 +10,7 @@ export type ToolType =
   | "question-bank"
   | "question-variant"
   | "exam-checker"
+  | "exam-audit"
   | "activity"
   | "differentiated-exercises"
   | "exam-shuffler"
@@ -42,6 +43,15 @@ export type GeneratedDocument = {
     examStyle?: string;
   };
   structuredExam?: import("@/lib/exam-types").StructuredExam;
+  auditMeta?: {
+    lastAuditedAt?: string;
+    auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";
+    errorCount: number;
+    warningCount: number;
+    acceptedWarningIds: string[];
+    auditVersion: string;
+    contentHash?: string;
+  };
   generationMeta?: {
     provider?: string;
     providerRequested?: string;
@@ -75,6 +85,13 @@ export type GeneratedDocument = {
     allowAiSupplement?: boolean;
     questionType?: string;
     requestContext?: import("@/lib/generation/request-context").GenerationRequestContext;
+    requestedTotalScore?: number;
+    requestedCognitiveRates?: {
+      recognition: number;
+      understanding: number;
+      application: number;
+      advanced: number;
+    };
   };
 };
 

@@ -34,6 +34,7 @@ import { validateTopicItem } from "@/lib/generation/topic-validator";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
+import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EXAM_AUDIT_SESSION_RESULT } from "@/lib/exam-audit/document";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -209,6 +210,24 @@ export default function ExamGeneratorPage() {
   }, []);
 
   useEffect(() => {
+    const raw = sessionStorage.getItem(EXAM_AUDIT_SESSION_RESULT);
+    if (!raw) return;
+    try {
+      const audited = JSON.parse(raw) as GeneratedDocument;
+      if (audited.type === "exam" && audited.structuredExam) {
+        queueMicrotask(() => {
+          setDocument(audited);
+          setMessage("Đã nhận lại đề sau khi kiểm tra chất lượng.");
+        });
+      }
+    } catch {
+      // Bỏ qua dữ liệu phiên cũ không hợp lệ.
+    } finally {
+      sessionStorage.removeItem(EXAM_AUDIT_SESSION_RESULT);
+    }
+  }, []);
+
+  useEffect(() => {
     queueMicrotask(() => {
       setDocument(null);
       setMessage("");
@@ -316,7 +335,12 @@ export default function ExamGeneratorPage() {
         .map((question, index) => ({ ...question, number: index + 1, score: Number((input.totalScore / Math.max(status.finalCount, 1)).toFixed(2)) })));
       const sourceCounts = bankSourceCounts(selected);
       const structuredExam: StructuredExam = {
-        metadata: { title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade, duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName },
+        metadata: {
+          title: `Đề kiểm tra ${input.subject} lớp ${input.grade}`, examStyle: input.examStyle, subject: input.subject, grade: input.grade,
+          duration: input.duration, examCode: input.examCode.padStart(4, "0"), schoolName: input.schoolName, totalScore: input.totalScore,
+          requestedSectionCounts: { partI: requestedCount, partII: 0, partIII: 0 },
+          requestedCognitiveRates: { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate },
+        },
         parts: [{ type: "multiple_choice", title: "PHẦN I. TRẮC NGHIỆM", instruction: "Chọn phương án đúng nhất trong mỗi câu.", questions: allStructuredQuestions }],
         teacherOnly: {
           scoringGuide: allStructuredQuestions.map((item, index) => `Câu ${index + 1}: ${item.answer} - ${item.explanation || "Rà soát lời giải."}`).join("\n"),
@@ -366,6 +390,8 @@ export default function ExamGeneratorPage() {
         allowAiSupplement,
         questionType: "Trắc nghiệm",
         requestContext: createGenerationRequestContext({ ...input, source: bankSource, allowAiSupplement, allowRelatedTopics, questionType: "Trắc nghiệm", questionCount: allStructuredQuestions.length }, "exam"),
+        requestedTotalScore: input.totalScore,
+        requestedCognitiveRates: { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate },
         warnings: notes,
       };
       setDocument(next);
@@ -398,6 +424,9 @@ export default function ExamGeneratorPage() {
     const sectionedBankIds = new Set(sectionedBankQuestions.map((item) => item.id));
     const validatedSectionedBankCount = structureAudit.exam.parts.flatMap((part) => part.questions).filter((question) => sectionedBankIds.has(question.id)).length;
     aiResult.structuredExam = structureAudit.exam;
+    aiResult.structuredExam.metadata.totalScore = input.totalScore;
+    aiResult.structuredExam.metadata.requestedSectionCounts = structureAudit.request.sectionCounts;
+    aiResult.structuredExam.metadata.requestedCognitiveRates = { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate };
     const generatedRaw = structuredExamToText(structureAudit.exam, input);
     const generated = withSourceAlignmentNote(generatedRaw
       .replace(/\nI\.\s+/i, "\nBẢN DÀNH CHO HỌC SINH\n\nI. ")
@@ -469,6 +498,8 @@ export default function ExamGeneratorPage() {
       warnings: [...(aiResult.warnings || []), "Nội dung đã được kiểm tra độ bám chủ đề."],
       questionType: input.examType,
       requestContext: createGenerationRequestContext({ ...input, source: useBank ? bankSource : "ai", allowAiSupplement, allowRelatedTopics }, "exam"),
+      requestedTotalScore: input.totalScore,
+      requestedCognitiveRates: { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate },
     };
     setDocument(next);
     incrementUsage();
@@ -507,6 +538,12 @@ export default function ExamGeneratorPage() {
     if (bank?.bankSource) setBankSource(bank.bankSource);
     if (bank?.bankCount) setBankCount(bank.bankCount);
     setMessage("Đã điền mẫu nhanh. Có thể chỉnh sửa nội dung sau khi tạo trước khi xuất file.");
+  }
+
+  function openExamAudit() {
+    if (!document) return;
+    sessionStorage.setItem(EXAM_AUDIT_SESSION_INPUT, JSON.stringify({ document, config: auditConfigFromDocument(document), source: "generator" }));
+    window.location.assign("/tools/exam-audit");
   }
 
   return (
@@ -657,6 +694,10 @@ export default function ExamGeneratorPage() {
                   <p className="mt-2 text-xs text-blue-800">SOẠN LAB đã loại các nội dung ngoài chủ đề trước khi hiển thị.</p>
                 </div>
                 {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo cấu trúc đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Phần yêu cầu: I {document.generationMeta?.requestedSectionCounts?.partI ?? input.multipleChoiceCount} · II {document.generationMeta?.requestedSectionCounts?.partII ?? input.trueFalseCount} · III {document.generationMeta?.requestedSectionCounts?.partIII ?? input.shortAnswerCount}</p><p>Phần hợp lệ: I {document.generationMeta?.generatedSectionCounts?.partI ?? 0} · II {document.generationMeta?.generatedSectionCounts?.partII ?? 0} · III {document.generationMeta?.generatedSectionCounts?.partIII ?? 0}</p><p>Tổng: {document.generationMeta?.finalCount ?? document.generationMeta?.questionCount ?? 0}/{document.generationMeta?.requestedCount ?? 0}</p><p>Đã loại trùng: {document.generationMeta?.duplicateRemovedCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
+                <div className="mb-3 rounded-2xl border border-blue-200 bg-white p-4 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-bold text-slate-900">1. Xem trước đề → 2. Kiểm tra đề → 3. Rà soát lỗi → 4. Xuất Word/PDF</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
+                  <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
+                </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />

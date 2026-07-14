@@ -13,6 +13,7 @@ const pages: Item[] = [
   ["Công cụ", "Tìm và mở mọi công cụ.", "/tools", "Điều hướng", "Trang"],
   ["Hướng dẫn", "Quy trình bắt đầu với Soạn Lab.", "/getting-started", "Hướng dẫn", "Trang"],
   ["Tạo đề kiểm tra", "Mở nhanh công cụ tạo đề.", "/tools/exam-generator", "Công cụ nổi bật", "Công cụ"],
+  ["Kiểm tra đề", "Rà soát đề trước khi xuất Word/PDF.", "/tools/exam-audit", "Công cụ nổi bật", "Công cụ"],
   ["Phiếu học tập", "Mở nhanh công cụ tạo phiếu học tập.", "/tools/worksheet-generator", "Công cụ nổi bật", "Công cụ"],
   ["Giáo án", "Mở nhanh công cụ tạo giáo án.", "/tools/lesson-plan-generator", "Công cụ nổi bật", "Công cụ"],
   ["Nhận xét học sinh", "Mở nhanh công cụ tạo nhận xét.", "/tools/student-comments", "Công cụ nổi bật", "Công cụ"],

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -29,7 +29,7 @@ export default function HistoryDetailPage() {
   return <div className="min-h-screen md:flex"><Sidebar /><main className="flex-1 p-5 md:p-8">
     <Link href="/history" className="mb-4 inline-flex items-center gap-1 text-sm font-semibold text-brand"><ArrowLeft size={16} />Quay lại lịch sử</Link>
     <PageHeader title={document.title} description={`${document.folder || "Khác"} · ${new Date(document.createdAt).toLocaleString("vi-VN")}`} />
-    <div className="mb-4 flex flex-wrap items-center gap-2"><DocumentExportMenu document={document} /><button className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa tài liệu này khỏi lịch sử?")) { deleteDocument(document.id); void deleteCloudDocument(document.id); router.push("/history"); } }}><Trash2 size={16} />Xóa</button></div>
+    <div className="mb-4 flex flex-wrap items-center gap-2"><DocumentExportMenu document={document} />{document.type === "exam" ? <Link href={`/tools/exam-audit?history=${encodeURIComponent(document.id)}`} className="btn-secondary"><ClipboardCheck size={16} />Kiểm tra lại</Link> : null}<button className="btn-secondary text-red-600" onClick={() => { if (window.confirm("Xóa tài liệu này khỏi lịch sử?")) { deleteDocument(document.id); void deleteCloudDocument(document.id); router.push("/history"); } }}><Trash2 size={16} />Xóa</button></div>
     <OutputPreview document={document} />
   </main></div>;
 }

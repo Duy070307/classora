@@ -9,6 +9,7 @@ const routes = [
   "/privacy",
   "/terms",
   "/tools/exam-generator",
+  "/tools/exam-audit",
   "/tools/worksheet-generator",
   "/tools/lesson-plan-generator",
   "/tools/student-comments",

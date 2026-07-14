@@ -24,6 +24,7 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     folder: typeof metadata.folder === "string" ? metadata.folder as GeneratedDocument["folder"] : undefined,
     examMeta: typeof metadata.examMeta === "object" && metadata.examMeta ? metadata.examMeta as GeneratedDocument["examMeta"] : undefined,
     generationMeta: typeof metadata.generationMeta === "object" && metadata.generationMeta ? metadata.generationMeta as GeneratedDocument["generationMeta"] : undefined,
+    auditMeta: typeof metadata.auditMeta === "object" && metadata.auditMeta ? metadata.auditMeta as GeneratedDocument["auditMeta"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
 }
@@ -63,7 +64,8 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
     metadata: {
       folder: document.folder,
       examMeta: document.examMeta,
-      generationMeta: document.generationMeta
+      generationMeta: document.generationMeta,
+      auditMeta: document.auditMeta
     },
     structured_data: document.structuredExam ?? null,
     updated_at: new Date().toISOString()

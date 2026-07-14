@@ -76,12 +76,14 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: rubric bài thuyết trình, bài viết, dự án",
   },
   {
-    title: "Kiểm tra lỗi đề",
-    description: "Rà soát lỗi chính tả, câu hỏi mơ hồ, tổng điểm và độ khó.",
-    href: "/tools/exam-checker",
+    title: "Kiểm tra đề",
+    description: "Rà soát cấu trúc, đáp án, điểm, câu trùng và mức sẵn sàng xuất file.",
+    href: "/tools/exam-audit",
+    popular: true,
+    badge: "Mới",
     category: "exam-assessment",
     aliases: ["rà soát đề", "lỗi đề", "kiểm tra đề"],
-    tags: ["Rà soát", "Đề kiểm tra"],
+    tags: ["Rà soát", "Đề kiểm tra", "Safe fix", "Word/PDF"],
   },
   {
     title: "Tạo ngân hàng câu hỏi",
