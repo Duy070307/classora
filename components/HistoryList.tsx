@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, ClipboardCheck, Download, Eye, FolderOpen, RefreshCw, Search, Trash2 } from "lucide-react";
+import { CalendarDays, ClipboardCheck, Download, Eye, FileCheck2, FolderOpen, RefreshCw, Search, Trash2 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import { deleteCloudDocument, listCloudDocuments, updateCloudDocumentFolder } from "@/lib/data/documents-store";
@@ -219,6 +219,7 @@ export function HistoryList() {
                     <FolderOpen size={13} /> {item.folder || "Khác"}
                   </span>
                   {item.type === "exam" ? <span className={`rounded-full px-3 py-1 text-xs font-black ${item.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : item.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(item)}</span> : null}
+                  {item.structuredExam ? <span className={`rounded-full px-3 py-1 text-xs font-black ${item.examSolutionSet?.verificationStatus === "verified" ? "bg-emerald-100 text-emerald-700" : item.examSolutionSet?.verificationStatus === "has_errors" || item.examSolutionSet?.verificationStatus === "needs_review" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>{item.examSolutionSet?.verificationStatus === "verified" ? "Đã xác minh" : item.examSolutionSet?.verificationStatus === "has_errors" || item.examSolutionSet?.verificationStatus === "needs_review" ? "Cần rà soát đáp án" : item.examSolutionSet ? "Đã tạo đáp án" : "Chưa có lời giải"}</span> : null}
                   {item.generationMeta?.creationMode && item.generationMeta.creationMode !== "manual" ? <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-700">{creationLabels[item.generationMeta.creationMode]}</span> : null}
                 </div>
                 <h3 className="mt-3 line-clamp-2 font-black text-slate-900">{item.title}</h3>
@@ -253,6 +254,7 @@ export function HistoryList() {
                 <Eye size={16} /> Xem
               </Link>
               {item.type === "exam" ? <Link href={`/tools/exam-audit?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><ClipboardCheck size={16} />Kiểm tra lại</Link> : null}
+              {item.structuredExam ? <Link href={`/tools/answer-solutions?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><FileCheck2 size={16} />Lời giải &amp; đáp án</Link> : null}
               {item.type === "exam" && item.generationMeta?.normalizedBlueprint ? <button type="button" className="btn-secondary min-h-9 px-3 py-1.5 text-xs" onClick={() => { sessionStorage.setItem(EXAM_BLUEPRINT_SESSION_KEY, JSON.stringify(item.generationMeta?.normalizedBlueprint)); window.location.assign("/tools/exam-generator?mode=file"); }}><RefreshCw size={16} />Tạo đề mới theo cấu trúc này</button> : null}
               <DocumentExportMenu document={item} compact />
             </div>

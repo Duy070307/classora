@@ -26,6 +26,18 @@ export async function exportDocx(document: GeneratedDocument) {
     await exportOfficialExamDocx(cleanDocument);
     return;
   }
+  const blob = await buildGenericDocxBlob(cleanDocument);
+  const url = URL.createObjectURL(blob);
+  const link = window.document.createElement("a");
+  link.href = url;
+  link.download = `${safeFileName(cleanDocument.title) || "soan-lab"}.docx`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export async function buildGenericDocxBlob(document: GeneratedDocument) {
+  const cleanDocument = normalizeGeneratedDocument(document);
+  if (cleanDocument.type === "exam") throw new Error("generic_docx_does_not_export_student_exam");
   const settings = getDocumentSettings();
   const fontSize = Number(settings.fontSize) * 2;
   const textRun = (text: string, options: { bold?: boolean; size?: number } = {}) => new TextRun({
@@ -94,11 +106,5 @@ export async function exportDocx(document: GeneratedDocument) {
     ]
   });
 
-  const blob = await Packer.toBlob(doc);
-  const url = URL.createObjectURL(blob);
-  const link = window.document.createElement("a");
-  link.href = url;
-  link.download = `${safeFileName(cleanDocument.title) || "soan-lab"}.docx`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return Packer.toBlob(doc);
 }

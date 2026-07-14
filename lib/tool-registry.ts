@@ -66,6 +66,16 @@ export const toolRegistry: ToolMeta[] = [
     tags: ["Đáp án", "Chấm điểm"],
   },
   {
+    title: "Lời giải & đáp án",
+    description: "Tạo đáp án nhanh, lời giải chi tiết và kiểm tra độc lập đáp án của đề đã hoàn thiện.",
+    href: "/tools/answer-solutions",
+    category: "exam-assessment",
+    popular: true,
+    badge: "Mới",
+    aliases: ["lời giải", "đáp án", "kiểm tra đáp án", "hướng dẫn chấm"],
+    tags: ["Lời giải", "Đáp án", "Word/PDF"],
+  },
+  {
     title: "Tạo rubric",
     description: "Tạo bảng tiêu chí đánh giá với các mức độ và điểm số.",
     href: "/tools/rubric-generator",

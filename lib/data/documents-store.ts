@@ -26,6 +26,7 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     generationMeta: typeof metadata.generationMeta === "object" && metadata.generationMeta ? metadata.generationMeta as GeneratedDocument["generationMeta"] : undefined,
     auditMeta: typeof metadata.auditMeta === "object" && metadata.auditMeta ? metadata.auditMeta as GeneratedDocument["auditMeta"] : undefined,
     examVariantSet: typeof metadata.examVariantSet === "object" && metadata.examVariantSet ? metadata.examVariantSet as GeneratedDocument["examVariantSet"] : undefined,
+    examSolutionSet: typeof metadata.examSolutionSet === "object" && metadata.examSolutionSet ? metadata.examSolutionSet as GeneratedDocument["examSolutionSet"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
 }
@@ -67,7 +68,8 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
       examMeta: document.examMeta,
       generationMeta: document.generationMeta,
       auditMeta: document.auditMeta,
-      examVariantSet: document.examVariantSet
+      examVariantSet: document.examVariantSet,
+      examSolutionSet: document.examSolutionSet
     },
     structured_data: document.structuredExam ?? null,
     updated_at: new Date().toISOString()

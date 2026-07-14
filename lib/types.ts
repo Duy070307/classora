@@ -44,6 +44,7 @@ export type GeneratedDocument = {
   };
   structuredExam?: import("@/lib/exam-types").StructuredExam;
   examVariantSet?: import("@/lib/exam-mixer/types").ExamVariantSet;
+  examSolutionSet?: import("@/lib/answer-solutions/types").ExamSolutionSet;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

@@ -37,6 +37,7 @@ import { getQueryPrefill } from "@/lib/public-beta-presets";
 import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EXAM_AUDIT_SESSION_RESULT } from "@/lib/exam-audit/document";
 import { FileExamGenerator } from "@/components/exam-generator/FileExamGenerator";
 import { openExamMixer } from "@/lib/exam-mixer/session";
+import { openAnswerSolutions } from "@/lib/answer-solutions/session";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -706,6 +707,7 @@ export default function ExamGeneratorPage() {
                 <div className="mb-3 rounded-2xl border border-blue-200 bg-white p-4 shadow-sm">
                   <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-bold text-slate-900">1. Xem trước đề → 2. Kiểm tra đề → 3. Rà soát lỗi → 4. Xuất Word/PDF</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
                   <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
+                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
                 </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
