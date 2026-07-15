@@ -26,6 +26,10 @@
 - [ ] Admin có thể chạy “Thêm câu hỏi mẫu Kết nối tri thức”; chạy lại không tạo trùng.
 - [ ] Command palette, favorites và recent tools hoạt động.
 - [ ] `/tools/image-to-latex` upload ảnh PNG/JPG/WEBP đã cắt gọn, trả LaTeX hoặc TikZ qua vision provider được cấu hình; copy LaTeX/TikZ, copy standalone, tải `.tex`/TXT/Markdown và lưu lịch sử hoạt động.
+- [ ] `/tools/document-recognition` nhận PNG/JPG/WEBP/PDF, phân loại từng trang, giữ kết quả một phần khi trang khác lỗi và bắt buộc rà soát khối tin cậy thấp.
+- [ ] PDF có lớp chữ tiếp tục dùng parser quyết định; PDF quét/hỗn hợp chỉ gọi nhận dạng hình ảnh cho trang cần thiết.
+- [ ] Draft nhận dạng mở lại từ Lịch sử; đề đã xác nhận mở được Auditor, Lời giải, Mixer, Word/PDF và thêm câu vào ngân hàng cá nhân.
+- [ ] Giáo viên không đọc draft của tài khoản khác; bảo trì chặn giáo viên và API nhận dạng, admin bypass vẫn hoạt động.
 
 ## Export
 
@@ -66,6 +70,7 @@
 - [ ] `npm run lint` đạt.
 - [ ] `npm run build` đạt.
 - [ ] `npm run smoke` đạt.
+- [ ] `npm run document:recognition-test` đạt 34 kiểm tra yêu cầu và bộ 10 fixture tồn tại.
 - [ ] Kiểm tra mobile khoảng 390px cho public pages và các form chính.
 - [ ] Không có tên thương hiệu cũ, CTA góp ý công khai hoặc từ ngữ phát triển nội bộ trong giao diện chính.
 

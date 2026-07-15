@@ -319,6 +319,7 @@ export default function QuestionBankPage() {
               ) : null}
             </div>
           </div>
+          <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-cyan-950"><strong>Đề giấy hoặc PDF quét:</strong> dùng <Link href="/tools/document-recognition" className="font-black text-blue-700 underline">Đọc đề từ ảnh/PDF</Link>, rà soát rồi chọn câu để thêm vào ngân hàng cá nhân.</div>
         </section>
         <div className="grid gap-6 xl:grid-cols-[400px_1fr]">
           <form onSubmit={submit} className="tool-form-card">

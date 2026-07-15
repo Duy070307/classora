@@ -6,6 +6,7 @@ Soạn Lab là bộ công cụ hỗ trợ giáo viên Việt Nam soạn đề ki
 
 - Tool hub cho giáo viên với dashboard, thư viện công cụ, trung tâm tạo mới và hướng dẫn bắt đầu.
 - Tạo đề kiểm tra theo cấu trúc PHẦN I/II/III, kèm đáp án, thang điểm, ma trận và bản đặc tả.
+- Đọc đề từ ảnh/PDF quét theo từng trang, cho giáo viên rà soát rồi chuẩn hóa vào cấu trúc đề hiện có.
 - Xuất Word và Print/PDF theo bố cục đề thi THPTQG.
 - Tạo phiếu học tập, kế hoạch bài dạy, nhận xét học sinh, rubric và tin nhắn phụ huynh.
 - Lưu lịch sử, mẫu cá nhân, ngân hàng câu hỏi, bản nháp biểu mẫu, công cụ yêu thích và công cụ gần đây.
@@ -16,10 +17,9 @@ Soạn Lab là bộ công cụ hỗ trợ giáo viên Việt Nam soạn đề ki
 ## Giới hạn hiện tại
 
 - Nội dung là bản nháp hỗ trợ giáo viên và cần giáo viên rà soát trước khi sử dụng.
-- Chưa có tài khoản/đăng nhập.
-- Chưa có đồng bộ cơ sở dữ liệu giữa thiết bị.
+- Tài khoản và đồng bộ cloud chỉ hoạt động khi Supabase được cấu hình; nếu không có, app dùng dữ liệu cục bộ.
 - Chưa có thanh toán.
-- Chưa có OCR ảnh/PDF.
+- Nhận dạng ảnh/PDF là bản hỗ trợ cần rà soát, chưa cam kết chính xác với chữ viết tay, ảnh mờ, bảng/công thức phức tạp hoặc ảnh nghiêng mạnh.
 - Dữ liệu cá nhân lưu trong trình duyệt bằng `localStorage`; nếu xóa dữ liệu trình duyệt thì dữ liệu cục bộ có thể mất.
 
 ## Chạy trên máy
@@ -64,6 +64,7 @@ AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần 
 - [Supabase setup](docs/SUPABASE_SETUP.md)
 - [Auth](docs/AUTH.md)
 - [Database](docs/DATABASE.md)
+- [Đọc đề từ ảnh/PDF](docs/DOCUMENT_RECOGNITION.md)
 
 ## Supabase Auth và cloud data
 

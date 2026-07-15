@@ -23,6 +23,7 @@ export type ToolType =
   | "image-to-latex"
   | "image-to-tikz"
   | "3d-animation"
+  | "document-recognition"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {
@@ -45,6 +46,7 @@ export type GeneratedDocument = {
   structuredExam?: import("@/lib/exam-types").StructuredExam;
   examVariantSet?: import("@/lib/exam-mixer/types").ExamVariantSet;
   examSolutionSet?: import("@/lib/answer-solutions/types").ExamSolutionSet;
+  recognitionDraft?: import("@/lib/document-recognition/types").RecognitionDocument;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";
@@ -101,6 +103,13 @@ export type GeneratedDocument = {
     sourceContentHash?: string;
     generatedAt?: string;
     auditStatus?: "failed" | "review" | "ready";
+    recognitionSourceType?: "image" | "scanned_pdf" | "mixed_pdf" | "text_pdf";
+    recognitionPageCount?: number;
+    recognizedPageCount?: number;
+    recognitionReviewStatus?: "draft" | "needs_review" | "confirmed";
+    lowConfidenceBlockCount?: number;
+    recognizedQuestionCount?: number;
+    recognitionDocumentHash?: string;
   };
 };
 

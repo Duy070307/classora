@@ -171,6 +171,19 @@ npm run build
 npm run smoke
 ```
 
+## Đọc đề từ ảnh/PDF
+
+1. Mở `/tools/document-recognition`, thử PNG/JPG/WEBP và ba PDF trong `tests/fixtures/document-recognition`.
+2. Xác nhận PDF có lớp chữ không gọi nhận dạng hình ảnh; PDF quét gọi theo từng trang; PDF hỗn hợp giữ kết quả từng trang.
+3. Thử xoay trang, thay/cắt ảnh, đọc lại một trang, bỏ qua/khôi phục trang.
+4. Sửa một khối tiếng Việt, một LaTeX, một bảng; gộp/tách, đổi loại, gắn hình với câu hỏi và đánh dấu đã xác nhận.
+5. Xác nhận khối tin cậy thấp, trang lỗi, công thức hỏng, phương án/mệnh đề mồ côi và hình mất tài sản chặn hoàn tất.
+6. Lưu draft, mở lại từ Lịch sử bằng “Tiếp tục rà soát”, rồi xác nhận thành `StructuredExam`.
+7. Mở Kiểm tra đề, Lời giải & đáp án, Trộn mã; xuất Word/Print-PDF và kiểm tra không lộ confidence, tọa độ hay nhãn khối.
+8. Chọn câu hợp lệ để thêm vào ngân hàng cá nhân; câu trùng phải được bỏ qua.
+9. Bật bảo trì: giáo viên bị chuyển tới `/maintenance`, API không tiêu quota; admin vẫn truy cập theo chính sách hiện có.
+10. Chạy `npm run document:recognition-test`: 34 kiểm tra yêu cầu và một kiểm tra 10 fixture phải đạt.
+
 ## Supabase Auth và cloud data checks
 
 - Không cấu hình Supabase: app build được, public pages mở được, localStorage fallback hoạt động.

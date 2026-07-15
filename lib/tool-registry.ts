@@ -48,6 +48,17 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: Toán 12 THPTQG, kiểm tra 45 phút",
   },
   {
+    title: "Đọc đề từ ảnh/PDF",
+    description: "Nhận dạng đề đã quét hoặc PDF hỗn hợp, rà soát từng khối rồi tạo đề có cấu trúc.",
+    href: "/tools/document-recognition",
+    category: "exam-assessment",
+    badge: "Beta",
+    popular: true,
+    aliases: ["đọc đề", "scan đề", "ảnh đề", "pdf đề", "nhận dạng đề", "ocr đề"],
+    tags: ["Ảnh/PDF", "Rà soát", "Nhập đề"],
+    example: "Ví dụ: đề giấy đã chụp, PDF quét hoặc PDF có cả chữ và hình",
+  },
+  {
     title: "Tạo ma trận đề",
     description: "Lập bảng ma trận, phân bổ câu hỏi và gợi ý thang điểm.",
     href: "/tools/matrix-generator",

@@ -41,6 +41,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "image-to-latex": "Ảnh công thức → LaTeX",
   "image-to-tikz": "Ảnh hình học → TikZ",
   "3d-animation": "Mô phỏng 3D",
+  "document-recognition": "Đề nhận dạng từ ảnh/PDF",
   "bulk-student-comments": "Nhận xét hàng loạt",
 };
 
@@ -253,6 +254,7 @@ export function HistoryList() {
               <Link href={`/history/${item.id}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs">
                 <Eye size={16} /> Xem
               </Link>
+              {item.type === "document-recognition" ? <Link href={`/tools/document-recognition?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><FileCheck2 size={16} />Tiếp tục rà soát</Link> : null}
               {item.type === "exam" ? <Link href={`/tools/exam-audit?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><ClipboardCheck size={16} />Kiểm tra lại</Link> : null}
               {item.structuredExam ? <Link href={`/tools/answer-solutions?history=${encodeURIComponent(item.id)}`} className="btn-secondary min-h-9 px-3 py-1.5 text-xs"><FileCheck2 size={16} />Lời giải &amp; đáp án</Link> : null}
               {item.type === "exam" && item.generationMeta?.normalizedBlueprint ? <button type="button" className="btn-secondary min-h-9 px-3 py-1.5 text-xs" onClick={() => { sessionStorage.setItem(EXAM_BLUEPRINT_SESSION_KEY, JSON.stringify(item.generationMeta?.normalizedBlueprint)); window.location.assign("/tools/exam-generator?mode=file"); }}><RefreshCw size={16} />Tạo đề mới theo cấu trúc này</button> : null}

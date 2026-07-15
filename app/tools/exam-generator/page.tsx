@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
@@ -558,6 +559,7 @@ export default function ExamGeneratorPage() {
           <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề bằng cấu hình</button>
           <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề từ file</button>
         </div>
+        <div className="mb-5 max-w-2xl rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm leading-6 text-cyan-950">Có đề giấy, ảnh chụp hoặc PDF quét? <Link href="/tools/document-recognition" className="font-black text-blue-700 underline">Đọc đề từ ảnh/PDF</Link> rồi rà soát trước khi tạo hoặc xuất file.</div>
         {creationMode === "file" ? <FileExamGenerator /> : (
         <ToolWorkspaceLayout
           form={
