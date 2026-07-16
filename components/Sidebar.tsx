@@ -50,7 +50,7 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
       ["Phiếu trả lời", "/tools/answer-sheet", ClipboardList, "Mới"],
       ["Kiểm tra đề", "/tools/exam-audit", ClipboardCheck, "Mới"],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
-      ["Giáo án", "/tools/lesson-plan-generator", FileText],
+      ["Giáo án", "/tools/lesson-plan", FileText],
       ["Tạo slide bài giảng", "/tools/lesson-slides", Presentation, "Mới"],
       ["Rubric", "/tools/rubric-generator", PenTool],
       ["Nhận xét học sinh", "/tools/student-comments", MessageCircle],

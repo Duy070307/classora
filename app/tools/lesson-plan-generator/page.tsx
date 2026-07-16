@@ -1,8 +1,2 @@
-"use client";
-
-import { ToolFormLayout } from "@/components/ToolFormLayout";
-import { getToolConfig } from "@/lib/tool-configs";
-
-export default function LessonPlanGeneratorPage() {
-  return <ToolFormLayout config={getToolConfig("/tools/lesson-plan-generator")!} />;
-}
+import { redirect } from "next/navigation";
+export default function LegacyLessonPlanPage(){redirect("/tools/lesson-plan");}

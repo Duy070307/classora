@@ -73,6 +73,8 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
           insideVertical: { style: BorderStyle.SINGLE, size: 1, color: "B0B0B0" }
         },
         rows: block.rows.map((row, rowIndex) => new TableRow({
+          tableHeader: rowIndex === 0,
+          cantSplit: true,
           children: row.map((cell) => new TableCell({
             children: [new Paragraph({ children: [textRun(cell, { bold: rowIndex === 0, size: Math.max(fontSize - 2, 18) })] })]
           }))

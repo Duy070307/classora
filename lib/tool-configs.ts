@@ -26,7 +26,7 @@ const text = (input: GenericToolInput, key: string, fallback = "") => String(inp
 export const expandedToolConfigs: ToolConfig[] = [
   {
     type: "lesson-plan",
-    href: "/tools/lesson-plan-generator",
+    href: "/tools/lesson-plan",
     title: "Tạo giáo án",
     description: "Soạn giáo án dạng bản nháp tham khảo, có mục tiêu, hoạt động học, đánh giá và ghi chú rà soát.",
     category: "Soạn bài & tài liệu",

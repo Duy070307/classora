@@ -27,7 +27,7 @@ const quickTools = [
   { title: "Ma trận & bảng đặc tả", desc: "Lập ma trận trước khi ra đề, xuất Excel/Word và đối chiếu đề hiện có.", href: "/tools/exam-blueprint", icon: ClipboardList, badge: "Mới", keywords: "ma trận đặc tả blueprint đối chiếu đề" },
   { title: "Chấm bài", desc: "Nhận dạng bài làm và chấm phần khách quan với bước giáo viên rà soát.", href: "/tools/grading-assistant", icon: ClipboardCheck, badge: "Mới", keywords: "chấm bài bảng điểm bài làm mã đề" },
   { title: "Phiếu trả lời", desc: "Tạo phiếu chuẩn có QR và điểm định vị để in, quét rồi chấm ổn định.", href: "/tools/answer-sheet", icon: ClipboardList, badge: "Mới", keywords: "phiếu trả lời phiếu tô qr mã đề" },
-  { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan-generator", icon: FileText, badge: "Tài liệu", keywords: "giáo án kế hoạch bài dạy" },
+  { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan", icon: FileText, badge: "Tài liệu", keywords: "giáo án kế hoạch bài dạy" },
   { title: "Tạo slide bài giảng", desc: "Tạo dàn ý, chỉnh sửa slide và xuất PowerPoint.", href: "/tools/lesson-slides", icon: Presentation, badge: "PowerPoint", keywords: "slide powerpoint bài giảng trình chiếu" },
   { title: "Phiếu học tập", desc: "Tạo bài tập theo chủ đề, có gợi ý đáp án để rà soát.", href: "/tools/worksheet-generator", icon: BookOpenCheck, badge: "Word/PDF", keywords: "phiếu học tập worksheet bài tập" },
   { title: "Ngân hàng câu hỏi", desc: "Lưu, tìm kiếm và quản lý câu hỏi theo môn/lớp/chủ đề.", href: "/question-bank", icon: BookOpenCheck, badge: "Quản lý", keywords: "ngân hàng câu hỏi import" },

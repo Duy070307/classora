@@ -175,7 +175,7 @@ export const toolRegistry: ToolMeta[] = [
   {
     title: "Soạn giáo án",
     description: "Soạn kế hoạch bài dạy có mục tiêu, hoạt động và đánh giá.",
-    href: "/tools/lesson-plan-generator",
+    href: "/tools/lesson-plan",
     category: "lesson-materials",
     popular: true,
     aliases: ["giáo án", "kế hoạch bài dạy", "bài dạy"],

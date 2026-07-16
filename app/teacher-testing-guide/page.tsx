@@ -19,7 +19,7 @@ const checklist = [
   {
     title: "Tạo một giáo án tham khảo",
     text: "Nhập môn, lớp, chủ đề để tạo giáo án. Kiểm tra mục tiêu bài học, hoạt động giáo viên/học sinh và phần đánh giá.",
-    href: "/tools/lesson-plan-generator",
+    href: "/tools/lesson-plan",
     example: ["Môn: Vật lý", "Lớp: 10", "Chủ đề: Khúc xạ ánh sáng"],
   },
   {
@@ -146,7 +146,7 @@ export default function TeacherTestingGuidePage() {
         </div>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Link href="/tools/exam-generator" className="btn-primary">Tạo đề kiểm tra</Link>
-          <Link href="/tools/lesson-plan-generator" className="btn-secondary">Tạo giáo án</Link>
+          <Link href="/tools/lesson-plan" className="btn-secondary">Tạo giáo án</Link>
           <Link href="/question-bank" className="btn-secondary">Ngân hàng câu hỏi</Link>
           <Link href="/history" className="btn-secondary">Xem lịch sử</Link>
           <GuideFeedbackButton />

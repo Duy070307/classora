@@ -72,7 +72,7 @@ export const publicBetaPresets: PublicBetaPreset[] = [
     title: "Vật lí 10 - Khúc xạ ánh sáng",
     description: "Điền nhanh giáo án có định hướng mục tiêu theo Bloom.",
     tool: "lesson-plan",
-    href: withQuery("/tools/lesson-plan-generator", {
+    href: withQuery("/tools/lesson-plan", {
       subject: "Vật lí",
       grade: "10",
       bookSeries: "Kết nối tri thức",

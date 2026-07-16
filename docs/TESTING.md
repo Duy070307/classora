@@ -24,7 +24,7 @@ Tool routes quan trọng:
 
 - `/tools/exam-generator`
 - `/tools/worksheet-generator`
-- `/tools/lesson-plan-generator`
+- `/tools/lesson-plan` (route cũ `/tools/lesson-plan-generator` chuyển hướng tương thích)
 - `/tools/lesson-slides`: tạo dàn ý, chỉnh một slide, xuất bản học sinh và bản giáo viên; kiểm tra bản học sinh không có notes/đáp án ẩn.
 - `/tools/student-comments`
 - `/tools/bulk-student-comments`
@@ -294,3 +294,15 @@ Admin:
 6. Lưu/mở lại/nhân bản; thêm câu hợp lệ vào Ngân hàng câu hỏi và kiểm tra cảnh báo trùng.
 7. Bật bảo trì: teacher bị chuyển `/maintenance`, admin vẫn truy cập.
 8. Chạy `npm run worksheet:test` và toàn bộ `npm run test`.
+
+## Giáo án có cấu trúc
+
+1. Mở `/tools/lesson-plan`, tạo Vật lí 11 – Định luật Ohm, một tiết 45 phút.
+2. Kiểm tra dàn ý có khởi động, hình thành kiến thức, luyện tập, vận dụng và củng cố; tổng đúng 45 phút.
+3. Sửa thời lượng để vượt 45 phút và xác nhận hệ thống báo chính xác phần vượt.
+4. Tạo chi tiết, sửa một hành động giáo viên rồi chọn tạo lại; xác nhận có lựa chọn tạo bản sao/thay thế/hủy.
+5. Kiểm tra báo cáo mục tiêu–hoạt động–minh chứng và nội dung phân hóa.
+6. Tạo phiếu, slide, rubric và kiểm tra nhanh từ một hoạt động; xác nhận đi vào công cụ hiện có.
+7. Xuất Word đầy đủ, Word bảng GV/HS và PDF; kiểm tra bảng Word có thể chỉnh sửa và không có metadata nội bộ.
+8. Mở lại từ History, kiểm tra ID, hoạt động và liên kết vẫn giữ nguyên.
+9. Chạy `npm run lesson:plan-test`, sau đó `npm run test`.

@@ -11,7 +11,7 @@ const routes = [
   "/tools/exam-generator",
   "/tools/exam-audit",
   "/tools/worksheet-generator",
-  "/tools/lesson-plan-generator",
+  "/tools/lesson-plan",
   "/tools/lesson-slides",
   "/tools/student-comments",
   "/tools/image-to-latex",

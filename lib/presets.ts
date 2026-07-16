@@ -37,7 +37,7 @@ export const studentCommentPresets = [
 ];
 
 export const genericPresets: Record<string, ToolPreset[]> = {
-  "/tools/lesson-plan-generator": [
+  "/tools/lesson-plan": [
     { name: "Ngữ văn 9 · Nghị luận xã hội", data: { subject: "Ngữ văn", grade: "9", lessonName: "Viết đoạn văn nghị luận xã hội", duration: "90 phút", objectives: "Xác định vấn đề, xây dựng luận điểm và viết đoạn văn có dẫn chứng phù hợp." } },
     { name: "Toán 7 · Tỉ lệ thức", data: { subject: "Toán", grade: "7", lessonName: "Tỉ lệ thức và tính chất", duration: "45 phút", objectives: "Nhận biết tỉ lệ thức, vận dụng tính chất để tìm số chưa biết." } },
     { name: "Lịch sử 12 · Cách mạng tháng Tám", data: { subject: "Lịch sử", grade: "12", lessonName: "Cách mạng tháng Tám năm 1945", duration: "45 phút", objectives: "Phân tích thời cơ, diễn biến, kết quả và ý nghĩa lịch sử." } }

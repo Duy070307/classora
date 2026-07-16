@@ -78,7 +78,7 @@ const groups = [
         title: "Soạn giáo án",
         description: "Lên kế hoạch bài dạy với mục tiêu, tiến trình và đánh giá.",
         examples: ["Ngữ văn 9", "Bài 45 phút", "Hoạt động khởi động"],
-        href: "/tools/lesson-plan-generator",
+        href: "/tools/lesson-plan",
         icon: FileText,
         tone: "from-indigo-500 to-violet-500",
       },

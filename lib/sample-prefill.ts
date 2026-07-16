@@ -4,7 +4,7 @@ export const sampleLinks = {
   math12Thptqg: "/tools/exam-generator?sample=math-12-thptqg",
   history12Thptqg: "/tools/exam-generator?sample=history-12-thptqg",
   worksheetMath8: "/tools/worksheet-generator?sample=worksheet-math-8",
-  lessonLiterature9: "/tools/lesson-plan-generator?sample=lesson-literature-9",
+  lessonLiterature9: "/tools/lesson-plan?sample=lesson-literature-9",
   studentComment: "/tools/student-comments?sample=student-comment",
   parentMessage: "/tools/parent-message-generator?sample=parent-message"
 } as const;
@@ -119,7 +119,7 @@ export function getStudentCommentSamplePrefill(sampleId: string): Partial<Studen
 }
 
 export function getGenericSamplePrefill(sampleId: string, href: string): Partial<GenericToolInput> | null {
-  if (href === "/tools/lesson-plan-generator" && sampleId === "lesson-literature-9") {
+  if (href === "/tools/lesson-plan" && sampleId === "lesson-literature-9") {
     return {
       subject: "Ngữ văn",
       grade: "9",

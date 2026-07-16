@@ -32,7 +32,7 @@ export type FeedbackPayload = {
 export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/tools/exam-generator")) return "Soạn đề kiểm tra";
   if (pathname.startsWith("/tools/worksheet-generator")) return "Phiếu học tập";
-  if (pathname.startsWith("/tools/lesson-plan-generator")) return "Giáo án";
+  if (pathname.startsWith("/tools/lesson-plan")) return "Giáo án";
   if (pathname.startsWith("/tools/student-comments")) return "Nhận xét học sinh";
   if (pathname.startsWith("/tools/bulk-student-comments")) return "Nhận xét học sinh hàng loạt";
   if (pathname.startsWith("/tools/parent-message-generator")) return "Tin nhắn phụ huynh";

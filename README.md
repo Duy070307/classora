@@ -69,6 +69,7 @@ AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần 
 - [Phiếu trả lời chuẩn](docs/ANSWER_SHEETS.md)
 - [Ma trận & bảng đặc tả](docs/EXAM_BLUEPRINT_WORKFLOW.md)
 - [Phiếu học tập có cấu trúc](docs/WORKSHEET_WORKFLOW.md)
+- [Giáo án có cấu trúc](docs/LESSON_PLAN_WORKFLOW.md)
 
 ## Supabase Auth và cloud data
 

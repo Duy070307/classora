@@ -34,6 +34,7 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     answerSheetLayout: typeof metadata.answerSheetLayout === "object" && metadata.answerSheetLayout ? metadata.answerSheetLayout as GeneratedDocument["answerSheetLayout"] : undefined,
     examBlueprint: typeof metadata.examBlueprint === "object" && metadata.examBlueprint ? metadata.examBlueprint as GeneratedDocument["examBlueprint"] : undefined,
     worksheet: typeof metadata.worksheet === "object" && metadata.worksheet ? metadata.worksheet as GeneratedDocument["worksheet"] : undefined,
+    lessonPlan: typeof metadata.lessonPlan === "object" && metadata.lessonPlan ? metadata.lessonPlan as GeneratedDocument["lessonPlan"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
 }
@@ -83,7 +84,8 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
       answerSheetTemplate: document.answerSheetTemplate,
       answerSheetLayout: document.answerSheetLayout,
       examBlueprint: document.examBlueprint,
-      worksheet: document.worksheet
+      worksheet: document.worksheet,
+      lessonPlan: document.lessonPlan
     },
     structured_data: document.structuredExam ?? null,
     updated_at: new Date().toISOString()

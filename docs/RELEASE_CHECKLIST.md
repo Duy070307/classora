@@ -150,3 +150,16 @@
 - [ ] History/cloud giữ canonical `Worksheet`; không cần migration mới.
 - [ ] Maintenance/admin bypass và Question Bank ownership đạt.
 - [ ] `npm run worksheet:test` đạt 38/38, bao phủ đủ 37 yêu cầu.
+
+### Giáo án có cấu trúc
+
+- [ ] `/tools/lesson-plan` mở được; route cũ `/tools/lesson-plan-generator` chuyển hướng đúng.
+- [ ] Bốn mode đầu vào hoạt động và tài liệu nhận dạng chưa xác nhận bị chặn.
+- [ ] Dàn ý được xác nhận trước khi tạo chi tiết; thời lượng mỗi tiết kiểm tra deterministic.
+- [ ] Hoạt động giữ ID ổn định, tạo lại riêng không ghi đè sửa tay im lặng.
+- [ ] Báo cáo mục tiêu/minh chứng, phân hóa và bảng giáo viên/học sinh hiển thị đúng.
+- [ ] Worksheet, Lesson Slides, Rubric và kiểm tra nhanh dùng công cụ hiện có.
+- [ ] Word đầy đủ/rút gọn/bảng GV-HS và PDF không chứa metadata nội bộ.
+- [ ] History phục hồi canonical `LessonPlan`; autosave không tạo snapshot mỗi phím.
+- [ ] Maintenance chặn teacher và admin bypass vẫn hoạt động.
+- [ ] `npm run lesson:plan-test` đạt 34/34.
