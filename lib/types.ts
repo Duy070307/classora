@@ -25,6 +25,8 @@ export type ToolType =
   | "image-to-tikz"
   | "3d-animation"
   | "document-recognition"
+  | "grading-assistant"
+  | "grading-report"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {
@@ -49,6 +51,7 @@ export type GeneratedDocument = {
   examSolutionSet?: import("@/lib/answer-solutions/types").ExamSolutionSet;
   recognitionDraft?: import("@/lib/document-recognition/types").RecognitionDocument;
   slideDeck?: import("@/lib/lesson-slides/types").SlideDeck;
+  gradingJob?: import("@/lib/grading/types").GradingJob;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

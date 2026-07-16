@@ -17,6 +17,7 @@ import { createDocument, getHistory, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
 import { openExamMixer } from "@/lib/exam-mixer/session";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
+import { openGradingAssistant } from "@/lib/grading/session";
 
 type Filter = "all" | "error" | "warning" | "fixed";
 
@@ -313,6 +314,7 @@ export function ExamAuditWorkspace() {
       </> : null}
 
       <OutputPreview document={document} />
+      {result ? <button type="button" className="btn-secondary" disabled={result.summary.errorCount > 0} onClick={() => openGradingAssistant(document)}><ClipboardCheck size={16}/>Chấm bài bằng đáp án đã kiểm tra</button> : null}
     </> : null}
     {message ? <div className="fixed bottom-5 right-5 z-50 max-w-md rounded-2xl border border-slate-200 bg-slate-950 px-4 py-3 text-sm font-bold text-white shadow-2xl">{message}</div> : null}
   </div>;

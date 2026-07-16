@@ -43,6 +43,8 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "image-to-tikz": "Ảnh hình học → TikZ",
   "3d-animation": "Mô phỏng 3D",
   "document-recognition": "Đề nhận dạng từ ảnh/PDF",
+  "grading-assistant": "Bộ bài đã chấm",
+  "grading-report": "Báo cáo chấm bài",
   "bulk-student-comments": "Nhận xét hàng loạt",
 };
 

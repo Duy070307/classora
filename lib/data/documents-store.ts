@@ -29,6 +29,7 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     examSolutionSet: typeof metadata.examSolutionSet === "object" && metadata.examSolutionSet ? metadata.examSolutionSet as GeneratedDocument["examSolutionSet"] : undefined,
     recognitionDraft: typeof metadata.recognitionDraft === "object" && metadata.recognitionDraft ? metadata.recognitionDraft as GeneratedDocument["recognitionDraft"] : undefined,
     slideDeck: typeof metadata.slideDeck === "object" && metadata.slideDeck ? metadata.slideDeck as GeneratedDocument["slideDeck"] : undefined,
+    gradingJob: typeof metadata.gradingJob === "object" && metadata.gradingJob ? metadata.gradingJob as GeneratedDocument["gradingJob"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
 }
@@ -73,7 +74,8 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
       examVariantSet: document.examVariantSet,
       examSolutionSet: document.examSolutionSet,
       recognitionDraft: document.recognitionDraft,
-      slideDeck: document.slideDeck
+      slideDeck: document.slideDeck,
+      gradingJob: document.gradingJob
     },
     structured_data: document.structuredExam ?? null,
     updated_at: new Date().toISOString()

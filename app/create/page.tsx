@@ -36,6 +36,14 @@ const groups = [
         icon: PenTool,
         tone: "from-purple-500 to-fuchsia-500",
       },
+      {
+        title: "Chấm bài",
+        description: "Đọc bài làm, chấm phần khách quan và rà soát từng kết quả trước khi xác nhận.",
+        examples: ["Ảnh/PDF", "Nhiều mã đề", "Bảng điểm"],
+        href: "/tools/grading-assistant",
+        icon: ClipboardList,
+        tone: "from-blue-500 to-indigo-500",
+      },
     ],
   },
   {
@@ -130,6 +138,7 @@ const groups = [
 
 const suggestions = [
   ["Tạo đề kiểm tra", "/tools/exam-generator"],
+  ["Chấm bài", "/tools/grading-assistant"],
   ["Tạo phiếu học tập", "/tools/worksheet-generator"],
   ["Tạo slide bài giảng", "/tools/lesson-slides"],
   ["Viết nhận xét học sinh", "/tools/student-comments"],

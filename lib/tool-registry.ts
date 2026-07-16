@@ -59,6 +59,17 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: đề giấy đã chụp, PDF quét hoặc PDF có cả chữ và hình",
   },
   {
+    title: "Chấm bài",
+    description: "Nhận dạng bài làm, chấm phần khách quan và rà soát điểm trước khi xuất báo cáo.",
+    href: "/tools/grading-assistant",
+    category: "exam-assessment",
+    popular: true,
+    badge: "Mới",
+    aliases: ["chấm bài", "bảng điểm", "bài làm", "mã đề", "phiếu trả lời"],
+    tags: ["Ảnh/PDF", "Bảng điểm", "Rà soát"],
+    example: "Ví dụ: chấm bài trắc nghiệm theo mã đề 101–104",
+  },
+  {
     title: "Tạo ma trận đề",
     description: "Lập bảng ma trận, phân bổ câu hỏi và gợi ý thang điểm.",
     href: "/tools/matrix-generator",

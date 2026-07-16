@@ -244,3 +244,16 @@ Admin:
 2. Mở `/admin/feedback`.
 3. Xác nhận góp ý mới nhất hiển thị trước, có loại góp ý, công cụ, rating, nội dung, liên hệ và đường dẫn trang.
 4. Xác nhận giao diện không hiển thị thông tin kỹ thuật nội bộ hoặc khóa dịch vụ.
+
+## Chấm bài
+
+1. Nạp một `StructuredExam` đã kiểm tra và xác nhận cảnh báo xuất hiện nếu đáp án chưa xác minh.
+2. Tải ảnh/PDF, DOCX, TXT và một ZIP an toàn; file lỗi không làm mất bài đã xử lý.
+3. Kiểm tra mã đề 101–104, câu nhận dạng độ tin cậy thấp và nhiều lựa chọn đều cần giáo viên xác nhận.
+4. Chấm trắc nghiệm, Đúng/Sai, `0,5`, `1/2`, `2/4`, đáp án có đơn vị và dung sai.
+5. Chỉnh câu trả lời/điểm, loại một câu và xác nhận lịch sử thay đổi còn giữ nguyên.
+6. Với bài mở, kiểm tra điểm gợi ý chưa được áp dụng trước khi giáo viên duyệt.
+7. Xuất XLSX, CSV tiếng Việt, DOCX, In/lưu PDF và ZIP phiếu học sinh; phiếu mặc định không lộ đáp án đầy đủ.
+8. Mở lại `Bộ bài đã chấm` từ lịch sử; xác nhận không có ảnh nguồn hoặc URL công khai trong dữ liệu lưu.
+9. Bật bảo trì: giáo viên bị chuyển đến `/maintenance`, API nhận dạng/chấm trả 503; admin vẫn truy cập được.
+10. Chạy `npm run grading:test`.

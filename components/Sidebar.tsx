@@ -45,6 +45,7 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
     title: "Soạn tài liệu",
     links: [
       ["Tạo đề kiểm tra", "/tools/exam-generator", ClipboardList],
+      ["Chấm bài", "/tools/grading-assistant", ClipboardCheck, "Mới"],
       ["Kiểm tra đề", "/tools/exam-audit", ClipboardCheck, "Mới"],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Giáo án", "/tools/lesson-plan-generator", FileText],

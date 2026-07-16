@@ -39,6 +39,7 @@ import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EX
 import { FileExamGenerator } from "@/components/exam-generator/FileExamGenerator";
 import { openExamMixer } from "@/lib/exam-mixer/session";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
+import { openGradingAssistant } from "@/lib/grading/session";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -711,6 +712,7 @@ export default function ExamGeneratorPage() {
                   <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
+                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openGradingAssistant(document)}>Chấm bài theo đề này</button>
                 </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />

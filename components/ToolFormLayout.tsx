@@ -11,6 +11,7 @@ import { OutputRefinementBar } from "@/components/tools/OutputRefinementBar";
 import { FormDraftControls } from "@/components/tools/FormDraftControls";
 import { PresetSelect } from "@/components/tools/PresetSelect";
 import { TemplateSelect } from "@/components/TemplateSelect";
+import { openGradingAssistant } from "@/lib/grading/session";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 import { incrementUsage } from "@/lib/usage";
@@ -233,6 +234,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
             <ToolOutputPanel loading={loading} loadingTitle="Đang tạo bản nháp…" loadingDescription="Soạn Lab đang chuẩn bị nội dung để thầy cô rà soát." hasOutput={Boolean(document)} showWarning={false}>
               {document ? <>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
+                {document.type === "rubric" ? <button type="button" className="btn-secondary mb-3" onClick={() => openGradingAssistant(document)}>Dùng rubric để chấm bài</button> : null}
                 <OutputRefinementBar tool={config.type} input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />
               </> : null}

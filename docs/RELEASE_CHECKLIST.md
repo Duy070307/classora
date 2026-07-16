@@ -102,3 +102,13 @@
 - [ ] PPTX học sinh không có ghi chú/đáp án ẩn; PPTX giáo viên có speaker notes.
 - [ ] Văn bản, shape và bảng trong PowerPoint chỉnh sửa được; ảnh không bị kéo giãn.
 - [ ] `npm run lesson:slides-test` vượt qua 30/30 trường hợp.
+
+## Chấm bài
+
+- [ ] `/tools/grading-assistant` yêu cầu đăng nhập và tuân thủ maintenance/admin bypass.
+- [ ] Đề thiếu đáp án hoặc ánh xạ mã đề lỗi bị chặn.
+- [ ] Kết quả nhận dạng thấp không tự nhận điểm cuối.
+- [ ] Chấm khách quan không gọi AI; câu mở luôn cần giáo viên duyệt.
+- [ ] XLSX/CSV/DOCX/PDF và phiếu học sinh không chứa dữ liệu nhận dạng nội bộ hoặc đáp án đầy đủ mặc định.
+- [ ] Job lịch sử không chứa `previewUrls`, `sourceCrop`, dữ liệu ảnh hay URL công khai.
+- [ ] `npm run grading:test` đạt.
