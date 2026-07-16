@@ -187,6 +187,17 @@ export const toolRegistry: ToolMeta[] = [
     tags: ["Phân hóa", "Bài tập"],
   },
   {
+    title: "Tạo slide bài giảng",
+    description: "Tạo dàn ý, chỉnh sửa slide có cấu trúc và xuất PowerPoint học sinh hoặc giáo viên.",
+    href: "/tools/lesson-slides",
+    category: "lesson-materials",
+    popular: true,
+    badge: "Mới",
+    aliases: ["slide", "powerpoint", "bài giảng", "trình chiếu", "pptx"],
+    tags: ["PowerPoint", "Bài giảng", "PPTX"],
+    example: "Ví dụ: Vật lí 11 – Định luật Ohm, 12 slide",
+  },
+  {
     title: "Tạo dàn ý slide bài giảng",
     description: "Tạo cấu trúc slide, bullet, minh họa và câu hỏi nhanh.",
     href: "/tools/slide-outline-generator",

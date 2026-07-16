@@ -15,6 +15,7 @@ export type ToolType =
   | "differentiated-exercises"
   | "exam-shuffler"
   | "slide-outline"
+  | "lesson-slides"
   | "lesson-summary"
   | "mindmap-outline"
   | "homeroom-plan"
@@ -47,6 +48,7 @@ export type GeneratedDocument = {
   examVariantSet?: import("@/lib/exam-mixer/types").ExamVariantSet;
   examSolutionSet?: import("@/lib/answer-solutions/types").ExamSolutionSet;
   recognitionDraft?: import("@/lib/document-recognition/types").RecognitionDocument;
+  slideDeck?: import("@/lib/lesson-slides/types").SlideDeck;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";
@@ -110,6 +112,10 @@ export type GeneratedDocument = {
     lowConfidenceBlockCount?: number;
     recognizedQuestionCount?: number;
     recognitionDocumentHash?: string;
+    slideCount?: number;
+    themeId?: string;
+    aspectRatio?: "16:9" | "4:3";
+    exportStatus?: "ready" | "warning" | "blocked";
   };
 };
 

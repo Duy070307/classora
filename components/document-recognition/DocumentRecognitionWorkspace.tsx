@@ -5,7 +5,7 @@ import Link from "next/link";
 import katex from "katex";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, ChevronUp, ClipboardCheck, FileCheck2, FileScan, ImageIcon, LoaderCircle, Merge, Plus, RotateCcw, RotateCw, Save, Scissors, ShieldCheck, Shuffle, Trash2, Upload } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, ClipboardCheck, FileCheck2, FileScan, ImageIcon, LoaderCircle, Merge, Plus, Presentation, RotateCcw, RotateCw, Save, Scissors, ShieldCheck, Shuffle, Trash2, Upload } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
@@ -18,6 +18,7 @@ import { auditStructuredExam } from "@/lib/exam-audit/audit";
 import { auditConfigFromDocument, EXAM_AUDIT_SESSION_INPUT, withAuditResult } from "@/lib/exam-audit/document";
 import { documentWithExam } from "@/lib/exam-audit/normalize";
 import { openExamMixer } from "@/lib/exam-mixer/session";
+import { openLessonSlides } from "@/lib/lesson-slides/source";
 import { createDocument, getHistory, saveDocument } from "@/lib/history";
 import { addQuestions, createQuestion, getQuestions } from "@/lib/question-bank";
 import type { GeneratedDocument } from "@/lib/types";
@@ -285,6 +286,7 @@ export function DocumentRecognitionWorkspace() {
 
   return (
     <div className="space-y-5">
+      {finalDocument ? <button type="button" className="btn-secondary" onClick={() => openLessonSlides(finalDocument)}><Presentation size={16} /> Tạo slide từ tài liệu đã nhận dạng</button> : null}
       <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"><div><p className="text-xs font-black uppercase tracking-wide text-blue-700">Đọc đề từ ảnh/PDF</p><h1 className="mt-1 text-xl font-black text-slate-950">Kiểm tra nội dung đã nhận dạng</h1><p className="mt-1 break-words text-sm font-bold text-slate-700">{document.sourceFileName}</p><p className="mt-1 text-sm text-slate-500">{document.pageCount} trang · {pageTypeLabels[document.pages[0]?.type || "unreadable"]} · trạng thái {document.reviewStatus === "confirmed" ? "đã xác nhận" : "bản nháp"}</p></div><div className="flex flex-wrap gap-2"><button type="button" className="btn-primary" disabled={busy} onClick={() => void recognizeAll()}>{busy ? <LoaderCircle className="animate-spin" size={16} /> : <FileScan size={16} />} Đọc các trang cần xử lý</button><button type="button" className="btn-secondary" onClick={saveDraft}><Save size={16} /> Lưu bản nháp</button><button type="button" className="btn-secondary" onClick={() => { setDocument(null); setFinalDocument(null); setPageBlobs({}); }}><Trash2 size={16} /> Hủy</button></div></div>
         {(progress || message) ? <p className="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-900">{progress || message}</p> : null}

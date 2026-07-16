@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, ClipboardCheck, Download, FileCheck2, Save, Sparkles, Upload } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardCheck, Download, FileCheck2, Presentation, Save, Sparkles, Upload } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { buildDeterministicSolutionSet, solutionSummary } from "@/lib/answer-solutions/verify";
 import { solutionSetToDocument } from "@/lib/answer-solutions/document";
@@ -16,6 +16,7 @@ import { parseExamText } from "@/lib/exam-audit/normalize";
 import type { StructuredExam } from "@/lib/exam-types";
 import { createDocument, getHistory, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
+import { openLessonSlides } from "@/lib/lesson-slides/source";
 
 type Mode = "quick" | "detailed" | "verify";
 type Filter = "all" | "verified" | "mismatch" | "uncertain" | "missing";
@@ -165,6 +166,7 @@ export function AnswerSolutionsWorkspace() {
   const scoringDocument = source && solutionSet ? solutionSetToDocument(source, solutionSet, "scoring") : null;
 
   return <div className="space-y-6">
+    {detailedDocument ? <button type="button" className="btn-secondary" onClick={() => openLessonSlides(detailedDocument, "solution")}><Presentation size={16}/>Tạo slide chữa đề</button> : null}
     <section className="rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700"><FileCheck2 size={14} />Dành riêng cho giáo viên</span><h1 className="mt-3 text-3xl font-black text-slate-950">Lời giải &amp; đáp án</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Tạo đáp án nhanh, lời giải chi tiết và kiểm tra độc lập đáp án trên cùng cấu trúc đề đã có.</p></div><Link href="/tools/exam-audit" className="btn-secondary"><ClipboardCheck size={16} />Mở công cụ Kiểm tra đề</Link></div>
       <div className="mt-6 grid gap-3 lg:grid-cols-3"><button type="button" className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left" onClick={() => { const current = parseSession(); if (current) loadSource(current); else setMessage("Chưa có đề hiện tại trong phiên này."); }}><strong>Nạp đề hiện tại</strong><span className="mt-1 block text-sm text-slate-600">Nhận đề từ công cụ tạo đề, kiểm tra đề hoặc trộn mã.</span></button><label className="rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 p-4"><strong>Tải DOCX, PDF hoặc TXT</strong><span className="mt-1 block text-sm text-slate-600">Dùng bộ nhận diện đề hiện có.</span><span className="btn-secondary mt-3 inline-flex"><Upload size={16} />{loading ? "Đang xử lý…" : "Chọn file"}</span><input className="hidden" type="file" accept=".docx,.pdf,.txt" disabled={loading} onChange={(event) => void upload(event.target.files?.[0])} /></label><div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><strong>Lịch sử của thầy/cô</strong><select className="form-field mt-3" value="" onChange={(event) => { const item = history.find((document) => document.id === event.target.value); if (item) loadSource(item); }}><option value="">Chọn đề đã lưu…</option>{history.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></div></div>

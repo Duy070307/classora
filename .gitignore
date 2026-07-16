@@ -20,6 +20,7 @@ build
 work
 outputs
 *.log
+*.tsbuildinfo
 
 # OS/editor
 .DS_Store

@@ -20,6 +20,7 @@ const blockedApiPrefixes = [
   "/api/ai",
   "/api/question-bank/ai-import",
   "/api/tikz-bank",
+  "/api/lesson-slides",
 ];
 
 function matchesPrefix(pathname: string, prefix: string) {

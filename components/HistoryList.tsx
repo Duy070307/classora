@@ -33,6 +33,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "differentiated-exercises": "Bài tập phân hóa",
   "exam-shuffler": "Bộ mã đề",
   "slide-outline": "Dàn ý slide",
+  "lesson-slides": "Slide bài giảng",
   "lesson-summary": "Tóm tắt bài học",
   "mindmap-outline": "Sơ đồ tư duy",
   "homeroom-plan": "Kế hoạch chủ nhiệm",

@@ -25,6 +25,7 @@ Tool routes quan trọng:
 - `/tools/exam-generator`
 - `/tools/worksheet-generator`
 - `/tools/lesson-plan-generator`
+- `/tools/lesson-slides`: tạo dàn ý, chỉnh một slide, xuất bản học sinh và bản giáo viên; kiểm tra bản học sinh không có notes/đáp án ẩn.
 - `/tools/student-comments`
 - `/tools/bulk-student-comments`
 - `/tools/rubric-generator`

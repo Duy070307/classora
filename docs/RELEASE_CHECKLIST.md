@@ -94,3 +94,11 @@
 - [ ] LocalStorage fallback still works when Supabase env is missing.
 - [ ] `/data` migration copies local browser data to cloud without deleting local data.
 - [ ] `supabase/schema.sql` has the `feedback` table before enabling in-app feedback in production.
+
+## Slide bài giảng
+
+- [ ] Bốn chế độ nguồn mở được và tài liệu quét chưa xác nhận bị chặn.
+- [ ] Dàn ý chỉnh được trước khi tạo nội dung; slide lỗi không xóa slide thành công.
+- [ ] PPTX học sinh không có ghi chú/đáp án ẩn; PPTX giáo viên có speaker notes.
+- [ ] Văn bản, shape và bảng trong PowerPoint chỉnh sửa được; ảnh không bị kéo giãn.
+- [ ] `npm run lesson:slides-test` vượt qua 30/30 trường hợp.

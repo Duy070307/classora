@@ -36,6 +36,7 @@ export function getHistory(): GeneratedDocument[] {
           "differentiated-exercises",
           "exam-shuffler",
           "slide-outline",
+          "lesson-slides",
           "lesson-summary",
           "mindmap-outline",
           "homeroom-plan",
@@ -81,7 +82,7 @@ export function updateDocumentFolder(id: string, folder: DocumentFolder) {
 
 function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {
   if (["exam", "matrix", "answer-key", "exam-checker", "exam-audit", "exam-shuffler", "question-bank", "question-variant", "document-recognition"].includes(type)) return "Đề kiểm tra";
-  if (type === "lesson-plan") return "Giáo án";
+  if (type === "lesson-plan" || type === "lesson-slides") return "Giáo án";
   if (type === "worksheet") return "Phiếu học tập";
   if (["student-comment", "bulk-student-comments"].includes(type)) return "Nhận xét học sinh";
   return "Khác";
