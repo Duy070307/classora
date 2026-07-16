@@ -1,8 +1,5 @@
-"use client";
-
-import { ToolFormLayout } from "@/components/ToolFormLayout";
-import { getToolConfig } from "@/lib/tool-configs";
+import { redirect } from "next/navigation";
 
 export default function MatrixGeneratorPage() {
-  return <ToolFormLayout config={getToolConfig("/tools/matrix-generator")!} />;
+  redirect("/tools/exam-blueprint");
 }

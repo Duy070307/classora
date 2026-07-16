@@ -41,6 +41,7 @@ import { openExamMixer } from "@/lib/exam-mixer/session";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
 import { openGradingAssistant } from "@/lib/grading/session";
 import { openAnswerSheet } from "@/lib/answer-sheet/session";
+import { openExamBlueprint } from "@/lib/exam-blueprint/session";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -557,6 +558,7 @@ export default function ExamGeneratorPage() {
   return (
     <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
+        <div className="mb-5 flex flex-wrap gap-2"><Link href="/tools/exam-blueprint" className="btn-secondary">Tạo ma trận trước khi ra đề</Link></div>
         <div className="mb-5 grid max-w-2xl grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
           <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề bằng cấu hình</button>
           <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề từ file</button>
@@ -715,6 +717,7 @@ export default function ExamGeneratorPage() {
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openGradingAssistant(document)}>Chấm bài theo đề này</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSheet(document)}>Tạo phiếu trả lời</button>
+                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamBlueprint({ mode: "from_exam", document })}>Xem ma trận của đề</button>
                 </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />

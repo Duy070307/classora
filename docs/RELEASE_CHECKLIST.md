@@ -125,3 +125,16 @@
 - [ ] Word không hiển thị như lựa chọn xuất phiếu vì chưa bảo đảm tọa độ.
 - [ ] Không có migration mới; template/layout lưu trong metadata tài liệu có RLS hiện tại.
 - [ ] Đã ghi rõ trạng thái kiểm thử máy in/camera thật trong báo cáo phát hành.
+
+## Ma trận & bảng đặc tả
+
+- [ ] `/tools/exam-blueprint` yêu cầu đăng nhập và tuân thủ maintenance/admin bypass.
+- [ ] Editor desktop/mobile không gây tràn ngang toàn trang.
+- [ ] Validation xác định chặn sai tổng câu, điểm, tỉ lệ, mức độ và cấu trúc Đúng/Sai.
+- [ ] Sửa đặc tả/ma trận không tự ghi đè đề hiện có.
+- [ ] Suy ra từ đề và đối chiếu không làm thay đổi `StructuredExam` nguồn.
+- [ ] Tạo đề tái sử dụng `FileExamGenerator` và Exam Auditor hiện có.
+- [ ] XLSX có Ma trận đề, Bảng đặc tả, Tổng hợp và Đối chiếu đề khi có.
+- [ ] DOCX ngang có ma trận, đặc tả, tiếng Việt và không chứa metadata nội bộ.
+- [ ] Blueprint history/cloud tuân thủ RLS; không cần migration mới.
+- [ ] `npm run exam:blueprint-test` đạt.

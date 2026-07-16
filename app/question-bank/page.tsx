@@ -258,6 +258,7 @@ export default function QuestionBankPage() {
   return (
     <AppShell title="Ngân hàng câu hỏi">
         <PageHeader title="Ngân hàng câu hỏi" description="Lưu, tìm kiếm và tái sử dụng câu hỏi ngay trên trình duyệt của bạn." />
+        <div className="mb-4"><Link href="/tools/exam-blueprint?mode=question_bank" className="btn-secondary">Tạo ma trận từ ngân hàng câu hỏi</Link></div>
         <BugReportLink source="question-bank" className="mb-4" />
         <section className="mb-6 rounded-[28px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

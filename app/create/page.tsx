@@ -29,6 +29,14 @@ const groups = [
         tone: "from-blue-500 to-cyan-500",
       },
       {
+        title: "Ma trận & bảng đặc tả",
+        description: "Lập cấu trúc đề, bảng đặc tả và đối chiếu trước hoặc sau khi tạo đề.",
+        examples: ["12/4/6", "Excel chỉnh sửa", "So sánh đề"],
+        href: "/tools/exam-blueprint",
+        icon: ClipboardList,
+        tone: "from-indigo-500 to-blue-600",
+      },
+      {
         title: "Tạo rubric",
         description: "Tạo bảng tiêu chí đánh giá có mức độ, mô tả và điểm số.",
         examples: ["Thuyết trình", "Bài viết", "Dự án nhóm"],

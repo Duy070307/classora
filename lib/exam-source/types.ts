@@ -14,6 +14,7 @@ export type BlueprintSection = {
 };
 
 export type BlueprintTopic = {
+  id?: string;
   topic: string;
   subtopic?: string;
   counts: {
@@ -27,6 +28,25 @@ export type BlueprintTopic = {
   percentage?: number;
   questionTypes?: string[];
   learningOutcomes?: string[];
+  knowledgeContent?: string;
+  skills?: string;
+  competency?: string;
+  notes?: string;
+};
+
+export type BlueprintSpecificationRow = {
+  id: string;
+  topicId?: string;
+  topic: string;
+  knowledgeUnit?: string;
+  learningOutcome: string;
+  cognitiveLevel: "recognition" | "comprehension" | "application" | "advancedApplication";
+  questionType: Exclude<BlueprintQuestionType, "mixed">;
+  questionCount: number;
+  score: number;
+  percentage: number;
+  note?: string;
+  teacherConfirmed: boolean;
 };
 
 export type CognitiveDistribution = {
@@ -45,6 +65,9 @@ export type BlueprintWarning = {
 };
 
 export type ExamBlueprint = {
+  id?: string;
+  ownerId?: string;
+  title?: string;
   sourceType: ExamSourceType;
   sourceName?: string;
   sourceContentHash?: string;
@@ -59,11 +82,21 @@ export type ExamBlueprint = {
   cognitiveDistribution: CognitiveDistribution;
   instructions?: string[];
   constraints?: string[];
+  bankMode?: BlueprintBankMode;
   confidence: {
     overall: number;
     fields: Record<string, number>;
   };
   warnings: BlueprintWarning[];
+  specificationRows?: BlueprintSpecificationRow[];
+  metadata?: {
+    sourceType: "manual" | "uploaded_matrix" | "existing_exam" | "question_bank";
+    sourceExamId?: string;
+    createdAt: string;
+    updatedAt: string;
+    confirmedAt?: string;
+    linkedExamHash?: string;
+  };
 };
 
 export type ExtractedTable = {
@@ -95,4 +128,3 @@ export type BlueprintValidation = {
 
 export type PreviousExamMode = "same_structure_new_questions" | "equivalent_difficulty" | "topics_and_types" | "reference_only";
 export type BlueprintBankMode = "ai_new" | "prefer_bank" | "combine" | "bank_only";
-

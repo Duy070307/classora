@@ -106,8 +106,19 @@ export function createExamBlueprint(source: ParsedExamSource, selectedType?: Exa
   let topics = tablesByRelevance.flatMap(topicsFromTable);
   if (!topics.length && sourceType === "lesson_material") topics = extractLessonTopics(source.text).map((topic) => ({ topic, counts: {} }));
   if (!topics.length && source.previousExam) {
-    topics = [...new Set(source.previousExam.parts.flatMap((part) => part.questions.map((question) => question.topic).filter(Boolean)))].map((topic) => ({ topic, counts: {} }));
-    if (!topics.length) topics = [{ topic: "Nội dung theo đề kiểm tra cũ", counts: {}, totalQuestions: source.previousExam.parts.reduce((sum, part) => sum + part.questions.length, 0) }];
+    const grouped = new Map<string, BlueprintTopic>();
+    source.previousExam.parts.flatMap((part) => part.questions).forEach((question) => {
+      const name = question.topic?.trim() || "Nội dung theo đề kiểm tra cũ";
+      const topic = grouped.get(name) || { topic: name, counts: {}, totalQuestions: 0, totalScore: 0, questionTypes: [] };
+      const difficulty = String(question.difficulty || "").toLocaleLowerCase("vi");
+      const level = difficulty.includes("vận dụng cao") ? "advancedApplication" : difficulty.includes("vận dụng") ? "application" : difficulty.includes("thông hiểu") ? "comprehension" : "recognition";
+      topic.counts[level] = Number(topic.counts[level] || 0) + 1;
+      topic.totalQuestions = Number(topic.totalQuestions || 0) + 1;
+      topic.totalScore = Number((Number(topic.totalScore || 0) + Number(question.score || 0)).toFixed(2));
+      topic.questionTypes = [...new Set([...(topic.questionTypes || []), question.part])];
+      grouped.set(name, topic);
+    });
+    topics = [...grouped.values()].map((topic) => ({ ...topic, percentage: source.previousExam!.metadata.totalScore ? Number((Number(topic.totalScore || 0) / source.previousExam!.metadata.totalScore * 100).toFixed(2)) : 0 }));
   }
   const sections = sectionDefaults(source);
   const text = source.text;
@@ -150,22 +161,32 @@ export function validateExamBlueprint(blueprint: ExamBlueprint): BlueprintValida
   const topicPercentage = Number(blueprint.topicDistribution.reduce((sum, topic) => sum + Number(topic.percentage || 0), 0).toFixed(2));
   const allNumbers = [blueprint.totalScore || 0, ...blueprint.sections.flatMap((section) => [section.questionCount, section.score]), ...blueprint.topicDistribution.flatMap((topic) => [topic.totalQuestions || 0, topic.totalScore || 0, topic.percentage || 0, ...Object.values(topic.counts).map((value) => value || 0)])];
   if (allNumbers.some((value) => value < 0)) errors.push({ code: "negative_value", message: "Cấu trúc có giá trị âm. Vui lòng kiểm tra số câu, điểm và tỉ lệ.", severity: "error" });
+  if ([...blueprint.sections.map((section) => section.questionCount), ...blueprint.topicDistribution.flatMap((topic) => [topic.totalQuestions ?? 0, ...Object.values(topic.counts).map((value) => value ?? 0)])].some((value) => !Number.isInteger(value))) errors.push({ code: "fractional_question_count", message: "Số câu phải là số nguyên, không thể dùng giá trị thập phân.", severity: "error" });
   if (!blueprint.sourceType || blueprint.sourceType === "unknown") errors.push({ code: "source_type_required", message: "Vui lòng chọn đúng loại nguồn trước khi tạo đề.", field: "sourceType", severity: "error" });
   if (!blueprint.sections.length || sectionQuestions <= 0) errors.push({ code: "invalid_question_total", message: "Tổng số câu phải lớn hơn 0.", field: "sections", severity: "error" });
   if (!blueprint.totalScore || blueprint.totalScore <= 0) errors.push({ code: "invalid_total_score", message: "Tổng điểm phải lớn hơn 0.", field: "totalScore", severity: "error" });
   if (!blueprint.topicDistribution.length) errors.push({ code: "topic_required", message: "Cần có ít nhất một chủ đề trước khi tạo đề.", field: "topicDistribution", severity: "error" });
   if (topicQuestions > 0 && topicQuestions !== sectionQuestions) errors.push({ code: "question_total_conflict", message: `Ma trận ghi ${sectionQuestions} câu nhưng tổng các chủ đề là ${topicQuestions} câu.`, severity: "error", suggestion: `Điều chỉnh tổng chủ đề về ${sectionQuestions} câu.` });
   if (sectionScore > 0 && blueprint.totalScore && Math.abs(sectionScore - blueprint.totalScore) > 0.01) errors.push({ code: "score_total_conflict", message: `Tổng điểm các phần là ${sectionScore} nhưng tổng điểm đề là ${blueprint.totalScore}.`, severity: "error" });
+  const topicScore = Number(blueprint.topicDistribution.reduce((sum, topic) => sum + Number(topic.totalScore || 0), 0).toFixed(2));
+  if (topicScore > 0 && blueprint.totalScore && Math.abs(topicScore - blueprint.totalScore) > 0.01) errors.push({ code: "topic_score_conflict", message: `Tổng điểm các chủ đề là ${topicScore} nhưng tổng điểm bài kiểm tra là ${blueprint.totalScore}.`, severity: "error" });
   const cognitiveTotal = Object.values(blueprint.cognitiveDistribution).reduce<number>((sum, value) => sum + (value || 0), 0);
   if (cognitiveTotal > sectionQuestions && cognitiveTotal <= 100 && sectionQuestions < 50) warnings.push({ code: "cognitive_may_be_percentage", message: "Phân bố mức độ có thể đang được ghi theo phần trăm. Thầy cô vui lòng kiểm tra.", severity: "warning" });
   else if (cognitiveTotal > sectionQuestions) errors.push({ code: "cognitive_total_conflict", message: "Tổng số câu theo mức độ nhận thức vượt quá tổng số câu của đề.", severity: "error" });
+  else if (cognitiveTotal > 0 && cognitiveTotal !== sectionQuestions) errors.push({ code: "cognitive_total_conflict", message: `Tổng số câu theo mức độ nhận thức là ${cognitiveTotal} nhưng cấu trúc đề có ${sectionQuestions} câu.`, severity: "error" });
+  const topicCognition = blueprint.topicDistribution.reduce((result, topic) => ({ recognition: result.recognition + Number(topic.counts.recognition || 0), comprehension: result.comprehension + Number(topic.counts.comprehension || 0), application: result.application + Number(topic.counts.application || 0), advancedApplication: result.advancedApplication + Number(topic.counts.advancedApplication || 0) }), { recognition: 0, comprehension: 0, application: 0, advancedApplication: 0 });
+  if ((["recognition", "comprehension", "application", "advancedApplication"] as const).some((key) => Number(blueprint.cognitiveDistribution[key] || 0) !== topicCognition[key])) errors.push({ code: "cognitive_distribution_conflict", message: "Phân bố nhận thức tổng hợp chưa khớp với các chủ đề trong ma trận.", severity: "error" });
   if (topicPercentage > 0) {
     if (topicPercentage >= 99 && topicPercentage <= 101) {
       if (topicPercentage !== 100) warnings.push({ code: "percentage_rounding", message: `Tổng tỉ lệ là ${topicPercentage}%. Sai lệch nhỏ do làm tròn được chấp nhận.`, severity: "warning" });
     } else errors.push({ code: "percentage_total_conflict", message: `Tổng tỉ lệ chủ đề là ${topicPercentage}%, chưa khớp 100%.`, severity: "error" });
   }
   blueprint.sections.forEach((section) => {
-    if (section.questionType === "true_false" && section.statementsPerQuestion && section.statementsPerQuestion !== 4) errors.push({ code: `invalid_true_false_${section.id}`, message: `${section.title} cần có 4 mệnh đề cho mỗi câu Đúng/Sai.`, severity: "error" });
+    if (!["multiple_choice", "true_false", "short_answer", "essay", "mixed"].includes(section.questionType)) errors.push({ code: `unsupported_question_type_${section.id}`, message: `${section.title} có dạng câu hỏi chưa được hỗ trợ.`, severity: "error" });
+    if (section.questionType === "true_false" && section.statementsPerQuestion !== 4) errors.push({ code: `invalid_true_false_${section.id}`, message: `${section.title} cần có 4 mệnh đề cho mỗi câu Đúng/Sai.`, severity: "error" });
+  });
+  blueprint.topicDistribution.forEach((topic, index) => {
+    if (Object.values(topic.counts).reduce<number>((sum, value) => sum + Number(value || 0), 0) <= 0) errors.push({ code: `topic_allocation_required_${index}`, message: `Chủ đề “${topic.topic || index + 1}” chưa có phân bổ câu hỏi.`, severity: "error" });
   });
   return { valid: errors.length === 0, errors, warnings, totals: { sectionQuestions, topicQuestions, sectionScore, topicPercentage } };
 }

@@ -270,3 +270,16 @@ Admin:
 8. Bật bảo trì: giáo viên bị chuyển `/maintenance`, hai API answer-sheet trả 503; admin vẫn dùng được.
 9. Kiểm tra mobile 390px: cấu hình và preview xếp dọc, không tràn ngang ngoài vùng preview có chủ đích.
 10. Chạy `npm run grading:test` để kiểm tra fixtures tổng hợp, PDF vật lý, QR, mapping và ZIP.
+
+## Ma trận & bảng đặc tả
+
+1. Mở `/tools/exam-blueprint`, xác nhận cấu trúc mặc định 12/4/6 có 22 câu, 10 điểm và 100%.
+2. Thử tổng tỉ lệ 99% (cảnh báo) và 80% (lỗi chặn); thử số âm, số câu thập phân và Đúng/Sai thiếu bốn mệnh đề.
+3. Chỉnh một dòng đặc tả; xác nhận chỉ hiện tác động và không đổi ma trận trước khi giáo viên đồng ý.
+4. Suy ra ma trận từ đề lịch sử; sửa chủ đề/mức độ rồi kiểm tra đề nguồn không đổi.
+5. Đối chiếu đề thiếu câu, thừa điểm và lệch mức độ nhận thức.
+6. Xuất Excel, mở đủ bốn sheet; kiểm tra ô số/phần trăm và công thức tổng.
+7. Xuất Word ngang; kiểm tra ma trận, đặc tả, lặp header và tiếng Việt.
+8. Lưu/mở lại/nhân bản blueprint; chuyển sang pipeline tạo đề và chạy Auditor.
+9. Bật bảo trì: giáo viên bị chuyển `/maintenance`, admin vẫn truy cập.
+10. Chạy `npm run exam:blueprint-test`.

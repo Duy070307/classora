@@ -24,6 +24,7 @@ import { publicBetaPresets } from "@/lib/public-beta-presets";
 
 const quickTools = [
   { title: "Tạo đề kiểm tra", desc: "Tạo đề, đáp án, thang điểm, ma trận và bản đặc tả.", href: "/tools/exam-generator", icon: ClipboardList, badge: "Thường dùng", keywords: "đề kiểm tra thi thptqg" },
+  { title: "Ma trận & bảng đặc tả", desc: "Lập ma trận trước khi ra đề, xuất Excel/Word và đối chiếu đề hiện có.", href: "/tools/exam-blueprint", icon: ClipboardList, badge: "Mới", keywords: "ma trận đặc tả blueprint đối chiếu đề" },
   { title: "Chấm bài", desc: "Nhận dạng bài làm và chấm phần khách quan với bước giáo viên rà soát.", href: "/tools/grading-assistant", icon: ClipboardCheck, badge: "Mới", keywords: "chấm bài bảng điểm bài làm mã đề" },
   { title: "Phiếu trả lời", desc: "Tạo phiếu chuẩn có QR và điểm định vị để in, quét rồi chấm ổn định.", href: "/tools/answer-sheet", icon: ClipboardList, badge: "Mới", keywords: "phiếu trả lời phiếu tô qr mã đề" },
   { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan-generator", icon: FileText, badge: "Tài liệu", keywords: "giáo án kế hoạch bài dạy" },

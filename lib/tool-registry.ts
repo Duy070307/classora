@@ -81,13 +81,13 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: phiếu THPT 12/4/6 cho mã đề 101–104",
   },
   {
-    title: "Tạo ma trận đề",
-    description: "Lập bảng ma trận, phân bổ câu hỏi và gợi ý thang điểm.",
-    href: "/tools/matrix-generator",
+    title: "Ma trận & bảng đặc tả",
+    description: "Lập ma trận, bảng đặc tả, tạo đề và đối chiếu cấu trúc hai chiều.",
+    href: "/tools/exam-blueprint",
     category: "exam-assessment",
     popular: true,
     aliases: ["ma trận", "đặc tả", "mức độ", "nhận biết"],
-    tags: ["Ma trận", "Thang điểm"],
+    tags: ["Ma trận", "Đặc tả", "Excel/Word"],
     example: "Ví dụ: ma trận giữa kỳ môn Lịch sử 12",
   },
   {

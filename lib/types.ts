@@ -55,6 +55,7 @@ export type GeneratedDocument = {
   gradingJob?: import("@/lib/grading/types").GradingJob;
   answerSheetTemplate?: import("@/lib/answer-sheet/types").AnswerSheetTemplate;
   answerSheetLayout?: import("@/lib/answer-sheet/types").AnswerSheetLayout;
+  examBlueprint?: import("@/lib/exam-source/types").ExamBlueprint;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";
