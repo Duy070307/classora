@@ -35,8 +35,9 @@ export function recognizeAnswersFromText(text: string, pageNumber = 1) {
 }
 
 export function mergeRecognizedAnswers(current: RecognizedAnswer[], incoming: RecognizedAnswer[]) {
-  const map = new Map(current.map((answer) => [`${answer.questionNumber}:${answer.sourcePage || 0}`, answer]));
-  incoming.forEach((answer) => map.set(`${answer.questionNumber}:${answer.sourcePage || 0}`, answer));
+  const key = (answer: RecognizedAnswer) => `${answer.questionId || `number-${answer.questionNumber}`}:${answer.sourcePage || 0}`;
+  const map = new Map(current.map((answer) => [key(answer), answer]));
+  incoming.forEach((answer) => map.set(key(answer), answer));
   return [...map.values()].sort((a, b) => a.questionNumber - b.questionNumber || (a.sourcePage || 0) - (b.sourcePage || 0));
 }
 

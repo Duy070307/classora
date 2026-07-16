@@ -18,6 +18,7 @@ import { createDocument, getHistory, saveDocument } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
 import { openLessonSlides } from "@/lib/lesson-slides/source";
 import { openGradingAssistant } from "@/lib/grading/session";
+import { openAnswerSheet } from "@/lib/answer-sheet/session";
 
 type Mode = "quick" | "detailed" | "verify";
 type Filter = "all" | "verified" | "mismatch" | "uncertain" | "missing";
@@ -176,7 +177,7 @@ export function AnswerSolutionsWorkspace() {
     </section>
 
     {source?.structuredExam && solutionSet ? <>
-      <section className="rounded-[28px] border border-blue-100 bg-blue-50 p-5"><button type="button" className="btn-primary" onClick={() => openGradingAssistant({ ...source, examSolutionSet: solutionSet })}><ClipboardCheck size={16}/>Dùng đáp án này để chấm bài</button></section>
+      <section className="flex flex-wrap gap-2 rounded-[28px] border border-blue-100 bg-blue-50 p-5"><button type="button" className="btn-primary" onClick={() => openGradingAssistant({ ...source, examSolutionSet: solutionSet })}><ClipboardCheck size={16}/>Dùng đáp án này để chấm bài</button><button type="button" className="btn-secondary" onClick={() => openAnswerSheet({ ...source, examSolutionSet: solutionSet })}><ClipboardCheck size={16}/>Tạo phiếu trả lời</button></section>
       <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-blue-700">Đề đang xử lý</p><h2 className="mt-1 text-xl font-black">{source.title}</h2><p className="mt-1 text-sm text-slate-600">{source.structuredExam.metadata.subject} · Lớp {source.structuredExam.metadata.grade} · {solutionSet.summary.totalQuestions} câu</p></div><button type="button" className="btn-secondary" onClick={saveCurrent}><Save size={16} />Lưu cùng đề</button></div>
         <div className="mt-5 flex max-w-full gap-2 overflow-x-auto pb-1">{([['quick','Đáp án nhanh'],['detailed','Lời giải chi tiết'],['verify','Kiểm tra đáp án']] as const).map(([key,label]) => <button key={key} type="button" onClick={() => setMode(key)} className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-black ${mode === key ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}>{label}</button>)}</div>
         <div className="mt-4 flex flex-wrap items-end gap-3"><label><span className="label">Mức chi tiết</span><select className="form-field mt-1" value={detailLevel} onChange={(event) => regenerateDeterministic(event.target.value as SolutionDetailLevel)}><option value="short">Ngắn gọn</option><option value="standard">Tiêu chuẩn</option><option value="detailed">Chi tiết</option></select></label><button type="button" className="btn-primary" disabled={loading} onClick={() => mode === "quick" ? regenerateDeterministic() : void generateSemantic()}><Sparkles size={16} />{loading ? "Đang xử lý…" : mode === "quick" ? "Tạo đáp án nhanh" : mode === "verify" ? "Kiểm tra câu đã chọn" : "Tạo lời giải đã chọn"}</button></div>

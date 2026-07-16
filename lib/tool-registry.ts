@@ -70,6 +70,17 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: chấm bài trắc nghiệm theo mã đề 101–104",
   },
   {
+    title: "Phiếu trả lời",
+    description: "Tạo phiếu chuẩn có QR và ô định vị để in, quét rồi chấm khách quan ổn định hơn.",
+    href: "/tools/answer-sheet",
+    category: "exam-assessment",
+    popular: true,
+    badge: "Mới",
+    aliases: ["phiếu trả lời", "phiếu tô", "answer sheet", "chấm trắc nghiệm", "qr"],
+    tags: ["PDF", "Mã đề", "Quét phiếu"],
+    example: "Ví dụ: phiếu THPT 12/4/6 cho mã đề 101–104",
+  },
+  {
     title: "Tạo ma trận đề",
     description: "Lập bảng ma trận, phân bổ câu hỏi và gợi ý thang điểm.",
     href: "/tools/matrix-generator",

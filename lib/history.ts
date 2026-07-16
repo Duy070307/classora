@@ -48,6 +48,7 @@ export function getHistory(): GeneratedDocument[] {
           "document-recognition",
           "grading-assistant",
           "grading-report",
+          "answer-sheet",
           "bulk-student-comments"
         ].includes(candidate.type ?? "")
       );
@@ -83,7 +84,7 @@ export function updateDocumentFolder(id: string, folder: DocumentFolder) {
 }
 
 function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {
-  if (["exam", "matrix", "answer-key", "exam-checker", "exam-audit", "exam-shuffler", "question-bank", "question-variant", "document-recognition", "grading-assistant", "grading-report"].includes(type)) return "Đề kiểm tra";
+  if (["exam", "matrix", "answer-key", "exam-checker", "exam-audit", "exam-shuffler", "question-bank", "question-variant", "document-recognition", "grading-assistant", "grading-report", "answer-sheet"].includes(type)) return "Đề kiểm tra";
   if (type === "lesson-plan" || type === "lesson-slides") return "Giáo án";
   if (type === "worksheet") return "Phiếu học tập";
   if (["student-comment", "bulk-student-comments"].includes(type)) return "Nhận xét học sinh";

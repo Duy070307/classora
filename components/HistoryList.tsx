@@ -45,6 +45,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "document-recognition": "Đề nhận dạng từ ảnh/PDF",
   "grading-assistant": "Bộ bài đã chấm",
   "grading-report": "Báo cáo chấm bài",
+  "answer-sheet": "Phiếu trả lời",
   "bulk-student-comments": "Nhận xét hàng loạt",
 };
 

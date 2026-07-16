@@ -40,6 +40,7 @@ import { FileExamGenerator } from "@/components/exam-generator/FileExamGenerator
 import { openExamMixer } from "@/lib/exam-mixer/session";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
 import { openGradingAssistant } from "@/lib/grading/session";
+import { openAnswerSheet } from "@/lib/answer-sheet/session";
 
 type BankSource = "system" | "user" | "both" | "ai";
 type DifficultyMode = "auto" | "suggested";
@@ -713,6 +714,7 @@ export default function ExamGeneratorPage() {
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
                   <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openGradingAssistant(document)}>Chấm bài theo đề này</button>
+                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSheet(document)}>Tạo phiếu trả lời</button>
                 </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />

@@ -27,6 +27,7 @@ export type ToolType =
   | "document-recognition"
   | "grading-assistant"
   | "grading-report"
+  | "answer-sheet"
   | "bulk-student-comments";
 
 export type GeneratedDocument = {
@@ -52,6 +53,8 @@ export type GeneratedDocument = {
   recognitionDraft?: import("@/lib/document-recognition/types").RecognitionDocument;
   slideDeck?: import("@/lib/lesson-slides/types").SlideDeck;
   gradingJob?: import("@/lib/grading/types").GradingJob;
+  answerSheetTemplate?: import("@/lib/answer-sheet/types").AnswerSheetTemplate;
+  answerSheetLayout?: import("@/lib/answer-sheet/types").AnswerSheetLayout;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

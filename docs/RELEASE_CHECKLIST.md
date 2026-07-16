@@ -112,3 +112,16 @@
 - [ ] XLSX/CSV/DOCX/PDF và phiếu học sinh không chứa dữ liệu nhận dạng nội bộ hoặc đáp án đầy đủ mặc định.
 - [ ] Job lịch sử không chứa `previewUrls`, `sourceCrop`, dữ liệu ảnh hay URL công khai.
 - [ ] `npm run grading:test` đạt.
+
+## Phiếu trả lời chuẩn
+
+- [ ] `/tools/answer-sheet` yêu cầu đăng nhập và tuân thủ maintenance/admin bypass.
+- [ ] Đề lỗi cấu trúc bị chặn trước khi tạo phiếu.
+- [ ] PDF A4/A5 đúng kích thước vật lý, có QR và bốn anchor, không chứa đáp án.
+- [ ] Bộ mã đề giữ đúng thứ tự câu/mệnh đề và xuất PDF riêng, PDF gộp, ZIP.
+- [ ] QR không chứa đáp án hoặc danh tính học sinh; QR hợp lệ không thay thế kiểm tra quyền sở hữu.
+- [ ] Phiếu rõ dùng nhận diện xác định, không tiêu thụ lượt AI.
+- [ ] Tô mờ, tô nhiều, gạch sửa, thiếu anchor và sai template bắt buộc rà soát hoặc bị từ chối.
+- [ ] Word không hiển thị như lựa chọn xuất phiếu vì chưa bảo đảm tọa độ.
+- [ ] Không có migration mới; template/layout lưu trong metadata tài liệu có RLS hiện tại.
+- [ ] Đã ghi rõ trạng thái kiểm thử máy in/camera thật trong báo cáo phát hành.

@@ -66,6 +66,7 @@ AI provider là tùy chọn. Mặc định `AI_PROVIDER=local` và không cần 
 - [Database](docs/DATABASE.md)
 - [Đọc đề từ ảnh/PDF](docs/DOCUMENT_RECOGNITION.md)
 - [Chấm bài](docs/GRADING_ASSISTANT.md)
+- [Phiếu trả lời chuẩn](docs/ANSWER_SHEETS.md)
 
 ## Supabase Auth và cloud data
 

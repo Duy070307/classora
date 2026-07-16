@@ -257,3 +257,16 @@ Admin:
 8. Mở lại `Bộ bài đã chấm` từ lịch sử; xác nhận không có ảnh nguồn hoặc URL công khai trong dữ liệu lưu.
 9. Bật bảo trì: giáo viên bị chuyển đến `/maintenance`, API nhận dạng/chấm trả 503; admin vẫn truy cập được.
 10. Chạy `npm run grading:test`.
+
+## Phiếu trả lời chuẩn
+
+1. Mở `/tools/answer-sheet`, chọn đề 12/4/6 và xác nhận preview có 12 câu trắc nghiệm, 4 nhóm đúng/sai, 6 vùng trả lời ngắn.
+2. Tạo bộ mã 101–104; kiểm tra mỗi phiếu hiện đúng mã đề, QR khác theo mã và ZIP có từng PDF cùng PDF gộp.
+3. Mở PDF ở tỉ lệ 100%; kiểm tra bốn anchor nằm trong vùng an toàn, QR sắc nét và không có đáp án.
+4. Lưu phiếu, mở lại từ lịch sử, tải PDF, tạo bản sao và dùng để mở công cụ chấm bài.
+5. Trong Chấm bài, chọn “Phiếu trả lời SOẠN LAB”; tải ảnh render rõ, ảnh xoay, ảnh phối cảnh, tô mờ, tô nhiều và gạch sửa.
+6. Xác nhận bubble rõ được đọc xác định; tô mờ/nhiều/gạch sửa không tự xác nhận.
+7. Kiểm tra thiếu/trùng trang và sai template hiển thị cảnh báo, không ghép im lặng.
+8. Bật bảo trì: giáo viên bị chuyển `/maintenance`, hai API answer-sheet trả 503; admin vẫn dùng được.
+9. Kiểm tra mobile 390px: cấu hình và preview xếp dọc, không tràn ngang ngoài vùng preview có chủ đích.
+10. Chạy `npm run grading:test` để kiểm tra fixtures tổng hợp, PDF vật lý, QR, mapping và ZIP.

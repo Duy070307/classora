@@ -23,7 +23,7 @@ export function DocumentExportMenu({
   const [message, setMessage] = useState("");
   const [exporting, setExporting] = useState(false);
   const buttonClass = compact ? "btn-secondary min-h-9 px-3 py-1.5 text-xs" : "btn-secondary";
-  if (document.type === "lesson-slides") return null;
+  if (document.type === "lesson-slides" || document.type === "answer-sheet") return null;
 
   async function copy() {
     try {

@@ -44,6 +44,14 @@ const groups = [
         icon: ClipboardList,
         tone: "from-blue-500 to-indigo-500",
       },
+      {
+        title: "Phiếu trả lời",
+        description: "Tạo phiếu tô chuẩn có QR và điểm định vị để in và chấm khách quan.",
+        examples: ["12/4/6", "Mã đề 101–104", "PDF in chuẩn"],
+        href: "/tools/answer-sheet",
+        icon: ClipboardList,
+        tone: "from-cyan-500 to-blue-600",
+      },
     ],
   },
   {
@@ -139,6 +147,7 @@ const groups = [
 const suggestions = [
   ["Tạo đề kiểm tra", "/tools/exam-generator"],
   ["Chấm bài", "/tools/grading-assistant"],
+  ["Tạo phiếu trả lời", "/tools/answer-sheet"],
   ["Tạo phiếu học tập", "/tools/worksheet-generator"],
   ["Tạo slide bài giảng", "/tools/lesson-slides"],
   ["Viết nhận xét học sinh", "/tools/student-comments"],
