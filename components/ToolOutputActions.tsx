@@ -1,9 +1,10 @@
 "use client";
 
-import { MessageCircle, Presentation, RotateCcw } from "lucide-react";
+import { BookOpenCheck, MessageCircle, Presentation, RotateCcw } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import type { GeneratedDocument } from "@/lib/types";
 import { openLessonSlides } from "@/lib/lesson-slides/source";
+import { openWorksheetGenerator } from "@/lib/worksheet/session";
 
 export function ToolOutputActions({
   document,
@@ -34,6 +35,7 @@ export function ToolOutputActions({
           {document.type === "worksheet" ? "Tạo slide chữa bài" : document.type === "exam" ? "Tạo slide ôn tập" : "Tạo slide bài giảng"}
         </button>
       ) : null}
+      {["lesson-plan", "exam", "document-recognition"].includes(document.type) ? <button type="button" className="btn-secondary" onClick={()=>openWorksheetGenerator(document,document.type==="exam"?"review":"practice")}><BookOpenCheck size={16}/>Tạo phiếu học tập</button>:null}
       {onGenerateAgain ? (
         <button type="button" onClick={onGenerateAgain} className="btn-secondary">
           <RotateCcw size={16} />

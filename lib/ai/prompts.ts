@@ -214,6 +214,36 @@ export function buildWorksheetPrompt(input: unknown) {
   );
 }
 
+export function buildWorksheetActivityPrompt(input: unknown) {
+  return prompt(
+    "Tạo đúng một hoạt động cho phiếu học tập",
+    input,
+    `Yêu cầu bắt buộc:
+- Viết bằng tiếng Việt, đúng môn, lớp, chủ đề, mục tiêu, loại hoạt động và mức độ đã cung cấp.
+- Nếu sourceOnly=true, chỉ dùng kiến thức trong sourceContent; không bù nội dung bằng kiến thức không liên quan.
+- Cơ bản phải có gợi ý và giảm tải nhận thức; tiêu chuẩn có vận dụng vừa phải; nâng cao cần lập luận sâu hơn nhưng vẫn cùng mục tiêu.
+- Nhiệm vụ nhóm phải có sản phẩm cụ thể, thời gian và cách tổ chức; không viết yêu cầu mơ hồ.
+- Không gọi hình, bảng, sơ đồ nếu không có block tương ứng. Không để đáp án lộ trong prompt học sinh.
+- Giữ LaTeX trong chuỗi văn bản. Không gọi AI để tính tổng điểm hoặc định dạng tài liệu.
+
+Chỉ trả về một JSON object, không markdown fence:
+{
+  "prompt": "yêu cầu rõ ràng",
+  "instructions": "cách thực hiện",
+  "expectedOutput": "sản phẩm học sinh",
+  "items": [{"id":"ổn định","prompt":"...","options":[{"id":"...","label":"A","text":"..."}],"answer":"A","acceptedAnswers":[],"explanation":"..."}],
+  "blocks": [],
+  "answer": "đáp án tổng quát",
+  "explanation": "giải thích ngắn",
+  "acceptedAlternatives": [],
+  "hint": "gợi ý nếu phù hợp",
+  "commonMistake": "lỗi thường gặp",
+  "teacherNote": "cách tổ chức và thời gian"
+}
+Với trắc nghiệm: 2–10 câu, A/B/C/D, đúng một đáp án. Với đúng/sai: mỗi mệnh đề có ID, đáp án và giải thích. Với nối/sắp xếp: lưu ánh xạ hoặc thứ tự đúng tách khỏi thứ tự hiển thị.`
+  );
+}
+
 export function buildLessonPlanPrompt(input: unknown) {
   return prompt(
     "Soạn kế hoạch bài dạy dạng bản nháp tham khảo",
@@ -349,6 +379,7 @@ export function buildPrompt(tool: string, input: unknown, action?: AIRefinementA
     "exam-generator": buildExamPrompt,
     worksheet: buildWorksheetPrompt,
     "worksheet-generator": buildWorksheetPrompt,
+    "worksheet-activity": buildWorksheetActivityPrompt,
     "lesson-plan": buildLessonPlanPrompt,
     "lesson-plan-generator": buildLessonPlanPrompt,
     "student-comments": buildStudentCommentsPrompt,

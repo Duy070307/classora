@@ -283,3 +283,14 @@ Admin:
 8. Lưu/mở lại/nhân bản blueprint; chuyển sang pipeline tạo đề và chạy Auditor.
 9. Bật bảo trì: giáo viên bị chuyển `/maintenance`, admin vẫn truy cập.
 10. Chạy `npm run exam:blueprint-test`.
+
+## Phiếu học tập có cấu trúc
+
+1. Mở `/tools/worksheet-generator`, tạo Vật lí 11 – Định luật Ohm, 20 phút, 6 hoạt động, ba mức độ.
+2. Xác nhận dàn ý xuất hiện trước nội dung và có thể đổi loại/mức độ/thứ tự.
+3. Tạo phiếu; sửa một hoạt động rồi tạo lại hoạt động khác, kiểm tra nội dung đã sửa không bị ghi đè.
+4. Xuất Word/PDF học sinh và giáo viên; tìm đáp án/ghi chú giáo viên trong bản học sinh và xác nhận không có.
+5. Tạo từ giáo án, slide và tài liệu nhận dạng; kiểm tra notes giáo viên và block chưa xác nhận bị loại.
+6. Lưu/mở lại/nhân bản; thêm câu hợp lệ vào Ngân hàng câu hỏi và kiểm tra cảnh báo trùng.
+7. Bật bảo trì: teacher bị chuyển `/maintenance`, admin vẫn truy cập.
+8. Chạy `npm run worksheet:test` và toàn bộ `npm run test`.

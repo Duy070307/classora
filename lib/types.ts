@@ -56,6 +56,7 @@ export type GeneratedDocument = {
   answerSheetTemplate?: import("@/lib/answer-sheet/types").AnswerSheetTemplate;
   answerSheetLayout?: import("@/lib/answer-sheet/types").AnswerSheetLayout;
   examBlueprint?: import("@/lib/exam-source/types").ExamBlueprint;
+  worksheet?: import("@/lib/worksheet/types").Worksheet;
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

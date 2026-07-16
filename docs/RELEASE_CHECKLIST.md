@@ -138,3 +138,15 @@
 - [ ] DOCX ngang có ma trận, đặc tả, tiếng Việt và không chứa metadata nội bộ.
 - [ ] Blueprint history/cloud tuân thủ RLS; không cần migration mới.
 - [ ] `npm run exam:blueprint-test` đạt.
+
+## Phiếu học tập có cấu trúc
+
+- [ ] Route cũ `/tools/worksheet-generator` còn hoạt động; `/tools/worksheet` chuyển hướng đúng.
+- [ ] Dàn ý được xác nhận trước khi tạo từng hoạt động.
+- [ ] Phiếu cơ bản/tiêu chuẩn/nâng cao cùng mục tiêu nhưng không trùng nội dung.
+- [ ] Bản học sinh không chứa đáp án, lời giải, teacher note hoặc metadata nội bộ.
+- [ ] Bản giáo viên có đáp án, hướng dẫn và thang điểm khi bật.
+- [ ] Lesson Plan, Slides, Exam, Solution và Recognition mở được worksheet với nguồn đúng.
+- [ ] History/cloud giữ canonical `Worksheet`; không cần migration mới.
+- [ ] Maintenance/admin bypass và Question Bank ownership đạt.
+- [ ] `npm run worksheet:test` đạt 38/38, bao phủ đủ 37 yêu cầu.
