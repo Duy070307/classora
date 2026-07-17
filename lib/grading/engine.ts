@@ -79,7 +79,7 @@ export function validateGradingSource(document: GeneratedDocument): GradingExamS
   if (document.examVariantSet?.variants.some((variant) => !variant.auditResult.valid)) blockingErrors.push("Bộ mã đề có ánh xạ đáp án chưa hợp lệ.");
   const verified = document.examSolutionSet?.verificationStatus === "verified" || document.auditMeta?.auditStatus === "ready";
   if (exam && !verified) warnings.push("Đáp án của đề chưa được xác minh. Thầy cô nên kiểm tra đáp án trước khi chấm bài.");
-  return { documentId: document.id, title: document.title, exam, variantSet: document.examVariantSet, rubricText: document.type === "rubric" ? document.content : undefined, verified, warnings, blockingErrors };
+  return { documentId: document.id, title: document.title, exam, variantSet: document.examVariantSet, rubric: document.rubric, rubricText: document.type === "rubric" ? document.content : undefined, verified, warnings, blockingErrors };
 }
 
 export function sourceFromPastedAnswerKey(title: string, value: string): GradingExamSource {
@@ -215,10 +215,10 @@ export function regradeAffectedQuestions(job: GradingJob, updatedExam: Structure
 
 export function createGradingJob(source: GradingExamSource): GradingJob {
   const examScore = source.exam?.metadata.totalScore || source.exam?.parts.flatMap((part) => part.questions).reduce((sum, question) => sum + Number(question.score || 0), 0) || 10;
-  const rubricCheck = source.rubricText ? rubricTotalMatches(source.rubricText, examScore) : null;
+  const rubricCheck = source.rubric ? { known: true, matches: Math.abs(source.rubric.totalScore - examScore) < 0.0001, total: source.rubric.totalScore } : source.rubricText ? rubricTotalMatches(source.rubricText, examScore) : null;
   const normalizedSource = rubricCheck?.known && !rubricCheck.matches ? { ...source, warnings: [...source.warnings, "Tổng điểm rubric chưa khớp với tổng điểm bài. Giáo viên cần sửa hoặc chọn tổng điểm phù hợp trước khi xác nhận."] } : source;
   const now = new Date().toISOString();
-  return { id: crypto.randomUUID(), examId: source.documentId, variantSetId: source.variantSet?.id, title: `Chấm bài · ${source.title}`, gradingMode: source.rubricText && !source.exam ? "essay_rubric" : source.variantSet ? "mixed_exam" : "combined", status: "draft", source: normalizedSource, submissions: [], settings: { ...DEFAULT_GRADING_SETTINGS, maximumScore: examScore }, metadata: { createdAt: now, updatedAt: now, examHash: source.exam ? stableHash(source.exam) : undefined, answerKeyHash: source.exam ? stableHash(source.exam.parts.flatMap((part) => part.questions.map((question) => [question.id, question.answer]))) : undefined, gradingVersion: GRADING_VERSION } };
+  return { id: crypto.randomUUID(), examId: source.documentId, variantSetId: source.variantSet?.id, rubricId: source.rubric?.id, title: `Chấm bài · ${source.title}`, gradingMode: (source.rubric || source.rubricText) && !source.exam ? "essay_rubric" : source.variantSet ? "mixed_exam" : "combined", status: "draft", source: normalizedSource, submissions: [], rubricAssessments: {}, settings: { ...DEFAULT_GRADING_SETTINGS, maximumScore: source.rubric?.totalScore || examScore }, metadata: { createdAt: now, updatedAt: now, examHash: source.exam ? stableHash(source.exam) : undefined, answerKeyHash: source.exam ? stableHash(source.exam.parts.flatMap((part) => part.questions.map((question) => [question.id, question.answer]))) : undefined, gradingVersion: GRADING_VERSION } };
 }
 
 export function classSummary(job: GradingJob) {

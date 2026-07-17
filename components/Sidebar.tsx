@@ -52,7 +52,7 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
       ["Giáo án", "/tools/lesson-plan", FileText],
       ["Tạo slide bài giảng", "/tools/lesson-slides", Presentation, "Mới"],
-      ["Rubric", "/tools/rubric-generator", PenTool],
+      ["Rubric", "/tools/rubric", PenTool],
       ["Nhận xét học sinh", "/tools/student-comments", MessageCircle],
       ["Tin nhắn phụ huynh", "/tools/parent-message-generator", MessagesSquare],
     ],

@@ -36,7 +36,7 @@ export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/tools/student-comments")) return "Nhận xét học sinh";
   if (pathname.startsWith("/tools/bulk-student-comments")) return "Nhận xét học sinh hàng loạt";
   if (pathname.startsWith("/tools/parent-message-generator")) return "Tin nhắn phụ huynh";
-  if (pathname.startsWith("/tools/rubric-generator")) return "Rubric";
+  if (pathname.startsWith("/tools/rubric")) return "Rubric";
   if (pathname.startsWith("/tools/import-questions")) return "Nhập câu hỏi";
   if (pathname.startsWith("/tools/image-to-latex")) return "Ảnh công thức / hình học → LaTeX/TikZ";
   if (pathname.startsWith("/tools/3d-animation")) return "Tạo mô phỏng 3D";

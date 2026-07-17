@@ -1,8 +1,2 @@
-"use client";
-
-import { ToolFormLayout } from "@/components/ToolFormLayout";
-import { getToolConfig } from "@/lib/tool-configs";
-
-export default function RubricGeneratorPage() {
-  return <ToolFormLayout config={getToolConfig("/tools/rubric-generator")!} />;
-}
+import { redirect } from "next/navigation";
+export default function RubricGeneratorPage() { redirect("/tools/rubric"); }

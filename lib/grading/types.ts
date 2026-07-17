@@ -1,5 +1,6 @@
 import type { StructuredExam } from "@/lib/exam-types";
 import type { ExamVariantSet } from "@/lib/exam-mixer/types";
+import type { Rubric, RubricAssessment } from "@/lib/rubric/types";
 
 export type GradingConfidence = "high" | "medium" | "low";
 export type GradingMode = "objective_exam" | "mixed_exam" | "short_answer" | "essay_rubric" | "combined";
@@ -114,6 +115,7 @@ export type GradingExamSource = {
   exam?: StructuredExam;
   variantSet?: ExamVariantSet;
   rubricText?: string;
+  rubric?: Rubric;
   verified: boolean;
   warnings: string[];
   blockingErrors: string[];
@@ -130,6 +132,7 @@ export type GradingJob = {
   status: GradingStatus;
   source: GradingExamSource;
   submissions: GradingSubmission[];
+  rubricAssessments?: Record<string, RubricAssessment>;
   settings: GradingSettings;
   metadata: {
     createdAt: string;

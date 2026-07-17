@@ -111,7 +111,7 @@ export const toolRegistry: ToolMeta[] = [
   {
     title: "Tạo rubric",
     description: "Tạo bảng tiêu chí đánh giá với các mức độ và điểm số.",
-    href: "/tools/rubric-generator",
+    href: "/tools/rubric",
     category: "exam-assessment",
     popular: true,
     aliases: ["rubric", "tiêu chí", "đánh giá", "chấm điểm"],

@@ -1,0 +1,78 @@
+import assert from "node:assert/strict";
+import ExcelJS from "exceljs";
+import JSZip from "jszip";
+import { rubricCoverage } from "../lib/rubric/coverage";
+import { buildRubricDocx, buildRubricXlsx } from "../lib/rubric/export";
+import { buildConfirmedFeedback, createRubricAssessment, updateCriterionAssessment } from "../lib/rubric/grading";
+import { importRubricText } from "../lib/rubric/import";
+import { RUBRIC_TEMPLATES, rubricFromTemplate } from "../lib/rubric/templates";
+import { validateRubric } from "../lib/rubric/validation";
+import { changeLevelCount, createRubricDraft, createRubricOutline, normalizeRubric, rubricFromDocument, rubricToDocument, rubricToText } from "../lib/rubric/workflow";
+
+let checks = 0;
+function check(value: unknown, message: string) { assert.ok(value, message); checks += 1; }
+
+async function main() {
+  const draft = createRubricDraft();
+  check(Boolean(draft.id), "draft has id");
+  check(draft.criteria.length === 4, "draft has criteria");
+  check(draft.levels.length === 4, "draft has levels");
+  check(normalizeRubric(draft).criteria.every((item, index) => item.order === index + 1), "normalizes order");
+  const outline = createRubricOutline({ title: "Rubric dự án", criteriaText: "Nội dung\nSản phẩm\nTrình bày", objectives: ["Giải quyết vấn đề", "Hợp tác"], rubricType: "weighted" });
+  check(outline.criteria.length === 3, "outline criteria");
+  check(outline.objectives.every((item) => Boolean(item.id)), "objective ids");
+  check(Math.abs(outline.criteria.reduce((sum, item) => sum + item.weight, 0) - 100) < 0.01, "outline weight total");
+  check(validateRubric(outline).status === "ready", "valid outline ready");
+  const weight99 = { ...outline, criteria: outline.criteria.map((item, index) => index === 0 ? { ...item, weight: item.weight - 1 } : item) };
+  check(validateRubric(weight99).status === "warning", "99 percent warning");
+  const weight101 = { ...outline, criteria: outline.criteria.map((item, index) => index === 0 ? { ...item, weight: item.weight + 1 } : item) };
+  check(validateRubric(weight101).status === "warning", "101 percent warning");
+  const weight80 = { ...outline, criteria: outline.criteria.map((item, index) => index === 0 ? { ...item, weight: item.weight - 20 } : item) };
+  check(validateRubric(weight80).status === "blocked", "large weight mismatch blocked");
+  const missing = { ...outline, criteria: outline.criteria.map((item, index) => index === 0 ? { ...item, descriptors: item.descriptors.map((entry, level) => level === 0 ? { ...entry, text: "" } : entry) } : item) };
+  check(validateRubric(missing).errors.some((item) => item.code === "missing_descriptor"), "missing descriptor blocked");
+  const duplicate = { ...outline, criteria: outline.criteria.map((item, index) => index === 0 ? { ...item, descriptors: item.descriptors.map((entry) => ({ ...entry, text: "Giống nhau" })) } : item) };
+  check(validateRubric(duplicate).warnings.some((item) => item.code === "duplicate_descriptor"), "duplicate descriptor warning");
+  const linked = { ...outline, criteria: outline.criteria.map((item, index) => ({ ...item, objectiveIds: index === 0 ? [outline.objectives[0].id] : [] })) };
+  check(rubricCoverage(linked)[0].status === "covered", "objective covered");
+  check(rubricCoverage(linked)[1].status === "missing", "objective missing");
+  const three = changeLevelCount(outline, 3);
+  check(three.levels.length === 3, "changes level count");
+  check(three.levels[0].id === outline.levels[0].id, "keeps stable level id");
+  check(three.criteria.every((item) => item.descriptors.length === 3), "fills descriptors");
+  const legacy = rubricFromDocument({ id: "legacy", title: "Rubric cũ", type: "rubric", createdAt: new Date().toISOString(), content: "Tiêu chí nội dung\nTiêu chí trình bày" });
+  check(legacy.criteria.length >= 2, "legacy adapted");
+  check(rubricToDocument(outline).rubric?.id === outline.id, "document stores canonical rubric");
+  outline.criteria[0].evidence = "Bài làm và quan sát";
+  check(!rubricToText(outline, "student").includes("Bài làm và quan sát"), "student output hides teacher evidence");
+  check(rubricToText(outline, "teacher").includes("Bài làm và quan sát"), "teacher output keeps evidence");
+  check(RUBRIC_TEMPLATES.length === 10, "ten templates");
+  check(RUBRIC_TEMPLATES.every((item) => item.criteria.length >= 4), "templates have criteria");
+  check(rubricFromTemplate(RUBRIC_TEMPLATES[0]).metadata.templateId === RUBRIC_TEMPLATES[0].id, "template metadata");
+  let assessment = createRubricAssessment(outline, "submission-1");
+  check(!assessment.teacherConfirmed, "assessment starts unconfirmed");
+  assessment = updateCriterionAssessment(outline, assessment, outline.criteria[0].id, { suggestedScore: 4, teacherConfirmed: false });
+  check(assessment.totalScore === 0, "suggestion does not count");
+  assessment = updateCriterionAssessment(outline, assessment, outline.criteria[0].id, { confirmedScore: outline.criteria[0].maxScore, teacherConfirmed: true, feedback: "Tốt" });
+  check(assessment.totalScore > 0 && !assessment.teacherConfirmed, "partial confirmation");
+  for (const criterion of outline.criteria.slice(1)) assessment = updateCriterionAssessment(outline, assessment, criterion.id, { confirmedScore: criterion.maxScore, teacherConfirmed: true, feedback: "Đạt" });
+  check(assessment.teacherConfirmed, "all criteria confirmed");
+  check(Boolean(assessment.feedback), "confirmed feedback generated");
+  check(buildConfirmedFeedback(outline, createRubricAssessment(outline, "x").criteria) === undefined, "unconfirmed feedback blocked");
+  const imported = importRubricText("Tiêu chí,Trọng số,Xuất sắc,Tốt,Đạt,Cần cố gắng\nNội dung,25,Rất tốt,Tốt,Đạt,Cần sửa\nTrình bày,25,Rõ ràng,Khá rõ,Cơ bản,Khó hiểu");
+  check(Boolean(imported.rubric), "csv imported");
+  check(imported.rubric?.criteria.length === 2, "import row count");
+  const docx = await buildRubricDocx(outline);
+  const docxBuffer = Buffer.from(await docx.arrayBuffer());
+  check(docxBuffer.subarray(0, 2).toString() === "PK", "docx is zip");
+  const docxZip = await JSZip.loadAsync(docxBuffer);
+  check(Boolean(docxZip.file("word/document.xml")), "docx has document xml");
+  const xlsx = await buildRubricXlsx(outline);
+  const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(await xlsx.arrayBuffer());
+  check(workbook.worksheets.length === 4, "xlsx has four sheets");
+  check(workbook.getWorksheet("Rubric")?.rowCount === outline.criteria.length + 1, "xlsx rubric rows");
+  assert.equal(checks, 37);
+  console.log(`Rubric workflow: ${checks}/37 kiểm tra đạt.`);
+}
+
+main().catch((error) => { console.error(error); process.exitCode = 1; });

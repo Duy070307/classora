@@ -52,6 +52,7 @@ export type WorksheetActivity = {
   commonMistake?: string;
   teacherNote?: string;
   rubric?: RubricItem[];
+  rubricId?: string;
   generationStatus?: "outline" | "pending" | "generating" | "ready" | "failed";
   generationError?: string;
   teacherEdited?: boolean;

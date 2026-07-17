@@ -58,6 +58,7 @@ export type GeneratedDocument = {
   examBlueprint?: import("@/lib/exam-source/types").ExamBlueprint;
   worksheet?: import("@/lib/worksheet/types").Worksheet;
   lessonPlan?: import("@/lib/lesson-plan/types").LessonPlan;
+  rubric?: import("@/lib/rubric/types").Rubric;
   questionCollection?: import("@/lib/question-bank-core/types").QuestionCollection;
   auditMeta?: {
     lastAuditedAt?: string;

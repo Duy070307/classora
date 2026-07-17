@@ -40,7 +40,7 @@ const groups = [
         title: "Tạo rubric",
         description: "Tạo bảng tiêu chí đánh giá có mức độ, mô tả và điểm số.",
         examples: ["Thuyết trình", "Bài viết", "Dự án nhóm"],
-        href: "/tools/rubric-generator",
+        href: "/tools/rubric",
         icon: PenTool,
         tone: "from-purple-500 to-fuchsia-500",
       },
