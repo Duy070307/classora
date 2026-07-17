@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import type { ExamQuestion } from "../lib/exam-types";
 import { balanceMultipleChoiceAnswers, balanceTrueFalsePatterns, normalizeTeacherMathNotation, validateMultipleChoiceOptions, validateShortAnswerNumeric, validateVisualDependency } from "../lib/exam/exam-quality";
 
@@ -60,4 +61,12 @@ const normalizedMath = normalizeTeacherMathNotation("sqrt(2x + 3) + ln(x - 1), x
 assert.equal(normalizedMath, "√(2x+3) + ln(x - 1), x tiến tới +∞ hoặc −∞");
 assert.doesNotMatch(normalizedMath, /sqrt|infinity/i);
 
-console.log("Exam quality: MCQ cân bằng 3/3/3/3, TF 8/8 với 4 mẫu khác nhau, short-answer numeric, visual dependency và math notation đều đạt.");
+const generatorSource = readFileSync("app/tools/exam-generator/page.tsx", "utf8");
+const generateStart = generatorSource.indexOf("async function generate()");
+const generateEnd = generatorSource.indexOf("function handleSave", generateStart);
+const generateSource = generatorSource.slice(generateStart, generateEnd);
+assert.match(generateSource, /generationLock\.current/, "Tạo đề phải chặn gửi lặp trong cùng một lượt");
+assert.match(generateSource, /finally\s*\{[\s\S]*generationLock\.current = false/, "Khóa tạo đề phải luôn được giải phóng");
+assert.doesNotMatch(generateSource, /setDocument\(null\)/, "Tạo lại thất bại không được xóa đề đang xem");
+
+console.log("Exam quality: nội dung đề, chống gửi lặp và giữ kết quả cũ khi thử lại đều đạt.");

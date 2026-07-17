@@ -97,7 +97,7 @@ const documentStore = readFileSync(resolve("lib/data/documents-store.ts"), "utf8
 assert.match(documentStore, /getCloudClientForUser\(\)/, "14. Lịch sử phải dùng client gắn với người dùng");
 assert.match(documentStore, /\.eq\("id", id\)/, "14. Truy vấn đề phải giới hạn theo id dưới RLS");
 
-const middleware = readFileSync(resolve("middleware.ts"), "utf8");
+const middleware = readFileSync(resolve("proxy.ts"), "utf8");
 assert.match(middleware, /getMaintenanceSettings\(\)/, "15. Middleware phải dùng trạng thái bảo trì chuẩn");
 assert.match(middleware, /decision === "redirect"/, "15. Bảo trì phải chặn trang giáo viên");
 assert.match(middleware, /isMaintenanceBypassed\(identity\)/, "16. Admin phải được bypass bảo trì");

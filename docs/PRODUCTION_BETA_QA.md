@@ -143,4 +143,4 @@ Lỗi đã sửa trong batch: khi lịch sử còn `structuredExam` nhưng text 
 - Cần một tài khoản teacher QA và admin QA để hoàn thành các thao tác ghi dữ liệu production; không lưu credential trong repo/tài liệu.
 - PDF/Print phụ thuộc hộp thoại trình duyệt nên chưa được kiểm tra tải file tự động trong lượt này.
 - Rate limit đăng ký dùng thử là giới hạn nhẹ theo instance, không phải cơ chế chống abuse phân tán.
-- Cảnh báo Next.js về quy ước `middleware` bị deprecated không làm build thất bại nhưng nên chuyển sang `proxy` ở batch bảo trì riêng.
+- Quy ước bảo vệ tuyến đã chuyển sang `proxy.ts` theo Next.js 16; logic xác thực, bảo trì và admin bypass được giữ nguyên và có regression test.

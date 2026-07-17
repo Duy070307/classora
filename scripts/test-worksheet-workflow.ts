@@ -50,8 +50,9 @@ await check("Lesson Plan regression còn chạy",()=>assert.match(fs.readFileSyn
 await check("Lesson Slides regression còn chạy",()=>assert.match(fs.readFileSync(`${root}/package.json`,"utf8"),/lesson:slides-test/));
 await check("Exam regression còn chạy",()=>assert.match(fs.readFileSync(`${root}/package.json`,"utf8"),/exam:quality-test/));
 await check("Word/PDF pipeline hiện có còn dùng",()=>{const source=fs.readFileSync(`${root}/lib/worksheet/export.ts`,"utf8");assert.match(source,/buildGenericDocxBlob/);assert.match(source,/printGeneratedDocument/);});
+await check("Lỗi tạo hoạt động không lộ thông tin nội bộ",()=>{const source=fs.readFileSync(`${root}/components/worksheet/WorksheetWorkspace.tsx`,"utf8");assert.doesNotMatch(source,/generationError:error instanceof Error\?error\.message/);assert.match(source,/Hoạt động này chưa tạo được nội dung/);});
 
-assert.equal(passed,38);console.log(`Worksheet workflow: ${passed}/38 nhóm kiểm tra đạt (bao phủ đủ 37 yêu cầu và 1 kiểm tra quyền sở hữu bổ sung).`);
+assert.equal(passed,39);console.log(`Worksheet workflow: ${passed}/39 nhóm kiểm tra đạt.`);
 }
 
 main().catch((error)=>{console.error(error);process.exit(1);});

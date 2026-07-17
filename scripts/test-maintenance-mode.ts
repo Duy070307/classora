@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { maintenanceAccessDecision } from "../lib/maintenance-access";
 import { DEFAULT_MAINTENANCE_MESSAGE, validateMaintenanceUpdate } from "../lib/maintenance-shared";
 
@@ -32,7 +32,9 @@ assert.match(routeSource, /isMaintenanceBypassed\(user\)/);
 assert.match(routeSource, /status:\s*403/);
 assert.match(routeSource, /setMaintenanceSettings/);
 
-const middlewareSource = readFileSync("middleware.ts", "utf8");
+const middlewareSource = readFileSync("proxy.ts", "utf8");
+assert.equal(existsSync("middleware.ts"), false, "Không giữ đồng thời middleware và proxy");
+assert.match(middlewareSource, /export async function proxy\(/);
 assert.match(middlewareSource, /getMaintenanceSettings\(\)/);
 assert.match(middlewareSource, /isMaintenanceBypassed\(identity\)/);
 assert.doesNotMatch(middlewareSource, /from\("system_settings"\)/, "Middleware không được đọc nguồn cấu hình khác helper canonical");

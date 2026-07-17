@@ -30,14 +30,18 @@ export function gradingRows(job: GradingJob) {
   }));
 }
 
-export function exportGradingCsv(job: GradingJob) {
+export function buildGradingCsvBlob(job: GradingJob) {
   const rows = gradingRows(job); const headers = Object.keys(rows[0] || { STT: "" });
   const csv = `\uFEFF${headers.map(csvCell).join(",")}\r\n${rows.map((row) => headers.map((header) => csvCell((row as Record<string, unknown>)[header])).join(",")).join("\r\n")}`;
-  download(new Blob([csv], { type: "text/csv;charset=utf-8" }), `${safeName(job.title)}.csv`);
+  return new Blob([csv], { type: "text/csv;charset=utf-8" });
+}
+
+export function exportGradingCsv(job: GradingJob) {
+  download(buildGradingCsvBlob(job), `${safeName(job.title)}.csv`);
 }
 
 function xml(value: unknown) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
-export async function exportGradingXlsx(job: GradingJob) {
+export async function buildGradingXlsxBlob(job: GradingJob) {
   const rows = gradingRows(job); const headers = Object.keys(rows[0] || { STT: "" });
   const sheetRows = [headers, ...rows.map((row) => headers.map((header) => (row as Record<string, unknown>)[header]))].map((row, rowIndex) => `<row r="${rowIndex + 1}">${row.map((cell, columnIndex) => { const ref = `${String.fromCharCode(65 + columnIndex)}${rowIndex + 1}`; return typeof cell === "number" ? `<c r="${ref}"><v>${cell}</v></c>` : `<c r="${ref}" t="inlineStr"><is><t>${xml(cell)}</t></is></c>`; }).join("")}</row>`).join("");
   const zip = new JSZip();
@@ -46,7 +50,11 @@ export async function exportGradingXlsx(job: GradingJob) {
   zip.file("xl/workbook.xml", `<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Bảng điểm" sheetId="1" r:id="rId1"/></sheets></workbook>`);
   zip.file("xl/_rels/workbook.xml.rels", `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`);
   zip.file("xl/worksheets/sheet1.xml", `<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sheetRows}</sheetData></worksheet>`);
-  download(await zip.generateAsync({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), `${safeName(job.title)}.xlsx`);
+  return zip.generateAsync({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+
+export async function exportGradingXlsx(job: GradingJob) {
+  download(await buildGradingXlsxBlob(job), `${safeName(job.title)}.xlsx`);
 }
 
 export function gradingReportDocument(job: GradingJob): GeneratedDocument {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ToolOutputActions } from "@/components/ToolOutputActions";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
@@ -146,6 +146,7 @@ export default function ExamGeneratorPage() {
   const [input, setInput] = useState(initialInput);
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
+  const generationLock = useRef(false);
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [useBank, setUseBank] = useState(false);
@@ -264,14 +265,15 @@ export default function ExamGeneratorPage() {
   }
 
   async function generate() {
+    if (generationLock.current) return;
     if (!input.subject.trim()) return setMessage("Vui lòng nhập môn học.");
     if (!input.grade.trim()) return setMessage("Vui lòng nhập lớp.");
     if (useBank && bankSource !== "ai" && !input.topic.trim()) return setMessage("Vui lòng nhập chủ đề trước khi lấy câu hỏi từ ngân hàng.");
     if (input.multipleChoiceCount + input.trueFalseCount + input.shortAnswerCount <= 0) return setMessage("Tổng số câu phải lớn hơn 0.");
     if ([input.recognitionRate, input.understandingRate, input.applicationRate, input.advancedRate].reduce((a, b) => a + b, 0) !== 100) return setMessage("Tổng tỉ lệ mức độ nên bằng 100%.");
+    generationLock.current = true;
     setLoading(true);
     setMessage("");
-    setDocument(null);
     try {
     if (useBank && bankSource !== "ai" && input.trueFalseCount === 0 && input.shortAnswerCount === 0 && input.essayCount === 0) {
       const requestedCount = Math.min(Math.max(bankCount || 1, 1), 50);
@@ -282,9 +284,7 @@ export default function ExamGeneratorPage() {
           : bankSource === "user"
             ? "Ngân hàng của tôi chưa có câu hỏi phù hợp. Thầy cô có thể thêm câu hỏi, nhập từ Excel hoặc chọn Ngân hàng Soạn Lab."
             : "Chưa có đủ câu hỏi phù hợp trong các nguồn đã chọn. Thầy cô có thể giảm số câu hoặc để Soạn Lab tạo bổ sung bằng AI.";
-        setDocument(null);
         setMessage(`${emptyMessage} Chế độ ‘Chỉ sử dụng câu hỏi có sẵn’ đang được bật.`);
-        setLoading(false);
         return;
       }
       const insufficientBank = selected.length < requestedCount && bankOnly;
@@ -517,8 +517,10 @@ export default function ExamGeneratorPage() {
       : `Đã tạo ${structureAudit.finalCount}/${structureAudit.request.requestedQuestionCount} câu theo đúng cấu trúc.`));
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Không thể tạo đề kiểm tra lúc này.");
+    } finally {
+      generationLock.current = false;
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   function handleSave() {

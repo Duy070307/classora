@@ -4,7 +4,7 @@ import type { StructuredExam } from "../lib/exam-types";
 import { classSummary, createGradingJob, gradeSubmission, overrideQuestionScore, regradeAffectedQuestions, regradeJob, rubricTotalMatches, stripGradingAssets, validateGradingSource } from "../lib/grading/engine";
 import { mergeRecognizedAnswers, recognizeAnswersFromText } from "../lib/grading/recognition";
 import { gradingJobToDocument } from "../lib/grading/history";
-import { gradingReportDocument, gradingRows, studentResultDocument } from "../lib/grading/export";
+import { buildGradingCsvBlob, buildGradingXlsxBlob, gradingReportDocument, gradingRows, studentResultDocument } from "../lib/grading/export";
 import type { GradingSubmission } from "../lib/grading/types";
 import JSZip from "jszip";
 import { answerSheetChecksum, createQrPayload, isAnswerSheetOwner, parseQrPayload, validateQrPayload } from "../lib/answer-sheet/checksum";
@@ -157,6 +157,11 @@ const studentVisibleText = layout1246.pages.flatMap((page) => page.primitives.fi
 assert.equal(studentVisibleText.includes("Đáp án"), false, "Phiếu học sinh không được lộ đáp án");
 
 async function testAnswerSheetExports() {
+  const csvBlob = buildGradingCsvBlob(gradedJob); const csvBytes = new Uint8Array(await csvBlob.arrayBuffer()); const csvText = new TextDecoder().decode(csvBytes);
+  assert.deepEqual([...csvBytes.slice(0, 3)], [0xef, 0xbb, 0xbf], "CSV thật phải giữ UTF-8 BOM");
+  assert.ok(csvText.includes("Nguyễn Văn A"), "CSV thật phải giữ tiếng Việt");
+  const gradingXlsx = await buildGradingXlsxBlob(gradedJob); const gradingWorkbook = await JSZip.loadAsync(await gradingXlsx.arrayBuffer());
+  assert.ok(gradingWorkbook.file("xl/workbook.xml") && gradingWorkbook.file("xl/worksheets/sheet1.xml"), "XLSX thật phải có workbook và worksheet");
   const pdfBlob = await buildAnswerSheetPdfBlob([template1246]); const pdfBytes = Buffer.from(await pdfBlob.arrayBuffer());
   assert.ok(pdfBytes.subarray(0, 5).toString() === "%PDF-", "Xuất phiếu phải tạo PDF thật");
   const pdfHeader = pdfBytes.toString("latin1"); assert.match(pdfHeader, /\/MediaBox\s*\[\s*0\s+0\s+595(?:\.\d+)?\s+841(?:\.\d+)?\s*\]/, "PDF phải giữ đúng MediaBox A4");
