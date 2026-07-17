@@ -30,6 +30,7 @@ const quickTools = [
   { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan", icon: FileText, badge: "Tài liệu", keywords: "giáo án kế hoạch bài dạy" },
   { title: "Tạo slide bài giảng", desc: "Tạo dàn ý, chỉnh sửa slide và xuất PowerPoint.", href: "/tools/lesson-slides", icon: Presentation, badge: "PowerPoint", keywords: "slide powerpoint bài giảng trình chiếu" },
   { title: "Phiếu học tập", desc: "Tạo bài tập theo chủ đề, có gợi ý đáp án để rà soát.", href: "/tools/worksheet-generator", icon: BookOpenCheck, badge: "Word/PDF", keywords: "phiếu học tập worksheet bài tập" },
+  { title: "Đề cương ôn tập", desc: "Tạo kiến thức trọng tâm, ví dụ, bài luyện tập, kiểm tra nhanh và đáp án.", href: "/tools/review-pack", icon: BookOpenCheck, badge: "Mới", keywords: "đề cương ôn tập củng cố luyện tập" },
   { title: "Ngân hàng câu hỏi", desc: "Lưu, tìm kiếm và quản lý câu hỏi theo môn/lớp/chủ đề.", href: "/question-bank", icon: BookOpenCheck, badge: "Quản lý", keywords: "ngân hàng câu hỏi import" },
   { title: "Ảnh công thức → LaTeX", desc: "Chuyển ảnh công thức hoặc hình học đã cắt gọn thành mã dùng lại.", href: "/tools/image-to-latex", icon: ImageIcon, badge: "Beta", keywords: "latex hình học tikz công thức" },
   { title: "Tạo mô phỏng 3D", desc: "Tạo mô phỏng minh họa đơn giản cho bài học.", href: "/tools/3d-animation", icon: Box, badge: "Beta", keywords: "3d mô phỏng trực quan vật lý hóa học" },

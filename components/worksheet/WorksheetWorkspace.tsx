@@ -17,6 +17,7 @@ import { createWorksheetDraft, createWorksheetOutline, deriveAnswerKey, normaliz
 import { openLessonSlides } from "@/lib/lesson-slides/source";
 import { openLessonPlanGenerator } from "@/lib/lesson-plan/session";
 import { openRubricGenerator } from "@/lib/rubric/session";
+import { openReviewPack } from "@/lib/review-pack/session";
 import { ActivityContentEditor, DifferentiationComparison } from "@/components/worksheet/ActivityContentEditor";
 
 type Stage="setup"|"outline"|"editor";
@@ -57,6 +58,7 @@ export function WorksheetWorkspace(){
   {stage==="editor"&&selected?<ActivityContentEditor activity={selected} updateActivity={updateActivity}/>:null}
   {stage==="editor"&&worksheet.differentiation!=="single"?<DifferentiationComparison worksheet={worksheet}/>:null}
   {stage==="editor"?<section className="rounded-[24px] border border-slate-200 bg-white p-5"><h2 className="font-black">Thầy cô muốn làm gì tiếp?</h2><div className="mt-3 flex flex-wrap gap-2"><button className="btn-secondary" onClick={()=>void downloadWorksheetDocx(worksheet,"student")}>Xuất bản học sinh</button><button className="btn-secondary" onClick={()=>void downloadWorksheetDocx(worksheet,"teacher")}>Xuất bản giáo viên</button>{worksheet.differentiation!=="single"?<button className="btn-secondary" onClick={()=>void downloadDifferentiatedWorksheetZip(worksheet)}>Tải ZIP phiếu phân hóa</button>:null}<button className="btn-secondary" onClick={()=>openLessonSlides(worksheetToDocument(worksheet,"teacher"),"solution")}>Tạo slide chữa bài</button><button className="btn-secondary" onClick={()=>openLessonPlanGenerator(worksheetToDocument(worksheet,"teacher"),"practice")}>Gắn phiếu vào giáo án</button><Link className="btn-secondary" href="/tools/exam-generator">Tạo bài kiểm tra nhanh</Link><button className="btn-secondary" onClick={()=>openRubricGenerator(worksheetToDocument(worksheet,"teacher"),selected?.id)}>Tạo rubric</button><button className="btn-secondary" onClick={addToBank}>Lưu câu hỏi vào ngân hàng</button><button className="btn-secondary" onClick={duplicateWorksheet}><Copy size={15}/>Nhân bản</button></div><p className="mt-3 text-xs text-slate-500">Chỉ các hoạt động dạng câu hỏi hợp lệ mới được đưa vào Ngân hàng câu hỏi; nội dung thảo luận và ghi chú giáo viên được bỏ qua.</p></section>:null}
+  {stage==="editor"?<button className="btn-secondary" onClick={()=>openReviewPack(worksheetToDocument(worksheet,"teacher"),selected?.id?[selected.id]:undefined)}>Tạo đề cương ôn tập từ phiếu này</button>:null}
   {message?<p className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900">{message}{savedOnce?" · Đã có bản lưu trong lịch sử.":""}</p>:null}</div></AppShell>;
 }
 

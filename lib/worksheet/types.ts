@@ -31,6 +31,7 @@ export type WorksheetBlock =
 
 export type WorksheetActivity = {
   id: string;
+  sourceSectionId?: string;
   order: number;
   title?: string;
   type: WorksheetActivityType;

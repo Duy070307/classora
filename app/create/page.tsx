@@ -83,6 +83,14 @@ const groups = [
         tone: "from-indigo-500 to-violet-500",
       },
       {
+        title: "Đề cương ôn tập",
+        description: "Tạo gói ôn tập hoàn chỉnh có kiến thức, ví dụ, bài tập và đáp án.",
+        examples: ["Ôn tập chương", "Củng cố sau kiểm tra", "Bản học sinh/giáo viên"],
+        href: "/tools/review-pack",
+        icon: BookOpenCheck,
+        tone: "from-cyan-500 to-blue-600",
+      },
+      {
         title: "Tạo slide bài giảng",
         description: "Rà soát dàn ý, chỉnh sửa từng slide và xuất PowerPoint.",
         examples: ["Giảng bài mới", "Ôn tập", "Chữa bài"],

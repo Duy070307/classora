@@ -6,6 +6,7 @@ import type { GeneratedDocument } from "@/lib/types";
 import { openLessonSlides } from "@/lib/lesson-slides/source";
 import { openWorksheetGenerator } from "@/lib/worksheet/session";
 import { openLessonPlanGenerator } from "@/lib/lesson-plan/session";
+import { openReviewPack } from "@/lib/review-pack/session";
 
 export function ToolOutputActions({
   document,
@@ -38,6 +39,7 @@ export function ToolOutputActions({
       ) : null}
       {["lesson-plan", "exam", "document-recognition"].includes(document.type) ? <button type="button" className="btn-secondary" onClick={()=>openWorksheetGenerator(document,document.type==="exam"?"review":"practice")}><BookOpenCheck size={16}/>Tạo phiếu học tập</button>:null}
       {["worksheet", "lesson-slides", "exam", "rubric", "document-recognition"].includes(document.type) ? <button type="button" className="btn-secondary" onClick={()=>openLessonPlanGenerator(document,document.type==="exam"?"solution":"new_lesson")}><FileText size={16}/>Tạo giáo án từ nội dung này</button>:null}
+      {["lesson-plan", "lesson-slides", "worksheet", "exam", "rubric", "document-recognition", "grading-assistant"].includes(document.type) ? <button type="button" className="btn-secondary" onClick={() => openReviewPack(document)}><BookOpenCheck size={16}/>Tạo đề cương ôn tập</button> : null}
       {onGenerateAgain ? (
         <button type="button" onClick={onGenerateAgain} className="btn-secondary">
           <RotateCcw size={16} />

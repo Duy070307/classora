@@ -14,6 +14,7 @@ export function ToolPageHeader({ title, description, category = "Công cụ giá
         <Link href="/tools" className="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50/70 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-blue-100">
           <ArrowLeft size={14} />Quay lại thư viện công cụ
         </Link>
+        {title === "Giáo án" ? <Link href="/tools/review-pack" className="ml-2 inline-flex items-center rounded-full border border-blue-100 px-3 py-1.5 text-xs font-bold text-brand transition hover:bg-blue-50">Tạo đề cương ôn tập</Link> : null}
         <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center">
           <SoanLabIcon name={resolvedIcon} size="lg" />
           <div className="min-w-0">

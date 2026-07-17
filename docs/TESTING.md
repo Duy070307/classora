@@ -306,3 +306,14 @@ Admin:
 7. Xuất Word đầy đủ, Word bảng GV/HS và PDF; kiểm tra bảng Word có thể chỉnh sửa và không có metadata nội bộ.
 8. Mở lại từ History, kiểm tra ID, hoạt động và liên kết vẫn giữ nguyên.
 9. Chạy `npm run lesson:plan-test`, sau đó `npm run test`.
+
+## Đề cương ôn tập
+
+1. Mở `/tools/review-pack`, thử đủ bốn nguồn: chủ đề, DOCX/PDF/TXT, nội dung đã lưu và bộ kết quả chấm đã xác nhận.
+2. Kiểm tra bước dàn ý xuất hiện trước nội dung; sửa, thêm, xóa, đổi thứ tự và mức độ của từng phần.
+3. Tạo nội dung, sửa một phần rồi tạo lại phần khác; xác nhận phần đã sửa không bị ghi đè.
+4. So sánh bản học sinh/giáo viên; bản học sinh không có đáp án, lời giải hoặc ghi chú giáo viên.
+5. Xuất Word học sinh/giáo viên, PDF, bảng công thức, bài luyện tập, lời giải và ZIP đầy đủ.
+6. Mở lại từ lịch sử, tạo slide, phiếu luyện tập, bài kiểm tra nhanh và lưu câu hỏi vào ngân hàng.
+7. Bật bảo trì: giáo viên được chuyển tới `/maintenance`, admin vẫn truy cập.
+8. Chạy `npm run review-pack:test`, sau đó `npm run test`.

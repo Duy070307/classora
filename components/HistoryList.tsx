@@ -35,6 +35,7 @@ const labels: Record<GeneratedDocument["type"], string> = {
   "slide-outline": "Dàn ý slide",
   "lesson-slides": "Slide bài giảng",
   "lesson-summary": "Tóm tắt bài học",
+  "review-pack": "Đề cương ôn tập",
   "mindmap-outline": "Sơ đồ tư duy",
   "homeroom-plan": "Kế hoạch chủ nhiệm",
   "parent-meeting-minutes": "Biên bản họp phụ huynh",

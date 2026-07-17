@@ -400,6 +400,34 @@ Hãy dùng bảng Markdown sạch để hệ thống chuyển thành bảng Word
   );
 }
 
+export function buildReviewPackSectionPrompt(input: unknown) {
+  return prompt(
+    "Tạo đúng một phần của đề cương ôn tập",
+    input,
+    `Chỉ trả về một JSON object hợp lệ, không bọc markdown fence và không giải thích ngoài JSON.
+
+Schema chung:
+{
+  "sectionType": "knowledge | formula | summary_table | exercise_types | worked_examples | basic_practice | application_practice | advanced_practice | quick_quiz | teacher_notes",
+  "title": "Tiêu đề cụ thể",
+  "summary": "Tóm tắt ngắn",
+  "keyPoints": ["Ý chính"],
+  "commonMistake": "Lỗi thường gặp",
+  "latex": "Công thức LaTeX nguyên vẹn",
+  "conditions": "Điều kiện áp dụng",
+  "symbols": [{"symbol":"x","meaning":"Ý nghĩa","unit":"Đơn vị"}],
+  "recognitionSignal": "Dấu hiệu nhận dạng dạng bài",
+  "method": ["Bước 1", "Bước 2"],
+  "commonMistakes": ["Lỗi cụ thể"],
+  "examples": [{"title":"Ví dụ","prompt":"Đề bài","method":"Phương pháp","steps":["Bước giải"],"finalAnswer":"Đáp án cuối"}],
+  "activities": [{"title":"Bài tập","type":"multiple_choice | true_false | short_answer | fill_blank | matching | ordering | table_completion | problem_solving | discussion | diagram_labeling","level":"basic | standard | advanced","prompt":"Yêu cầu cụ thể","answer":"Đáp án","explanation":"Giải thích","hint":"Gợi ý"}],
+  "teacherNotes": ["Ghi chú"]
+}
+
+Chỉ điền các trường phù hợp sectionType. Tên dạng bài phải cụ thể theo chủ đề, không dùng nhãn mơ hồ. Ví dụ và bài tập phải có dữ kiện thật, đáp án khớp và cùng chủ đề. Nếu sourceOnly=true, tuyệt đối chỉ dùng sourceContent. Giữ nguyên LaTeX, đơn vị và ký hiệu.`
+  );
+}
+
 export function buildGenericPrompt(tool: string, input: unknown) {
   return prompt(tool, input, "Các phần có tiêu đề rõ ràng, nội dung ngắn gọn, dễ kiểm tra và dễ xuất Word/PDF.");
 }
@@ -424,6 +452,7 @@ export function buildPrompt(tool: string, input: unknown, action?: AIRefinementA
     "lesson-plan": buildLessonPlanPrompt,
     "lesson-plan-generator": buildLessonPlanPrompt,
     "lesson-plan-activity": buildLessonPlanActivityPrompt,
+    "review-pack-section": buildReviewPackSectionPrompt,
     "student-comments": buildStudentCommentsPrompt,
     "bulk-student-comments": buildBulkStudentCommentsPrompt,
     rubric: buildRubricPrompt,

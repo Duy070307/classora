@@ -163,3 +163,16 @@
 - [ ] History phục hồi canonical `LessonPlan`; autosave không tạo snapshot mỗi phím.
 - [ ] Maintenance chặn teacher và admin bypass vẫn hoạt động.
 - [ ] `npm run lesson:plan-test` đạt 34/34.
+
+### Đề cương ôn tập
+
+- [ ] `/tools/review-pack` yêu cầu đăng nhập và tuân thủ maintenance/admin bypass.
+- [ ] Bốn mode đầu vào hoạt động; chỉ dữ liệu chấm đã xác nhận được dùng.
+- [ ] Dàn ý được giáo viên xác nhận trước khi tạo từng phần nội dung.
+- [ ] `ReviewPack` tái sử dụng `WorksheetActivity`, `StructuredExam` và `ExamSolutionSet`.
+- [ ] Tạo lại từng phần không ghi đè chỉnh sửa của giáo viên nếu chưa xác nhận.
+- [ ] Bản học sinh không có đáp án, lời giải, ghi chú giáo viên, ID hoặc metadata nội bộ.
+- [ ] Word/PDF/ZIP và các tệp công thức/luyện tập/lời giải mở được, giữ tiếng Việt và LaTeX.
+- [ ] History/cloud phục hồi canonical `ReviewPack`; không cần migration mới.
+- [ ] Liên kết Lesson Plan, Slides, Worksheet, Exam, Grading, Recognition và Question Bank hoạt động.
+- [ ] `npm run review-pack:test` đạt 29/29.

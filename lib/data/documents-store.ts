@@ -36,6 +36,7 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     worksheet: typeof metadata.worksheet === "object" && metadata.worksheet ? metadata.worksheet as GeneratedDocument["worksheet"] : undefined,
     lessonPlan: typeof metadata.lessonPlan === "object" && metadata.lessonPlan ? metadata.lessonPlan as GeneratedDocument["lessonPlan"] : undefined,
     rubric: typeof metadata.rubric === "object" && metadata.rubric ? metadata.rubric as GeneratedDocument["rubric"] : undefined,
+    reviewPack: typeof metadata.reviewPack === "object" && metadata.reviewPack ? metadata.reviewPack as GeneratedDocument["reviewPack"] : undefined,
     questionCollection: typeof metadata.questionCollection === "object" && metadata.questionCollection ? metadata.questionCollection as GeneratedDocument["questionCollection"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
@@ -89,6 +90,7 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
       worksheet: document.worksheet,
       lessonPlan: document.lessonPlan,
       rubric: document.rubric,
+      reviewPack: document.reviewPack,
       questionCollection: document.questionCollection
     },
     structured_data: document.structuredExam ?? null,

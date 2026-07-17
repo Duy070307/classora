@@ -38,6 +38,7 @@ export function getHistory(): GeneratedDocument[] {
           "slide-outline",
           "lesson-slides",
           "lesson-summary",
+          "review-pack",
           "mindmap-outline",
           "homeroom-plan",
           "parent-meeting-minutes",

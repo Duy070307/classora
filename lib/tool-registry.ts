@@ -193,6 +193,17 @@ export const toolRegistry: ToolMeta[] = [
     example: "Ví dụ: phiếu học tập Toán 8, hoạt động nhóm",
   },
   {
+    title: "Đề cương ôn tập",
+    description: "Tạo gói ôn tập có kiến thức, công thức, ví dụ, bài luyện tập, bài kiểm tra nhanh và đáp án.",
+    href: "/tools/review-pack",
+    category: "lesson-materials",
+    popular: true,
+    badge: "Mới",
+    aliases: ["đề cương", "ôn tập", "luyện tập", "củng cố", "review pack"],
+    tags: ["Word/PDF", "Bài tập", "Đáp án"],
+    example: "Ví dụ: đề cương ôn tập chương Hàm số lớp 12",
+  },
+  {
     title: "Tạo hoạt động lớp học",
     description: "Gợi ý hoạt động có mục tiêu, cách tổ chức và đánh giá.",
     href: "/tools/activity-generator",

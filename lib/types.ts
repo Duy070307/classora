@@ -17,6 +17,7 @@ export type ToolType =
   | "slide-outline"
   | "lesson-slides"
   | "lesson-summary"
+  | "review-pack"
   | "mindmap-outline"
   | "homeroom-plan"
   | "parent-meeting-minutes"
@@ -59,6 +60,7 @@ export type GeneratedDocument = {
   worksheet?: import("@/lib/worksheet/types").Worksheet;
   lessonPlan?: import("@/lib/lesson-plan/types").LessonPlan;
   rubric?: import("@/lib/rubric/types").Rubric;
+  reviewPack?: import("@/lib/review-pack/types").ReviewPack;
   questionCollection?: import("@/lib/question-bank-core/types").QuestionCollection;
   auditMeta?: {
     lastAuditedAt?: string;
@@ -87,6 +89,9 @@ export type GeneratedDocument = {
     grade?: string;
     topic?: string;
     questionCount?: number;
+    sectionCount?: number;
+    exerciseCount?: number;
+    purpose?: string;
     bankQuestionCount?: number;
     aiQuestionCount?: number;
     systemBankCount?: number;
