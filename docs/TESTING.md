@@ -26,13 +26,20 @@ Tool routes quan trọng:
 - `/tools/worksheet-generator`
 - `/tools/lesson-plan` (route cũ `/tools/lesson-plan-generator` chuyển hướng tương thích)
 - `/tools/lesson-slides`: tạo dàn ý, chỉnh một slide, xuất bản học sinh và bản giáo viên; kiểm tra bản học sinh không có notes/đáp án ẩn.
-- `/tools/student-comments`
-- `/tools/bulk-student-comments`
 - `/tools/rubric-generator`
-- `/tools/parent-message-generator`
 - `/tools/import-questions`
 - `/tools/image-to-latex`
 - `/tools/latex-preview`
+
+Các route cũ `/tools/student-comments`, `/tools/bulk-student-comments` và `/tools/parent-message-generator` phải yêu cầu đăng nhập, tôn trọng maintenance mode rồi chuyển hướng an toàn về `/tools`. Bản ghi lịch sử cũ vẫn phải xem, xuất và xóa được với nhãn “Nội dung cũ”, nhưng không có hành động tạo lại.
+
+### Ngân hàng câu hỏi
+
+- Không hiển thị bulk toolbar khi chưa chọn câu; khi chọn phải có đúng một toolbar gọn.
+- Chỉ có một menu Xuất; Word/PDF/XLSX/CSV/Markdown/TXT không bị render lặp.
+- Editor đóng mặc định, mở dạng drawer trên desktop và toàn màn hình trên mobile.
+- Bộ lọc đang dùng hiển thị bằng chip, có thể xóa từng chip hoặc xóa tất cả.
+- Rà soát trùng lặp hiển thị theo cụm; cùng dạng/chủ đề/công thức nhưng khác nhiệm vụ không bị tính là câu trùng.
 
 ## Công cụ và prefill nội bộ
 

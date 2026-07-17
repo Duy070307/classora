@@ -1,8 +1,9 @@
-"use client";
+import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/auth/require-user";
+import { getMaintenanceBlockForUser } from "@/lib/maintenance";
 
-import { ToolFormLayout } from "@/components/ToolFormLayout";
-import { getToolConfig } from "@/lib/tool-configs";
-
-export default function ParentMessageGeneratorPage() {
-  return <ToolFormLayout config={getToolConfig("/tools/parent-message-generator")!} />;
+export default async function LegacyParentMessagePage() {
+  const user = await requireUser();
+  if (await getMaintenanceBlockForUser(user)) redirect("/maintenance");
+  redirect("/tools");
 }

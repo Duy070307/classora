@@ -55,7 +55,7 @@ function polishGeneratedContent(type: string, input: GenericToolInput, content: 
   return content;
 }
 
-const serverAIToolTypes = new Set(["lesson-plan", "rubric", "parent-message", "bulk-student-comments"]);
+const serverAIToolTypes = new Set(["lesson-plan", "rubric"]);
 
 export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const initialInput = useMemo(() => getInitialInput(config.fields), [config.fields]);
@@ -65,7 +65,7 @@ export function ToolFormLayout({ config }: { config: ToolConfig }) {
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const draft = useFormDraft(config.href, input, setInput);
-  const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "matrix" ? "Ma trận đề" : config.type === "answer-key" ? "Đáp án và thang điểm" : config.type === "exam-shuffler" ? "Đề kiểm tra" : config.type === "parent-message" ? "Tin nhắn phụ huynh" : "";
+  const templateType = config.type === "lesson-plan" ? "Giáo án" : config.type === "matrix" ? "Ma trận đề" : config.type === "answer-key" ? "Đáp án và thang điểm" : config.type === "exam-shuffler" ? "Đề kiểm tra" : "";
 
   useEffect(() => {
     const sampleId = getCurrentSampleId();

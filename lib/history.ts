@@ -6,54 +6,68 @@ import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
 
 const HISTORY_KEY = STORAGE_KEYS.history;
 
+const LEGACY_TOOL_DOCUMENT_TYPES = new Set<GeneratedDocument["type"]>([
+  "student-comment",
+  "bulk-student-comments",
+  "parent-message",
+]);
+
+export function isLegacyToolDocument(
+  document: Pick<GeneratedDocument, "type">,
+) {
+  return LEGACY_TOOL_DOCUMENT_TYPES.has(document.type);
+}
+
 export function getHistory(): GeneratedDocument[] {
   if (typeof window === "undefined") return [];
   try {
     const parsed = readJson<unknown>(HISTORY_KEY, []);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item): item is GeneratedDocument => {
-      if (!item || typeof item !== "object") return false;
-      const candidate = item as Partial<GeneratedDocument>;
-      return (
-        typeof candidate.id === "string" &&
-        typeof candidate.title === "string" &&
-        typeof candidate.content === "string" &&
-        typeof candidate.createdAt === "string" &&
-        [
-          "exam",
-          "worksheet",
-          "student-comment",
-          "lesson-plan",
-          "matrix",
-          "answer-key",
-          "rubric",
-          "parent-message",
-          "question-bank",
-          "question-variant",
-          "exam-checker",
-          "exam-audit",
-          "activity",
-          "differentiated-exercises",
-          "exam-shuffler",
-          "slide-outline",
-          "lesson-slides",
-          "lesson-summary",
-          "review-pack",
-          "mindmap-outline",
-          "homeroom-plan",
-          "parent-meeting-minutes",
-          "latex-converter",
-          "image-to-latex",
-          "image-to-tikz",
-          "3d-animation",
-          "document-recognition",
-          "grading-assistant",
-          "grading-report",
-          "answer-sheet",
-          "bulk-student-comments"
-        ].includes(candidate.type ?? "")
-      );
-    }).map((item) => normalizeGeneratedDocument(item));
+    return parsed
+      .filter((item): item is GeneratedDocument => {
+        if (!item || typeof item !== "object") return false;
+        const candidate = item as Partial<GeneratedDocument>;
+        return (
+          typeof candidate.id === "string" &&
+          typeof candidate.title === "string" &&
+          typeof candidate.content === "string" &&
+          typeof candidate.createdAt === "string" &&
+          [
+            "exam",
+            "worksheet",
+            "student-comment",
+            "lesson-plan",
+            "matrix",
+            "answer-key",
+            "rubric",
+            "parent-message",
+            "question-bank",
+            "question-variant",
+            "exam-checker",
+            "exam-audit",
+            "activity",
+            "differentiated-exercises",
+            "exam-shuffler",
+            "slide-outline",
+            "lesson-slides",
+            "lesson-summary",
+            "review-pack",
+            "mindmap-outline",
+            "homeroom-plan",
+            "parent-meeting-minutes",
+            "latex-converter",
+            "image-to-latex",
+            "image-to-tikz",
+            "3d-animation",
+            "document-recognition",
+            "grading-assistant",
+            "grading-report",
+            "answer-sheet",
+            "bulk-student-comments",
+          ].includes(candidate.type ?? "")
+        );
+      })
+      .map((item) => normalizeGeneratedDocument(item));
   } catch {
     return [];
   }
@@ -61,10 +75,15 @@ export function getHistory(): GeneratedDocument[] {
 
 export function saveDocument(document: GeneratedDocument) {
   const cleanDocument = normalizeGeneratedDocument(document);
-  const next = [cleanDocument, ...getHistory().filter((item) => item.id !== document.id)];
+  const next = [
+    cleanDocument,
+    ...getHistory().filter((item) => item.id !== document.id),
+  ];
   writeJson(HISTORY_KEY, next);
   if (typeof window !== "undefined") {
-    import("@/lib/data/documents-store").then(({ saveDocumentToCloud }) => saveDocumentToCloud(cleanDocument)).catch(() => undefined);
+    import("@/lib/data/documents-store")
+      .then(({ saveDocumentToCloud }) => saveDocumentToCloud(cleanDocument))
+      .catch(() => undefined);
   }
 }
 
@@ -72,33 +91,65 @@ export function deleteDocument(id: string) {
   const next = getHistory().filter((item) => item.id !== id);
   writeJson(HISTORY_KEY, next);
   if (typeof window !== "undefined") {
-    import("@/lib/data/documents-store").then(({ deleteCloudDocument }) => deleteCloudDocument(id)).catch(() => undefined);
+    import("@/lib/data/documents-store")
+      .then(({ deleteCloudDocument }) => deleteCloudDocument(id))
+      .catch(() => undefined);
   }
 }
 
 export function updateDocumentFolder(id: string, folder: DocumentFolder) {
-  const next = getHistory().map((item) => item.id === id ? { ...item, folder } : item);
+  const next = getHistory().map((item) =>
+    item.id === id ? { ...item, folder } : item,
+  );
   writeJson(HISTORY_KEY, next);
   if (typeof window !== "undefined") {
-    import("@/lib/data/documents-store").then(({ updateCloudDocumentFolder }) => updateCloudDocumentFolder(id, folder)).catch(() => undefined);
+    import("@/lib/data/documents-store")
+      .then(({ updateCloudDocumentFolder }) =>
+        updateCloudDocumentFolder(id, folder),
+      )
+      .catch(() => undefined);
   }
 }
 
 function defaultFolder(type: GeneratedDocument["type"]): DocumentFolder {
-  if (["exam", "matrix", "answer-key", "exam-checker", "exam-audit", "exam-shuffler", "question-bank", "question-variant", "document-recognition", "grading-assistant", "grading-report", "answer-sheet"].includes(type)) return "Đề kiểm tra";
+  if (
+    [
+      "exam",
+      "matrix",
+      "answer-key",
+      "exam-checker",
+      "exam-audit",
+      "exam-shuffler",
+      "question-bank",
+      "question-variant",
+      "document-recognition",
+      "grading-assistant",
+      "grading-report",
+      "answer-sheet",
+    ].includes(type)
+  )
+    return "Đề kiểm tra";
   if (type === "lesson-plan" || type === "lesson-slides") return "Giáo án";
   if (type === "worksheet") return "Phiếu học tập";
-  if (["student-comment", "bulk-student-comments"].includes(type)) return "Nhận xét học sinh";
+  if (["student-comment", "bulk-student-comments"].includes(type))
+    return "Nhận xét học sinh";
   return "Khác";
 }
 
-export function createDocument(title: string, type: GeneratedDocument["type"], content: string): GeneratedDocument {
+export function createDocument(
+  title: string,
+  type: GeneratedDocument["type"],
+  content: string,
+): GeneratedDocument {
   return normalizeGeneratedDocument({
-    id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     title,
     type,
     content,
     createdAt: new Date().toISOString(),
-    folder: defaultFolder(type)
+    folder: defaultFolder(type),
   });
 }

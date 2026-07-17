@@ -12,10 +12,16 @@ export type CanonicalQuestionType =
 
 export type QuestionQualityStatus = "valid" | "needs_review" | "invalid";
 export type QuestionReviewStatus = "draft" | "teacher_confirmed" | "verified";
-export type CognitiveLevel = "Nhận biết" | "Thông hiểu" | "Vận dụng" | "Vận dụng cao";
+export type CognitiveLevel =
+  "Nhận biết" | "Thông hiểu" | "Vận dụng" | "Vận dụng cao";
 
 export type QuestionOption = { id: string; label: string; text: string };
-export type TrueFalseStatement = { id: string; label: string; text: string; answer: boolean };
+export type TrueFalseStatement = {
+  id: string;
+  label: string;
+  text: string;
+  answer: boolean;
+};
 export type MatchingPair = { id: string; left: string; right: string };
 export type TableAnswer = { row: number; column: number; value: string };
 export type QuestionVisual = {
@@ -50,7 +56,12 @@ export type QuestionBankItem = {
   acceptedAnswers: string[];
   unit: string;
   tolerance?: number;
-  essayRubric: Array<{ id: string; criterion: string; maxScore: number; guidance: string }>;
+  essayRubric: Array<{
+    id: string;
+    criterion: string;
+    maxScore: number;
+    guidance: string;
+  }>;
   matchingPairs: MatchingPair[];
   orderingItems: Array<{ id: string; text: string; order: number }>;
   tableAnswers: TableAnswer[];
@@ -103,7 +114,14 @@ export type QuestionFilters = {
   usage?: "all" | "used" | "unused";
 };
 
-export type QuestionSort = "newest" | "oldest" | "most_used" | "least_used" | "difficulty" | "topic" | "quality";
+export type QuestionSort =
+  | "newest"
+  | "oldest"
+  | "most_used"
+  | "least_used"
+  | "difficulty"
+  | "topic"
+  | "quality";
 
 export type QuestionAuditIssue = {
   code: string;
@@ -114,8 +132,16 @@ export type QuestionAuditIssue = {
 export type DuplicateMatch = {
   leftId: string;
   rightId: string;
-  kind: "exact" | "reordered_options" | "near" | "expression_variant";
+  kind: "exact" | "reordered_options" | "near";
   similarity: number;
+};
+
+export type DuplicateCluster = {
+  id: string;
+  questionIds: string[];
+  kind: DuplicateMatch["kind"];
+  confidence: number;
+  matches: DuplicateMatch[];
 };
 
 export type SmartSetConfig = {
@@ -151,4 +177,6 @@ export const QUESTION_TYPE_LABELS: Record<CanonicalQuestionType, string> = {
   table_completion: "Hoàn thành bảng",
 };
 
-export const QUESTION_TYPES = Object.keys(QUESTION_TYPE_LABELS) as CanonicalQuestionType[];
+export const QUESTION_TYPES = Object.keys(
+  QUESTION_TYPE_LABELS,
+) as CanonicalQuestionType[];

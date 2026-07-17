@@ -37,7 +37,9 @@
 - [ ] Print/PDF đề THPTQG hiển thị đúng header, mã đề, PHẦN I/II/III và trang giáo viên.
 - [ ] Đáp án giáo viên, thang điểm, ma trận và bản đặc tả không lẫn vào đề học sinh.
 - [ ] Mở đề từ lịch sử và xuất Word/Print lại thành công.
-- [ ] Phiếu học tập, giáo án, nhận xét học sinh, rubric và tin nhắn phụ huynh xuất Word được.
+- [ ] Phiếu học tập, giáo án, rubric và đề cương ôn tập xuất Word được.
+- [ ] Bản ghi nhận xét học sinh/tin nhắn phụ huynh cũ vẫn xem, xuất, xóa được và có nhãn “Nội dung cũ”; không còn điểm tạo mới.
+- [ ] Ngân hàng câu hỏi chỉ có một toolbar xuất, editor đóng mặc định và rà soát trùng lặp theo cụm.
 - [ ] Bảng rubric, ma trận và bảng đáp án là bảng thật, không lộ Markdown thô.
 - [ ] Nội dung toán/logic không còn marker `**`, không có `�`/`ï¿½`, và các ký hiệu P ↔ Q, ∀, ∃, ∈, ⇒, ⇔, ≤, ≥, ≠, √, π, Δ hiển thị đọc được trong preview, Word, Print/PDF và lịch sử.
 - [ ] Word export giữ công thức ở dạng text dễ chỉnh sửa, ưu tiên font toán khi phát hiện biểu thức/ký hiệu.

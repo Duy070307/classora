@@ -7,7 +7,6 @@ import {
   ClipboardList,
   FileText,
   History,
-  MessageSquareText,
   PenTool,
   Sigma,
 } from "lucide-react";
@@ -18,7 +17,7 @@ const capabilities = [
   ["Soạn đề kiểm tra", "Tạo đề, đáp án, thang điểm và ma trận để giáo viên rà soát.", PenTool],
   ["Tạo phiếu học tập", "Chuẩn bị bài tập, phần vận dụng và hướng dẫn giáo viên.", FileText],
   ["Lập kế hoạch bài dạy", "Gợi ý mục tiêu, hoạt động học và cách đánh giá.", BookOpenCheck],
-  ["Viết nhận xét học sinh", "Soạn nhận xét tự nhiên, tích cực và dễ chỉnh sửa.", MessageSquareText],
+  ["Ngân hàng câu hỏi", "Lưu, lọc và tái sử dụng câu hỏi trong đề, phiếu học tập hoặc giáo án.", ClipboardList],
   ["Quản lý tài liệu", "Lưu lịch sử, mở lại và xuất file khi cần dùng lại.", History],
   ["Ảnh công thức → LaTeX", "Chuyển ảnh công thức hoặc hình học đã cắt gọn thành mã LaTeX/TikZ.", Sigma],
 ] as const;
@@ -33,7 +32,7 @@ const steps = [
 const benefits = [
   [
     "Giảm thời gian lặp lại",
-    "Tạo bản nháp cho những công việc quen thuộc như đề kiểm tra, phiếu học tập, nhận xét và tin nhắn phụ huynh.",
+    "Tạo bản nháp cho những công việc quen thuộc như đề kiểm tra, phiếu học tập, giáo án và tài liệu ôn tập.",
   ],
   [
     "Xuất file dễ chỉnh sửa",
@@ -47,7 +46,7 @@ const benefits = [
 
 export const metadata: Metadata = {
   title: { absolute: "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam" },
-  description: "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.",
+  description: "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, ngân hàng câu hỏi và xuất Word/PDF nhanh hơn.",
 };
 
 export default function HomePage() {
@@ -62,7 +61,7 @@ export default function HomePage() {
             Soạn tài liệu dạy học <span className="text-blue-600">nhanh hơn</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">
-            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian gọn gàng.
+            Tạo đề kiểm tra, phiếu học tập, giáo án, ngân hàng câu hỏi và xuất Word/PDF trong một không gian gọn gàng.
           </p>
           <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-900">
             Soạn Lab đang mở bản dùng thử cho giáo viên. Rất mong thầy cô trải nghiệm, xuất thử tài liệu và gửi góp ý để sản phẩm hoàn thiện hơn.
@@ -92,7 +91,7 @@ export default function HomePage() {
                 Soạn Lab đang mở bản dùng thử cho giáo viên
               </h2>
               <p className="mt-3 max-w-3xl leading-7 text-slate-600">
-                Soạn Lab là bộ công cụ hỗ trợ giáo viên tạo bản nháp đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF. Hiện sản phẩm đang ở bản thử nghiệm, rất mong nhận được góp ý từ thầy cô để hoàn thiện hơn.
+                Soạn Lab là bộ công cụ hỗ trợ giáo viên tạo bản nháp đề kiểm tra, phiếu học tập, giáo án, quản lý ngân hàng câu hỏi và xuất Word/PDF. Hiện sản phẩm đang ở bản thử nghiệm, rất mong nhận được góp ý từ thầy cô để hoàn thiện hơn.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
@@ -195,7 +194,7 @@ function HeroPreview() {
   const rows = [
     ["Soạn đề kiểm tra", "Đáp án · Ma trận · Thang điểm", ClipboardList],
     ["Phiếu học tập", "Bài tập · Hướng dẫn · In ấn", FileText],
-    ["Nhận xét học sinh", "Tự nhiên · Tích cực · Dễ chỉnh", MessageSquareText],
+    ["Ngân hàng câu hỏi", "Lưu · Lọc · Tái sử dụng", ClipboardList],
     ["Xuất Word/PDF", "Tải xuống hoặc in nhanh", History],
   ] as const;
 

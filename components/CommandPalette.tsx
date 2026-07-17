@@ -16,7 +16,6 @@ const pages: Item[] = [
   ["Kiểm tra đề", "Rà soát đề trước khi xuất Word/PDF.", "/tools/exam-audit", "Công cụ nổi bật", "Công cụ"],
   ["Phiếu học tập", "Mở nhanh công cụ tạo phiếu học tập.", "/tools/worksheet-generator", "Công cụ nổi bật", "Công cụ"],
   ["Giáo án", "Mở nhanh công cụ tạo giáo án.", "/tools/lesson-plan", "Công cụ nổi bật", "Công cụ"],
-  ["Nhận xét học sinh", "Mở nhanh công cụ tạo nhận xét.", "/tools/student-comments", "Công cụ nổi bật", "Công cụ"],
   ["Ảnh công thức & hình học → LaTeX/TikZ", "Chuyển ảnh công thức thành LaTeX hoặc ảnh hình học thành TikZ.", "/tools/image-to-latex", "Công thức & LaTeX", "Công cụ"],
   ["Lịch sử", "Tài liệu đã lưu trên trình duyệt.", "/history", "Dữ liệu cá nhân", "Dữ liệu cá nhân"],
   ["Cài đặt", "Header, font và dữ liệu làm việc.", "/settings", "Cấu hình", "Trang"],

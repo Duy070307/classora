@@ -10,7 +10,6 @@ import {
   generateMindmapOutline,
   generateMatrix,
   generateParentMeetingMinutes,
-  generateParentMessage,
   generateQuestionBank,
   generateQuestionVariants,
   generateRubric,
@@ -105,22 +104,6 @@ export const expandedToolConfigs: ToolConfig[] = [
       { name: "totalScore", label: "Tổng điểm", type: "number", defaultValue: 10 },
       { name: "levelCount", label: "Số mức đánh giá", type: "number", defaultValue: 4 },
       { name: "extraRequirements", label: "Yêu cầu thêm", type: "textarea", defaultValue: "" }
-    ]
-  },
-  {
-    type: "parent-message",
-    href: "/tools/parent-message-generator",
-    title: "Tạo tin nhắn gửi phụ huynh",
-    description: "Soạn tin nhắn ngắn, trang trọng và thân thiện để trao đổi với phụ huynh.",
-    category: "Chủ nhiệm & phụ huynh",
-    generate: generateParentMessage,
-    makeTitle: (input) => `Tin nhắn phụ huynh - ${text(input, "studentName", "học sinh")}`,
-    fields: [
-      { name: "studentName", label: "Tên học sinh", type: "text", defaultValue: "Nguyễn Minh An" },
-      { name: "className", label: "Lớp", type: "text", defaultValue: "7A1" },
-      { name: "situation", label: "Tình huống", type: "select", options: ["Nhắc học bài", "Báo tiến bộ", "Báo vi phạm", "Nhắc đóng phí", "Mời họp phụ huynh", "Khác"], defaultValue: "Báo tiến bộ" },
-      { name: "mainContent", label: "Nội dung chính", type: "textarea", defaultValue: "em đã tích cực hơn trong giờ học nhưng cần chủ động ôn bài ở nhà" },
-      { name: "tone", label: "Giọng văn", type: "select", options: ["Nhẹ nhàng", "Trang trọng", "Ngắn gọn", "Cứng rắn nhưng lịch sự"], defaultValue: "Nhẹ nhàng" }
     ]
   },
   {
@@ -354,12 +337,6 @@ export const existingToolLinks = [
     description: "Chuẩn bị phiếu học tập có bài tập và đáp án.",
     href: "/tools/worksheet-generator"
   },
-  {
-    category: "Chủ nhiệm & phụ huynh",
-    title: "Tạo nhận xét học sinh",
-    description: "Viết nhận xét phù hợp nhiều mục đích.",
-    href: "/tools/student-comments"
-  }
 ];
 
 const rawToolLinks = [

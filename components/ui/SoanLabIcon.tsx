@@ -10,7 +10,6 @@ export function iconNameFromHref(href: string): SoanLabIconName {
   if (href.includes("shuffler")) return "shuffle";
   if (href.includes("worksheet")) return "worksheet";
   if (href.includes("lesson")) return "lesson";
-  if (href.includes("bulk-student-comments")) return "bulk-comment";
   if (href.includes("comment") || href.includes("parent")) return "comment";
   if (href.includes("question-bank") || href === "/question-bank") return "question-bank";
   if (href.includes("template") || href === "/templates") return "template";

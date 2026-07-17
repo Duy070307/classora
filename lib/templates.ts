@@ -16,6 +16,9 @@ export type TemplateItem = {
 const TEMPLATE_KEY = STORAGE_KEYS.templates;
 
 export const templateTypes = ["Đề kiểm tra", "Đáp án và thang điểm", "Ma trận đề", "Giáo án", "Phiếu học tập", "Nhận xét học sinh", "Tin nhắn phụ huynh"];
+export const activeTemplateTypes = templateTypes.filter(
+  (type) => !["Nhận xét học sinh", "Tin nhắn phụ huynh"].includes(type),
+);
 
 export function getTemplates(): TemplateItem[] {
   if (typeof window === "undefined") return [];

@@ -13,7 +13,6 @@ const routes = [
   "/tools/worksheet-generator",
   "/tools/lesson-plan",
   "/tools/lesson-slides",
-  "/tools/student-comments",
   "/tools/image-to-latex",
 ];
 

@@ -5,7 +5,7 @@ const entries = [
   ["Hiện tại", ["Trung tâm tạo tài liệu", "Xuất Word/PDF cho đề THPTQG", "Bảng đáp án giáo viên", "Tài liệu ngoài đề thi", "Điều hướng sản phẩm chính thức"]],
   ["Cải thiện tài liệu", ["Cấu trúc PHẦN I/II/III", "Ma trận và bản đặc tả", "Lưu lịch sử và xuất lại", "Mẫu cá nhân"]],
   ["Nền tảng dữ liệu cục bộ", ["Bản nháp biểu mẫu", "Sao l?u/kh?i ph?c d? li?u", "Ngân hàng câu hỏi", "Cài đặt header tài liệu"]],
-  ["Công cụ cốt lõi", ["Tạo đề kiểm tra", "Phiếu học tập", "Giáo án", "Nhận xét học sinh", "Export Word"]],
+  ["Công cụ cốt lõi", ["Tạo đề kiểm tra", "Phiếu học tập", "Giáo án", "Ngân hàng câu hỏi", "Xuất Word"]],
 ];
 
 export default function ChangelogPage() {

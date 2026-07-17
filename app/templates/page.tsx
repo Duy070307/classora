@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { AppShell } from "@/components/AppShell";
-import { getTemplates, saveTemplates, templateTypes, type TemplateItem } from "@/lib/templates";
+import { activeTemplateTypes, getTemplates, saveTemplates, type TemplateItem } from "@/lib/templates";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 
 const placeholderGuide = `{{ten_truong}} - Tên trường/trung tâm
@@ -26,7 +26,7 @@ export default function TemplatesPage() {
   const [items, setItems] = useState<TemplateItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [type, setType] = useState(templateTypes[0]);
+  const [type, setType] = useState(activeTemplateTypes[0]);
   const [content, setContent] = useState("");
   const [notes, setNotes] = useState("");
   const [message, setMessage] = useState("");
@@ -43,7 +43,7 @@ export default function TemplatesPage() {
   function resetForm() {
     setEditingId(null);
     setName("");
-    setType(templateTypes[0]);
+    setType(activeTemplateTypes[0]);
     setContent("");
     setNotes("");
   }
@@ -94,7 +94,7 @@ export default function TemplatesPage() {
 
         <section className="card mb-6 p-5">
           <h2 className="text-lg font-bold text-ink">Cách dùng mẫu tài liệu</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">Soạn Lab có sẵn các mẫu tiếng Việt cho đề kiểm tra, đáp án, ma trận, giáo án, phiếu học tập và nhận xét học sinh. Bạn cũng có thể tạo mẫu cá nhân bằng placeholder; khi chọn mẫu trong tool, Soạn Lab thay placeholder bằng dữ liệu từ cài đặt, form và nội dung đã tạo.</p>
+          <p className="mt-2 text-sm leading-6 text-muted">Soạn Lab có sẵn các mẫu tiếng Việt cho đề kiểm tra, đáp án, ma trận, giáo án và phiếu học tập. Bạn cũng có thể tạo mẫu cá nhân bằng placeholder; khi chọn mẫu trong công cụ, Soạn Lab thay placeholder bằng dữ liệu từ cài đặt, form và nội dung đã tạo.</p>
           <div className="mt-4 rounded-md bg-slate-50 p-4">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <h3 className="font-semibold text-ink">Placeholder guide</h3>
@@ -117,7 +117,7 @@ export default function TemplatesPage() {
             <div>
               <label className="label">Loại mẫu</label>
               <select className="form-field mt-1" value={type} onChange={(event) => setType(event.target.value)}>
-                {templateTypes.map((item) => <option key={item}>{item}</option>)}
+                {activeTemplateTypes.map((item) => <option key={item}>{item}</option>)}
               </select>
             </div>
             <div>

@@ -53,7 +53,7 @@ function LoginContent() {
             Soạn Lab giúp giáo viên tạo tài liệu nhanh hơn, gọn hơn.
           </h1>
           <p className="mt-5 max-w-lg text-lg leading-8 text-slate-600">
-            Tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF trong một không gian làm việc rõ ràng.
+            Tạo đề kiểm tra, phiếu học tập, giáo án, ngân hàng câu hỏi và xuất Word/PDF trong một không gian làm việc rõ ràng.
           </p>
           <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
             {[

@@ -7,7 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 
 const shareMessage =
-  "Em muốn giới thiệu Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề kiểm tra, phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF. Thầy/cô có thể chọn công cụ phù hợp, tạo một bản nháp tài liệu, xuất Word/PDF rồi rà soát và chỉnh sửa trước khi dùng.";
+  "Em muốn giới thiệu Soạn Lab, một bộ công cụ hỗ trợ giáo viên tạo đề kiểm tra, phiếu học tập, giáo án, quản lý ngân hàng câu hỏi và xuất Word/PDF. Thầy/cô có thể chọn công cụ phù hợp, tạo một bản nháp tài liệu, xuất Word/PDF rồi rà soát và chỉnh sửa trước khi dùng.";
 
 const flow = [
   "Chọn công cụ phù hợp",

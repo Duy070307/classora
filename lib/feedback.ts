@@ -33,12 +33,10 @@ export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/tools/exam-generator")) return "Soạn đề kiểm tra";
   if (pathname.startsWith("/tools/worksheet-generator")) return "Phiếu học tập";
   if (pathname.startsWith("/tools/lesson-plan")) return "Giáo án";
-  if (pathname.startsWith("/tools/student-comments")) return "Nhận xét học sinh";
-  if (pathname.startsWith("/tools/bulk-student-comments")) return "Nhận xét học sinh hàng loạt";
-  if (pathname.startsWith("/tools/parent-message-generator")) return "Tin nhắn phụ huynh";
   if (pathname.startsWith("/tools/rubric")) return "Rubric";
   if (pathname.startsWith("/tools/import-questions")) return "Nhập câu hỏi";
-  if (pathname.startsWith("/tools/image-to-latex")) return "Ảnh công thức / hình học → LaTeX/TikZ";
+  if (pathname.startsWith("/tools/image-to-latex"))
+    return "Ảnh công thức / hình học → LaTeX/TikZ";
   if (pathname.startsWith("/tools/3d-animation")) return "Tạo mô phỏng 3D";
   if (pathname.startsWith("/question-bank")) return "Ngân hàng câu hỏi";
   if (pathname.startsWith("/tikz-bank")) return "Ngân hàng TikZ";
@@ -46,7 +44,8 @@ export function detectToolFromPath(pathname: string) {
   if (pathname.startsWith("/templates")) return "Mẫu cá nhân";
   if (pathname.startsWith("/data")) return "Dữ liệu";
   if (pathname.startsWith("/settings")) return "Cài đặt";
-  if (pathname.startsWith("/teacher-testing-guide")) return "Hướng dẫn dùng thử";
+  if (pathname.startsWith("/teacher-testing-guide"))
+    return "Hướng dẫn dùng thử";
   if (pathname.startsWith("/admin")) return "Quản trị";
   if (pathname.startsWith("/create")) return "Tạo mới";
   if (pathname.startsWith("/tools")) return "Công cụ";
@@ -54,25 +53,44 @@ export function detectToolFromPath(pathname: string) {
   return "Khác";
 }
 
-export function validateFeedbackPayload(input: unknown): { ok: true; data: FeedbackPayload } | { ok: false; error: string } {
-  if (!input || typeof input !== "object") return { ok: false, error: "Dữ liệu góp ý chưa hợp lệ." };
+export function validateFeedbackPayload(
+  input: unknown,
+): { ok: true; data: FeedbackPayload } | { ok: false; error: string } {
+  if (!input || typeof input !== "object")
+    return { ok: false, error: "Dữ liệu góp ý chưa hợp lệ." };
   const body = input as Record<string, unknown>;
-  const category = typeof body.category === "string" ? body.category.trim() : "";
+  const category =
+    typeof body.category === "string" ? body.category.trim() : "";
   const tool = typeof body.tool === "string" ? body.tool.trim() : "";
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const contact = typeof body.contact === "string" ? body.contact.trim() : "";
   const path = typeof body.path === "string" ? body.path.trim() : "";
-  const pageTitle = typeof body.pageTitle === "string" ? body.pageTitle.trim() : "";
-  const userAgent = typeof body.userAgent === "string" ? body.userAgent.trim() : "";
-  const rating = typeof body.rating === "number" && Number.isFinite(body.rating) ? body.rating : null;
+  const pageTitle =
+    typeof body.pageTitle === "string" ? body.pageTitle.trim() : "";
+  const userAgent =
+    typeof body.userAgent === "string" ? body.userAgent.trim() : "";
+  const rating =
+    typeof body.rating === "number" && Number.isFinite(body.rating)
+      ? body.rating
+      : null;
 
   if (!category) return { ok: false, error: "Vui lòng chọn loại góp ý." };
   if (!message) return { ok: false, error: "Vui lòng nhập nội dung góp ý." };
-  if (message.length > 3000) return { ok: false, error: "Nội dung góp ý quá dài. Vui lòng rút ngắn lại." };
-  if (contact.length > 300) return { ok: false, error: "Thông tin liên hệ quá dài. Vui lòng rút ngắn lại." };
+  if (message.length > 3000)
+    return {
+      ok: false,
+      error: "Nội dung góp ý quá dài. Vui lòng rút ngắn lại.",
+    };
+  if (contact.length > 300)
+    return {
+      ok: false,
+      error: "Thông tin liên hệ quá dài. Vui lòng rút ngắn lại.",
+    };
   if (tool.length > 200) return { ok: false, error: "Tên công cụ quá dài." };
-  if (path.length > 500) return { ok: false, error: "Đường dẫn trang quá dài." };
-  if (rating !== null && (rating < 1 || rating > 5)) return { ok: false, error: "Mức độ hài lòng chưa hợp lệ." };
+  if (path.length > 500)
+    return { ok: false, error: "Đường dẫn trang quá dài." };
+  if (rating !== null && (rating < 1 || rating > 5))
+    return { ok: false, error: "Mức độ hài lòng chưa hợp lệ." };
 
   return {
     ok: true,

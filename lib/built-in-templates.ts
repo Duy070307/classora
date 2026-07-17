@@ -168,33 +168,6 @@ KHU VỰC HỌC SINH TRẢ LỜI
 
 ĐÁP ÁN DÀNH CHO GIÁO VIÊN
 {{dap_an}}`
-  },
-  {
-    id: "builtin-student-comments",
-    builtIn: true,
-    name: "Mẫu nhận xét học sinh",
-    type: "Nhận xét học sinh",
-    tools: ["student-comment", "bulk-student-comments"],
-    notes: "Mẫu nhận xét có ưu điểm, điểm cần cải thiện và thông điệp gửi phụ huynh.",
-    updatedAt: now,
-    content: `{{ten_truong}}
-Giáo viên: {{ten_giao_vien}} - Năm học: {{nam_hoc}}
-
-NHẬN XÉT HỌC SINH
-Học sinh/Lớp: {{lop}}
-
-I. ƯU ĐIỂM
-{{noi_dung}}
-
-II. ĐIỂM CẦN CẢI THIỆN
-{{ghi_chu}}
-
-III. GỢI Ý HỖ TRỢ
-- Gia đình và giáo viên tiếp tục động viên, theo dõi tiến bộ của học sinh.
-- Ưu tiên mục tiêu nhỏ, rõ ràng và có phản hồi thường xuyên.
-
-IV. THÔNG ĐIỆP GỬI PHỤ HUYNH
-{{noi_dung}}`
   }
 ];
 

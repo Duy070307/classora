@@ -7,7 +7,6 @@ import {
   Clock3,
   FileText,
   LayoutDashboard,
-  MessageSquareText,
   PenTool,
   ShieldCheck,
 } from "lucide-react";
@@ -24,7 +23,6 @@ const tools = [
   ["Tạo đề kiểm tra", "Đề, đáp án, thang điểm và ma trận.", "/tools/exam-generator", PenTool],
   ["Phiếu học tập", "Mục tiêu, kiến thức cần nhớ và bài tập.", "/tools/worksheet-generator", FileText],
   ["Kế hoạch bài dạy", "Mục tiêu, hoạt động học và đánh giá.", "/tools/lesson-plan", BookOpenCheck],
-  ["Nhận xét học sinh", "Nhận xét tự nhiên, tích cực, dễ chỉnh sửa.", "/tools/student-comments", MessageSquareText],
   ["Ngân hàng câu hỏi", "Lưu và tái sử dụng câu hỏi cục bộ.", "/question-bank", CheckCircle2],
 ] as const;
 

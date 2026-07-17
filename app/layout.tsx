@@ -7,7 +7,7 @@ import { getSiteUrl } from "@/lib/site-url";
 
 const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
 const description =
-  "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, nhận xét học sinh và xuất Word/PDF nhanh hơn.";
+  "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, ngân hàng câu hỏi và xuất Word/PDF nhanh hơn.";
 const ogImage = "/og-image.png";
 const iconVersion = "soanlab-transparent-20260705";
 
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     "soạn đề kiểm tra",
     "tạo phiếu học tập",
     "giáo án",
-    "nhận xét học sinh",
+    "ngân hàng câu hỏi",
     "xuất Word",
     "xuất PDF",
     "giáo viên Việt Nam",

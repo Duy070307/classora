@@ -6,11 +6,9 @@ import {
   ClipboardList,
   FileText,
   ImageIcon,
-  MessageSquareText,
   PenTool,
   Presentation,
   Ruler,
-  Send,
   Sparkles,
 } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
@@ -101,28 +99,6 @@ const groups = [
     ],
   },
   {
-    title: "Giao tiếp & nhận xét",
-    description: "Viết nhận xét học sinh và tin nhắn phụ huynh lịch sự.",
-    items: [
-      {
-        title: "Viết nhận xét học sinh",
-        description: "Tạo nhận xét tự nhiên, tích cực, có điểm mạnh và hướng cải thiện.",
-        examples: ["Cuối kỳ", "Tiến bộ", "Cần hỗ trợ thêm"],
-        href: "/tools/student-comments",
-        icon: MessageSquareText,
-        tone: "from-amber-500 to-orange-500",
-      },
-      {
-        title: "Soạn tin nhắn phụ huynh",
-        description: "Viết tin nhắn ngắn gọn, lịch sự và rõ ý để gửi phụ huynh.",
-        examples: ["Nhắc học bài", "Mời họp", "Báo tiến bộ"],
-        href: "/tools/parent-message-generator",
-        icon: Send,
-        tone: "from-pink-500 to-rose-500",
-      },
-    ],
-  },
-  {
     title: "Toán & LaTeX",
     description: "Xử lý công thức, ảnh toán học và hình học cần vẽ lại.",
     items: [
@@ -166,7 +142,6 @@ const suggestions = [
   ["Tạo phiếu trả lời", "/tools/answer-sheet"],
   ["Tạo phiếu học tập", "/tools/worksheet-generator"],
   ["Tạo slide bài giảng", "/tools/lesson-slides"],
-  ["Viết nhận xét học sinh", "/tools/student-comments"],
   ["Chuyển ảnh công thức sang LaTeX", "/tools/image-to-latex?mode=formula"],
   ["Tạo mô phỏng 3D", "/tools/3d-animation"],
 ] as const;
