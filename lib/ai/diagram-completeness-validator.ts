@@ -32,6 +32,7 @@ function hasTikzLabel(tikz: string, label: string) {
 
 export function validateDiagramCompleteness(diagramType: string, structure: Record<string, unknown>, tikz: string): DiagramValidation {
   if (diagramType === "solid_geometry") diagramType = "geometry_diagram";
+  if (diagramType === "plane_geometry") diagramType = "geometry_diagram";
   if (diagramType === "coordinate_geometry") diagramType = "coordinate_graph";
   const detectedLines = array(structure.lines).length
     || array(structure.segments).length
@@ -121,6 +122,14 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     if (expectedRightAngles && !/right angle|right-angle-marker/i.test(tikz)) missingComponents.push("right_angles");
     if (meaningfulPoints < 3) hardFailures.push("too_few_points");
     if (generated.lines < 2) hardFailures.push("too_few_edges");
+  } else if (diagramType === "statistical_chart") {
+    const detectedBars = array(structure.bars).length; const generatedBars = (tikz.match(/\\filldraw\b|rectangle\b/g) || []).length;
+    if (detectedBars && generatedBars < detectedBars) missingComponents.push("chart_bars");
+    if (!generatedBars) hardFailures.push("missing_chart_data");
+  } else if (diagramType === "physics_diagram") {
+    const components = array(structure.forces).length + array(structure.opticsRays).length + array(structure.circuitElements).length;
+    if (!components) hardFailures.push("missing_physics_components");
+    if (components && !/\\(?:draw|node)\b/.test(tikz)) hardFailures.push("missing_physics_rendering");
   } else {
     hardFailures.push("classification_failed");
   }

@@ -2,13 +2,17 @@
 
 import { Copy, Download, FileImage, RotateCcw, Save, Sparkles } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import katex from "katex";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { SaveToTikzBankButton } from "@/components/tikz/SaveToTikzBankButton";
+import { TikzReviewWorkspace } from "@/components/tikz/TikzReviewWorkspace";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
+import type { TikzDiagramDraft } from "@/lib/tikz/types";
+import { normalizeLegacyTikzDraft } from "@/lib/tikz/model";
+import { createDraftFromDescription } from "@/lib/tikz/description";
 
 type Mode = "auto" | "formula" | "geometry";
 
@@ -49,6 +53,7 @@ type ApiResult = {
     detected: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
     generated: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
   };
+  tikzDraft?: TikzDiagramDraft;
 } | {
   ok: false;
   error: string;
@@ -62,7 +67,7 @@ const modes: Array<{ value: Mode; label: string }> = [
 
 const exampleChips = ["Công thức phân số", "Căn thức", "Ma trận", "Tam giác", "Đường tròn", "Hình tọa độ"];
 
-const maxSize = 5 * 1024 * 1024;
+const maxSize = 10 * 1024 * 1024;
 
 export default function ImageToLatexPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -83,11 +88,34 @@ export default function ImageToLatexPage() {
   const [geometryDiagnostic, setGeometryDiagnostic] = useState<GeometryDiagnosticUi>();
   const [geometryStructure, setGeometryStructure] = useState<unknown>();
   const [diagramDiagnostic, setDiagramDiagnostic] = useState<{ type?: string; confidence?: number; status?: "valid" | "draft_with_warnings" | "invalid"; retryCount?: number; fallbackUsed?: boolean; structure?: unknown; validation?: Extract<ApiResult, { ok: true }>["diagramValidation"] }>({});
+  const [tikzDraft, setTikzDraft] = useState<TikzDiagramDraft>();
+  const [rotation, setRotation] = useState<-90 | 0 | 90 | 180>(0);
+  const [enhanceContrast, setEnhanceContrast] = useState(false);
+  const [useOriginal, setUseOriginal] = useState(false);
+  const [manualSource, setManualSource] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const isGeometryMode = mode === "geometry";
   const isTikzOutput = outputType === "tikz" || isGeometryMode;
+
+  useEffect(() => {
+    function handlePaste(event: ClipboardEvent) {
+      const image = [...(event.clipboardData?.items || [])].find((item) => item.type.startsWith("image/"))?.getAsFile();
+      if (image) pickFile(new File([image], `anh-dan-${Date.now()}.${image.type === "image/png" ? "png" : image.type === "image/webp" ? "webp" : "jpg"}`, { type: image.type }));
+    }
+    window.addEventListener("paste", handlePaste); return () => window.removeEventListener("paste", handlePaste);
+  });
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        const pending = sessionStorage.getItem("soanlab:tikz-open"); if (!pending) return;
+        sessionStorage.removeItem("soanlab:tikz-open"); const draft = normalizeLegacyTikzDraft(JSON.parse(pending));
+        setMode("geometry"); setOutputType("tikz"); setTikzDraft(draft); setTikzCode(draft.tikz.snippet); setLatex(draft.tikz.snippet); setDisplayLatex(draft.tikz.snippet); setStandaloneLatex(draft.tikz.standalone); setWarnings(draft.validation.warnings);
+      } catch { /* Bỏ qua dữ liệu phiên cũ không hợp lệ. */ }
+    });
+  }, []);
 
   const preview = useMemo(() => {
     const source = displayLatex || latex;
@@ -135,7 +163,7 @@ export default function ImageToLatexPage() {
       return;
     }
     if (nextFile.size > maxSize) {
-      setError("Ảnh quá lớn. Vui lòng dùng ảnh tối đa 5MB.");
+      setError("Ảnh quá lớn. Vui lòng dùng ảnh tối đa 10MB.");
       return;
     }
     setFile(nextFile);
@@ -154,6 +182,9 @@ export default function ImageToLatexPage() {
       const formData = new FormData();
       formData.set("image", file);
       formData.set("mode", mode);
+      formData.set("rotation", String(rotation));
+      formData.set("contrast", enhanceContrast ? "enhanced" : "normal");
+      formData.set("useOriginal", String(useOriginal));
       const response = await fetch("/api/ai/image-to-latex", {
         method: "POST",
         body: formData,
@@ -174,6 +205,7 @@ export default function ImageToLatexPage() {
       setGeometryDiagnostic(result.geometryDiagnostic);
       setGeometryStructure(result.geometryStructure);
       setDiagramDiagnostic({ type: result.diagramType, confidence: result.diagramConfidence, status: result.diagramStatus, retryCount: result.retryCount, fallbackUsed: result.fallbackUsed, structure: result.detectedStructure, validation: result.diagramValidation });
+      setTikzDraft(result.tikzDraft);
       saveRecentTool({ title: "Ảnh công thức & hình học → LaTeX/TikZ", href: "/tools/image-to-latex" });
       showMessage(mode === "geometry"
         ? result.diagramStatus === "draft_with_warnings" ? "Đã tạo bản nháp TikZ cần rà soát." : "Đã chuyển ảnh thành TikZ."
@@ -205,6 +237,11 @@ export default function ImageToLatexPage() {
     setGeometryDiagnostic(undefined);
     setGeometryStructure(undefined);
     setDiagramDiagnostic({});
+    setTikzDraft(undefined);
+    setRotation(0);
+    setEnhanceContrast(false);
+    setUseOriginal(false);
+    setManualSource("");
     setError("");
     setMessage("");
   }
@@ -212,6 +249,24 @@ export default function ImageToLatexPage() {
   async function copyStandaloneLatex() {
     await navigator.clipboard.writeText(standaloneLatex);
     showMessage("Đã copy standalone LaTeX.");
+  }
+
+  function updateTikzDraft(next: TikzDiagramDraft) {
+    setTikzDraft(next);
+    setTikzCode(next.tikz.snippet);
+    setLatex(next.tikz.snippet);
+    setDisplayLatex(next.tikz.snippet);
+    setStandaloneLatex(next.tikz.standalone);
+    setWarnings(next.validation.warnings);
+  }
+
+  function openManualSource() {
+    const value = manualSource.trim();
+    if (!value) return setError("Vui lòng nhập mô tả hình hoặc mã TikZ.");
+    const draft = /\\begin\{tikzpicture\}|\\draw\b/.test(value)
+      ? normalizeLegacyTikzDraft({ content: value, title: "Mã TikZ nhập thủ công" }, value)
+      : createDraftFromDescription(value);
+    setMode("geometry"); setOutputType("tikz"); updateTikzDraft(draft); setError(""); showMessage("Đã mở bản nháp trong trình rà soát TikZ.");
   }
 
   function download(extension: "txt" | "md" | "tex") {
@@ -244,6 +299,7 @@ export default function ImageToLatexPage() {
     const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content);
     saveDocument({
       ...document,
+      tikzDiagramDraft: isTikzOutput ? tikzDraft : undefined,
       generationMeta: {
         mode: isTikzOutput ? "geometry" : mode,
         confidence: confidence || undefined,
@@ -329,7 +385,7 @@ export default function ImageToLatexPage() {
               >
                 <FileImage className="text-blue-600" size={34} />
                 <span className="mt-3 text-sm font-extrabold text-ink">Upload hoặc kéo thả ảnh</span>
-                <span className="mt-1 text-xs leading-5 text-muted">PNG, JPG/JPEG, WEBP · tối đa 5MB</span>
+                <span className="mt-1 text-xs leading-5 text-muted">PNG, JPG/JPEG, WEBP · tối đa 10MB · có thể dán từ clipboard</span>
                 <input
                   className="sr-only"
                   type="file"
@@ -339,10 +395,24 @@ export default function ImageToLatexPage() {
               </label>
             </div>
 
+            <details className="rounded-2xl border border-slate-200 bg-white p-4">
+              <summary className="cursor-pointer text-sm font-black text-slate-900">Nhập mô tả hoặc mở mã TikZ có sẵn</summary>
+              <p className="mt-2 text-xs leading-5 text-slate-600">Dùng cho mô tả hình cơ bản hoặc dán một khối tikzpicture hiện có. Mẫu trong Ngân hàng TikZ cũng mở tại cùng trình chỉnh sửa này.</p>
+              <textarea className="form-field mt-3 min-h-28 font-mono text-xs" value={manualSource} onChange={(event) => setManualSource(event.target.value)} placeholder="Ví dụ: Hình chóp S.ABCD có cạnh SA, SB, SC, SD... hoặc dán mã TikZ" />
+              <button type="button" className="btn-secondary mt-2" onClick={openManualSource}>Mở trong trình rà soát</button>
+            </details>
+
             {previewUrl ? (
               <div className="overflow-hidden rounded-3xl border border-blue-100 bg-white p-3 shadow-sm">
-                <div className="relative h-80 w-full">
-                  <Image src={previewUrl} alt="Ảnh công thức đã upload" fill className="rounded-2xl object-contain" unoptimized />
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === -90 ? 180 : rotation - 90) as -90 | 0 | 90 | 180)}>Xoay trái</button>
+                  <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === 180 ? -90 : rotation + 90) as -90 | 0 | 90 | 180)}>Xoay phải</button>
+                  <button type="button" className={`btn-secondary ${enhanceContrast ? "ring-2 ring-blue-500" : ""}`} onClick={() => setEnhanceContrast((value) => !value)}>Tăng tương phản</button>
+                  <button type="button" className={`btn-secondary ${useOriginal ? "ring-2 ring-blue-500" : ""}`} onClick={() => setUseOriginal((value) => !value)}>Dùng ảnh gốc</button>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div><p className="mb-2 text-xs font-black text-slate-600">Ảnh gốc</p><div className="relative h-64 w-full"><Image src={previewUrl} alt="Ảnh gốc đã tải lên" fill className="rounded-2xl object-contain" unoptimized /></div></div>
+                  <div><p className="mb-2 text-xs font-black text-slate-600">Ảnh sẽ xử lý</p><div className="relative h-64 w-full"><Image src={previewUrl} alt="Ảnh sau thiết lập xử lý" fill className="rounded-2xl object-contain" unoptimized style={{ transform: `rotate(${rotation}deg)`, filter: useOriginal ? "none" : `grayscale(1) contrast(${enhanceContrast ? 1.35 : 1.12})` }} /></div></div>
                 </div>
               </div>
             ) : null}
@@ -388,7 +458,9 @@ export default function ImageToLatexPage() {
               </p>
             </div>
             <div className="space-y-5 p-5">
-              <div>
+              {isTikzOutput && tikzDraft ? (
+                <TikzReviewWorkspace key={tikzDraft.id} draft={tikzDraft} sourceUrl={previewUrl} onChange={updateTikzDraft} />
+              ) : <div>
                 <label className="label">{isTikzOutput ? "Mã TikZ" : "LaTeX"}</label>
                 <textarea
                   className="form-field mt-1 min-h-52 font-mono"
@@ -400,7 +472,7 @@ export default function ImageToLatexPage() {
                   }}
                   placeholder={isGeometryMode ? "Mã TikZ sẽ hiển thị ở đây sau khi nhận diện ảnh." : "LaTeX sẽ hiển thị ở đây sau khi nhận diện ảnh."}
                 />
-              </div>
+              </div>}
 
               {isTikzOutput ? (
                 <div>
@@ -484,7 +556,7 @@ export default function ImageToLatexPage() {
                 </details>
               ) : null}
 
-              <div>
+              {isTikzOutput && tikzDraft ? null : <div>
                 <p className="label">{isTikzOutput ? "Bản xem trước hình vẽ" : "Preview nếu LaTeX render được"}</p>
                 <div className="mt-2 min-h-36 overflow-auto rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 p-5 text-center text-xl shadow-inner">
                   {!latex ? (
@@ -504,7 +576,7 @@ export default function ImageToLatexPage() {
                     <div dangerouslySetInnerHTML={{ __html: preview.html }} />
                   )}
                 </div>
-              </div>
+              </div>}
             </div>
           </section>
         </div>

@@ -301,7 +301,7 @@ Trả về đúng JSON:
   "warnings": ["cảnh báo nếu có"]
 }`;
 
-  const structurePrompt = `Trước khi tạo TikZ, hãy phân loại ảnh thành đúng một trong: solid_geometry, function_graph, line_angle_diagram, coordinate_geometry, statistical_chart, formula_or_text, unknown. Sau đó liệt kê đầy đủ mọi thành phần nhìn thấy: đường thẳng, trục, đường cong, đoạn thẳng, điểm được đánh dấu, giao điểm, nét gióng đứt, marker góc vuông và nhãn. Chỉ trả JSON cấu trúc; không tạo TikZ, không giải bài toán cho đến khi cấu trúc đã rõ.
+  const structurePrompt = `Trước khi tạo TikZ, hãy phân loại ảnh thành đúng một trong: solid_geometry, plane_geometry, function_graph, line_angle_diagram, coordinate_geometry, statistical_chart, physics_diagram, formula_or_text, unknown. Sau đó liệt kê đầy đủ mọi thành phần nhìn thấy: đường thẳng, trục, đường cong, đoạn thẳng, điểm được đánh dấu, giao điểm, nét gióng đứt, marker góc vuông và nhãn. Chỉ trả JSON cấu trúc; không tạo TikZ, không giải bài toán cho đến khi cấu trúc đã rõ.
 Nếu ảnh là đồ thị tọa độ, tuyệt đối không chỉ trả điểm O. Nếu ảnh có nhiều đường thẳng, tuyệt đối không chỉ trả một đoạn. Giữ nhãn đúng như ảnh và phân biệt nhãn điểm, nhãn đường, nhãn góc.
 Ưu tiên tính đúng đắn hình học hơn độ giống pixel. Nhận diện figureType như triangle, quadrilateral, parallelogram, trapezoid, rectangle, square, circle, pyramid, prism, cuboid hoặc unknown.
 Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi O thành 0, H thành M, I thành U; không thêm điểm thay thế.
@@ -310,7 +310,7 @@ Phân tích base/apex, intersection, pointOnSegment và perpendicular trước k
 
 Trả về JSON theo đúng dạng:
 {
-  "diagramType": "solid_geometry|function_graph|line_angle_diagram|coordinate_geometry|statistical_chart|formula_or_text|unknown",
+  "diagramType": "solid_geometry|plane_geometry|function_graph|line_angle_diagram|coordinate_geometry|statistical_chart|physics_diagram|formula_or_text|unknown",
   "confidence": 0.82,
   "figureType": "pyramid|triangle|circle|quadrilateral|unknown",
   "points": [{"label":"A","relativePosition":"left-lower|bottom|lower-right|right-upper|left-upper|top|center"}],

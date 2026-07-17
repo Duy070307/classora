@@ -694,6 +694,19 @@ export default function HistoryDetailPage() {
         ) : null}
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <DocumentExportMenu document={document} />
+          {document.type === "image-to-tikz" ? (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                sessionStorage.setItem("soanlab:tikz-open", JSON.stringify(document.tikzDiagramDraft || document));
+                router.push("/tools/image-to-latex?mode=geometry&source=history");
+              }}
+            >
+              <Eye size={16} />
+              Mở lại &amp; chỉnh sửa
+            </button>
+          ) : null}
           {document.type === "document-recognition" ? (
             <Link
               href={`/tools/document-recognition?history=${encodeURIComponent(document.id)}`}

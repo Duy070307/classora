@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Code2, Copy, Download, Edit3, FileUp, Plus, Save, Search, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { TikzBankImportModal } from "@/components/tikz/TikzBankImportModal";
 import { buildStandaloneLatex, tikzCategories, tikzFilename, type TikzSnippet } from "@/lib/tikz-bank";
+import { normalizeLegacyTikzDraft } from "@/lib/tikz/model";
 
 type SourceTab = "all" | "system" | "user";
 type FormState = {
@@ -23,6 +25,7 @@ type FormState = {
 const emptyForm: FormState = { title: "", description: "", category: "Hình học phẳng", subject: "Toán", grade: "", tags: "", tikz_code: "", full_latex: "", preview_note: "" };
 
 export default function TikzBankPage() {
+  const router = useRouter();
   const [snippets, setSnippets] = useState<TikzSnippet[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userId, setUserId] = useState("");
@@ -35,6 +38,7 @@ export default function TikzBankPage() {
   const [subject, setSubject] = useState("");
   const [grade, setGrade] = useState("");
   const [tag, setTag] = useState("");
+  const [reviewStatus, setReviewStatus] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [editing, setEditing] = useState<TikzSnippet | null>(null);
@@ -75,10 +79,12 @@ export default function TikzBankPage() {
       if (subject && item.subject !== subject) return false;
       if (grade && item.grade !== grade) return false;
       if (tag && !(item.tags || []).includes(tag)) return false;
+      if (reviewStatus === "review" && !item.needs_review) return false;
+      if (reviewStatus === "checked" && item.needs_review) return false;
       const searchable = `${item.title} ${item.description || ""} ${item.category || ""} ${item.subject || ""} ${item.grade || ""} ${(item.tags || []).join(" ")} ${item.tikz_code}`.toLowerCase();
       return !q || searchable.includes(q);
     });
-  }, [category, grade, query, snippets, subject, tab, tag]);
+  }, [category, grade, query, reviewStatus, snippets, subject, tab, tag]);
 
   const counts = useMemo(() => ({ system: snippets.filter((item) => item.bank_scope === "system").length, user: snippets.filter((item) => item.bank_scope === "user").length }), [snippets]);
 
@@ -184,7 +190,20 @@ export default function TikzBankPage() {
     toast("Đã tải file .tex.");
   }
 
-  const hasFilters = Boolean(query || category || subject || grade || tag);
+  function openInEditor(item: TikzSnippet) {
+    sessionStorage.setItem("soanlab:tikz-open", JSON.stringify(normalizeLegacyTikzDraft(item)));
+    router.push("/tools/image-to-latex?mode=geometry&source=tikz-bank");
+  }
+
+  async function downloadAsset(item: TikzSnippet, format: "svg" | "png") {
+    try {
+      const response = await fetch("/api/tikz/render", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ draft: normalizeLegacyTikzDraft(item), format, fileName: item.title }) });
+      if (!response.ok) return toast("Chưa kết xuất được hình. Vui lòng mở và rà soát mã trước.", "error");
+      const url = URL.createObjectURL(await response.blob()); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${tikzFilename(item.title).replace(/\.tex$/, "")}.${format}`; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch { toast("Chưa kết xuất được hình. Vui lòng thử lại.", "error"); }
+  }
+
+  const hasFilters = Boolean(query || category || subject || grade || tag || reviewStatus);
   const emptyText = hasFilters
     ? "Không tìm thấy mã TikZ phù hợp."
     : tab === "system"
@@ -216,11 +235,12 @@ export default function TikzBankPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} className="form-field pl-11" placeholder="Tìm theo tên, chủ đề, tag hoặc nội dung mã TikZ…" />
         </label>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
           <Filter value={category} onChange={setCategory} label="Danh mục" options={[...tikzCategories]} />
           <Filter value={subject} onChange={setSubject} label="Môn học" options={options.subjects} />
           <Filter value={grade} onChange={setGrade} label="Lớp" options={options.grades} />
           <Filter value={tag} onChange={setTag} label="Tag" options={options.tags} />
+          <Filter value={reviewStatus} onChange={setReviewStatus} label="Trạng thái" options={["review", "checked"]} labels={{ review: "Cần rà soát", checked: "Đã kiểm tra" }} />
         </div>
       </section>
 
@@ -249,6 +269,9 @@ export default function TikzBankPage() {
                 <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => { void copyText(item.tikz_code, "Đã sao chép mã TikZ."); }}><Copy size={14} />Sao chép TikZ</button>
                 <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => { void copyText(fullLatex, "Đã sao chép LaTeX đầy đủ."); }}><Copy size={14} />Sao chép LaTeX đầy đủ</button>
                 <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => downloadTex(item)}><Download size={14} />Tải .tex</button>
+                <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => openInEditor(item)}><Edit3 size={14} />Mở trình chỉnh sửa</button>
+                <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => { void downloadAsset(item, "svg"); }}><Download size={14} />SVG</button>
+                <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => { void downloadAsset(item, "png"); }}><Download size={14} />PNG</button>
                 {item.bank_scope === "system" && !isAdmin ? <button type="button" disabled={busy} className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => { void copyPersonal(item); }}><Save size={14} />Lưu vào của tôi</button> : null}
                 {canManage ? <button type="button" className="btn-secondary min-h-9 px-3 py-2 text-xs" onClick={() => openEdit(item)}><Edit3 size={14} />Sửa</button> : null}
                 {canManage ? <button type="button" disabled={busy} className="inline-flex min-h-9 items-center gap-1 rounded-xl border border-red-200 px-3 py-2 text-xs font-bold text-red-700 hover:bg-red-50" onClick={() => { void removeSnippet(item); }}><Trash2 size={14} />Xóa</button> : null}
@@ -264,8 +287,8 @@ export default function TikzBankPage() {
   );
 }
 
-function Filter({ value, onChange, label, options }: { value: string; onChange: (value: string) => void; label: string; options: string[] }) {
-  return <label className="text-xs font-bold text-slate-500">{label}<select className="form-field mt-1" value={value} onChange={(event) => onChange(event.target.value)}><option value="">Tất cả</option>{options.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>;
+function Filter({ value, onChange, label, options, labels = {} }: { value: string; onChange: (value: string) => void; label: string; options: string[]; labels?: Record<string, string> }) {
+  return <label className="text-xs font-bold text-slate-500">{label}<select className="form-field mt-1" value={value} onChange={(event) => onChange(event.target.value)}><option value="">Tất cả</option>{options.map((item) => <option key={item} value={item}>{labels[item] || item}</option>)}</select></label>;
 }
 
 function SnippetModal({ form, setForm, editing, busy, onClose, onSave }: { form: FormState; setForm: React.Dispatch<React.SetStateAction<FormState>>; editing: boolean; busy: boolean; onClose: () => void; onSave: () => void }) {

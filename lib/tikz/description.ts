@@ -1,0 +1,14 @@
+import { createTikzDiagramDraft, stableTikzId } from "@/lib/tikz/model";
+import { generateTikzFromDraft } from "@/lib/tikz/generator";
+import { inspectTikzSyntax } from "@/lib/tikz/syntax";
+import { qualitySummary, validateTikzDraft } from "@/lib/tikz/validation";
+
+export function createDraftFromDescription(description: string) {
+  const value = description.trim(); const lower = value.toLocaleLowerCase("vi"); let raw: Record<string, unknown>;
+  if (/hình chóp|pyramid/.test(lower)) raw = { diagramType: "solid_geometry", figureType: "pyramid", confidence: 0.75, points: [{ label: "A", relativePosition: "left-lower" }, { label: "B", relativePosition: "lower-right" }, { label: "C", relativePosition: "right-upper" }, { label: "D", relativePosition: "left-upper" }, { label: "S", relativePosition: "top" }], solidEdges: [["A", "B"], ["B", "C"], ["C", "D"], ["S", "A"], ["S", "B"], ["S", "C"]], dashedEdges: [["D", "A"], ["S", "D"]], warnings: ["Bố cục được dựng từ mô tả; cần xác nhận cạnh khuất và quan hệ hình học."] };
+  else if (/tam giác|triangle/.test(lower)) raw = { diagramType: "plane_geometry", figureType: "triangle", confidence: 0.8, points: [{ label: "A", coordinate: [0, 3] }, { label: "B", coordinate: [-2.5, 0] }, { label: "C", coordinate: [2.5, 0] }], solidEdges: [["A", "B"], ["B", "C"], ["C", "A"]], warnings: ["Hình được dựng từ mô tả, không phải từ ảnh nguồn."] };
+  else if (/tọa độ|đồ thị|hàm số/.test(lower)) { const markedPoints = [...value.matchAll(/\((-?\d+(?:\.\d+)?)\s*[,;]\s*(-?\d+(?:\.\d+)?)\)/g)].map((match) => ({ coordinate: [Number(match[1]), Number(match[2])], label: "" })); raw = { diagramType: /đồ thị|hàm số/.test(lower) ? "function_graph" : "coordinate_geometry", confidence: 0.7, axes: { xLabel: "x", yLabel: "y", origin: "O" }, curves: /đồ thị|hàm số/.test(lower) ? [{ id: "f", label: "y=f(x)", approximatePoints: markedPoints.length >= 2 ? markedPoints.map((item) => item.coordinate) : [[-3, -2], [-1, 2], [1, -1], [3, 3]] }] : [], markedPoints, warnings: ["Cần kiểm tra miền trục và dạng đường cong theo ý định của giáo viên."] }; }
+  else raw = { diagramType: "unknown", confidence: 0.2, warnings: ["SOẠN LAB chưa xác định chắc chắn loại hình từ mô tả này."] };
+  const draft = createTikzDiagramDraft({ sourceHash: stableTikzId("description", value), sourceName: "Mô tả hình", sourceType: "description", rawStructure: raw, tikzCode: "\\begin{tikzpicture}\n\\end{tikzpicture}", warnings: raw.warnings as string[] });
+  const generated = generateTikzFromDraft(draft); draft.tikz = { ...draft.tikz, snippet: generated.snippet, generatedSnippet: generated.snippet, standalone: generated.standalone, libraries: generated.libraries, packages: generated.packages }; draft.compilation = inspectTikzSyntax(generated.snippet); draft.validation = validateTikzDraft(draft); draft.quality = qualitySummary(draft); return draft;
+}

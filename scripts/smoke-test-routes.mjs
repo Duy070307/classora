@@ -85,6 +85,8 @@ const requiredFiles = [
   "public/manifest.json",
   "public/icon.svg",
   "app/api/ai/generate/route.ts",
+  "app/api/ai/image-to-latex/route.ts",
+  "app/api/tikz/render/route.ts",
   "app/api/ai/3d-animation/route.ts",
   "lib/ai/extract-json.ts",
   "lib/exam/normalize-ai-exam.ts",

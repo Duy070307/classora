@@ -45,6 +45,12 @@ export function requiredTikzLibraries(tikzCode: string) {
   if (/\$\([^)]*\)\$|\\(?:coordinate|node)\b[^;]*\bat\s*\(\$|\\pgfmath|\\path\s+let\b/.test(tikzCode)) libraries.add("calc");
   if (/\bpattern\s*=/.test(tikzCode)) libraries.add("patterns");
   if (/\bdecoration\s*=|decorate\b/.test(tikzCode)) libraries.add("decorations.pathreplacing");
+  if (/Stealth|Latex\b|Triangle\b|>=\s*(?:stealth|latex)/i.test(tikzCode)) libraries.add("arrows.meta");
+  if (/\b(?:above|below|left|right)\s*=\s*of\b|node distance\s*=/.test(tikzCode)) libraries.add("positioning");
+  if (/\b(?:diamond|ellipse|trapezium|regular polygon)\b/.test(tikzCode)) libraries.add("shapes.geometric");
+  if (/\bplot mark\b|mark\s*=/.test(tikzCode)) libraries.add("plotmarks");
+  if (/on background layer|pgfonlayer/.test(tikzCode)) libraries.add("backgrounds");
+  if (/\\matrix\b|matrix of nodes/.test(tikzCode)) libraries.add("matrix");
   return [...libraries];
 }
 

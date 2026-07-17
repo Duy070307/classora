@@ -3,10 +3,13 @@ import { DiagramIncompleteError, generateLatexFromImage, VisionCapabilityError, 
 import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 import { getCurrentUser } from "@/lib/auth/user";
 import { getMaintenanceBlockForUser } from "@/lib/maintenance";
+import { preprocessDiagramImage } from "@/lib/tikz/preprocess";
+import { createTikzDiagramDraft } from "@/lib/tikz/model";
 
 const allowedMimeTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
 const allowedModes = new Set<ImageToLatexMode>(["auto", "formula", "geometry"]);
-const maxSize = 5 * 1024 * 1024;
+const maxSize = 10 * 1024 * 1024;
+const allowedExtensions = /\.(?:png|jpe?g|webp)$/i;
 
 export async function POST(request: Request) {
   try {
@@ -35,17 +38,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Soạn Lab chỉ hỗ trợ ảnh PNG, JPG/JPEG hoặc WEBP." }, { status: 400 });
     }
 
+    if (file.name && !allowedExtensions.test(file.name)) {
+      return NextResponse.json({ ok: false, error: "Tên tệp chưa đúng định dạng PNG, JPG/JPEG hoặc WEBP." }, { status: 400 });
+    }
+
     if (file.size > maxSize) {
-      return NextResponse.json({ ok: false, error: "Ảnh quá lớn. Vui lòng dùng ảnh tối đa 5MB." }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Ảnh quá lớn. Vui lòng dùng ảnh tối đa 10MB." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    const rotationValue = Number(formData.get("rotation") || 0);
+    const rotation = [-90, 0, 90, 180].includes(rotationValue) ? rotationValue as -90 | 0 | 90 | 180 : 0;
+    const processed = await preprocessDiagramImage(buffer, {
+      rotation,
+      contrast: formData.get("contrast") === "enhanced" ? "enhanced" : "normal",
+      useOriginal: formData.get("useOriginal") === "true",
+    });
     const result = await generateLatexFromImage({
-      imageBase64: buffer.toString("base64"),
-      mimeType: file.type,
+      imageBase64: processed.base64,
+      mimeType: processed.mimeType,
       mode,
     });
     const developmentDiagnostics = process.env.NODE_ENV === "development";
+    const tikzDraft = result.type === "tikz" && result.tikzCode ? createTikzDiagramDraft({
+      sourceHash: processed.sourceHash,
+      sourceName: file.name,
+      width: processed.originalWidth,
+      height: processed.originalHeight,
+      processedWidth: processed.processedWidth,
+      processedHeight: processed.processedHeight,
+      rawStructure: result.detectedStructure || result.geometryStructure,
+      tikzCode: result.tikzCode,
+      standaloneLatex: result.standaloneLatex,
+      warnings: result.warnings,
+    }) : undefined;
 
     return NextResponse.json({
       ok: true,
@@ -66,6 +92,14 @@ export async function POST(request: Request) {
       diagramValidation: developmentDiagnostics ? result.diagramValidation : undefined,
       retryCount: developmentDiagnostics ? result.retryCount : undefined,
       fallbackUsed: developmentDiagnostics ? result.fallbackUsed : undefined,
+      tikzDraft,
+      preprocessing: {
+        sourceHash: processed.sourceHash,
+        originalWidth: processed.originalWidth,
+        originalHeight: processed.originalHeight,
+        processedWidth: processed.processedWidth,
+        processedHeight: processed.processedHeight,
+      },
     });
   } catch (error) {
     if (error instanceof DiagramIncompleteError) {
