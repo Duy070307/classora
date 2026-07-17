@@ -19,6 +19,7 @@ const protectedPagePrefixes = [
 const blockedApiPrefixes = [
   "/api/ai",
   "/api/question-bank/ai-import",
+  "/api/question-bank/import",
   "/api/tikz-bank",
   "/api/lesson-slides",
 ];

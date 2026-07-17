@@ -29,6 +29,7 @@ export function ExamBlueprintWorkspace() {
   const [blueprint, setBlueprint] = useState<ExamBlueprint>(() => createBlankExamBlueprint());
   const [exams, setExams] = useState<GeneratedDocument[]>([]);
   const [bank, setBank] = useState<QuestionItem[]>([]);
+  const [bankSelectionIds, setBankSelectionIds] = useState<string[]>([]);
   const [comparison, setComparison] = useState<BlueprintComparison | undefined>();
   const [linkedExam, setLinkedExam] = useState<GeneratedDocument | null>(null);
   const [importText, setImportText] = useState("");
@@ -42,6 +43,7 @@ export function ExamBlueprintWorkspace() {
     const historyId = searchParams.get("history");
     if (historyId) { const saved = await getCloudDocument(historyId) ?? docs.find((item) => item.id === historyId); if (saved?.examBlueprint) { setBlueprint(normalizeWorkflowBlueprint(saved.examBlueprint)); setMode(requestedMode === "compare" ? "compare" : requestedMode === "specification" ? "specification" : "matrix"); setMessage("Đã mở lại ma trận từ lịch sử."); return; } }
     const payload = readExamBlueprintSession();
+    if (payload?.selectedQuestionIds?.length) { setBankSelectionIds(payload.selectedQuestionIds); setMessage(`Đã nhận ${payload.selectedQuestionIds.length} câu đã chọn từ Ngân hàng câu hỏi.`); }
     if (payload?.blueprintDocument?.examBlueprint) { setBlueprint(normalizeWorkflowBlueprint(payload.blueprintDocument.examBlueprint)); setMode(payload.mode === "compare" ? "compare" : "matrix"); }
     const payloadExam = examFromDocument(payload?.document); if (payload?.document && payloadExam) { const next = blueprintFromExam(payloadExam, payload.document.id); setBlueprint(next); setLinkedExam(payload.document); setMode(payload.mode === "compare" ? "compare" : "from_exam"); if (payload.mode === "compare") setComparison(compareBlueprintWithExam(next, payloadExam)); setMessage("Ma trận được suy ra từ đề hiện tại. Thầy cô vui lòng kiểm tra các mục được đánh dấu."); }
   }); }, []);
@@ -49,7 +51,8 @@ export function ExamBlueprintWorkspace() {
   const validation = useMemo(() => validateExamBlueprint(blueprint), [blueprint]);
   const specificationRows = useMemo(() => blueprint.specificationRows || [], [blueprint.specificationRows]);
   const specificationImpact = useMemo(() => specificationMatrixImpact(blueprint, specificationRows), [blueprint, specificationRows]);
-  const bankAvailability = useMemo(() => blueprint.topicDistribution.map((topic) => { const available = bank.filter((item) => (!blueprint.subject || item.subject === blueprint.subject) && (!blueprint.grade || item.grade === blueprint.grade) && item.topic.toLocaleLowerCase("vi").includes(topic.topic.toLocaleLowerCase("vi"))).length; const required = topicQuestionCount(topic); return { topic: topic.topic, available, required, missing: Math.max(0, required - available) }; }), [bank, blueprint]);
+  const effectiveBank = useMemo(() => bankSelectionIds.length ? bank.filter((item) => bankSelectionIds.includes(item.id)) : bank, [bank, bankSelectionIds]);
+  const bankAvailability = useMemo(() => blueprint.topicDistribution.map((topic) => { const available = effectiveBank.filter((item) => (!blueprint.subject || item.subject === blueprint.subject) && (!blueprint.grade || item.grade === blueprint.grade) && item.topic.toLocaleLowerCase("vi").includes(topic.topic.toLocaleLowerCase("vi"))).length; const required = topicQuestionCount(topic); return { topic: topic.topic, available, required, missing: Math.max(0, required - available) }; }), [effectiveBank, blueprint]);
 
   function update(patch: Partial<ExamBlueprint>, matrixChanged = true) {
     setBlueprint((current) => ({ ...current, ...patch, metadata: current.metadata ? { ...current.metadata, updatedAt: new Date().toISOString() } : current.metadata }));
@@ -67,7 +70,7 @@ export function ExamBlueprintWorkspace() {
 
   function selectExam(id: string, compare = false) { const source = exams.find((item) => item.id === id); const exam = examFromDocument(source); if (!source || !exam) return; setLinkedExam(source); if (compare) { setComparison(compareBlueprintWithExam(blueprint, exam)); setMode("compare"); } else { setBlueprint(blueprintFromExam(exam, source.id)); setMode("from_exam"); setMessage("Ma trận được suy ra từ đề hiện tại. Thầy cô vui lòng kiểm tra các mục được đánh dấu."); } }
   function buildFromQuestionBank() {
-    const source = bank.filter((item) => (!blueprint.subject || item.subject === blueprint.subject) && (!blueprint.grade || item.grade === blueprint.grade));
+    const source = effectiveBank.filter((item) => (!blueprint.subject || item.subject === blueprint.subject) && (!blueprint.grade || item.grade === blueprint.grade));
     if (!source.length) return setMessage("Ngân hàng hiện chưa có câu phù hợp môn và khối đã chọn.");
     const cognitiveKey = (difficulty: QuestionItem["difficulty"]): CognitiveKey => difficulty === "Nhận biết" ? "recognition" : difficulty === "Thông hiểu" ? "comprehension" : difficulty === "Vận dụng cao" ? "advancedApplication" : "application";
     const typeKey = (type: QuestionItem["type"]): Exclude<BlueprintQuestionType,"mixed"> => type === "Trắc nghiệm" ? "multiple_choice" : type === "Đúng/Sai" ? "true_false" : type === "Tự luận" ? "essay" : "short_answer";
