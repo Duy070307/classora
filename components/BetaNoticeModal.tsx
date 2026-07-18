@@ -80,13 +80,13 @@ export function BetaNoticeModal() {
       aria-labelledby="beta-notice-title"
       aria-describedby="beta-notice-description"
     >
-      <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.22)] sm:p-7">
+      <div className="ui-dialog max-h-[92vh] max-w-2xl overflow-y-auto">
         <div className="flex items-start gap-4">
-          <div className="shrink-0 rounded-2xl border border-blue-100 bg-blue-50 p-2">
+          <div className="shrink-0 rounded-xl border border-emerald-100 bg-emerald-50 p-2">
             <BrandLogo variant="mark" compact />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-blue-700">SOẠN LAB</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">SOẠN LAB</p>
             <h2 id="beta-notice-title" className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
               Thông báo về bản thử nghiệm
             </h2>
@@ -105,19 +105,16 @@ export function BetaNoticeModal() {
           </p>
         </div>
 
-        <ul className="mt-5 grid gap-2 rounded-2xl border border-blue-100 bg-blue-50/70 p-4 text-sm font-semibold leading-6 text-blue-950 sm:grid-cols-2">
+        <ul className="mt-5 grid gap-2 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 text-sm font-semibold leading-6 text-emerald-950 sm:grid-cols-2">
           {bullets.map((item) => (
             <li key={item} className="flex gap-2">
-              <CheckCircle2 className="mt-0.5 shrink-0 text-blue-600" size={17} />
+              <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700" size={17} />
               <span>{item}</span>
             </li>
           ))}
         </ul>
 
-        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button type="button" className="btn-secondary" onClick={accept}>
-            Tiếp tục dùng thử
-          </button>
+        <div className="mt-6 flex justify-end">
           <button ref={primaryButtonRef} type="button" className="btn-primary" onClick={accept}>
             Tôi đã hiểu
           </button>

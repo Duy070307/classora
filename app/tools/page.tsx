@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { FileDown, History, Search, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -120,35 +119,35 @@ function ToolsContent() {
 
   return (
     <AppShell title="Công cụ">
-      <section className="relative mb-6 overflow-hidden rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <section className="ui-panel relative mb-5 overflow-hidden p-5 sm:p-6">
         <div className="relative max-w-4xl">
-          <p className="text-xs font-extrabold uppercase tracking-[.14em] text-blue-700">
+          <p className="text-xs font-extrabold uppercase tracking-[.14em] text-emerald-700">
             Thư viện công cụ giáo viên
           </p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
             Tìm công cụ phù hợp cho tiết dạy hôm nay
           </h1>
           <p className="mt-4 max-w-2xl text-slate-600">
             Soạn đề, tạo tài liệu, viết nhận xét, xử lý LaTeX và lưu lại lịch sử
             trong một không gian gọn gàng.
           </p>
-          <label className="relative mt-7 block max-w-3xl">
+          <label className="relative mt-5 block max-w-3xl">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               size={19}
             />
             <input
-              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100"
+              className="form-field h-12 pl-12"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Tìm: đề, kiểm tra, giáo án, LaTeX, hình học..."
             />
           </label>
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
+            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">
               {toolRegistry.length}+ công cụ
             </span>
-            <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
+            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">
               <Sparkles size={13} className="mr-1 inline" />
               Tạo bản nháp
             </span>
@@ -164,14 +163,14 @@ function ToolsContent() {
         </div>
       </section>
 
-      <section className="sticky top-[74px] z-10 mb-7 rounded-[24px] border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl sm:p-4">
+      <section className="sticky top-[68px] z-10 mb-5 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
           {displayCategories.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => change(item)}
-              className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-black transition ${category === item ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
+              className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-black transition ${category === item ? "bg-emerald-700 text-white" : "bg-slate-50 text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"}`}
             >
               {item}
             </button>
@@ -191,7 +190,7 @@ function ToolsContent() {
           )}
           <button
             onClick={clear}
-            className="rounded-xl px-3 py-2 text-xs font-black text-blue-700 hover:bg-blue-50"
+            className="min-h-11 rounded-xl px-3 py-2 text-xs font-black text-emerald-800 hover:bg-emerald-50"
           >
             Xóa bộ lọc
           </button>
@@ -201,28 +200,8 @@ function ToolsContent() {
         </div>
       </section>
 
-      <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-indigo-100 bg-indigo-50/70 p-4">
-        <div>
-          <p className="font-black text-slate-900">
-            Chưa biết nên bắt đầu từ đâu?
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            Mở trung tâm tạo mới hoặc chọn trực tiếp công cụ phù hợp với công
-            việc hôm nay.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/create" className="btn-primary">
-            Tạo mới
-          </Link>
-          <Link href="/tools" className="btn-secondary">
-            Xem công cụ
-          </Link>
-        </div>
-      </div>
-
       {tools.length ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {tools.map((tool) => (
             <ToolCard
               key={tool.href}

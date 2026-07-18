@@ -56,7 +56,7 @@ export function ActionMenu({
         <div
           role="menu"
           aria-label={label}
-          className="absolute right-0 z-40 mt-2 min-w-56 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl"
+          className="absolute right-0 z-40 mt-2 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl"
         >
           {items.map((item, index) => (
             <button
@@ -65,7 +65,7 @@ export function ActionMenu({
               type="button"
               role="menuitem"
               disabled={item.disabled}
-              className={`block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold transition hover:bg-slate-50 focus:bg-blue-50 focus:outline-none disabled:opacity-50 ${item.danger ? "mt-1 border-t border-slate-100 text-red-700" : "text-slate-700"}`}
+              className={`block min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition hover:bg-slate-50 focus:bg-emerald-50 focus:outline-none disabled:opacity-50 ${item.danger ? "mt-1 border-t border-slate-100 text-red-700" : "text-slate-700"}`}
               onClick={() => {
                 setOpen(false);
                 void item.onSelect();

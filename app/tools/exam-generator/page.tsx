@@ -560,18 +560,20 @@ export default function ExamGeneratorPage() {
   return (
     <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
-        <div className="mb-5 flex flex-wrap gap-2"><Link href="/tools/exam-blueprint" className="btn-secondary">Tạo ma trận trước khi ra đề</Link></div>
-        <div className="mb-5 grid max-w-2xl grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
-          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề bằng cấu hình</button>
-          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`rounded-xl px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo đề từ file</button>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid w-full max-w-2xl grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-100 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
+          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-emerald-800 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo bằng cấu hình</button>
+          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-emerald-800 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo từ file</button>
         </div>
-        <div className="mb-5 max-w-2xl rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm leading-6 text-cyan-950">Có đề giấy, ảnh chụp hoặc PDF quét? <Link href="/tools/document-recognition" className="font-black text-blue-700 underline">Đọc đề từ ảnh/PDF</Link> rồi rà soát trước khi tạo hoặc xuất file.</div>
+        <Link href="/tools/exam-blueprint" className="btn-secondary shrink-0">Tạo ma trận trước</Link>
+        </div>
+        <div className="mb-5 max-w-2xl rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-950">Có đề giấy, ảnh chụp hoặc PDF quét? <Link href="/tools/document-recognition" className="font-black text-emerald-800 underline">Đọc đề từ ảnh/PDF</Link> rồi rà soát trước khi tạo hoặc xuất file.</div>
         {creationMode === "file" ? <FileExamGenerator /> : (
         <ToolWorkspaceLayout
           form={
           <form onSubmit={handleSubmit} className="tool-form-card">
-            <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
-              <p className="text-sm font-black text-slate-900">Mẫu nhanh</p>
+            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <summary className="cursor-pointer text-sm font-black text-slate-900">Mẫu điền nhanh</summary>
               <p className="mt-1 text-sm leading-6 text-slate-600">Chọn một gợi ý để điền nhanh các trường chính, rồi chỉnh lại theo lớp của thầy/cô.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {quickExamPresets.map((preset) => (
@@ -579,13 +581,13 @@ export default function ExamGeneratorPage() {
                     key={preset.label}
                     type="button"
                     onClick={() => applyQuickPreset(preset.values, preset.bank)}
-                    className="rounded-full bg-white px-3 py-2 text-xs font-extrabold text-blue-700 ring-1 ring-blue-100 transition hover:bg-blue-600 hover:text-white"
+                    className="min-h-10 rounded-xl bg-white px-3 py-2 text-xs font-extrabold text-emerald-800 ring-1 ring-emerald-100 transition hover:bg-emerald-700 hover:text-white"
                   >
                     {preset.label}
                   </button>
                 ))}
               </div>
-            </div>
+            </details>
             <button type="button" onClick={useSampleData} className="btn-secondary w-full">Điền thử mẫu nhanh</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <div><p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mẫu nhanh theo môn</p><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
@@ -631,15 +633,18 @@ export default function ExamGeneratorPage() {
                 <div><label className="label">Tỉ lệ vận dụng cao</label><input type="number" className="form-field mt-1" value={input.advancedRate ?? 0} onChange={(e) => setInput({ ...input, advancedRate: Number(e.target.value) })} /></div>
               </div>
             </div>
-            <div className="form-section space-y-3">
-              <p className="form-section-title">Xuất file</p>
+            <details className="form-section group">
+              <summary className="form-section-title mb-0 cursor-pointer list-none">Tùy chọn nội dung đi kèm</summary>
+              <div className="mt-3 space-y-3">
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeAnswers} onChange={(e) => setInput({ ...input, includeAnswers: e.target.checked })} /> Có tạo đáp án không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeRubric} onChange={(e) => setInput({ ...input, includeRubric: e.target.checked })} /> Có tạo thang điểm không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeMatrix} onChange={(e) => setInput({ ...input, includeMatrix: e.target.checked })} /> Có tạo ma trận đề không</label>
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={input.includeSpecification} onChange={(e) => setInput({ ...input, includeSpecification: e.target.checked })} /> Có bản đặc tả đề không</label>
-            </div>
-            <div className="form-section space-y-3">
-              <p className="form-section-title">Mẫu tài liệu / ngân hàng câu hỏi</p>
+              </div>
+            </details>
+            <details className="form-section group">
+              <summary className="form-section-title mb-0 cursor-pointer list-none">Ngân hàng câu hỏi</summary>
+              <div className="mt-3 space-y-3">
               <label className="flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={useBank} onChange={(e) => setUseBank(e.target.checked)} /> Lấy câu hỏi từ ngân hàng câu hỏi</label>
               {useBank ? <>
                 <div>
@@ -696,9 +701,10 @@ export default function ExamGeneratorPage() {
                   </div>
                 ) : <p className="text-sm text-muted">{(bankSource === "system" || bankSource === "both") && !systemBankSubjects.some((subject) => normalizeText(subject) === normalizeText(input.subject)) ? systemBankSubjectNote : (bankSource === "system" || bankSource === "both") && (input.trueFalseCount > 0 || input.shortAnswerCount > 0 || input.essayCount > 0) ? systemBankTypeNote : bankOnly ? "Chưa có câu hỏi phù hợp trong nguồn đã chọn. Chế độ chỉ dùng câu có sẵn đang bật." : "Chưa có câu hỏi phù hợp trong nguồn đã chọn. SOẠN LAB sẽ tự tạo bổ sung theo đúng chủ đề."}</p>}
               </> : null}
-            </div>
+              </div>
+            </details>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
-            <div className="tool-tip-card"><p className="font-bold text-blue-800">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
+            <div className="tool-tip-card"><p className="font-bold text-emerald-900">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>
             {message ? <p className={`rounded-xl p-2 text-sm font-medium ${document?.generationMeta?.isPartial ? "bg-amber-50 text-amber-800" : "text-mint"}`}>{message}</p> : null}
           </form>
@@ -712,14 +718,19 @@ export default function ExamGeneratorPage() {
                   <p className="mt-2 text-xs text-blue-800">SOẠN LAB đã loại các nội dung ngoài chủ đề trước khi hiển thị.</p>
                 </div>
                 {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo cấu trúc đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Phần yêu cầu: I {document.generationMeta?.requestedSectionCounts?.partI ?? input.multipleChoiceCount} · II {document.generationMeta?.requestedSectionCounts?.partII ?? input.trueFalseCount} · III {document.generationMeta?.requestedSectionCounts?.partIII ?? input.shortAnswerCount}</p><p>Phần hợp lệ: I {document.generationMeta?.generatedSectionCounts?.partI ?? 0} · II {document.generationMeta?.generatedSectionCounts?.partII ?? 0} · III {document.generationMeta?.generatedSectionCounts?.partIII ?? 0}</p><p>Tổng: {document.generationMeta?.finalCount ?? document.generationMeta?.questionCount ?? 0}/{document.generationMeta?.requestedCount ?? 0}</p><p>Đã loại trùng: {document.generationMeta?.duplicateRemovedCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
-                <div className="mb-3 rounded-2xl border border-blue-200 bg-white p-4 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-bold text-slate-900">1. Xem trước đề → 2. Kiểm tra đề → 3. Rà soát lỗi → 4. Xuất Word/PDF</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
+                <div className="mb-3 rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-emerald-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-bold text-slate-900">Xem trước → Kiểm tra → Rà soát → Xuất file</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
                   <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
-                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
-                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
-                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openGradingAssistant(document)}>Chấm bài theo đề này</button>
-                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openAnswerSheet(document)}>Tạo phiếu trả lời</button>
-                  <button type="button" className="btn-secondary mt-3 ml-2" onClick={() => openExamBlueprint({ mode: "from_exam", document })}>Xem ma trận của đề</button>
+                  <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <summary className="cursor-pointer text-sm font-black text-slate-700">Tác vụ khác với đề này</summary>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button type="button" className="btn-secondary" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
+                      <button type="button" className="btn-secondary" onClick={() => openExamMixer(document)}>Trộn mã đề</button>
+                      <button type="button" className="btn-secondary" onClick={() => openGradingAssistant(document)}>Chấm bài theo đề này</button>
+                      <button type="button" className="btn-secondary" onClick={() => openAnswerSheet(document)}>Tạo phiếu trả lời</button>
+                      <button type="button" className="btn-secondary" onClick={() => openExamBlueprint({ mode: "from_exam", document })}>Xem ma trận của đề</button>
+                    </div>
+                  </details>
                 </div>
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />

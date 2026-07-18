@@ -23,8 +23,8 @@ export function ToolOutputPanel({
 }) {
   if (loading) {
     return (
-      <div className="rounded-[28px] border border-blue-100 bg-white p-8 text-center shadow-sm">
-        <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-brand">
+      <div className="ui-panel p-7 text-center">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
           <Loader2 className="animate-spin" size={36} />
         </span>
         <p className="mt-5 font-bold text-ink">{loadingTitle}</p>
@@ -35,9 +35,9 @@ export function ToolOutputPanel({
 
   if (!hasOutput) {
     return (
-      <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-7">
+      <section className="ui-panel relative overflow-hidden p-5 text-center sm:p-6">
         <div className="relative mx-auto max-w-md">
-          <SoanLabIllustration variant="document" className="max-w-[240px]" />
+          <SoanLabIllustration variant="document" className="max-w-[200px]" />
           <h2 className="mt-4 text-xl font-black text-ink">{emptyTitle || "Kết quả sẽ xuất hiện tại đây"}</h2>
           <p className="mt-2 text-sm leading-6 text-muted">{emptyDescription || "Sau khi tạo bản nháp, thầy cô có thể sao chép, lưu lịch sử hoặc xuất Word/PDF."}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -53,8 +53,8 @@ export function ToolOutputPanel({
     <div className="space-y-4">
       {children}
       {showWarning ? (
-        <div className="flex gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-          <AlertTriangle className="mt-0.5 shrink-0 text-blue-600" size={18} />
+        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+          <AlertTriangle className="mt-0.5 shrink-0 text-amber-700" size={18} />
           <p>Nội dung là bản nháp hỗ trợ soạn tài liệu. Giáo viên cần kiểm tra và chỉnh sửa trước khi sử dụng.</p>
         </div>
       ) : null}

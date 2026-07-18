@@ -1194,8 +1194,8 @@ export function QuestionBankWorkspace() {
 
   return (
     <AppShell title="Ngân hàng câu hỏi">
-      <div className="mx-auto max-w-[1600px] space-y-5">
-        <header className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mx-auto max-w-[1600px] min-w-0 space-y-4">
+        <header className="ui-panel p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <span className="soft-badge">Kho nội dung cá nhân</span>
@@ -1240,12 +1240,12 @@ export function QuestionBankWorkspace() {
         </header>
 
         {message ? (
-          <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-900">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-900" role="status" aria-live="polite">
             {message}
           </div>
         ) : null}
         {smartOpen ? (
-          <section className="rounded-[24px] border border-blue-100 bg-white p-5">
+          <section className="ui-panel p-4 sm:p-5">
             <div className="flex flex-wrap items-end gap-3">
               <label>
                 <span className="label">Số câu cần chọn</span>
@@ -1280,7 +1280,7 @@ export function QuestionBankWorkspace() {
         ) : null}
 
         {importRows.length || paste ? (
-          <section className="rounded-[24px] border border-amber-200 bg-white p-5">
+          <section className="ui-panel border-amber-200 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="font-black">Rà soát trước khi nhập</h2>
@@ -1327,8 +1327,8 @@ export function QuestionBankWorkspace() {
                 </button>
               </div>
             ) : (
-              <div className="mt-4 overflow-x-auto">
-                <table className="min-w-[1100px] text-sm">
+              <div className="ui-table-wrap mt-4">
+                <table className="ui-table min-w-[1100px]">
                   <thead>
                     <tr className="text-left text-xs uppercase text-slate-500">
                       <th className="p-2">Chọn</th>
@@ -1435,7 +1435,7 @@ export function QuestionBankWorkspace() {
             )}
           </section>
         ) : (
-          <details className="rounded-[24px] border border-slate-200 bg-white p-4">
+          <details className="ui-panel p-4">
             <summary className="cursor-pointer font-black">
               Hoặc dán nội dung câu hỏi
             </summary>
@@ -1450,7 +1450,7 @@ export function QuestionBankWorkspace() {
           </details>
         )}
 
-        <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
           {filterOpen ? (
             <button
               type="button"
@@ -1460,12 +1460,13 @@ export function QuestionBankWorkspace() {
             />
           ) : null}
           <aside
-            className={`${filterOpen ? "fixed inset-y-0 left-0 z-50 block w-[min(88vw,320px)] overflow-y-auto bg-slate-50 p-4 shadow-2xl" : "hidden"} space-y-4 lg:static lg:z-auto lg:block lg:w-auto lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none`}
+            className={`${filterOpen ? "fixed inset-y-0 left-0 z-50 block w-[min(88vw,320px)] overflow-y-auto bg-slate-50 p-4 shadow-2xl" : "hidden"} space-y-3 lg:static lg:z-auto lg:block lg:w-auto lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none`}
           >
-            <section className="rounded-[24px] border bg-white p-4">
+            <section className="ui-panel p-3">
               <div className="flex items-center justify-between">
                 <h2 className="font-black">Bộ câu hỏi</h2>
                 <button
+                  className="ui-icon-button"
                   aria-label="Tạo bộ"
                   onClick={() => {
                     const title = window.prompt("Tên bộ câu hỏi:");
@@ -1481,7 +1482,7 @@ export function QuestionBankWorkspace() {
                 </button>
               </div>
               <button
-                className={`mt-3 w-full rounded-xl p-2 text-left text-sm font-bold ${!activeCollectionId ? "bg-blue-50 text-blue-800" : "hover:bg-slate-50"}`}
+                className={`mt-3 min-h-11 w-full rounded-xl p-2 text-left text-sm font-bold ${!activeCollectionId ? "bg-emerald-50 text-emerald-900" : "hover:bg-slate-50"}`}
                 onClick={() => setActiveCollectionId("")}
               >
                 Tất cả câu hỏi ({items.length})
@@ -1489,7 +1490,7 @@ export function QuestionBankWorkspace() {
               {collections.map((collection) => (
                 <div
                   key={collection.id}
-                  className={`mt-1 flex rounded-xl ${activeCollectionId === collection.id ? "bg-blue-50" : "hover:bg-slate-50"}`}
+                  className={`mt-1 flex rounded-xl ${activeCollectionId === collection.id ? "bg-emerald-50" : "hover:bg-slate-50"}`}
                 >
                   <button
                     className="min-w-0 flex-1 p-2 text-left text-sm"
@@ -1504,7 +1505,7 @@ export function QuestionBankWorkspace() {
                   </button>
                   <button
                     aria-label="Đổi tên"
-                    className="px-2"
+                    className="ui-icon-button"
                     onClick={() => renameCollection(collection)}
                   >
                     <RefreshCw size={13} />
@@ -1512,7 +1513,7 @@ export function QuestionBankWorkspace() {
                 </div>
               ))}
             </section>
-            <section className="rounded-[24px] border bg-white p-4">
+            <section className="ui-panel p-3">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="flex items-center gap-2 font-black">
                   <ListFilter size={17} />
@@ -1521,7 +1522,7 @@ export function QuestionBankWorkspace() {
                 </h2>
                 <button
                   type="button"
-                  className="rounded-lg p-2 text-slate-500 lg:hidden"
+                  className="ui-icon-button lg:hidden"
                   aria-label="Đóng bộ lọc"
                   onClick={() => setFilterOpen(false)}
                 >
@@ -1531,6 +1532,7 @@ export function QuestionBankWorkspace() {
               <div className="mt-3 space-y-2">
                 <select
                   className="form-field"
+                  aria-label="Nguồn câu hỏi"
                   value={filters.scope || "all"}
                   onChange={(event) =>
                     setFilters({
@@ -1555,6 +1557,7 @@ export function QuestionBankWorkspace() {
                   <select
                     key={field}
                     className="form-field"
+                    aria-label={field === "subject" ? "Lọc theo môn" : field === "grade" ? "Lọc theo khối" : field === "topic" ? "Lọc theo chủ đề" : field === "subtopic" ? "Lọc theo chủ đề con" : "Lọc theo bộ sách"}
                     value={filters[field] || ""}
                     onChange={(event) =>
                       setFilters({ ...filters, [field]: event.target.value })
@@ -1578,6 +1581,7 @@ export function QuestionBankWorkspace() {
                 ))}
                 <select
                   className="form-field"
+                  aria-label="Lọc theo dạng câu"
                   value={filters.type || ""}
                   onChange={(event) =>
                     setFilters({
@@ -1595,6 +1599,7 @@ export function QuestionBankWorkspace() {
                 </select>
                 <select
                   className="form-field"
+                  aria-label="Lọc theo độ khó"
                   value={filters.difficulty || ""}
                   onChange={(event) =>
                     setFilters({
@@ -1610,6 +1615,7 @@ export function QuestionBankWorkspace() {
                 </select>
                 <select
                   className="form-field"
+                  aria-label="Lọc theo chất lượng"
                   value={filters.quality || ""}
                   onChange={(event) =>
                     setFilters({
@@ -1625,6 +1631,7 @@ export function QuestionBankWorkspace() {
                 </select>
                 <select
                   className="form-field"
+                  aria-label="Lọc theo tình trạng sử dụng"
                   value={filters.usage || "all"}
                   onChange={(event) =>
                     setFilters({
@@ -1640,7 +1647,7 @@ export function QuestionBankWorkspace() {
                 {activeFilters.length ? (
                   <button
                     type="button"
-                    className="w-full text-sm font-bold text-blue-700"
+                    className="min-h-11 w-full rounded-xl text-sm font-bold text-emerald-800 hover:bg-emerald-50"
                     onClick={() => {
                       setFilters({ scope: "all", usage: "all" });
                       setQueryInput("");
@@ -1654,7 +1661,7 @@ export function QuestionBankWorkspace() {
           </aside>
 
           <main className="min-w-0 space-y-3">
-            <section className="rounded-[24px] border bg-white p-4">
+            <section className="ui-panel p-3 sm:p-4">
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -1665,7 +1672,7 @@ export function QuestionBankWorkspace() {
                   Bộ lọc{" "}
                   {activeFilters.length ? `(${activeFilters.length})` : ""}
                 </button>
-                <label className="relative min-w-56 flex-1">
+                <label className="relative min-w-0 flex-1 basis-64">
                   <Search
                     className="absolute left-3 top-3 text-slate-400"
                     size={17}
@@ -1678,7 +1685,8 @@ export function QuestionBankWorkspace() {
                   />
                 </label>
                 <select
-                  className="form-field w-44"
+                  className="form-field w-full sm:w-44"
+                  aria-label="Sắp xếp câu hỏi"
                   value={sort}
                   onChange={(event) =>
                     setSort(event.target.value as QuestionSort)
@@ -1702,7 +1710,7 @@ export function QuestionBankWorkspace() {
                     <button
                       key={filter.key}
                       type="button"
-                      className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-800 hover:bg-blue-100"
+                      className="min-h-10 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-900 hover:bg-emerald-100"
                       onClick={() => {
                         setFilters((current) =>
                           clearQuestionFilter(current, filter.key),
@@ -1716,7 +1724,7 @@ export function QuestionBankWorkspace() {
                   ))}
                   <button
                     type="button"
-                    className="px-2 text-xs font-bold text-slate-600 hover:text-blue-700"
+                    className="min-h-10 rounded-xl px-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-emerald-800"
                     onClick={() => {
                       setFilters({ scope: "all", usage: "all" });
                       setQueryInput("");
@@ -1734,9 +1742,9 @@ export function QuestionBankWorkspace() {
             </section>
 
             {selectedItems.length ? (
-              <section className="sticky top-3 z-30 rounded-[22px] border border-blue-200 bg-white/95 p-3 shadow-lg backdrop-blur">
+              <section className="sticky top-[68px] z-30 rounded-2xl border border-emerald-200 bg-white/95 p-3 shadow-md backdrop-blur">
                 <div className="flex flex-wrap items-center gap-2">
-                  <strong className="mr-1 text-sm text-blue-900">
+                  <strong className="mr-1 text-sm text-emerald-900">
                     Đã chọn {selectedItems.length} câu
                   </strong>
                   <button
@@ -2023,7 +2031,7 @@ export function QuestionBankWorkspace() {
                 visible.map((item) => (
                   <article
                     key={item.id}
-                    className={`group rounded-2xl border bg-white p-4 transition ${activeId === item.id && editorOpen ? "border-blue-400 ring-2 ring-blue-100" : "border-slate-200 hover:border-blue-200"}`}
+                    className={`group rounded-2xl border bg-white p-4 transition ${activeId === item.id && editorOpen ? "border-emerald-400 ring-2 ring-emerald-100" : "border-slate-200 hover:border-emerald-200"}`}
                   >
                     <div className="flex items-start gap-3">
                       <input
@@ -2074,17 +2082,17 @@ export function QuestionBankWorkspace() {
                           </p>
                         </div>
                       </button>
-                      <div className="hidden gap-1 md:group-hover:flex md:group-focus-within:flex">
+                      <div className="hidden shrink-0 gap-1 md:flex">
                         <button
                           aria-label="Chỉnh sửa câu hỏi"
-                          className="rounded-lg p-2 text-blue-700 hover:bg-blue-50"
+                          className="ui-icon-button text-emerald-700"
                           onClick={() => openEditor(item)}
                         >
                           <Sparkles size={16} />
                         </button>
                         <button
                           aria-label="Nhân bản"
-                          className="rounded-lg p-2 hover:bg-slate-100"
+                          className="ui-icon-button"
                           onClick={() => duplicate(item)}
                         >
                           <Copy size={16} />
@@ -2092,7 +2100,7 @@ export function QuestionBankWorkspace() {
                         {item.scope === "user" ? (
                           <button
                             aria-label="Xóa"
-                            className="rounded-lg p-2 text-red-600 hover:bg-red-50"
+                            className="ui-icon-button text-red-600 hover:bg-red-50 hover:text-red-700"
                             onClick={() => remove([item.id])}
                           >
                             <Trash2 size={16} />
@@ -2158,7 +2166,7 @@ export function QuestionBankWorkspace() {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="question-editor-title"
-                className="fixed inset-y-0 right-0 z-50 h-dvh w-full overflow-y-auto bg-slate-50 shadow-2xl sm:max-w-xl"
+                className="fixed inset-y-0 right-0 z-50 h-dvh w-full overflow-y-auto overscroll-contain border-l border-slate-200 bg-slate-50 shadow-2xl sm:max-w-2xl"
               >
                 <form
                   onSubmit={saveDraft}

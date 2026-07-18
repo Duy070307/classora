@@ -37,10 +37,10 @@ export function ToolCard({
   }, [href]);
 
   return (
-    <article className="group relative flex min-h-[260px] flex-col overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-within:ring-4 focus-within:ring-blue-100">
+    <article className="group relative flex min-h-[246px] min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm outline-none transition duration-200 hover:border-emerald-200 hover:shadow-md focus-within:ring-4 focus-within:ring-emerald-100 sm:p-5">
       <button
         type="button"
-        className={`absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition ${favorite ? "bg-amber-50 text-amber-500 ring-1 ring-amber-100" : "bg-white text-slate-400 ring-1 ring-slate-100 hover:bg-blue-50 hover:text-blue-600"}`}
+        className={`absolute right-3 top-3 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-xl shadow-sm transition ${favorite ? "bg-amber-50 text-amber-600 ring-1 ring-amber-100" : "bg-white text-slate-500 ring-1 ring-slate-200 hover:bg-emerald-50 hover:text-emerald-700"}`}
         aria-label={favorite ? `Bỏ ${title} khỏi yêu thích` : `Thêm ${title} vào yêu thích`}
         onClick={() => {
           toggleFavoriteTool(href);
@@ -52,12 +52,12 @@ export function ToolCard({
 
       <SoanLabIcon name={iconNameFromHref(href)} className="mb-4" />
       <div className="flex min-h-6 flex-wrap items-center gap-2 pr-10">
-        {categoryLabel ? <span className="text-[11px] font-extrabold uppercase tracking-wide text-blue-600">{categoryLabel}</span> : null}
+        {categoryLabel ? <span className="text-[11px] font-extrabold uppercase tracking-wide text-emerald-700">{categoryLabel}</span> : null}
         {badge ? <SoanLabBadge tone={badge === "Mới" ? "new" : badge === "Hữu ích" ? "useful" : "popular"}>{badge}</SoanLabBadge> : null}
       </div>
       <h3 className="mt-3 text-lg font-black leading-6 text-slate-900">{title}</h3>
       <p className="mt-2 line-clamp-2 min-h-12 text-sm leading-6 text-slate-500">{description}</p>
-      <div className="mt-4 rounded-2xl bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-600">
+      <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-600">
         {displayExample}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -71,7 +71,7 @@ export function ToolCard({
       <Link
         href={href}
         onClick={() => saveRecentTool({ href, title })}
-        className="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-black text-blue-700 outline-none focus-visible:rounded-xl focus-visible:ring-4 focus-visible:ring-blue-100"
+        className="mt-auto flex min-h-11 items-center justify-between border-t border-slate-100 pt-3 text-sm font-black text-emerald-800 outline-none focus-visible:rounded-xl focus-visible:ring-4 focus-visible:ring-emerald-100"
       >
         <span>Mở công cụ</span>
         <ArrowRight size={17} className="transition group-hover:translate-x-1" />

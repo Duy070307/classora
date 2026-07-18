@@ -57,13 +57,11 @@ const map = {
 
 export function SoanLabIcon({ name = "default", className = "", size = "md" }: { name?: SoanLabIconName; className?: string; size?: "sm" | "md" | "lg" }) {
   const Icon = map[name];
-  const sizes = size === "lg" ? "h-16 w-16 rounded-[1.35rem]" : size === "sm" ? "h-10 w-10 rounded-2xl" : "h-12 w-12 rounded-2xl";
+  const sizes = size === "lg" ? "h-14 w-14 rounded-2xl" : size === "sm" ? "h-10 w-10 rounded-xl" : "h-12 w-12 rounded-xl";
   const iconSize = size === "lg" ? 30 : size === "sm" ? 18 : 22;
   return (
-    <span className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-lg shadow-blue-200/70 ${sizes} ${className}`}>
-      <span className="absolute -right-3 -top-3 h-8 w-8 rounded-full bg-white/20" />
-      <span className="absolute bottom-1 left-1 h-2 w-5 rounded-full bg-cyan-200/60" />
-      <Icon size={iconSize} strokeWidth={2.1} className="relative" />
+    <span className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-emerald-700 text-white shadow-sm ring-1 ring-emerald-800/10 ${sizes} ${className}`}>
+      <Icon size={iconSize} strokeWidth={2} className="relative" />
     </span>
   );
 }

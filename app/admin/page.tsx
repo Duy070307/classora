@@ -44,13 +44,13 @@ export default async function AdminPage() {
 
   return (
     <AppShell title="Quản trị">
-      <section className="rounded-[32px] bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 p-6 text-white shadow-[0_24px_60px_rgba(15,23,42,.25)] sm:p-8">
-        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-200">Quản trị Soạn Lab</p>
-        <h1 className="mt-3 text-3xl font-black sm:text-4xl">Tổng quan vận hành</h1>
-        <p className="mt-3 max-w-2xl leading-7 text-blue-100">Theo dõi tài khoản, tài liệu đã lưu và trạng thái đăng ký ở mức cần thiết cho quản trị viên.</p>
+      <section className="ui-panel border-l-4 border-l-emerald-700 p-5 sm:p-6">
+        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">Quản trị Soạn Lab</p>
+        <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">Tổng quan vận hành</h1>
+        <p className="mt-2 max-w-2xl leading-7 text-slate-600">Theo dõi tài khoản, tài liệu đã lưu và trạng thái đăng ký ở mức cần thiết cho quản trị viên.</p>
       </section>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard icon={Users} label="Tài khoản gần đây" value={String(userCount)} />
         <StatCard icon={FileText} label="Tài liệu đã lưu" value={String(documents?.count ?? "—")} />
         <StatCard icon={Shield} label="Quyền quản trị" value={isSupabaseAdminConfigured() ? "Sẵn sàng" : "Chưa sẵn sàng"} />
@@ -60,13 +60,13 @@ export default async function AdminPage() {
 
       <MaintenanceAdminPanel />
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
+      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="ui-panel p-5">
           <h2 className="text-lg font-black text-slate-900">Tài khoản gần đây</h2>
           {users && "data" in users ? (
             <div className="mt-4 space-y-2">
               {users.data.users.map((item) => (
-                <div key={item.id} className="rounded-2xl bg-slate-50 p-3 text-sm">
+                <div key={item.id} className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm">
                   <p className="font-bold text-slate-900">{item.email}</p>
                   <p className="text-slate-500">Tạo lúc {item.created_at ? new Date(item.created_at).toLocaleString("vi-VN") : "không rõ"}</p>
                 </div>
@@ -77,7 +77,7 @@ export default async function AdminPage() {
           )}
         </section>
 
-        <section className="rounded-[28px] border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
+        <section className="ui-panel p-5">
           <h2 className="text-lg font-black text-slate-900">Dữ liệu đã lưu</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <Row label="Tài liệu" value={documents?.count ?? "—"} />
@@ -95,7 +95,7 @@ export default async function AdminPage() {
         </section>
       </div>
 
-      <section className="mt-6 rounded-[28px] border border-blue-100 bg-blue-50 p-5 text-sm leading-7 text-blue-950">
+      <section className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-7 text-emerald-950">
         <p>
           <span className="font-black">Gợi ý khi mời giáo viên dùng thử: </span>
           Sau khi gửi link test, quản trị viên có thể theo dõi phản hồi tại mục Góp ý giáo viên để ưu tiên sửa những điểm ảnh hưởng nhiều nhất tới trải nghiệm.
@@ -107,8 +107,8 @@ export default async function AdminPage() {
 
 function StatCard({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: string }) {
   return (
-    <div className="rounded-[26px] border border-blue-100 bg-white p-5 shadow-sm">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+    <div className="ui-panel p-4">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
         <Icon size={20} />
       </div>
       <p className="mt-4 text-sm font-semibold text-slate-500">{label}</p>
@@ -119,7 +119,7 @@ function StatCard({ icon: Icon, label, value }: { icon: typeof Users; label: str
 
 function Row({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="flex justify-between gap-4 rounded-2xl bg-white p-3">
+    <div className="flex justify-between gap-4 rounded-xl bg-slate-50 p-3">
       <dt className="text-slate-500">{label}</dt>
       <dd className="font-black text-slate-900">{value}</dd>
     </div>

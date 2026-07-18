@@ -107,8 +107,8 @@ function LoginContent() {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
-            <Link href="/dang-ky-dung-thu" className="text-blue-700">Đăng ký dùng thử</Link>
-            <Link href="/" className="text-slate-500">Về trang chủ</Link>
+            <Link href="/dang-ky-dung-thu" className="inline-flex min-h-11 items-center rounded-xl px-2 text-emerald-800 hover:bg-emerald-50">Đăng ký dùng thử</Link>
+            <Link href="/" className="inline-flex min-h-11 items-center rounded-xl px-2 text-slate-600 hover:bg-slate-100">Về trang chủ</Link>
           </div>
         </section>
       </div>

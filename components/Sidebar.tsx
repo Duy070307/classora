@@ -139,40 +139,40 @@ function Content({
 
   return (
     <>
-      <button type="button" aria-label="Đóng menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-300 md:sticky md:top-0 md:z-auto md:h-screen md:w-72 md:shrink-0 md:translate-x-0 md:shadow-none ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex min-h-[78px] items-center border-b border-slate-200/70 px-5 py-4">
+      <button type="button" aria-label="Đóng menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-none xl:w-72 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`} aria-label="Điều hướng chính">
+        <div className="flex min-h-[70px] items-center border-b border-slate-200/70 px-4 py-3">
           <Link
             href="/dashboard"
             onClick={onClose}
-            className="group flex min-w-0 flex-1 rounded-2xl px-1.5 py-1.5 transition hover:bg-slate-50"
+            className="group flex min-w-0 flex-1 rounded-xl px-1.5 py-1.5 transition hover:bg-emerald-50/60"
             aria-label="Về trang tổng quan Soạn Lab"
           >
             <BrandLogo size="md" showSubtitle className="pointer-events-none" />
           </Link>
-          <button type="button" className="ml-auto rounded-xl p-2 text-slate-500 hover:bg-slate-100 md:hidden" onClick={onClose} aria-label="Đóng menu">
+          <button type="button" className="ui-icon-button ml-auto md:hidden" onClick={onClose} aria-label="Đóng menu">
             <X size={18} />
           </button>
         </div>
-        <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 pt-4">
+        <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-4 pt-3">
           {groups.map((group) => {
             const links = group.links.filter(([, , , , adminOnly]) => !adminOnly || isAdmin);
             if (!links.length) return null;
             return (
-              <section key={group.title} className="mb-4">
+              <section key={group.title} className="mb-3">
                 <p className="mb-2 px-3 text-[11px] font-extrabold uppercase tracking-[0.11em] text-slate-400">{group.title}</p>
                 <div className="space-y-1">
                   {links.map(([label, href, Icon, badge]) => {
                     const selected = active(href);
-                    const baseClass = `group relative flex min-h-[42px] items-center gap-3 rounded-[15px] px-3 text-sm font-bold transition ${selected ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-800"}`;
+                    const baseClass = `group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-bold transition duration-200 ${selected ? "bg-emerald-700 text-white shadow-sm" : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"}`;
                     const content = (
                       <>
-                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500/90 group-hover:bg-white group-hover:text-blue-600"}`}>
+                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-emerald-700"}`}>
                           <Icon size={16} />
                         </span>
                         <span className="min-w-0 flex-1 truncate">{label}</span>
                         {badge ? (
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-700"}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-800"}`}>
                             {badge}
                           </span>
                         ) : null}
