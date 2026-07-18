@@ -26,12 +26,12 @@ assert.match(actionMenu, /max-h-\[min\(24rem,calc\(100dvh-6rem\)\)\]/);
 
 const toolCenter = source("app/tools/page.tsx");
 assert.match(toolCenter, /<select className="form-field" value=\{category\}/);
-assert.match(toolCenter, /className="hidden flex-wrap gap-2 sm:flex"/);
+assert.match(toolCenter, /className="hidden flex-wrap gap-x-1 gap-y-2 sm:flex"/);
 assert.doesNotMatch(toolCenter, /flex gap-2 overflow-x-auto px-1/);
 
 const toolCard = source("components/ToolCard.tsx");
 assert.doesNotMatch(toolCard, /displayExample|displayTags/);
-assert.match(toolCard, /min-h-\[210px\]/);
+assert.match(toolCard, /min-h-\[132px\]/);
 
 const dashboard = source("app/dashboard/page.tsx");
 const coreTools = [

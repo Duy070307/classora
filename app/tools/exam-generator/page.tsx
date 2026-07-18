@@ -554,9 +554,9 @@ export default function ExamGeneratorPage() {
     <AppShell title="Tạo đề kiểm tra">
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="grid w-full max-w-2xl grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-100 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
-          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo bằng cấu hình</button>
-          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo từ file</button>
+        <div className="grid w-full max-w-2xl grid-cols-2 border-b border-slate-200" role="tablist" aria-label="Chế độ tạo đề">
+          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`min-h-11 border-b-2 px-3 py-2.5 text-sm font-semibold transition ${creationMode === "manual" ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:text-slate-950"}`}>Tạo bằng cấu hình</button>
+          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`min-h-11 border-b-2 px-3 py-2.5 text-sm font-semibold transition ${creationMode === "file" ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:text-slate-950"}`}>Tạo từ file</button>
         </div>
         <Link href="/tools/exam-blueprint" className="btn-secondary shrink-0">Tạo ma trận trước</Link>
         </div>
@@ -564,9 +564,9 @@ export default function ExamGeneratorPage() {
         {creationMode === "file" ? <FileExamGenerator /> : (
         <ToolWorkspaceLayout
           form={
-          <form onSubmit={handleSubmit} className="tool-form-card">
-            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <summary className="cursor-pointer text-sm font-black text-slate-900">Mẫu điền nhanh</summary>
+          <form onSubmit={handleSubmit} className="space-y-5 border-y border-slate-200 bg-white py-4 xl:border-y-0 xl:border-r xl:pr-5">
+            <details className="border-b border-slate-200 pb-4">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-900">Mẫu điền nhanh</summary>
               <p className="mt-1 text-sm leading-6 text-slate-600">Chọn một gợi ý để điền nhanh các trường chính, rồi chỉnh lại theo lớp của thầy/cô.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {quickExamPresets.map((preset) => (
@@ -574,7 +574,7 @@ export default function ExamGeneratorPage() {
                     key={preset.label}
                     type="button"
                     onClick={() => applyQuickPreset(preset.values, preset.bank)}
-                    className="min-h-11 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-blue-700 ring-1 ring-blue-100 transition hover:bg-blue-600 hover:text-white"
+                    className="min-h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-50"
                   >
                     {preset.label}
                   </button>
@@ -582,7 +582,7 @@ export default function ExamGeneratorPage() {
               </div>
             </details>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
-            <div><p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mẫu nhanh theo môn</p><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
+            <div><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />
             <div className="form-section">
               <p className="form-section-title">Thông tin đề</p>
@@ -659,7 +659,7 @@ export default function ExamGeneratorPage() {
                     <label className="label">Số câu hỏi</label>
                     <input type="number" min="1" max="50" className="form-field mt-1" value={bankCount} onChange={(e) => setBankCount(Math.min(50, Math.max(1, Number(e.target.value) || 1)))} />
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {[5, 10, 15, 20].map((count) => <button key={count} type="button" className={`rounded-full px-2.5 py-1 text-[11px] font-black ${bankCount === count ? "bg-blue-600 text-white" : "bg-blue-50 text-blue-700"}`} onClick={() => setBankCount(count)}>{count}</button>)}
+                      {[5, 10, 15, 20].map((count) => <button key={count} type="button" className={`min-h-9 rounded-md border px-2.5 py-1 text-[11px] font-semibold ${bankCount === count ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 text-blue-700"}`} onClick={() => setBankCount(count)}>{count}</button>)}
                     </div>
                   </div>
                 </div>
@@ -711,10 +711,10 @@ export default function ExamGeneratorPage() {
                 </div>
                 {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo cấu trúc đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Phần yêu cầu: I {document.generationMeta?.requestedSectionCounts?.partI ?? input.multipleChoiceCount} · II {document.generationMeta?.requestedSectionCounts?.partII ?? input.trueFalseCount} · III {document.generationMeta?.requestedSectionCounts?.partIII ?? input.shortAnswerCount}</p><p>Phần hợp lệ: I {document.generationMeta?.generatedSectionCounts?.partI ?? 0} · II {document.generationMeta?.generatedSectionCounts?.partII ?? 0} · III {document.generationMeta?.generatedSectionCounts?.partIII ?? 0}</p><p>Tổng: {document.generationMeta?.finalCount ?? document.generationMeta?.questionCount ?? 0}/{document.generationMeta?.requestedCount ?? 0}</p><p>Đã loại trùng: {document.generationMeta?.duplicateRemovedCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
                 <div className="mb-3 rounded-xl border border-blue-200 bg-white p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-semibold text-slate-900">Xem trước → Kiểm tra → Rà soát → Xuất file</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
+                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-medium text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-semibold text-slate-900">Xem trước → Kiểm tra → Rà soát → Xuất file</p></div><span className={`rounded-md px-3 py-1.5 text-xs font-semibold ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
                   <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
                   <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <summary className="cursor-pointer text-sm font-black text-slate-700">Tác vụ khác với đề này</summary>
+                    <summary className="cursor-pointer text-sm font-semibold text-slate-700">Tác vụ khác với đề này</summary>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <button type="button" className="btn-secondary" onClick={() => openAnswerSolutions(document)}>Tạo lời giải chi tiết</button>
                       <button type="button" className="btn-secondary" onClick={() => openExamMixer(document)}>Trộn mã đề</button>

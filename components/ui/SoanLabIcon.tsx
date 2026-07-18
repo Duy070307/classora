@@ -55,12 +55,12 @@ const map = {
   default: CheckCircle2
 } as const;
 
-export function SoanLabIcon({ name = "default", className = "", size = "md" }: { name?: SoanLabIconName; className?: string; size?: "sm" | "md" | "lg" }) {
+export function SoanLabIcon({ name = "default", className = "", size = "md", plain = false }: { name?: SoanLabIconName; className?: string; size?: "sm" | "md" | "lg"; plain?: boolean }) {
   const Icon = map[name];
-  const sizes = size === "lg" ? "h-14 w-14 rounded-xl" : size === "sm" ? "h-10 w-10 rounded-lg" : "h-12 w-12 rounded-lg";
+  const sizes = plain ? "h-auto w-auto" : size === "lg" ? "h-14 w-14 rounded-xl" : size === "sm" ? "h-10 w-10 rounded-lg" : "h-12 w-12 rounded-lg";
   const iconSize = size === "lg" ? 30 : size === "sm" ? 18 : 22;
   return (
-    <span className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-blue-600 text-white ring-1 ring-blue-700/10 ${sizes} ${className}`}>
+    <span className={`relative inline-flex shrink-0 items-center justify-center ${plain ? "text-blue-700" : "overflow-hidden bg-blue-600 text-white ring-1 ring-blue-700/10"} ${sizes} ${className}`}>
       <Icon size={iconSize} strokeWidth={2} className="relative" />
     </span>
   );

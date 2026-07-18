@@ -44,14 +44,14 @@ const groups: Array<{ title: string; links: NavItem[] }> = [
     title: "Soạn tài liệu",
     links: [
       ["Tạo đề kiểm tra", "/tools/exam-generator", ClipboardList],
-      ["Ma trận & bảng đặc tả", "/tools/exam-blueprint", ClipboardList, "Mới"],
-      ["Chấm bài", "/tools/grading-assistant", ClipboardCheck, "Mới"],
-      ["Phiếu trả lời", "/tools/answer-sheet", ClipboardList, "Mới"],
-      ["Kiểm tra đề", "/tools/exam-audit", ClipboardCheck, "Mới"],
+      ["Ma trận & bảng đặc tả", "/tools/exam-blueprint", ClipboardList],
+      ["Chấm bài", "/tools/grading-assistant", ClipboardCheck],
+      ["Phiếu trả lời", "/tools/answer-sheet", ClipboardList],
+      ["Kiểm tra đề", "/tools/exam-audit", ClipboardCheck],
       ["Phiếu học tập", "/tools/worksheet-generator", FileText],
-      ["Đề cương ôn tập", "/tools/review-pack", BookOpenCheck, "Mới"],
+      ["Đề cương ôn tập", "/tools/review-pack", BookOpenCheck],
       ["Giáo án", "/tools/lesson-plan", FileText],
-      ["Tạo slide bài giảng", "/tools/lesson-slides", Presentation, "Mới"],
+      ["Tạo slide bài giảng", "/tools/lesson-slides", Presentation],
       ["Rubric", "/tools/rubric", PenTool],
     ],
   },
@@ -195,19 +195,19 @@ function Content({
             if (!links.length) return null;
             return (
               <section key={group.title} className="mb-3">
-                <p className="mb-2 px-3 text-[11px] font-extrabold uppercase tracking-[0.11em] text-slate-400">{group.title}</p>
+                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-400">{group.title}</p>
                 <div className="space-y-1">
                   {links.map(([label, href, Icon, badge]) => {
                     const selected = active(href);
-                    const baseClass = `group relative flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition duration-200 ${selected ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-blue-50 hover:text-blue-800"}`;
+                    const baseClass = `group relative flex min-h-11 items-center gap-3 border-l-2 px-3 text-sm font-medium transition duration-200 ${selected ? "border-blue-600 bg-blue-50 text-blue-800" : "border-transparent text-slate-600 hover:bg-slate-50 hover:text-blue-800"}`;
                     const content = (
                       <>
-                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-blue-700"}`}>
+                        <span className={`flex h-8 w-6 shrink-0 items-center justify-center transition ${selected ? "text-blue-700" : "text-slate-400 group-hover:text-blue-700"}`}>
                           <Icon size={16} />
                         </span>
                         <span className="min-w-0 flex-1 truncate">{label}</span>
                         {badge ? (
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-800"}`}>
+                          <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800">
                             {badge}
                           </span>
                         ) : null}

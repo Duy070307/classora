@@ -119,12 +119,9 @@ function ToolsContent() {
 
   return (
     <AppShell title="Công cụ">
-      <section className="relative mb-5 border-b border-slate-200 bg-white px-4 py-5 sm:px-5">
+      <section className="relative mb-4 border-b border-slate-200 bg-white px-1 pb-5 pt-2">
         <div className="relative max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[.14em] text-blue-700">
-            Thư viện công cụ giáo viên
-          </p>
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
             Tìm công cụ phù hợp cho tiết dạy hôm nay
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
@@ -146,32 +143,32 @@ function ToolsContent() {
         </div>
       </section>
 
-      <section className="sticky top-[68px] z-10 mb-5 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
+      <section className="sticky top-[68px] z-10 mb-4 border-y border-slate-200 bg-white/95 py-3 backdrop-blur-xl">
         <label className="block sm:hidden">
           <span className="label">Danh mục công cụ</span>
           <select className="form-field" value={category} onChange={(event) => change(event.target.value)}>
             {displayCategories.map((item) => <option key={item}>{item}</option>)}
           </select>
         </label>
-        <div className="hidden flex-wrap gap-2 sm:flex">
+        <div className="hidden flex-wrap gap-x-1 gap-y-2 sm:flex">
           {displayCategories.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => change(item)}
-              className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold transition ${category === item ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
+              className={`min-h-11 shrink-0 border-b-2 px-3 text-sm font-semibold transition ${category === item ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950"}`}
             >
               {item}
             </button>
           ))}
         </div>
-        <div className="mt-3 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-3">
+        <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-2">
           {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map(
             (item) => (
               <button
                 key={item}
                 onClick={() => setMode(item)}
-                className={`min-h-11 rounded-lg px-3 py-2 text-xs font-semibold ${mode === item ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`min-h-11 border-b-2 px-3 py-2 text-xs font-semibold ${mode === item ? "border-slate-900 text-slate-950" : "border-transparent text-slate-600 hover:text-slate-950"}`}
               >
                 {item}
               </button>
@@ -190,13 +187,12 @@ function ToolsContent() {
       </section>
 
       {tools.length ? (
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-0 md:gap-3 md:grid-cols-2 xl:grid-cols-3">
           {tools.map((tool) => (
             <ToolCard
               key={tool.href}
               {...tool}
-              badge={tool.badge || (tool.popular ? "Phổ biến" : undefined)}
-              categoryLabel={categoryLabels[tool.category]}
+              badge={tool.badge === "Beta" ? "Beta" : undefined}
             />
           ))}
         </div>

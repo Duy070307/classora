@@ -1234,11 +1234,10 @@ export function QuestionBankWorkspace() {
   return (
     <AppShell title="Ngân hàng câu hỏi">
       <div className="mx-auto max-w-[1600px] min-w-0 space-y-4">
-        <header className="ui-panel p-4 sm:p-5">
+        <header className="border-b border-slate-200 pb-5 pt-1">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="soft-badge">Kho nội dung cá nhân</span>
-              <h1 className="mt-3 text-3xl font-black text-slate-950">
+              <h1 className="text-3xl font-bold text-slate-950">
                 Ngân hàng câu hỏi
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -1275,7 +1274,7 @@ export function QuestionBankWorkspace() {
               </button>
             </div>
           </div>
-          <BugReportLink source="question-bank" className="mt-4" />
+          <BugReportLink source="question-bank" className="mt-3" />
         </header>
 
         {message ? (
@@ -1284,7 +1283,7 @@ export function QuestionBankWorkspace() {
           </div>
         ) : null}
         {smartOpen ? (
-          <section className="ui-panel p-4 sm:p-5">
+          <section className="border-y border-slate-200 bg-slate-50/60 px-3 py-4">
             <div className="flex flex-wrap items-end gap-3">
               <label>
                 <span className="label">Số câu cần chọn</span>
@@ -1322,7 +1321,7 @@ export function QuestionBankWorkspace() {
           <section className="ui-panel border-amber-200 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="font-black">Rà soát trước khi nhập</h2>
+                <h2 className="font-semibold">Rà soát trước khi nhập</h2>
                 <p className="text-sm text-slate-500">
                   Có thể sửa trực tiếp nội dung, đáp án và chủ đề; chỉ các dòng
                   được chọn và không có lỗi chặn mới được nhập.
@@ -1474,8 +1473,8 @@ export function QuestionBankWorkspace() {
             )}
           </section>
         ) : (
-          <details className="ui-panel p-4">
-            <summary className="cursor-pointer font-black">
+          <details className="border-y border-slate-200 px-2 py-3">
+            <summary className="cursor-pointer font-semibold">
               Hoặc dán nội dung câu hỏi
             </summary>
             <textarea
@@ -1502,11 +1501,11 @@ export function QuestionBankWorkspace() {
             role={filterOpen ? "dialog" : undefined}
             aria-modal={filterOpen ? "true" : undefined}
             aria-label={filterOpen ? "Bộ lọc câu hỏi" : undefined}
-            className={`${filterOpen ? "fixed inset-y-0 left-0 z-50 block w-[min(88vw,320px)] overflow-y-auto bg-slate-50 p-4 shadow-2xl" : "hidden"} space-y-3 lg:static lg:z-auto lg:block lg:w-auto lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none`}
+            className={`${filterOpen ? "fixed inset-y-0 left-0 z-50 block w-[min(88vw,320px)] overflow-y-auto bg-white p-4 shadow-2xl" : "hidden"} lg:static lg:z-auto lg:block lg:w-auto lg:overflow-visible lg:border-r lg:border-slate-200 lg:bg-transparent lg:pr-4 lg:shadow-none`}
           >
-            <section className="ui-panel p-3">
+            <section className="border-b border-slate-200 pb-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-black">Bộ câu hỏi</h2>
+                <h2 className="font-semibold">Bộ câu hỏi</h2>
                 <button
                   className="ui-icon-button"
                   aria-label="Tạo bộ"
@@ -1555,9 +1554,9 @@ export function QuestionBankWorkspace() {
                 </div>
               ))}
             </section>
-            <section className="ui-panel p-3">
+            <section className="pt-4">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="flex items-center gap-2 font-black">
+                <h2 className="flex items-center gap-2 font-semibold">
                   <ListFilter size={17} />
                   Bộ lọc{" "}
                   {activeFilters.length ? `(${activeFilters.length})` : ""}
@@ -1704,7 +1703,7 @@ export function QuestionBankWorkspace() {
           </aside>
 
           <main className="min-w-0 space-y-3">
-            <section className="ui-panel p-3 sm:p-4">
+            <section className="border-b border-slate-200 pb-3">
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -1777,7 +1776,7 @@ export function QuestionBankWorkspace() {
                   </button>
                 </div>
               ) : null}
-              <div className="mt-3 text-sm text-slate-600">
+              <div className="mt-2 text-sm text-slate-600">
                 <strong className="text-slate-900">
                   {visible.length} câu hỏi
                 </strong>
@@ -1929,7 +1928,7 @@ export function QuestionBankWorkspace() {
 
             {duplicates.length || ignoredDuplicateKeys.size ? (
               <details className="rounded-2xl border border-slate-200 bg-white p-4">
-                <summary className="cursor-pointer list-none font-black text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+                <summary className="cursor-pointer list-none font-semibold text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
                   <span>{duplicateClusters.length} nhóm câu cần kiểm tra</span>
                   <span className="ml-3 text-xs font-semibold text-slate-500">
                     Trùng chính xác{" "}
@@ -2065,16 +2064,17 @@ export function QuestionBankWorkspace() {
                 </div>
               </details>
             ) : null}
-            <section className="space-y-2">
+            <section className="border-t border-slate-200">
               {loading ? (
-                <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center text-sm font-semibold text-slate-600">
-                  Đang tải ngân hàng câu hỏi...
+                <div className="flex min-h-14 items-center gap-3 border-b border-slate-200 px-2 text-sm font-medium text-slate-600" role="status">
+                  <span className="size-4 animate-pulse rounded-full bg-blue-200" aria-hidden="true" />
+                  Đang tải ngân hàng câu hỏi…
                 </div>
               ) : visible.length ? (
                 visible.map((item) => (
                   <article
                     key={item.id}
-                    className={`group rounded-xl border bg-white p-4 transition ${activeId === item.id && editorOpen ? "border-blue-400 ring-2 ring-blue-100" : "border-slate-200 hover:border-blue-300"}`}
+                    className={`group border-b border-slate-200 bg-white px-2 py-4 transition ${activeId === item.id && editorOpen ? "bg-blue-50/60 ring-2 ring-inset ring-blue-200" : "hover:bg-slate-50"}`}
                   >
                     <div className="flex items-start gap-3">
                       <input
@@ -2095,11 +2095,11 @@ export function QuestionBankWorkspace() {
                         onClick={() => openEditor(item)}
                       >
                         <div className="flex flex-wrap gap-2">
-                          <span className="soft-badge">
+                          <span className="text-xs font-medium text-blue-700">
                             {QUESTION_TYPE_LABELS[item.type]}
                           </span>
                           <span
-                            className={`rounded-full px-2 py-1 text-[11px] font-black ${item.quality.checkedAt ? qualityClasses[item.quality.status] : "bg-slate-100 text-slate-600"}`}
+                            className={`rounded-md px-2 py-1 text-[11px] font-semibold ${item.quality.checkedAt ? qualityClasses[item.quality.status] : "bg-slate-100 text-slate-600"}`}
                           >
                             {item.quality.checkedAt
                               ? qualityLabels[item.quality.status]
@@ -2179,9 +2179,9 @@ export function QuestionBankWorkspace() {
                   </article>
                 ))
               ) : (
-                <div className="rounded-[24px] border border-dashed bg-white p-10 text-center">
+                <div className="border-b border-slate-200 py-8 text-center">
                   <Search className="mx-auto text-slate-400" />
-                  <h2 className="mt-3 font-black">
+                  <h2 className="mt-3 font-semibold">
                     {items.length
                       ? "Không tìm thấy câu hỏi phù hợp với bộ lọc hiện tại."
                       : "Ngân hàng câu hỏi chưa có nội dung."}
@@ -2217,7 +2217,7 @@ export function QuestionBankWorkspace() {
                 >
                   <div className="sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6">
                     <div>
-                      <h2 id="question-editor-title" className="font-black">
+                      <h2 id="question-editor-title" className="font-semibold">
                         {editorMode === "edit"
                           ? "Chỉnh sửa câu hỏi"
                           : editorMode === "copy"
@@ -2510,8 +2510,8 @@ export function QuestionBankWorkspace() {
             </>
           ) : null}
         </div>
-        <section className="rounded-[24px] border bg-white p-5">
-          <h2 className="font-black">Mẫu nhập dữ liệu</h2>
+        <section className="border-y border-slate-200 bg-white py-5">
+          <h2 className="font-semibold">Mẫu nhập dữ liệu</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
               className="btn-secondary"

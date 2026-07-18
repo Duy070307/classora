@@ -815,8 +815,8 @@ export function GradingAssistantWorkspace() {
           </Link>
           <div className="mt-3">
             <div>
-              <span className="soft-badge">Đánh giá &amp; kiểm tra</span>
-              <h1 className="mt-2 text-3xl font-bold text-slate-950">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Đánh giá &amp; kiểm tra</p>
+              <h1 className="mt-1 text-3xl font-bold text-slate-950">
                 Chấm bài
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -824,7 +824,7 @@ export function GradingAssistantWorkspace() {
                 viên quyết định mọi kết quả chưa chắc chắn.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                <span className="inline-flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-sm font-semibold text-blue-900">
+                <span className="inline-flex items-center gap-2 border-l-2 border-blue-500 pl-3 text-sm font-semibold text-blue-900">
                 <ShieldCheck className="mr-2 inline" size={18} />
                 Điểm chỉ là bản nháp đến khi giáo viên xác nhận.
                 </span>
@@ -888,18 +888,18 @@ export function GradingAssistantWorkspace() {
           </div>
         </header>
         {message ? (
-          <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold text-blue-950">
+          <div className="mt-4 border-y border-blue-100 bg-blue-50 px-3 py-3 text-sm font-semibold text-blue-950">
             {message}
           </div>
         ) : null}
         {progress ? (
-          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-bold">
+          <div className="mt-4 flex items-center gap-2 border-y border-slate-200 bg-white px-3 py-3 text-sm font-semibold" role="status">
             <Loader2 className="animate-spin text-blue-600" size={18} />
             {progress}
           </div>
         ) : null}
         {step === 2 && job ? (
-          <section className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
+          <section className="mt-4 border-y border-blue-100 bg-blue-50 px-2 py-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <label>
                 <span className="label">Loại bài làm</span>
@@ -958,21 +958,21 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 1 ? (
-          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-xl font-black">1. Chọn đề và đáp án</h2>
+          <section className="mt-5 border-t border-slate-200 pt-5">
+            <h2 className="text-xl font-semibold">1. Chọn đề và đáp án</h2>
             <p className="mt-1 text-sm text-slate-600">
               Ưu tiên đề có cấu trúc và đáp án đã được kiểm tra.
             </p>
             <div
               role="tablist"
               aria-label="Phương thức chọn nguồn chấm"
-              className="mt-5 inline-flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-1.5"
+              className="mt-4 inline-flex max-w-full overflow-x-auto border-b border-slate-200"
             >
               <button
                 type="button"
                 role="tab"
                 aria-selected={sourceMode === "history"}
-                className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold ${sourceMode === "history" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-white"}`}
+                className={`min-h-11 shrink-0 border-b-2 px-4 text-sm font-semibold ${sourceMode === "history" ? "border-blue-600 text-blue-700" : "border-transparent text-slate-700 hover:text-slate-950"}`}
                 onClick={() => setSourceMode("history")}
               >
                 Chọn đề đã lưu
@@ -981,14 +981,14 @@ export function GradingAssistantWorkspace() {
                 type="button"
                 role="tab"
                 aria-selected={sourceMode === "paste"}
-                className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold ${sourceMode === "paste" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-white"}`}
+                className={`min-h-11 shrink-0 border-b-2 px-4 text-sm font-semibold ${sourceMode === "paste" ? "border-blue-600 text-blue-700" : "border-transparent text-slate-700 hover:text-slate-950"}`}
                 onClick={() => setSourceMode("paste")}
               >
                 Dán đáp án
               </button>
             </div>
 
-            <div className="mt-4 max-w-4xl rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+            <div className="mt-4 max-w-4xl border-b border-slate-200 bg-slate-50/50 px-1 py-4">
               {sourceMode === "history" ? (
                 <label className="block max-w-2xl">
                   <span className="label">
@@ -1093,8 +1093,8 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 2 && job ? (
-          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-xl font-black">2. Tải bài làm</h2>
+          <section className="mt-5 border-t border-slate-200 pt-5">
+            <h2 className="text-xl font-semibold">2. Tải bài làm</h2>
             <p className="mt-1 text-sm text-slate-600">
               PNG, JPG/JPEG, WEBP, PDF tối đa 30 trang, DOCX, TXT hoặc ZIP an
               toàn. Tối đa 100 bài và 200MB mỗi bộ.
@@ -1122,7 +1122,7 @@ export function GradingAssistantWorkspace() {
               />
             </label>
             <details className="mt-4 rounded-2xl border border-slate-200 p-4">
-              <summary className="cursor-pointer font-black">
+              <summary className="cursor-pointer font-semibold">
                 Hoặc dán bài làm dạng văn bản
               </summary>
               <textarea
@@ -1162,8 +1162,8 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 3 && job ? (
-          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-xl font-black">3. Nhận dạng câu trả lời</h2>
+          <section className="mt-5 border-t border-slate-200 pt-5">
+            <h2 className="text-xl font-semibold">3. Nhận dạng câu trả lời</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               SOẠN LAB chỉ đọc nội dung nhìn thấy. Bài viết tay, tẩy xóa, khoanh
               nhiều đáp án hoặc ảnh mờ sẽ được đánh dấu để giáo viên kiểm tra.
@@ -1207,7 +1207,7 @@ export function GradingAssistantWorkspace() {
         {step === 4 && job && selected ? (
           <section className="mt-5 grid min-h-[720px] gap-4 xl:grid-cols-[280px_minmax(0,1fr)_390px]">
             <aside className="rounded-xl border border-slate-200 bg-white p-3">
-              <h2 className="px-2 py-2 font-black">4. Kiểm tra nhận dạng</h2>
+              <h2 className="px-2 py-2 font-semibold">4. Kiểm tra nhận dạng</h2>
               <SubmissionList
                 job={job}
                 selectedId={selected.id}
@@ -1366,8 +1366,8 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 5 && job ? (
-          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-xl font-black">5. Chấm điểm</h2>
+          <section className="mt-5 border-t border-slate-200 pt-5">
+            <h2 className="text-xl font-semibold">5. Chấm điểm</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <Setting label="Trắc nghiệm">
                 <select
@@ -1570,7 +1570,7 @@ export function GradingAssistantWorkspace() {
             <div className="rounded-xl border border-slate-200 bg-white p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-xl font-black">6. Giáo viên rà soát</h2>
+                  <h2 className="text-xl font-semibold">6. Giáo viên rà soát</h2>
                   <p className="mt-1 text-sm text-slate-600">
                     Mọi câu mở, điểm gợi ý và thay đổi đều cần giáo viên duyệt.
                   </p>
@@ -1748,11 +1748,11 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 7 && job && summary ? (
-          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
+          <section className="mt-5 border-t border-slate-200 pt-5">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="text-emerald-600" size={28} />
               <div>
-                <h2 className="text-xl font-black">
+                <h2 className="text-xl font-semibold">
                   7. Xác nhận và xuất kết quả
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">

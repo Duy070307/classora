@@ -538,7 +538,7 @@ export function ExamBlueprintWorkspace() {
   return (
     <AppShell title="Ma trận & bảng đặc tả">
       <div className="mx-auto max-w-[1500px] space-y-5">
-        <header className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <header className="border-b border-slate-200 bg-white pb-5 pt-1">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -548,8 +548,8 @@ export function ExamBlueprintWorkspace() {
           </Link>
           <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="soft-badge">Đánh giá &amp; kiểm tra</span>
-              <h1 className="mt-3 text-3xl font-black text-slate-950">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Đánh giá &amp; kiểm tra</p>
+              <h1 className="mt-1 text-3xl font-bold text-slate-950">
                 Ma trận &amp; bảng đặc tả
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -595,7 +595,7 @@ export function ExamBlueprintWorkspace() {
           </select>
         </label>
         <nav
-          className="ui-segmented-control hidden grid-cols-4 md:grid"
+          className="hidden grid-cols-4 border-b border-slate-200 md:grid"
           role="tablist"
           aria-label="Chế độ ma trận và bảng đặc tả"
         >
@@ -614,8 +614,8 @@ export function ExamBlueprintWorkspace() {
               aria-selected={mode === key}
               className={
                 mode === key
-                  ? "bg-white text-blue-700 shadow-sm"
-                  : "text-slate-600 hover:bg-white/70"
+                  ? "border-b-2 border-blue-600 text-blue-700"
+                  : "border-b-2 border-transparent text-slate-600 hover:text-slate-950"
               }
               onClick={() => setMode(key)}
             >
@@ -625,8 +625,8 @@ export function ExamBlueprintWorkspace() {
         </nav>
 
         {mode === "from_exam" || mode === "compare" ? (
-          <section className="rounded-[24px] border border-slate-200 bg-white p-5">
-            <h2 className="font-black">Chọn đề hiện có</h2>
+          <section className="border-b border-slate-200 bg-white pb-4">
+            <h2 className="font-semibold">Chọn đề hiện có</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               <select
                 className="form-field max-w-xl"
@@ -662,8 +662,8 @@ export function ExamBlueprintWorkspace() {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <main className="min-w-0 space-y-5">
             {mode !== "compare" ? (
-              <section className="rounded-[24px] border border-slate-200 bg-white p-5">
-                <h2 className="font-black">Thông tin chung</h2>
+              <section className="border-y border-slate-200 bg-white py-5">
+                <h2 className="font-semibold">Thông tin chung</h2>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <Field
                     label="Tên ma trận"
@@ -731,8 +731,8 @@ export function ExamBlueprintWorkspace() {
                   addTopic={addTopic}
                   moveTopic={moveTopic}
                 />
-                <section className="rounded-[24px] border border-slate-200 bg-white p-5">
-                  <h2 className="font-black">Nhập nhanh chủ đề</h2>
+                <section className="border-y border-slate-200 bg-white py-5">
+                  <h2 className="font-semibold">Nhập nhanh chủ đề</h2>
                   <textarea
                     className="form-field mt-3 min-h-24"
                     value={importText}
@@ -774,10 +774,10 @@ export function ExamBlueprintWorkspace() {
               />
             ) : null}
           </main>
-          <aside className="space-y-4">
-            <section className="sticky top-4 rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="font-black">Tổng hợp trực tiếp</h2>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+          <aside className="space-y-4 xl:border-l xl:border-slate-200 xl:pl-4">
+            <section className="sticky top-20 border-y border-slate-200 bg-white py-4">
+              <h2 className="font-semibold">Tổng hợp trực tiếp</h2>
+              <div className="mt-3 divide-y divide-slate-100 border-y border-slate-100">
                 <Metric label="Tổng số câu" value={totals.sectionQuestions} />
                 <Metric label="Tổng điểm phần" value={totals.sectionScore} />
                 <Metric label="Tổng chủ đề" value={totals.topicQuestions} />
@@ -797,12 +797,12 @@ export function ExamBlueprintWorkspace() {
                 className={`mt-4 rounded-xl p-3 text-sm ${validation.valid ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}
               >
                 {validation.valid ? (
-                  <p className="font-black">
+                  <p className="font-semibold">
                     <CheckCircle2 className="mr-1 inline" size={16} />
                     Ma trận hợp lệ
                   </p>
                 ) : (
-                  <p className="font-black">
+                  <p className="font-semibold">
                     <AlertTriangle className="mr-1 inline" size={16} />
                     Cần sửa trước khi tạo đề
                   </p>
@@ -815,13 +815,13 @@ export function ExamBlueprintWorkspace() {
                 {!validation.valid ? (
                   <div className="mt-3 grid gap-2">
                     <button
-                      className="rounded-lg border border-current px-2 py-1 text-xs font-black"
+                      className="rounded-md border border-current px-2 py-1 text-xs font-semibold"
                       onClick={suggestAdjustment}
                     >
                       Gợi ý điều chỉnh
                     </button>
                     <button
-                      className="rounded-lg border border-current px-2 py-1 text-xs font-black"
+                      className="rounded-md border border-current px-2 py-1 text-xs font-semibold"
                       onClick={applySafeAdjustment}
                     >
                       Áp dụng gợi ý
@@ -861,8 +861,8 @@ export function ExamBlueprintWorkspace() {
                 </button>
               </div>
             </section>
-            <section className="rounded-[24px] border border-slate-200 bg-white p-5">
-              <h2 className="font-black">Nguồn ngân hàng câu hỏi</h2>
+            <section className="border-y border-slate-200 bg-white py-4">
+              <h2 className="font-semibold">Nguồn ngân hàng câu hỏi</h2>
               <p className="mt-1 text-xs text-slate-500">
                 Chỉ thống kê câu thuộc ngân hàng hiện tại của giáo viên và nguồn
                 hệ thống được phép xem.
@@ -935,9 +935,9 @@ function SectionEditor({
   update: (patch: Partial<ExamBlueprint>) => void;
 }) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-5">
+    <section className="border-y border-slate-200 bg-white py-5">
       <div className="flex items-center justify-between">
-        <h2 className="font-black">Cấu trúc phần thi</h2>
+        <h2 className="font-semibold">Cấu trúc phần thi</h2>
         <button
           className="btn-secondary"
           onClick={() =>
@@ -1117,9 +1117,9 @@ function TopicEditor({
   moveTopic: (index: number, direction: -1 | 1) => void;
 }) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-5">
+    <section className="border-y border-slate-200 bg-white py-5">
       <div className="flex items-center justify-between">
-        <h2 className="font-black">Ma trận theo chủ đề</h2>
+        <h2 className="font-semibold">Ma trận theo chủ đề</h2>
         <button className="btn-secondary" onClick={addTopic}>
           <Plus size={15} />
           Thêm chủ đề
@@ -1183,7 +1183,7 @@ function TopicEditor({
                     />
                   </td>
                 ))}
-                <td className="p-1 font-black">{topicQuestionCount(topic)}</td>
+                <td className="p-1 font-semibold">{topicQuestionCount(topic)}</td>
                 <td className="p-1">
                   <input
                     className="form-field w-20"
@@ -1345,10 +1345,10 @@ function SpecificationEditor({
   sync: () => void;
 }) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-5">
+    <section className="border-y border-slate-200 bg-white py-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="font-black">Bảng đặc tả chi tiết</h2>
+          <h2 className="font-semibold">Bảng đặc tả chi tiết</h2>
           <p className="text-sm text-slate-500">
             Thay đổi ở đây không tự ghi đè ma trận.
           </p>
@@ -1387,7 +1387,7 @@ function SpecificationEditor({
           <strong>Bảng đặc tả đang tác động đến ma trận:</strong>{" "}
           {impact.matrixQuestions} → {impact.specificationQuestions} câu;{" "}
           {impact.matrixScore} → {impact.specificationScore} điểm.{" "}
-          <button className="ml-2 font-black underline" onClick={sync}>
+          <button className="ml-2 font-semibold underline" onClick={sync}>
             Xác nhận đồng bộ
           </button>
         </div>
@@ -1582,9 +1582,9 @@ function ComparisonView({
 }) {
   if (!comparison)
     return (
-      <section className="rounded-[24px] border border-slate-200 bg-white p-5">
+      <section className="border-y border-slate-200 bg-white py-5">
         <FileCheck2 />
-        <h2 className="mt-3 font-black">Chưa có kết quả đối chiếu</h2>
+        <h2 className="mt-3 font-semibold">Chưa có kết quả đối chiếu</h2>
         <p className="mt-1 text-sm text-slate-500">
           Chọn một đề hiện có ở phía trên rồi chạy đối chiếu.
         </p>
@@ -1594,10 +1594,10 @@ function ComparisonView({
       </section>
     );
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-5">
+    <section className="border-y border-slate-200 bg-white py-5">
       <div className="flex justify-between">
         <div>
-          <h2 className="font-black">Báo cáo đối chiếu</h2>
+          <h2 className="font-semibold">Báo cáo đối chiếu</h2>
           <p className="text-sm text-slate-500">
             Trạng thái tổng: {statusLabel[comparison.overall]}
           </p>
@@ -1630,7 +1630,7 @@ function ComparisonView({
           </tbody>
         </table>
       </div>
-      <h3 className="mt-5 font-black">Chi tiết chủ đề</h3>
+      <h3 className="mt-5 font-semibold">Chi tiết chủ đề</h3>
       <div className="mt-2 grid gap-2 md:grid-cols-2">
         {comparison.topics.map((topic) => (
           <div className="rounded-xl border p-3 text-sm" key={topic.topic}>
@@ -1727,9 +1727,9 @@ function NumberField({
 }
 function Metric({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
-      <p className="text-[11px] font-bold uppercase text-slate-500">{label}</p>
-      <p className="mt-1 text-xl font-black">{value}</p>
+    <div className="flex min-h-10 items-center justify-between gap-3 py-2">
+      <p className="text-xs font-medium text-slate-500">{label}</p>
+      <p className="font-semibold text-slate-950">{value}</p>
     </div>
   );
 }

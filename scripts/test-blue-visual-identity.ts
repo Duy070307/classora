@@ -63,17 +63,17 @@ for (const item of sharedBrandSources) {
 // 7. Xanh lá vẫn được giữ cho trạng thái hoàn thành có nghĩa.
 assert.match(stages, /stage\.completed \? "bg-emerald-100 text-emerald-800"/);
 // 8-9. Dashboard và Tool Center dùng selection/CTA xanh dương.
-assert.match(dashboard, /hover:border-blue-300/);
-assert.match(toolCenter, /category === item \? "bg-blue-600 text-white"/);
+assert.match(dashboard, /focus-visible:ring-blue-500/);
+assert.match(toolCenter, /category === item \? "border-blue-600 text-blue-700"/);
 // 10. Tool card có focus rõ, radius tiết chế và không còn CTA xanh lá.
-assert.match(toolCard, /rounded-xl[\s\S]*focus-within:ring-blue-100/);
+assert.match(toolCard, /focus-within:ring-blue-500[\s\S]*md:rounded-lg/);
 assert.doesNotMatch(toolCard, /emerald/);
 // 11. Bộ chọn nguồn assessment giữ lưới responsive và selected state xanh dương.
 assert.match(picker, /grid grid-cols-1 gap-3/);
 assert.match(picker, /border-blue-300 bg-blue-50/);
 // 12. Stepper có active xanh dương nhưng completed vẫn là success xanh lá.
-assert.match(stages, /bg-blue-600 text-white/);
-assert.match(stages, /bg-emerald-50 text-emerald-800/);
+assert.match(stages, /border-blue-600 text-blue-700/);
+assert.match(stages, /border-emerald-500 text-emerald-800/);
 // 13. Header công cụ là dải nội dung gọn, không còn card nổi có rail xanh lá.
 assert.match(toolHeader, /border-b border-slate-200 bg-white/);
 assert.doesNotMatch(toolHeader, /ui-panel|border-l-emerald/);
@@ -86,7 +86,7 @@ for (const item of priorityWorkspaces) {
 }
 // 16. Question Bank dùng xanh dương cho collection, filter và selection.
 assert.match(questionBank, /bg-blue-50 text-blue-900/);
-assert.match(questionBank, /border-blue-400 ring-2 ring-blue-100/);
+assert.match(questionBank, /bg-blue-50\/60 ring-2 ring-inset ring-blue-200/);
 // 17. History dùng xanh dương cho selection nhưng vẫn có badge trạng thái verified xanh lá.
 assert.match(history, /border-blue-400 bg-blue-50\/50 ring-2 ring-blue-100/);
 assert.match(history, /verificationStatus === "verified" \? "bg-emerald-100/);

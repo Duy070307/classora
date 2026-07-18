@@ -1,6 +1,4 @@
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
-import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
 
 export function ToolOutputPanel({
   loading = false,
@@ -23,27 +21,23 @@ export function ToolOutputPanel({
 }) {
   if (loading) {
     return (
-      <div className="ui-panel p-7 text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-          <Loader2 className="animate-spin" size={36} />
-        </span>
-        <p className="mt-5 font-bold text-ink">{loadingTitle}</p>
-        <p className="mt-2 text-sm leading-6 text-muted">{loadingDescription}</p>
+      <div className="flex min-h-24 items-center gap-3 border-y border-slate-200 px-3 py-5" role="status">
+        <Loader2 className="shrink-0 animate-spin text-blue-700" size={22} />
+        <div>
+          <p className="font-semibold text-ink">{loadingTitle}</p>
+          <p className="mt-1 text-sm leading-6 text-muted">{loadingDescription}</p>
+        </div>
       </div>
     );
   }
 
   if (!hasOutput) {
     return (
-      <section className="ui-panel relative overflow-hidden p-5 text-center sm:p-6">
-        <div className="relative mx-auto max-w-md">
-          <SoanLabIllustration variant="document" className="max-w-[200px]" />
-          <h2 className="mt-4 text-xl font-black text-ink">{emptyTitle || "Kết quả sẽ xuất hiện tại đây"}</h2>
+      <section className="relative min-h-[420px] border border-slate-200 bg-white p-5 sm:p-8">
+        <div className="mx-auto flex min-h-[350px] max-w-md flex-col items-center justify-center text-center">
+          <span className="mb-5 h-1 w-12 bg-blue-600" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-ink">{emptyTitle || "Kết quả sẽ xuất hiện tại đây"}</h2>
           <p className="mt-2 text-sm leading-6 text-muted">{emptyDescription || "Sau khi tạo bản nháp, thầy cô có thể sao chép, lưu lịch sử hoặc xuất Word/PDF."}</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <SoanLabBadge tone="export">Word/PDF</SoanLabBadge>
-            <SoanLabBadge tone="useful">Lưu lịch sử</SoanLabBadge>
-          </div>
         </div>
       </section>
     );

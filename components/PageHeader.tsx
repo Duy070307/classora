@@ -8,10 +8,10 @@ export function PageHeader({
   eyebrow?: string;
 }) {
   return (
-    <header className="relative mb-5 border-b border-slate-200 bg-white px-4 py-5 sm:px-5">
+    <header className="relative mb-4 border-b border-slate-200 bg-white px-1 pb-4 pt-1">
       <div>
-        <span className="soft-badge">{eyebrow}</span>
-        <h1 className="mt-2 text-2xl font-black tracking-[-0.02em] text-ink sm:text-3xl">{title}</h1>
+        {eyebrow !== "Soạn Lab" ? <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{eyebrow}</p> : null}
+        <h1 className={`${eyebrow !== "Soạn Lab" ? "mt-1" : ""} text-2xl font-bold tracking-[-0.02em] text-ink sm:text-3xl`}>{title}</h1>
         {description ? <p className="mt-1.5 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p> : null}
       </div>
     </header>

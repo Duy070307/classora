@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 import { SoanLabIcon, iconNameFromHref } from "@/components/ui/SoanLabIcon";
@@ -13,7 +13,6 @@ export function ToolCard({
   description,
   href,
   badge,
-  categoryLabel,
 }: {
   title: string;
   description: string;
@@ -32,10 +31,10 @@ export function ToolCard({
   }, [href]);
 
   return (
-    <article className="group relative flex min-h-[210px] min-w-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-4 outline-none transition duration-200 hover:border-blue-300 hover:shadow-sm focus-within:ring-4 focus-within:ring-blue-100">
+    <article className="group relative min-h-[132px] min-w-0 border-b border-slate-200 bg-white transition hover:bg-slate-50 focus-within:bg-blue-50/40 focus-within:ring-2 focus-within:ring-inset focus-within:ring-blue-500 md:rounded-lg md:border">
       <button
         type="button"
-        className={`absolute right-3 top-3 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-lg transition ${favorite ? "bg-amber-50 text-amber-600 ring-1 ring-amber-100" : "bg-white text-slate-500 ring-1 ring-slate-200 hover:bg-blue-50 hover:text-blue-700"}`}
+        className={`absolute right-2 top-2 z-20 flex min-h-11 min-w-11 items-center justify-center rounded-lg transition focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-blue-500 ${favorite ? "bg-amber-50 text-amber-600 opacity-100" : "bg-white/90 text-slate-500 opacity-0 hover:bg-blue-50 hover:text-blue-700 group-hover:opacity-100 group-focus-within:opacity-100"}`}
         aria-label={favorite ? `Bỏ ${title} khỏi yêu thích` : `Thêm ${title} vào yêu thích`}
         onClick={() => {
           toggleFavoriteTool(href);
@@ -45,20 +44,19 @@ export function ToolCard({
         <Star size={18} fill={favorite ? "currentColor" : "none"} />
       </button>
 
-      <SoanLabIcon name={iconNameFromHref(href)} className="mb-3" />
-      <div className="flex min-h-6 flex-wrap items-center gap-2 pr-10">
-        {categoryLabel ? <span className="text-[11px] font-bold uppercase tracking-wide text-blue-700">{categoryLabel}</span> : null}
-        {badge ? <SoanLabBadge tone={badge === "Mới" ? "new" : badge === "Hữu ích" ? "useful" : "popular"}>{badge}</SoanLabBadge> : null}
-      </div>
-      <h3 className="mt-2 text-base font-black leading-6 text-slate-900 sm:text-lg">{title}</h3>
-      <p className="mt-1.5 line-clamp-3 text-sm leading-6 text-slate-600">{description}</p>
       <Link
         href={href}
         onClick={() => saveRecentTool({ href, title })}
-        className="mt-auto flex min-h-11 items-center justify-between border-t border-slate-100 pt-3 text-sm font-semibold text-blue-700 outline-none focus-visible:rounded-lg focus-visible:ring-4 focus-visible:ring-blue-100"
+        className="flex min-h-[132px] gap-3 p-4 pr-14 outline-none"
       >
-        <span>Mở công cụ</span>
-        <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+        <SoanLabIcon name={iconNameFromHref(href)} size="sm" plain className="mt-0.5" />
+        <span className="min-w-0">
+          <span className="flex min-h-6 flex-wrap items-center gap-2">
+            <span className="text-base font-semibold leading-6 text-slate-950">{title}</span>
+            {badge ? <SoanLabBadge tone={badge === "Mới" ? "new" : "popular"}>{badge}</SoanLabBadge> : null}
+          </span>
+          <span className="mt-1.5 block line-clamp-3 text-sm leading-6 text-slate-600">{description}</span>
+        </span>
       </Link>
     </article>
   );
