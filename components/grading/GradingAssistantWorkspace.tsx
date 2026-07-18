@@ -805,7 +805,7 @@ export function GradingAssistantWorkspace() {
   return (
     <AppShell title="Chấm bài" contentClassName="w-full p-3 sm:p-5 lg:p-6">
       <div className="mx-auto max-w-[1280px]">
-        <header className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <header className="border-b border-slate-200 bg-white px-1 pb-4">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -816,7 +816,7 @@ export function GradingAssistantWorkspace() {
           <div className="mt-3">
             <div>
               <span className="soft-badge">Đánh giá &amp; kiểm tra</span>
-              <h1 className="mt-3 text-3xl font-black text-slate-950">
+              <h1 className="mt-2 text-3xl font-bold text-slate-950">
                 Chấm bài
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -831,7 +831,7 @@ export function GradingAssistantWorkspace() {
                 {job?.source.exam || job?.source.variantSet ? (
                   <button
                     type="button"
-                    className="text-sm font-bold text-emerald-700 underline-offset-4 hover:underline"
+                    className="text-sm font-semibold text-blue-700 underline-offset-4 hover:underline"
                     onClick={() =>
                       openAnswerSheet({
                         id: job.source.documentId || crypto.randomUUID(),
@@ -851,7 +851,7 @@ export function GradingAssistantWorkspace() {
                 ) : (
                   <Link
                     href="/tools/answer-sheet"
-                    className="text-sm font-bold text-emerald-700 underline-offset-4 hover:underline"
+                    className="text-sm font-semibold text-blue-700 underline-offset-4 hover:underline"
                   >
                     Chưa có phiếu trả lời? Tạo phiếu chuẩn
                   </Link>
@@ -899,7 +899,7 @@ export function GradingAssistantWorkspace() {
           </div>
         ) : null}
         {step === 2 && job ? (
-          <section className="mt-4 rounded-[24px] border border-emerald-100 bg-emerald-50 p-4">
+          <section className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <label>
                 <span className="label">Loại bài làm</span>
@@ -948,7 +948,7 @@ export function GradingAssistantWorkspace() {
               ) : null}
             </div>
             {submissionFormat === "soanlab_answer_sheet" ? (
-              <p className="mt-3 text-sm leading-6 text-emerald-950">
+              <p className="mt-3 text-sm leading-6 text-blue-950">
                 SOẠN LAB căn theo QR và bốn ô định vị, sau đó đọc bubble bằng xử
                 lý ảnh xác định. Ô tô mờ, tô nhiều hoặc gạch sửa luôn được
                 chuyển sang giáo viên rà soát.
@@ -958,7 +958,7 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 1 ? (
-          <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="text-xl font-black">1. Chọn đề và đáp án</h2>
             <p className="mt-1 text-sm text-slate-600">
               Ưu tiên đề có cấu trúc và đáp án đã được kiểm tra.
@@ -972,7 +972,7 @@ export function GradingAssistantWorkspace() {
                 type="button"
                 role="tab"
                 aria-selected={sourceMode === "history"}
-                className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-bold ${sourceMode === "history" ? "bg-emerald-700 text-white" : "text-slate-700 hover:bg-white"}`}
+                className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold ${sourceMode === "history" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-white"}`}
                 onClick={() => setSourceMode("history")}
               >
                 Chọn đề đã lưu
@@ -981,7 +981,7 @@ export function GradingAssistantWorkspace() {
                 type="button"
                 role="tab"
                 aria-selected={sourceMode === "paste"}
-                className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-bold ${sourceMode === "paste" ? "bg-emerald-700 text-white" : "text-slate-700 hover:bg-white"}`}
+                className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold ${sourceMode === "paste" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-white"}`}
                 onClick={() => setSourceMode("paste")}
               >
                 Dán đáp án
@@ -1093,7 +1093,7 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 2 && job ? (
-          <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="text-xl font-black">2. Tải bài làm</h2>
             <p className="mt-1 text-sm text-slate-600">
               PNG, JPG/JPEG, WEBP, PDF tối đa 30 trang, DOCX, TXT hoặc ZIP an
@@ -1162,7 +1162,7 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 3 && job ? (
-          <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="text-xl font-black">3. Nhận dạng câu trả lời</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               SOẠN LAB chỉ đọc nội dung nhìn thấy. Bài viết tay, tẩy xóa, khoanh
@@ -1206,7 +1206,7 @@ export function GradingAssistantWorkspace() {
 
         {step === 4 && job && selected ? (
           <section className="mt-5 grid min-h-[720px] gap-4 xl:grid-cols-[280px_minmax(0,1fr)_390px]">
-            <aside className="rounded-[24px] border border-slate-200 bg-white p-3 shadow-sm">
+            <aside className="rounded-xl border border-slate-200 bg-white p-3">
               <h2 className="px-2 py-2 font-black">4. Kiểm tra nhận dạng</h2>
               <SubmissionList
                 job={job}
@@ -1220,7 +1220,7 @@ export function GradingAssistantWorkspace() {
                 compact
               />
             </aside>
-            <div className="min-w-0 rounded-[24px] border border-slate-200 bg-slate-950 p-3 shadow-sm">
+            <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-950 p-3">
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-900 p-2 text-white">
                 <div className="flex items-center gap-1">
                   <button
@@ -1306,7 +1306,7 @@ export function GradingAssistantWorkspace() {
                 )}
               </div>
             </div>
-            <aside className="min-w-0 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+            <aside className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
               <IdentityEditor
                 job={job}
                 submission={selected}
@@ -1366,7 +1366,7 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 5 && job ? (
-          <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="text-xl font-black">5. Chấm điểm</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <Setting label="Trắc nghiệm">
@@ -1567,7 +1567,7 @@ export function GradingAssistantWorkspace() {
               <Info label="Cao nhất" value={summary.highest} />
               <Info label="Thấp nhất" value={summary.lowest} />
             </div>
-            <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-xl font-black">6. Giáo viên rà soát</h2>
@@ -1625,7 +1625,7 @@ export function GradingAssistantWorkspace() {
                     aria-selected={reviewQueueFilter === "needs_review"}
                     className={
                       reviewQueueFilter === "needs_review"
-                        ? "bg-white text-emerald-800 shadow-sm"
+                        ? "bg-white text-blue-800 shadow-sm"
                         : "text-slate-600"
                     }
                     onClick={() => setReviewQueueFilter("needs_review")}
@@ -1638,7 +1638,7 @@ export function GradingAssistantWorkspace() {
                     aria-selected={reviewQueueFilter === "all"}
                     className={
                       reviewQueueFilter === "all"
-                        ? "bg-white text-emerald-800 shadow-sm"
+                        ? "bg-white text-blue-800 shadow-sm"
                         : "text-slate-600"
                     }
                     onClick={() => setReviewQueueFilter("all")}
@@ -1748,7 +1748,7 @@ export function GradingAssistantWorkspace() {
         ) : null}
 
         {step === 7 && job && summary ? (
-          <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="mt-5 rounded-xl border border-slate-200 bg-white p-5">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="text-emerald-600" size={28} />
               <div>
@@ -1914,7 +1914,7 @@ function SourceCard({ job }: { job: GradingJob }) {
 }
 function Info({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="text-xs font-bold text-slate-500">{label}</p>
       <p className="mt-1 text-2xl font-black">{value}</p>
     </div>
@@ -1948,7 +1948,7 @@ function RubricAssessmentPanel({
   ) => void;
 }) {
   return (
-    <section className="rounded-[28px] border border-blue-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-blue-200 bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-black">Chấm theo từng tiêu chí rubric</h2>
@@ -2351,7 +2351,7 @@ function ResultReview({
 }) {
   const result = submission.gradingResult!;
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-slate-200 bg-white p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-black">

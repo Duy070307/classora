@@ -251,7 +251,7 @@ export function AnswerSheetWorkspace() {
   return (
     <AppShell title="Phiếu trả lời" contentClassName="w-full p-3 sm:p-5 lg:p-6">
       <div className="mx-auto max-w-[1280px]">
-        <header className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <header className="border-b border-slate-200 bg-white px-1 pb-4">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-black text-blue-700"
@@ -262,14 +262,14 @@ export function AnswerSheetWorkspace() {
           <div className="mt-3">
             <div>
               <span className="soft-badge">Đánh giá xác định</span>
-              <h1 className="mt-3 text-3xl font-black text-slate-950">
+              <h1 className="mt-2 text-3xl font-bold text-slate-950">
                 Phiếu trả lời
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
                 Tạo phiếu chuẩn có QR, điểm định vị và ô trả lời ổn định để in,
                 quét và chấm khách quan chính xác hơn.
               </p>
-              <p className="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50/70 px-3 py-2 text-sm font-semibold text-emerald-900">
+              <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-900">
                 <CheckCircle2 size={17} aria-hidden="true" />
                 Không đưa đáp án vào phiếu hoặc mã QR.
               </p>
@@ -331,7 +331,7 @@ export function AnswerSheetWorkspace() {
           >
             <main className="space-y-5">
               {configStage === "source" ? (
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="text-xl font-black">1. Chọn nguồn đề</h2>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <label>
@@ -425,7 +425,7 @@ export function AnswerSheetWorkspace() {
                 </section>
               ) : null}
               {configStage === "details" ? (
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="text-xl font-black">
                     2. Thông tin bài kiểm tra
                   </h2>
@@ -478,7 +478,7 @@ export function AnswerSheetWorkspace() {
                 </section>
               ) : null}
               {configStage === "answers" ? (
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="text-xl font-black">
                     3. Cấu trúc câu trả lời
                   </h2>
@@ -562,7 +562,7 @@ export function AnswerSheetWorkspace() {
             </main>
             {configStage === "answers" ? (
               <aside className="space-y-5">
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="font-black">Thông tin học sinh</h2>
                   <div className="mt-3 space-y-2">
                     {(
@@ -593,7 +593,7 @@ export function AnswerSheetWorkspace() {
                     ))}
                   </div>
                 </section>
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="font-black">Khổ giấy &amp; mật độ</h2>
                   <SelectField
                     label="Khổ giấy"
@@ -664,7 +664,7 @@ export function AnswerSheetWorkspace() {
           </div>
         ) : template && layout && page ? (
           <section className="mt-5 grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)_300px]">
-            <aside className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <aside className="rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="text-xl font-black">Xem trước phiếu trả lời</h2>
               <p className="mt-2 text-sm text-slate-600">
                 {countLabel(template)}
@@ -719,12 +719,12 @@ export function AnswerSheetWorkspace() {
                 </p>
               ))}
             </aside>
-            <div className="overflow-auto rounded-[28px] border border-slate-200 bg-slate-100 p-4 shadow-inner">
+            <div className="overflow-auto rounded-xl border border-slate-200 bg-slate-100 p-4">
               <div className="mx-auto max-w-[800px] overflow-hidden border border-slate-300 bg-white shadow-xl">
                 <AnswerSheetPreview page={page} />
               </div>
             </div>
-            <aside className="space-y-3 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <aside className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
               <h2 className="font-black">Xuất &amp; sử dụng</h2>
               <button
                 className="btn-primary w-full justify-start"

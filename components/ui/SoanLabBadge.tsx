@@ -1,14 +1,14 @@
 import { CheckCircle2, Download, Sparkles, Star, Wand2 } from "lucide-react";
 
 const styles = {
-  demo: "border-emerald-100 bg-emerald-50 text-emerald-800",
-  ai: "border-violet-100 bg-violet-50 text-violet-700",
-  export: "border-emerald-100 bg-emerald-50 text-emerald-800",
-  local: "border-emerald-100 bg-emerald-50 text-emerald-700",
+  demo: "border-blue-100 bg-blue-50 text-blue-800",
+  ai: "border-blue-100 bg-blue-50 text-blue-800",
+  export: "border-blue-100 bg-blue-50 text-blue-800",
+  local: "border-slate-200 bg-slate-50 text-slate-700",
   mvp: "border-slate-200 bg-slate-50 text-slate-700",
   popular: "border-amber-100 bg-amber-50 text-amber-700",
-  new: "border-emerald-100 bg-emerald-50 text-emerald-800",
-  useful: "border-emerald-100 bg-emerald-50 text-emerald-800",
+  new: "border-blue-100 bg-blue-50 text-blue-800",
+  useful: "border-blue-100 bg-blue-50 text-blue-800",
   review: "border-orange-100 bg-orange-50 text-orange-700",
 } as const;
 
@@ -41,7 +41,7 @@ export type SoanLabBadgeTone = keyof typeof styles;
 export function SoanLabBadge({ tone = "demo", children }: { tone?: SoanLabBadgeTone; children?: React.ReactNode }) {
   const Icon = icons[tone];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-extrabold ${styles[tone]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[tone]}`}>
       <Icon size={12} />
       {children || labelMap[tone]}
     </span>

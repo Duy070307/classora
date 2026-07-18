@@ -1053,7 +1053,7 @@ function Editor({
             {pack.outline.map((item) => (
               <button
                 key={item.id}
-                className={`min-h-11 w-full rounded-xl border p-3 text-left text-sm ${selected?.id === item.id ? "border-emerald-400 bg-emerald-50" : "border-slate-200"}`}
+                className={`min-h-11 w-full rounded-lg border p-3 text-left text-sm ${selected?.id === item.id ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}
                 onClick={() => select(item.id)}
               >
                 <strong>
@@ -1072,13 +1072,13 @@ function Editor({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex gap-2">
               <button
-                className={`min-h-11 rounded-xl px-3 py-2 text-sm font-bold ${audience === "student" ? "bg-emerald-700 text-white" : "bg-slate-100"}`}
+                className={`min-h-11 rounded-lg px-3 py-2 text-sm font-semibold ${audience === "student" ? "bg-blue-600 text-white" : "bg-slate-100"}`}
                 onClick={() => setAudience("student")}
               >
                 Bản học sinh
               </button>
               <button
-                className={`min-h-11 rounded-xl px-3 py-2 text-sm font-bold ${audience === "teacher" ? "bg-emerald-700 text-white" : "bg-slate-100"}`}
+                className={`min-h-11 rounded-lg px-3 py-2 text-sm font-semibold ${audience === "teacher" ? "bg-blue-600 text-white" : "bg-slate-100"}`}
                 onClick={() => setAudience("teacher")}
               >
                 Bản giáo viên

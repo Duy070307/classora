@@ -16,7 +16,7 @@ type BrandLogoProps = {
 
 const sizeStyles = {
   sm: {
-    box: "h-9 w-9 rounded-[13px]",
+    box: "h-9 w-9 rounded-lg",
     mark: "h-6 w-6",
     fallback: "text-base",
     word: "text-[15px]",
@@ -24,7 +24,7 @@ const sizeStyles = {
     gap: "gap-2.5",
   },
   md: {
-    box: "h-10 w-10 rounded-[14px]",
+    box: "h-10 w-10 rounded-lg",
     mark: "h-7 w-7",
     fallback: "text-lg",
     word: "text-[17px]",
@@ -32,7 +32,7 @@ const sizeStyles = {
     gap: "gap-3",
   },
   lg: {
-    box: "h-11 w-11 rounded-[15px]",
+    box: "h-11 w-11 rounded-lg",
     mark: "h-8 w-8",
     fallback: "text-xl",
     word: "text-[19px]",
@@ -95,7 +95,7 @@ export function BrandLogo({
     </span>
   );
 
-  const classes = `inline-flex min-w-0 items-center rounded-2xl transition ${href ? "hover:bg-slate-50" : ""} ${className}`;
+  const classes = `inline-flex min-w-0 items-center rounded-lg transition ${href ? "hover:bg-slate-50" : ""} ${className}`;
 
   if (href) {
     return (

@@ -555,12 +555,12 @@ export default function ExamGeneratorPage() {
         <PageHeader title="Tạo đề kiểm tra" description="Tạo bản nháp đề kiểm tra, đáp án, thang điểm và ma trận trong vài phút." />
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="grid w-full max-w-2xl grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-100 p-1.5" role="tablist" aria-label="Chế độ tạo đề">
-          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-black transition ${creationMode === "manual" ? "bg-white text-emerald-800 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo bằng cấu hình</button>
-          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-black transition ${creationMode === "file" ? "bg-white text-emerald-800 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo từ file</button>
+          <button type="button" role="tab" aria-selected={creationMode === "manual"} onClick={() => setCreationMode("manual")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${creationMode === "manual" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo bằng cấu hình</button>
+          <button type="button" role="tab" aria-selected={creationMode === "file"} onClick={() => setCreationMode("file")} className={`min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${creationMode === "file" ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-950"}`}>Tạo từ file</button>
         </div>
         <Link href="/tools/exam-blueprint" className="btn-secondary shrink-0">Tạo ma trận trước</Link>
         </div>
-        <div className="mb-5 max-w-2xl rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-950">Có đề giấy, ảnh chụp hoặc PDF quét? <Link href="/tools/document-recognition" className="font-black text-emerald-800 underline">Đọc đề từ ảnh/PDF</Link> rồi rà soát trước khi tạo hoặc xuất file.</div>
+        <div className="mb-5 max-w-2xl rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-950">Có đề giấy, ảnh chụp hoặc PDF quét? <Link href="/tools/document-recognition" className="font-semibold text-blue-700 underline">Đọc đề từ ảnh/PDF</Link> rồi rà soát trước khi tạo hoặc xuất file.</div>
         {creationMode === "file" ? <FileExamGenerator /> : (
         <ToolWorkspaceLayout
           form={
@@ -574,7 +574,7 @@ export default function ExamGeneratorPage() {
                     key={preset.label}
                     type="button"
                     onClick={() => applyQuickPreset(preset.values, preset.bank)}
-                    className="min-h-11 rounded-xl bg-white px-3 py-2 text-xs font-extrabold text-emerald-800 ring-1 ring-emerald-100 transition hover:bg-emerald-700 hover:text-white"
+                    className="min-h-11 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-blue-700 ring-1 ring-blue-100 transition hover:bg-blue-600 hover:text-white"
                   >
                     {preset.label}
                   </button>
@@ -696,7 +696,7 @@ export default function ExamGeneratorPage() {
               </div>
             </details>
             <div><label className="label">Yêu cầu thêm</label><textarea className="form-field mt-1 min-h-24" value={input.extraRequirements} onChange={(e) => setInput({ ...input, extraRequirements: e.target.value })} /></div>
-            <div className="tool-tip-card"><p className="font-bold text-emerald-900">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
+            <div className="tool-tip-card"><p className="font-semibold text-blue-900">Mẹo trước khi tạo</p><p className="mt-1">Kiểm tra tổng tỉ lệ nhận thức bằng 100% và chọn đúng phần cần xuất để file Word gọn hơn.</p></div>
             <button className="btn-primary w-full" disabled={loading}>{loading ? "Đang tạo..." : "Tạo đề kiểm tra"}</button>
             {message ? <p className={`rounded-xl p-2 text-sm font-medium ${document?.generationMeta?.isPartial ? "bg-amber-50 text-amber-800" : "text-mint"}`}>{message}</p> : null}
           </form>
@@ -710,8 +710,8 @@ export default function ExamGeneratorPage() {
                   <p className="mt-2 text-xs text-blue-800">SOẠN LAB đã loại các nội dung ngoài chủ đề trước khi hiển thị.</p>
                 </div>
                 {process.env.NODE_ENV === "development" ? <details className="mb-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700"><summary className="cursor-pointer font-bold">Báo cáo cấu trúc đề (phát triển)</summary><div className="mt-2 space-y-1"><p>Yêu cầu: {input.subject} · lớp {input.grade} · {input.topic}</p><p>Phần yêu cầu: I {document.generationMeta?.requestedSectionCounts?.partI ?? input.multipleChoiceCount} · II {document.generationMeta?.requestedSectionCounts?.partII ?? input.trueFalseCount} · III {document.generationMeta?.requestedSectionCounts?.partIII ?? input.shortAnswerCount}</p><p>Phần hợp lệ: I {document.generationMeta?.generatedSectionCounts?.partI ?? 0} · II {document.generationMeta?.generatedSectionCounts?.partII ?? 0} · III {document.generationMeta?.generatedSectionCounts?.partIII ?? 0}</p><p>Tổng: {document.generationMeta?.finalCount ?? document.generationMeta?.questionCount ?? 0}/{document.generationMeta?.requestedCount ?? 0}</p><p>Đã loại trùng: {document.generationMeta?.duplicateRemovedCount ?? 0}</p><p>Nguồn: {document.generationMeta?.bankSource || document.generationMeta?.source || "Tạo tự động"}</p><p>Cảnh báo: {document.generationMeta?.warnings?.join("; ") || "Không có"}</p></div></details> : null}
-                <div className="mb-3 rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm">
-                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-black uppercase tracking-wide text-emerald-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-bold text-slate-900">Xem trước → Kiểm tra → Rà soát → Xuất file</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
+                <div className="mb-3 rounded-xl border border-blue-200 bg-white p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quy trình trước khi xuất</p><p className="mt-1 text-sm font-semibold text-slate-900">Xem trước → Kiểm tra → Rà soát → Xuất file</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-black ${document.auditMeta?.auditStatus === "ready" ? "bg-emerald-100 text-emerald-700" : document.auditMeta?.auditStatus === "needs_fix" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800"}`}>{auditStatusLabel(document)}</span></div>
                   <button type="button" className="btn-primary mt-3" onClick={openExamAudit}>Kiểm tra đề trước khi xuất</button>
                   <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                     <summary className="cursor-pointer text-sm font-black text-slate-700">Tác vụ khác với đề này</summary>

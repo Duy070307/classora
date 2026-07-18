@@ -53,7 +53,7 @@ export default function GettingStartedPage() {
               Chọn công cụ phù hợp, nhập thông tin bằng biểu mẫu, tạo bản nháp rồi xuất Word/PDF hoặc lưu lịch sử.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 shadow-lg">
+              <Link href="/dashboard" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 py-2 text-sm font-semibold text-blue-700 shadow-sm">
                 Bắt đầu sử dụng
               </Link>
               <Link href="/tools" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-2 text-sm font-bold text-white">
@@ -69,8 +69,8 @@ export default function GettingStartedPage() {
             {steps.map(([number, title, text, Icon]) => (
               <article key={number} className="card app-card-hover p-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-extrabold text-indigo-600">{number}</span>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700"><Icon size={19} /></span>
+                  <span className="text-sm font-bold text-blue-600">{number}</span>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Icon size={19} /></span>
                 </div>
                 <h3 className="mt-5 font-bold text-ink">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-muted">{text}</p>
@@ -85,9 +85,9 @@ export default function GettingStartedPage() {
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {tools.map(([title, text, href, Icon]) => (
               <Link key={href} href={href} className="card app-card-hover group flex items-center gap-4 p-5">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 text-indigo-700"><Icon size={21} /></span>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Icon size={21} /></span>
                 <div className="min-w-0 flex-1"><h3 className="font-bold text-ink">{title}</h3><p className="mt-1 text-sm text-muted">{text}</p></div>
-                <ArrowRight size={17} className="shrink-0 text-indigo-600 transition group-hover:translate-x-1" />
+                <ArrowRight size={17} className="shrink-0 text-blue-600 transition group-hover:translate-x-1" />
               </Link>
             ))}
           </div>

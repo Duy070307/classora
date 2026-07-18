@@ -378,7 +378,7 @@ export default function ImageToLatexPage() {
           <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
         </div>
 
-        <section className="mb-5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+        <section className="mb-5 rounded-xl border border-slate-200 bg-white p-3">
           <span className="label">Chế độ nhận diện</span>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {modes.map((item) => (
@@ -386,7 +386,7 @@ export default function ImageToLatexPage() {
                 key={item.value}
                 type="button"
                 onClick={() => setMode(item.value)}
-                className={`min-h-11 rounded-xl border px-3 py-2 text-sm font-bold transition ${mode === item.value ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300"}`}
+                className={`min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold transition ${mode === item.value ? "border-blue-300 bg-blue-50 text-blue-800" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"}`}
               >
                 {item.label}
               </button>
@@ -431,7 +431,7 @@ export default function ImageToLatexPage() {
             </details>
 
             {previewUrl ? (
-              <div className="overflow-hidden rounded-3xl border border-blue-100 bg-white p-3 shadow-sm">
+              <div className="overflow-hidden rounded-xl border border-blue-100 bg-white p-3">
                 <div className="mb-3 flex flex-wrap gap-2">
                   <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === -90 ? 180 : rotation - 90) as -90 | 0 | 90 | 180)}>Xoay trái</button>
                   <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === 180 ? -90 : rotation + 90) as -90 | 0 | 90 | 180)}>Xoay phải</button>
@@ -452,9 +452,9 @@ export default function ImageToLatexPage() {
             ) : null}
 
             {busy ? (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4" role="status" aria-live="polite">
-                <p className="font-black text-emerald-950">Đang xử lý ảnh</p>
-                <p className="mt-1 text-sm leading-6 text-emerald-900">
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4" role="status" aria-live="polite">
+                <p className="font-bold text-blue-950">Đang xử lý ảnh</p>
+                <p className="mt-1 text-sm leading-6 text-blue-900">
                   Đang nhận dạng · Đang dựng hình · Đang kiểm tra
                 </p>
               </div>
@@ -596,7 +596,7 @@ export default function ImageToLatexPage() {
 
               {isTikzOutput && tikzDraft ? null : <div>
                 <p className="label">{isTikzOutput ? "Bản xem trước hình vẽ" : "Preview nếu LaTeX render được"}</p>
-                <div className="mt-2 min-h-36 overflow-auto rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 p-5 text-center text-xl shadow-inner">
+                <div className="mt-2 min-h-36 overflow-auto rounded-xl border border-blue-100 bg-white p-5 text-center text-xl">
                   {!latex ? (
                     <p className="text-sm text-muted">{isGeometryMode ? "Chưa có mã TikZ để xem trước." : "Chưa có LaTeX để preview."}</p>
                   ) : isTikzOutput ? (
@@ -620,7 +620,7 @@ export default function ImageToLatexPage() {
         </div>
         ) : null}
         {error && !previewUrl ? <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p> : null}
-        {message && !previewUrl ? <p className="mt-4 text-sm font-bold text-emerald-700">{message}</p> : null}
+        {message && !previewUrl ? <p className="mt-4 text-sm font-semibold text-blue-700">{message}</p> : null}
         </div>
       </main>
     </div>

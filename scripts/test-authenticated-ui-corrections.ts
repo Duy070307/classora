@@ -41,7 +41,7 @@ assert.match(mixer, /pendingSource \? "Tiếp tục cấu hình mã đề" : und
 // 7. Nguồn xếp một cột ở mobile và chỉ tăng cột theo breakpoint.
 assert.match(picker, /grid grid-cols-1 gap-3/);
 // 8. Bước chưa thực hiện có độ tương phản đọc được.
-assert.match(stages, /text-slate-700 hover:bg-emerald-50/);
+assert.match(stages, /text-slate-700 hover:bg-blue-50/);
 assert.match(stages, /disabled:opacity-60/);
 // 9. Mobile không hiển thị bảy nhãn bước ngang.
 assert.match(stages, /md:hidden/);

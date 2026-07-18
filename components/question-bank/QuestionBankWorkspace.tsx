@@ -1524,7 +1524,7 @@ export function QuestionBankWorkspace() {
                 </button>
               </div>
               <button
-                className={`mt-3 min-h-11 w-full rounded-xl p-2 text-left text-sm font-bold ${!activeCollectionId ? "bg-emerald-50 text-emerald-900" : "hover:bg-slate-50"}`}
+                className={`mt-3 min-h-11 w-full rounded-lg p-2 text-left text-sm font-semibold ${!activeCollectionId ? "bg-blue-50 text-blue-900" : "hover:bg-slate-50"}`}
                 onClick={() => setActiveCollectionId("")}
               >
                 Tất cả câu hỏi ({items.length})
@@ -1532,7 +1532,7 @@ export function QuestionBankWorkspace() {
               {collections.map((collection) => (
                 <div
                   key={collection.id}
-                  className={`mt-1 flex rounded-xl ${activeCollectionId === collection.id ? "bg-emerald-50" : "hover:bg-slate-50"}`}
+                  className={`mt-1 flex rounded-lg ${activeCollectionId === collection.id ? "bg-blue-50" : "hover:bg-slate-50"}`}
                 >
                   <button
                     className="min-w-0 flex-1 p-2 text-left text-sm"
@@ -1690,7 +1690,7 @@ export function QuestionBankWorkspace() {
                 {activeFilters.length ? (
                   <button
                     type="button"
-                    className="min-h-11 w-full rounded-xl text-sm font-bold text-emerald-800 hover:bg-emerald-50"
+                    className="min-h-11 w-full rounded-lg text-sm font-semibold text-blue-700 hover:bg-blue-50"
                     onClick={() => {
                       setFilters({ scope: "all", usage: "all" });
                       setQueryInput("");
@@ -1753,7 +1753,7 @@ export function QuestionBankWorkspace() {
                     <button
                       key={filter.key}
                       type="button"
-                      className="min-h-10 rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-900 hover:bg-emerald-100"
+                      className="min-h-10 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-900 hover:bg-blue-100"
                       onClick={() => {
                         setFilters((current) =>
                           clearQuestionFilter(current, filter.key),
@@ -1767,7 +1767,7 @@ export function QuestionBankWorkspace() {
                   ))}
                   <button
                     type="button"
-                    className="min-h-10 rounded-xl px-2 text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-emerald-800"
+                    className="min-h-10 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-blue-700"
                     onClick={() => {
                       setFilters({ scope: "all", usage: "all" });
                       setQueryInput("");
@@ -1785,9 +1785,9 @@ export function QuestionBankWorkspace() {
             </section>
 
             {selectedItems.length ? (
-              <section className="sticky top-[68px] z-30 rounded-2xl border border-emerald-200 bg-white/95 p-3 shadow-md backdrop-blur">
+              <section className="sticky top-[68px] z-30 rounded-xl border border-blue-200 bg-white/95 p-3 shadow-sm backdrop-blur">
                 <div className="flex flex-wrap items-center gap-2">
-                  <strong className="mr-1 text-sm text-emerald-900">
+                  <strong className="mr-1 text-sm text-blue-900">
                     Đã chọn {selectedItems.length} câu
                   </strong>
                   <button
@@ -2074,7 +2074,7 @@ export function QuestionBankWorkspace() {
                 visible.map((item) => (
                   <article
                     key={item.id}
-                    className={`group rounded-2xl border bg-white p-4 transition ${activeId === item.id && editorOpen ? "border-emerald-400 ring-2 ring-emerald-100" : "border-slate-200 hover:border-emerald-200"}`}
+                    className={`group rounded-xl border bg-white p-4 transition ${activeId === item.id && editorOpen ? "border-blue-400 ring-2 ring-blue-100" : "border-slate-200 hover:border-blue-300"}`}
                   >
                     <div className="flex items-start gap-3">
                       <input
@@ -2128,7 +2128,7 @@ export function QuestionBankWorkspace() {
                       <div className="hidden shrink-0 gap-1 md:flex">
                         <button
                           aria-label="Chỉnh sửa câu hỏi"
-                          className="ui-icon-button text-emerald-700"
+                          className="ui-icon-button text-blue-700"
                           onClick={() => openEditor(item)}
                         >
                           <Sparkles size={16} />

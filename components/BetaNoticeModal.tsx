@@ -82,11 +82,11 @@ export function BetaNoticeModal() {
     >
       <div className="ui-dialog max-h-[92vh] max-w-2xl overflow-y-auto">
         <div className="flex items-start gap-4">
-          <div className="shrink-0 rounded-xl border border-emerald-100 bg-emerald-50 p-2">
+          <div className="shrink-0 rounded-lg border border-blue-100 bg-blue-50 p-2">
             <BrandLogo variant="mark" compact />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">SOẠN LAB</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">SOẠN LAB</p>
             <h2 id="beta-notice-title" className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
               Thông báo về bản thử nghiệm
             </h2>
@@ -105,10 +105,10 @@ export function BetaNoticeModal() {
           </p>
         </div>
 
-        <ul className="mt-5 grid gap-2 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 text-sm font-semibold leading-6 text-emerald-950 sm:grid-cols-2">
+        <ul className="mt-5 grid gap-2 rounded-xl border border-blue-100 bg-blue-50/70 p-4 text-sm font-medium leading-6 text-slate-800 sm:grid-cols-2">
           {bullets.map((item) => (
             <li key={item} className="flex gap-2">
-              <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700" size={17} />
+              <CheckCircle2 className="mt-0.5 shrink-0 text-blue-700" size={17} />
               <span>{item}</span>
             </li>
           ))}

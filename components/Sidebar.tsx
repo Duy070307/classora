@@ -180,7 +180,7 @@ function Content({
           <Link
             href="/dashboard"
             onClick={onClose}
-            className="group flex min-w-0 flex-1 rounded-xl px-1.5 py-1.5 transition hover:bg-emerald-50/60"
+            className="group flex min-w-0 flex-1 rounded-lg px-1.5 py-1.5 transition hover:bg-blue-50/70"
             aria-label="Về trang tổng quan Soạn Lab"
           >
             <BrandLogo size="md" showSubtitle className="pointer-events-none" />
@@ -199,15 +199,15 @@ function Content({
                 <div className="space-y-1">
                   {links.map(([label, href, Icon, badge]) => {
                     const selected = active(href);
-                    const baseClass = `group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-bold transition duration-200 ${selected ? "bg-emerald-700 text-white shadow-sm" : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"}`;
+                    const baseClass = `group relative flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition duration-200 ${selected ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-blue-50 hover:text-blue-800"}`;
                     const content = (
                       <>
-                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-emerald-700"}`}>
+                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition ${selected ? "bg-white/15 text-white" : "bg-slate-50 text-slate-500 group-hover:bg-white group-hover:text-blue-700"}`}>
                           <Icon size={16} />
                         </span>
                         <span className="min-w-0 flex-1 truncate">{label}</span>
                         {badge ? (
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${selected ? "bg-white/20 text-white" : "bg-emerald-50 text-emerald-800"}`}>
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${selected ? "bg-white/20 text-white" : "bg-blue-50 text-blue-800"}`}>
                             {badge}
                           </span>
                         ) : null}

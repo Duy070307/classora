@@ -43,7 +43,7 @@ function LoginContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4 py-8">
+    <main className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_.95fr]">
         <section className="hidden lg:block">
           <Link href="/" className="inline-flex">
@@ -63,7 +63,7 @@ function LoginContent() {
             ].map(([Icon, label]) => {
               const I = Icon as typeof FileText;
               return (
-                <div key={label as string} className="rounded-3xl border border-blue-100 bg-white p-4 shadow-sm">
+                <div key={label as string} className="rounded-xl border border-blue-100 bg-white p-4">
                   <I className="text-blue-600" size={22} />
                   <p className="mt-3 text-sm font-black text-slate-900">{label as string}</p>
                 </div>
@@ -72,7 +72,7 @@ function LoginContent() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-md rounded-[32px] border border-blue-100 bg-white p-6 shadow-2xl shadow-blue-100/70 sm:p-8">
+        <section className="mx-auto w-full max-w-md rounded-xl border border-blue-100 bg-white p-6 shadow-lg sm:p-8">
           <Link href="/" className="inline-flex lg:hidden">
             <BrandLogo />
           </Link>
@@ -107,7 +107,7 @@ function LoginContent() {
           </div>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
-            <Link href="/dang-ky-dung-thu" className="inline-flex min-h-11 items-center rounded-xl px-2 text-emerald-800 hover:bg-emerald-50">Đăng ký dùng thử</Link>
+            <Link href="/dang-ky-dung-thu" className="inline-flex min-h-11 items-center rounded-lg px-2 text-blue-700 hover:bg-blue-50">Đăng ký dùng thử</Link>
             <Link href="/" className="inline-flex min-h-11 items-center rounded-xl px-2 text-slate-600 hover:bg-slate-100">Về trang chủ</Link>
           </div>
         </section>

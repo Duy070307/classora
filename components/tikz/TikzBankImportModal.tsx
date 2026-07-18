@@ -79,12 +79,12 @@ export function TikzBankImportModal({ onClose, onImported }: { onClose: () => vo
       <div className="flex items-start justify-between gap-4"><div><h2 className="text-2xl font-black text-slate-950">Nhập dữ liệu vào Ngân hàng TikZ</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Tải lên bộ dữ liệu JSON hoặc ZIP đã được chuẩn bị. Hệ thống sẽ kiểm tra và cho phép xem trước trước khi nhập.</p></div><button type="button" onClick={onClose} aria-label="Đóng" className="ui-icon-button"><X size={20} /></button></div>
       <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-900">Chỉ nhập các bộ mã có nguồn và quyền sử dụng rõ ràng.</div>
 
-      <label className="mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 p-5 text-center hover:border-emerald-400">
-        <FileArchive className="text-emerald-700" size={30} /><span className="mt-3 font-black text-slate-900">Chọn tệp JSON hoặc ZIP</span><span className="mt-1 text-xs text-slate-500">JSON tối đa 5MB · ZIP tối đa 8MB</span>
+      <label className="mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 p-5 text-center hover:border-blue-400">
+        <FileArchive className="text-blue-700" size={30} /><span className="mt-3 font-bold text-slate-900">Chọn tệp JSON hoặc ZIP</span><span className="mt-1 text-xs text-slate-500">JSON tối đa 5MB · ZIP tối đa 8MB</span>
         <input type="file" className="sr-only" accept=".json,.zip,application/json,application/zip" disabled={busy} onChange={(event) => { void chooseFile(event.target.files?.item(0) || null); event.target.value = ""; }} />
       </label>
 
-      {busy ? <p className="mt-4 text-center text-sm font-bold text-emerald-800">Đang kiểm tra dữ liệu…</p> : null}
+      {busy ? <p className="mt-4 text-center text-sm font-semibold text-blue-800">Đang kiểm tra dữ liệu…</p> : null}
       {error ? <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700" role="alert">{error}</div> : null}
       {result ? <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800" role="status"><CheckCircle2 className="mr-2 inline" size={17} />{result}</div> : null}
 

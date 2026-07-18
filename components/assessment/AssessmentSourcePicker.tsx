@@ -44,18 +44,18 @@ export function AssessmentSourcePicker({
           return (
             <article
               key={option.id}
-              className={`flex min-h-44 min-w-0 flex-col rounded-2xl border p-4 transition ${
+              className={`flex min-h-44 min-w-0 flex-col rounded-xl border p-4 transition ${
                 selected
-                  ? "border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-100"
+                  ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100"
                   : option.disabledReason
                     ? "border-slate-200 bg-slate-50 opacity-75"
-                    : "border-slate-200 bg-white hover:border-emerald-300"
+                    : "border-slate-200 bg-white hover:border-blue-300"
               }`}
               aria-current={selected ? "true" : undefined}
             >
               <div className="flex min-w-0 items-start gap-3">
                 {Icon ? (
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-50 text-blue-700">
                     <Icon size={19} aria-hidden="true" />
                   </span>
                 ) : null}
@@ -66,7 +66,7 @@ export function AssessmentSourcePicker({
                     </h3>
                     {selected ? (
                       <CheckCircle2
-                        className="shrink-0 text-emerald-700"
+                        className="shrink-0 text-blue-700"
                         size={19}
                         aria-label="Đã chọn"
                       />
@@ -97,8 +97,8 @@ export function AssessmentSourcePicker({
       {secondary ? <div>{secondary}</div> : null}
 
       {selectedId && continueLabel && onContinue ? (
-        <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-semibold leading-6 text-emerald-950">
+        <div className="flex flex-col gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-semibold leading-6 text-blue-950">
             {continueHint || "Nguồn đã sẵn sàng để tiếp tục."}
           </p>
           <button

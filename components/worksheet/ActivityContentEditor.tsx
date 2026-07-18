@@ -362,7 +362,7 @@ export function DifferentiationComparison({
               aria-selected={activeLevel === level}
               className={
                 activeLevel === level
-                  ? "bg-white text-emerald-800 shadow-sm"
+                  ? "bg-white text-blue-700 shadow-sm"
                   : "text-slate-600"
               }
               onClick={() => setActiveLevel(level)}

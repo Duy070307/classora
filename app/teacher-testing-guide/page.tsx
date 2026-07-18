@@ -54,7 +54,7 @@ const feedbackPrompts = [
 export default function TeacherTestingGuidePage() {
   return (
     <AppShell title="Hướng dẫn dùng thử">
-      <section className="rounded-[34px] border border-blue-100 bg-gradient-to-br from-white via-blue-50 to-cyan-50 p-6 shadow-sm sm:p-8">
+      <section className="rounded-xl border border-blue-100 bg-blue-50/60 p-6 sm:p-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1.5 text-xs font-black text-blue-700">
@@ -107,9 +107,9 @@ export default function TeacherTestingGuidePage() {
       </section>
 
       <section id="feedback-guide" className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="rounded-[28px] border border-indigo-100 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-blue-100 bg-white p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-700">
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
               <MessageCircle size={21} />
             </div>
             <div>

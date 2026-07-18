@@ -614,7 +614,7 @@ export function ExamBlueprintWorkspace() {
               aria-selected={mode === key}
               className={
                 mode === key
-                  ? "bg-white text-emerald-800 shadow-sm"
+                  ? "bg-white text-blue-700 shadow-sm"
                   : "text-slate-600 hover:bg-white/70"
               }
               onClick={() => setMode(key)}

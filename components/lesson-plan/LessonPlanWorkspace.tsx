@@ -1346,7 +1346,7 @@ function Editor({
                 {period.activities.map((activity) => (
                   <button
                     key={activity.id}
-                    className={`mt-2 min-h-11 w-full rounded-xl border p-3 text-left text-sm ${selectedId === activity.id ? "border-emerald-400 bg-emerald-50" : "border-slate-200"}`}
+                    className={`mt-2 min-h-11 w-full rounded-lg border p-3 text-left text-sm ${selectedId === activity.id ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}
                     onClick={() => select(activity.id)}
                   >
                     <strong>
@@ -1414,7 +1414,7 @@ function Editor({
                     aria-selected={previewMode === value}
                     className={
                       previewMode === value
-                        ? "bg-white text-emerald-800 shadow-sm"
+                        ? "bg-white text-blue-700 shadow-sm"
                         : "text-slate-600"
                     }
                     onClick={() => setPreviewMode(value)}

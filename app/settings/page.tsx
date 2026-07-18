@@ -100,7 +100,7 @@ export default function SettingsPage() {
         </section>
 
         <aside className="space-y-5">
-          <section className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
+          <section className="rounded-xl border border-blue-100 bg-white p-5">
             <div className="flex items-center gap-3">
               <ShieldCheck className="text-blue-600" size={22} />
               <h2 className="text-lg font-black text-slate-900">Dữ liệu cá nhân</h2>
@@ -111,7 +111,7 @@ export default function SettingsPage() {
             <Link href="/data" className="btn-secondary mt-4">Quản lý dữ liệu</Link>
           </section>
 
-          <section className="rounded-[28px] border border-indigo-100 bg-indigo-50/60 p-5 shadow-sm">
+          <section className="rounded-xl border border-blue-100 bg-blue-50/60 p-5">
             <h2 className="text-lg font-black text-slate-900">Muốn xem lại hướng dẫn?</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">
               Mở lại thẻ hướng dẫn nhanh trên dashboard để bắt đầu theo từng bước.

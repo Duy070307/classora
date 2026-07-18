@@ -4,15 +4,16 @@
 
 :root {
   color-scheme: light;
-  --page-bg: #f7faf8;
-  --card-border: #dfe7e2;
-  --ink: #17211b;
-  --muted: #5f6f65;
-  --brand: #047857;
-  --brand-strong: #065f46;
-  --brand-soft: #ecfdf5;
-  --surface-shadow: 0 8px 24px rgba(21, 43, 31, 0.055), 0 1px 3px rgba(15, 23, 42, 0.035);
-  --surface-shadow-hover: 0 14px 32px rgba(21, 43, 31, 0.09), 0 3px 10px rgba(15, 23, 42, 0.045);
+  --page-bg: #f8fafc;
+  --card-border: #e2e8f0;
+  --ink: #111827;
+  --muted: #475569;
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --brand-soft: #eff6ff;
+  --navy: #0f172a;
+  --surface-shadow: 0 1px 2px rgba(15, 23, 42, 0.045);
+  --surface-shadow-hover: 0 4px 12px rgba(15, 23, 42, 0.065);
 }
 
 * {
@@ -27,16 +28,16 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
-.app-bg { background: linear-gradient(180deg,#f9fbfa 0%,#f5f8f6 100%); }
-.warm-page { background: linear-gradient(180deg,#ffffff 0%,#f7faf8 55%,#ffffff 100%); }
-.play-card { @apply rounded-2xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
-.task-row { @apply flex items-center gap-4 rounded-2xl border bg-white p-4 transition duration-200 hover:border-emerald-200 hover:bg-emerald-50/30; border-color: var(--card-border); }
-.premium-card { @apply rounded-2xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
-.premium-card-hover { @apply transition duration-200 hover:border-emerald-200; }
+.app-bg { background: #f8fafc; }
+.warm-page { background: #f8fafc; }
+.play-card { @apply rounded-xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
+.task-row { @apply flex items-center gap-4 rounded-xl border bg-white p-4 transition duration-200 hover:border-blue-200 hover:bg-blue-50/30; border-color: var(--card-border); }
+.premium-card { @apply rounded-xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
+.premium-card-hover { @apply transition duration-200 hover:border-blue-200; }
 .premium-card-hover:hover { box-shadow: var(--surface-shadow-hover); }
-.hero-gradient { @apply bg-emerald-700; }
-.icon-tile { @apply flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100; }
-.section-title { @apply text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl; }
+.hero-gradient { @apply bg-blue-600; }
+.icon-tile { @apply flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-700 ring-1 ring-blue-100; }
+.section-title { @apply text-xl font-bold tracking-tight text-slate-950 sm:text-2xl; }
 
 button,
 input,
@@ -46,119 +47,119 @@ textarea {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(5, 150, 105, 0.3);
+  outline: 3px solid rgba(37, 99, 235, 0.3);
   outline-offset: 2px;
 }
 
 .form-field {
-  @apply min-h-11 w-full rounded-xl border bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-emerald-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100/80 sm:text-sm;
+  @apply min-h-11 w-full rounded-lg border bg-white px-3.5 py-2.5 text-base text-slate-800 outline-none transition duration-200 placeholder:text-slate-400 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100/80 sm:text-sm;
   border-color: var(--card-border);
 }
 
 .label {
-  @apply mb-1 block text-sm font-bold leading-5 text-slate-700;
+  @apply mb-1 block text-sm font-semibold leading-5 text-slate-800;
 }
 
 .btn-primary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white shadow-sm transition duration-200 hover:bg-emerald-800 active:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 active:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .btn-secondary {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2 text-sm font-bold text-ink shadow-sm transition duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800 disabled:cursor-not-allowed disabled:opacity-50;
   border-color: var(--card-border);
 }
 
 .btn-ghost {
-  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-muted transition duration-200 hover:bg-emerald-50 hover:text-emerald-800;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-muted transition duration-200 hover:bg-blue-50 hover:text-blue-800;
 }
 
 .card {
-  @apply rounded-2xl border bg-white;
+  @apply rounded-xl border bg-white;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .premium-shell-card {
-  @apply rounded-2xl border bg-white;
+  @apply rounded-xl border bg-white;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .premium-section {
-  @apply rounded-2xl border bg-white p-5 sm:p-6;
+  @apply rounded-xl border bg-white p-5 sm:p-6;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .premium-pill {
-  @apply inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-800;
+  @apply inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800;
 }
 
 .section-card {
-  @apply rounded-2xl border bg-white p-5 sm:p-6;
+  @apply rounded-xl border bg-white p-5 sm:p-6;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .soft-badge {
-  @apply inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800;
+  @apply inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800;
 }
 
 .form-section {
-  @apply rounded-2xl border bg-slate-50/70 p-4;
+  @apply rounded-lg border bg-slate-50/70 p-4;
   border-color: var(--card-border);
 }
 
 .form-section-title {
-  @apply mb-3 flex items-center gap-2 text-sm font-extrabold text-slate-800;
+  @apply mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900;
 }
 
 .empty-state {
-  @apply rounded-2xl border border-dashed border-blue-200 bg-gradient-to-br from-white to-blue-50/50 p-7 text-center text-sm leading-6 text-muted shadow-sm sm:p-9;
+  @apply rounded-xl border border-slate-200 bg-white p-5 text-left text-sm leading-6 text-muted;
 }
 
 .tool-form-card {
-  @apply h-fit space-y-5 rounded-2xl border bg-white p-4 sm:p-5;
+  @apply h-fit space-y-5 rounded-xl border bg-white p-4 sm:p-5;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
-.app-surface { @apply rounded-2xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
-.app-card-hover { @apply transition duration-200 hover:border-emerald-200; }
+.app-surface { @apply rounded-xl border bg-white; border-color: var(--card-border); box-shadow: var(--surface-shadow); }
+.app-card-hover { @apply transition duration-200 hover:border-blue-200; }
 .app-card-hover:hover { box-shadow: var(--surface-shadow-hover); }
-.app-gradient-hero { @apply relative overflow-hidden rounded-2xl bg-emerald-800 text-white; box-shadow: 0 16px 36px rgba(6,95,70,.18); }
-.app-badge { @apply inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800; }
-.document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-2xl bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 24px 70px rgba(30,64,175,.13), 0 2px 8px rgba(15,23,42,.05); }
+.app-gradient-hero { @apply relative overflow-hidden rounded-xl bg-blue-700 text-white; box-shadow: 0 8px 24px rgba(30,64,175,.14); }
+.app-badge { @apply inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800; }
+.document-paper { @apply mx-auto min-w-0 max-w-3xl rounded-lg bg-white text-slate-800 ring-1 ring-slate-200/80; box-shadow: 0 12px 36px rgba(15,23,42,.09); }
 .math-friendly { font-family: "Cambria Math", "STIX Two Math", "DejaVu Serif", "Times New Roman", serif; letter-spacing: .005em; }
-.tool-form-card input[type="checkbox"] { @apply h-4 w-4 rounded border-slate-300 accent-emerald-700; }
-.tool-tip-card { @apply rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4 text-sm leading-6 text-slate-700; }
-.soft-grid-bg { background-image: linear-gradient(rgba(99,102,241,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,.035) 1px, transparent 1px); background-size: 24px 24px; }
-.loading-dot { @apply h-1.5 w-1.5 rounded-full bg-indigo-600; animation: loading-bounce 900ms ease-in-out infinite; }
+.tool-form-card input[type="checkbox"] { @apply h-4 w-4 rounded border-slate-300 accent-blue-600; }
+.tool-tip-card { @apply rounded-lg border border-blue-100 bg-blue-50/50 p-4 text-sm leading-6 text-slate-700; }
+.soft-grid-bg { background-image: linear-gradient(rgba(37,99,235,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,.03) 1px, transparent 1px); background-size: 24px 24px; }
+.loading-dot { @apply h-1.5 w-1.5 rounded-full bg-blue-600; animation: loading-bounce 900ms ease-in-out infinite; }
 .motion-enter { animation: motion-enter 420ms cubic-bezier(.2,.8,.2,1) both; }
 @keyframes loading-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-4px); opacity: 1; } }
 @keyframes motion-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-::selection { background: rgba(5,150,105,.2); color: #064e3b; }
+::selection { background: rgba(37,99,235,.18); color: #1e3a8a; }
 
 /* Shared application primitives. Keep page-specific markup visually consistent. */
 .ui-panel {
-  @apply min-w-0 rounded-2xl border bg-white;
+  @apply min-w-0 rounded-xl border bg-white;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .ui-toolbar {
-  @apply flex min-w-0 flex-col gap-3 rounded-2xl border bg-white p-3 sm:flex-row sm:flex-wrap sm:items-center;
+  @apply flex min-w-0 flex-col gap-3 rounded-xl border bg-white p-3 sm:flex-row sm:flex-wrap sm:items-center;
   border-color: var(--card-border);
   box-shadow: var(--surface-shadow);
 }
 
 .ui-icon-button {
-  @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-slate-600 transition duration-200 hover:bg-emerald-50 hover:text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-600 transition duration-200 hover:bg-blue-50 hover:text-blue-800 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .ui-table-wrap {
-  @apply max-w-full overflow-x-auto rounded-2xl border bg-white;
+  @apply max-w-full overflow-x-auto rounded-xl border bg-white;
   border-color: var(--card-border);
 }
 
@@ -174,8 +175,10 @@ textarea {
   @apply border-b border-slate-100 px-4 py-3 align-top text-slate-700;
 }
 
+.ui-table tbody tr { @apply transition-colors hover:bg-blue-50/40; }
+
 .ui-dialog {
-  @apply max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-xl overflow-y-auto overscroll-contain rounded-2xl border bg-white p-5 sm:p-6;
+  @apply max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-xl overflow-y-auto overscroll-contain rounded-xl border bg-white p-5 sm:p-6;
   border-color: var(--card-border);
   box-shadow: 0 24px 64px rgba(15,23,42,.2);
 }
@@ -190,7 +193,7 @@ textarea {
 }
 
 .ui-section-heading {
-  @apply text-lg font-black tracking-tight text-slate-900 sm:text-xl;
+  @apply text-lg font-bold tracking-tight text-slate-950 sm:text-xl;
 }
 
 button, a, input, select, textarea {
@@ -207,7 +210,7 @@ main {
 
 @media (max-width: 639px) {
   .play-card, .premium-card, .card, .section-card, .tool-form-card, .app-surface {
-    border-radius: 1.25rem;
+    border-radius: .75rem;
   }
   .btn-primary, .btn-secondary {
     min-height: 2.75rem;

@@ -119,9 +119,9 @@ function ToolsContent() {
 
   return (
     <AppShell title="Công cụ">
-      <section className="ui-panel relative mb-5 overflow-hidden p-4 sm:p-5">
+      <section className="relative mb-5 border-b border-slate-200 bg-white px-4 py-5 sm:px-5">
         <div className="relative max-w-4xl">
-          <p className="text-xs font-extrabold uppercase tracking-[.14em] text-emerald-700">
+          <p className="text-xs font-bold uppercase tracking-[.14em] text-blue-700">
             Thư viện công cụ giáo viên
           </p>
           <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
@@ -146,7 +146,7 @@ function ToolsContent() {
         </div>
       </section>
 
-      <section className="sticky top-[68px] z-10 mb-5 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
+      <section className="sticky top-[68px] z-10 mb-5 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
         <label className="block sm:hidden">
           <span className="label">Danh mục công cụ</span>
           <select className="form-field" value={category} onChange={(event) => change(event.target.value)}>
@@ -159,7 +159,7 @@ function ToolsContent() {
               key={item}
               type="button"
               onClick={() => change(item)}
-              className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-black transition ${category === item ? "bg-emerald-700 text-white" : "bg-slate-50 text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"}`}
+              className={`min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold transition ${category === item ? "bg-blue-600 text-white" : "bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
             >
               {item}
             </button>
@@ -171,7 +171,7 @@ function ToolsContent() {
               <button
                 key={item}
                 onClick={() => setMode(item)}
-                className={`min-h-11 rounded-xl px-3 py-2 text-xs font-black ${mode === item ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+                className={`min-h-11 rounded-lg px-3 py-2 text-xs font-semibold ${mode === item ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 {item}
               </button>
@@ -179,7 +179,7 @@ function ToolsContent() {
           )}
           <button
             onClick={clear}
-            className="min-h-11 rounded-xl px-3 py-2 text-xs font-black text-emerald-800 hover:bg-emerald-50"
+            className="min-h-11 rounded-lg px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
           >
             Xóa bộ lọc
           </button>

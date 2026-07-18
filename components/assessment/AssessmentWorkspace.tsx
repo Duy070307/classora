@@ -103,9 +103,9 @@ export function AssessmentStageNavigation({
   );
   return (
     <nav aria-label={label} className="min-w-0">
-      <div className="rounded-2xl border border-slate-200 bg-white p-3 md:hidden">
+      <div className="rounded-xl border border-slate-200 bg-white p-3 md:hidden">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <span className="text-xs font-black uppercase tracking-wide text-emerald-700">
+          <span className="text-xs font-bold uppercase tracking-wide text-blue-700">
             Bước {activeIndex + 1}/{stages.length}
           </span>
           <span className="min-w-0 truncate text-sm font-bold text-slate-800">
@@ -132,7 +132,7 @@ export function AssessmentStageNavigation({
         </select>
       </div>
 
-      <ol className="hidden max-w-full items-center gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1.5 md:flex">
+      <ol className="hidden max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1.5 md:flex">
         {stages.map((stage, index) => {
           const active = stage.id === activeId;
           return (
@@ -148,12 +148,12 @@ export function AssessmentStageNavigation({
                     : undefined
                 }
                 onClick={() => onChange(stage.id)}
-                className={`flex min-h-11 min-w-[8.75rem] items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
+                className={`flex min-h-11 min-w-[8.75rem] items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                   active
-                    ? "bg-emerald-700 text-white shadow-sm"
+                    ? "bg-blue-600 text-white"
                     : stage.completed
                       ? "bg-emerald-50 text-emerald-800"
-                      : "text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
+                      : "text-slate-700 hover:bg-blue-50 hover:text-blue-800"
                 }`}
               >
                 <span
@@ -337,7 +337,7 @@ export function AssessmentDisclosure({
 }) {
   return (
     <details
-      className="group rounded-2xl border border-slate-200 bg-white"
+      className="group rounded-xl border border-slate-200 bg-white"
       open={defaultOpen}
     >
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-bold text-slate-800 marker:hidden">
@@ -350,7 +350,7 @@ export function AssessmentDisclosure({
           ) : null}
         </span>
         <ChevronRight
-          className="shrink-0 text-emerald-700 transition group-open:rotate-90"
+          className="shrink-0 text-blue-700 transition group-open:rotate-90"
           size={18}
           aria-hidden="true"
         />

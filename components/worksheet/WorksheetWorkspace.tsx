@@ -1240,7 +1240,7 @@ function Editor({
             {worksheet.activities.map((activity) => (
               <button
                 key={activity.id}
-                className={`min-h-11 w-full rounded-xl border p-3 text-left text-sm ${selected?.id === activity.id ? "border-emerald-400 bg-emerald-50" : "border-slate-200"}`}
+                className={`min-h-11 w-full rounded-lg border p-3 text-left text-sm ${selected?.id === activity.id ? "border-blue-400 bg-blue-50" : "border-slate-200"}`}
                 onClick={() => select(activity.id)}
               >
                 <strong>
@@ -1306,7 +1306,7 @@ function Editor({
                     aria-selected={previewAudience === audience}
                     className={
                       previewAudience === audience
-                        ? "bg-white text-emerald-800 shadow-sm"
+                        ? "bg-white text-blue-700 shadow-sm"
                         : "text-slate-600"
                     }
                     onClick={() => setPreviewAudience(audience)}

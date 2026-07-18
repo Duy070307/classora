@@ -419,14 +419,14 @@ export function AnswerSolutionsWorkspace() {
           </button>
         </div>
       ) : null}
-      <section className="rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
+      <section className="border-b border-slate-200 bg-white px-1 pb-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
               <FileCheck2 size={14} />
               Dành riêng cho giáo viên
             </span>
-            <h1 className="mt-3 text-3xl font-black text-slate-950">
+            <h1 className="mt-2 text-3xl font-bold text-slate-950">
               Lời giải &amp; đáp án
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -553,7 +553,7 @@ export function AnswerSolutionsWorkspace() {
 
       {source?.structuredExam && solutionSet ? (
         <>
-          <section className="flex flex-wrap gap-2 rounded-[28px] border border-blue-100 bg-blue-50 p-5">
+          <section className="flex flex-wrap gap-2 rounded-xl border border-blue-100 bg-blue-50 p-5">
             <button
               type="button"
               className="btn-primary"
@@ -578,7 +578,7 @@ export function AnswerSolutionsWorkspace() {
               Tạo phiếu trả lời
             </button>
           </section>
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-wide text-blue-700">
@@ -625,7 +625,7 @@ export function AnswerSolutionsWorkspace() {
                     if (key === "detailed" || key === "scoring")
                       setMode("detailed");
                   }}
-                  className={`min-h-11 shrink-0 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-black ${view === key ? "bg-emerald-700 text-white" : "bg-transparent text-slate-700 hover:bg-white"}`}
+                  className={`min-h-11 shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${view === key ? "bg-blue-600 text-white" : "bg-transparent text-slate-700 hover:bg-white"}`}
                 >
                   {label}
                 </button>
@@ -690,7 +690,7 @@ export function AnswerSolutionsWorkspace() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                  className="rounded-xl border border-slate-200 bg-white p-4"
                 >
                   <p className="text-xs font-bold text-slate-500">{label}</p>
                   <p className="mt-1 text-2xl font-black text-slate-950">
@@ -907,7 +907,7 @@ export function AnswerSolutionsWorkspace() {
             </section>
           ) : null}
 
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-5">
             <h2 className="text-xl font-black">Xuất file dành cho giáo viên</h2>
             <p className="mt-1 text-sm text-slate-600">
               Đáp án, lời giải và hướng dẫn chấm luôn nằm trong file riêng; đề

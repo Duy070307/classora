@@ -29,7 +29,7 @@ export default function SharePage() {
     <main className="warm-page min-h-screen">
       <Navbar />
       <section className="mx-auto max-w-4xl px-4 py-10 sm:py-16">
-        <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-xl shadow-blue-200 sm:p-9">
+        <div className="rounded-xl bg-blue-700 p-6 text-white shadow-sm sm:p-9">
           <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold">Soạn Lab</span>
           <h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">Chia sẻ Soạn Lab</h1>
           <p className="mt-4 max-w-2xl leading-7 text-blue-100">

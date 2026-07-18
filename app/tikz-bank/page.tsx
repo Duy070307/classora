@@ -256,13 +256,13 @@ export default function TikzBankPage() {
             return <article key={item.id} className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-black ${item.bank_scope === "system" ? "bg-blue-50 text-blue-700" : "bg-emerald-50 text-emerald-700"}`}>{item.bank_scope === "system" ? "SOẠN LAB" : "Của tôi"}</span>
+                  <span className={`rounded-md px-3 py-1 text-xs font-semibold ${item.bank_scope === "system" ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-700"}`}>{item.bank_scope === "system" ? "SOẠN LAB" : "Của tôi"}</span>
                   <h2 className="mt-3 text-lg font-black text-slate-950">{item.title}</h2>
                   {item.description ? <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p> : null}
                 </div>
                 <div className="flex flex-wrap gap-1 text-xs font-bold text-slate-500">{[item.category, item.subject, item.grade ? `Lớp ${item.grade}` : ""].filter(Boolean).map((value) => <span key={value} className="rounded-full bg-slate-100 px-2.5 py-1">{value}</span>)}</div>
               </div>
-              {(item.tags || []).length ? <div className="mt-3 flex flex-wrap gap-1">{item.tags?.map((value) => <span key={value} className="rounded-lg bg-indigo-50 px-2 py-1 text-xs font-bold text-indigo-700">#{value}</span>)}</div> : null}
+              {(item.tags || []).length ? <div className="mt-3 flex flex-wrap gap-1">{item.tags?.map((value) => <span key={value} className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">#{value}</span>)}</div> : null}
               <pre className="mt-4 max-h-52 overflow-auto whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 font-mono text-xs leading-5 text-slate-100">{item.tikz_code}</pre>
               {item.preview_note ? <p className="mt-3 text-xs font-semibold leading-5 text-amber-700">{item.preview_note}</p> : null}
               <div className="mt-4 flex flex-wrap gap-2">

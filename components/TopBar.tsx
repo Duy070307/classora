@@ -24,16 +24,16 @@ export function TopBar({
         <button
           type="button"
           onClick={() => window.dispatchEvent(new Event("classora-open-command-palette"))}
-          className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 text-left text-sm text-slate-500 transition hover:border-emerald-300 hover:bg-white sm:px-4"
+          className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 text-left text-sm text-slate-500 transition hover:border-blue-300 hover:bg-white sm:px-4"
           aria-label="Tìm công cụ, tài liệu"
         >
-          <Search size={18} className="shrink-0 text-emerald-700" />
+          <Search size={18} className="shrink-0 text-blue-700" />
           <span className="truncate">Tìm công cụ, tài liệu...</span>
           <kbd className="ml-auto hidden rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-400 sm:block">
             Ctrl K
           </kbd>
         </button>
-        <Link href="/history" className="hidden min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800 lg:inline-flex">
+        <Link href="/history" className="hidden min-h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-800 lg:inline-flex">
           <FileClock size={16} />
           Lịch sử
         </Link>

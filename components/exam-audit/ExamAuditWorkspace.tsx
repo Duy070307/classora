@@ -531,14 +531,14 @@ export function ExamAuditWorkspace() {
 
   return (
     <div className="mx-auto max-w-[1280px] space-y-6">
-      <section className="rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
+      <section className="border-b border-slate-200 bg-white px-1 pb-5">
         <div>
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
               <ShieldCheck size={14} />
               Kiểm tra trước khi xuất
             </span>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
               Kiểm tra chất lượng đề
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
@@ -686,7 +686,7 @@ export function ExamAuditWorkspace() {
 
       {document?.structuredExam ? (
         <>
-          <section id="exam-audit-config" className="scroll-mt-4 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section id="exam-audit-config" className="scroll-mt-4 rounded-xl border border-slate-200 bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-wide text-blue-700">
@@ -1060,7 +1060,7 @@ export function ExamAuditWorkspace() {
               />
 
               {previewIds.length ? (
-                <section className="rounded-[28px] border border-blue-200 bg-blue-50 p-5">
+                <section className="rounded-xl border border-blue-200 bg-blue-50 p-5">
                   <h2 className="text-xl font-black text-slate-950">
                     Xem thay đổi
                   </h2>
@@ -1120,7 +1120,7 @@ export function ExamAuditWorkspace() {
               ) : null}
 
               {questionDraft ? (
-                <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <section className="rounded-xl border border-slate-200 bg-white p-5">
                   <h2 className="text-xl font-black text-slate-950">
                     Sửa thủ công · Câu {questionDraft.number}
                   </h2>

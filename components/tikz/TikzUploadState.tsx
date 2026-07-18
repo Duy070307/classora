@@ -25,16 +25,16 @@ export function TikzUploadState({
   geometryMode?: boolean;
 }) {
   return (
-    <section className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
       <label
-        className="mx-auto flex min-h-72 max-w-4xl cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-emerald-300 bg-emerald-50/40 p-6 text-center transition hover:border-emerald-500 hover:bg-emerald-50"
+        className="mx-auto flex min-h-64 max-w-4xl cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/40 p-6 text-center transition hover:border-blue-500 hover:bg-blue-50"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
           onFile(event.dataTransfer.files.item(0));
         }}
       >
-        <span className="grid size-14 place-items-center rounded-2xl bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-100">
+        <span className="grid size-14 place-items-center rounded-lg bg-white text-blue-700 ring-1 ring-blue-100">
           <FileImage size={28} aria-hidden="true" />
         </span>
         <h2 className="mt-4 text-xl font-black text-slate-950 sm:text-2xl">

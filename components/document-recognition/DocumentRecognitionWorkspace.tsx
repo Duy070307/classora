@@ -929,7 +929,7 @@ export function DocumentRecognitionWorkspace() {
                     setActivePage(item.pageNumber);
                     setSelectedBlocks([]);
                   }}
-                  className={`min-h-11 w-full rounded-2xl border p-3 text-left ${activePage === item.pageNumber ? "border-emerald-400 bg-emerald-50" : "border-slate-200 bg-white"}`}
+                  className={`min-h-11 w-full rounded-xl border p-3 text-left ${activePage === item.pageNumber ? "border-blue-400 bg-blue-50" : "border-slate-200 bg-white"}`}
                 >
                   {item.adjustedDataUrl || item.sourceDataUrl ? (
                     <img
@@ -1135,7 +1135,7 @@ export function DocumentRecognitionWorkspace() {
                   key={value}
                   type="button"
                   aria-pressed={blockFilter === value}
-                  className={`min-h-11 rounded-full px-3 py-2 text-xs font-black ${blockFilter === value ? "bg-emerald-700 text-white" : "bg-slate-100 text-slate-600 hover:bg-emerald-50"}`}
+                  className={`min-h-11 rounded-lg px-3 py-2 text-xs font-semibold ${blockFilter === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-blue-50"}`}
                   onClick={() => setBlockFilter(value)}
                 >
                   {label}
@@ -1169,7 +1169,7 @@ export function DocumentRecognitionWorkspace() {
                 visibleBlocks.map((block) => (
                   <article
                     key={block.id}
-                    className={`rounded-2xl border p-3 ${selectedBlocks.includes(block.id) ? "ring-2 ring-emerald-300" : ""} ${block.excluded ? "border-slate-200 bg-slate-50 opacity-60" : block.confidence === "low" ? "border-red-200 bg-red-50/30" : "border-slate-200"}`}
+                    className={`rounded-xl border p-3 ${selectedBlocks.includes(block.id) ? "ring-2 ring-blue-300" : ""} ${block.excluded ? "border-slate-200 bg-slate-50 opacity-60" : block.confidence === "low" ? "border-red-200 bg-red-50/30" : "border-slate-200"}`}
                   >
                     <div className="flex items-start gap-2">
                       <input

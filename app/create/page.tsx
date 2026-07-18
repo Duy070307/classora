@@ -24,7 +24,7 @@ const groups = [
         examples: ["Toán 12 THPTQG", "Lịch sử 12", "Kiểm tra 45 phút"],
         href: "/tools/exam-generator",
         icon: ClipboardList,
-        tone: "from-blue-500 to-cyan-500",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Ma trận & bảng đặc tả",
@@ -32,7 +32,7 @@ const groups = [
         examples: ["12/4/6", "Excel chỉnh sửa", "So sánh đề"],
         href: "/tools/exam-blueprint",
         icon: ClipboardList,
-        tone: "from-indigo-500 to-blue-600",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Tạo rubric",
@@ -40,7 +40,7 @@ const groups = [
         examples: ["Thuyết trình", "Bài viết", "Dự án nhóm"],
         href: "/tools/rubric",
         icon: PenTool,
-        tone: "from-purple-500 to-fuchsia-500",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Chấm bài",
@@ -48,7 +48,7 @@ const groups = [
         examples: ["Ảnh/PDF", "Nhiều mã đề", "Bảng điểm"],
         href: "/tools/grading-assistant",
         icon: ClipboardList,
-        tone: "from-blue-500 to-indigo-500",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Phiếu trả lời",
@@ -56,7 +56,7 @@ const groups = [
         examples: ["12/4/6", "Mã đề 101–104", "PDF in chuẩn"],
         href: "/tools/answer-sheet",
         icon: ClipboardList,
-        tone: "from-cyan-500 to-blue-600",
+        tone: "from-blue-500 to-blue-600",
       },
     ],
   },
@@ -70,7 +70,7 @@ const groups = [
         examples: ["Toán 8", "Hoạt động nhóm", "Ôn tập chương"],
         href: "/tools/worksheet-generator",
         icon: BookOpenCheck,
-        tone: "from-emerald-500 to-teal-500",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Soạn giáo án",
@@ -78,7 +78,7 @@ const groups = [
         examples: ["Ngữ văn 9", "Bài 45 phút", "Hoạt động khởi động"],
         href: "/tools/lesson-plan",
         icon: FileText,
-        tone: "from-indigo-500 to-violet-500",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Đề cương ôn tập",
@@ -86,7 +86,7 @@ const groups = [
         examples: ["Ôn tập chương", "Củng cố sau kiểm tra", "Bản học sinh/giáo viên"],
         href: "/tools/review-pack",
         icon: BookOpenCheck,
-        tone: "from-cyan-500 to-blue-600",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Tạo slide bài giảng",
@@ -94,7 +94,7 @@ const groups = [
         examples: ["Giảng bài mới", "Ôn tập", "Chữa bài"],
         href: "/tools/lesson-slides",
         icon: Presentation,
-        tone: "from-blue-500 to-indigo-500",
+        tone: "from-blue-500 to-blue-600",
       },
     ],
   },
@@ -108,7 +108,7 @@ const groups = [
         examples: ["Phân số", "Căn thức", "Ma trận"],
         href: "/tools/image-to-latex?mode=formula",
         icon: ImageIcon,
-        tone: "from-sky-500 to-blue-600",
+        tone: "from-blue-500 to-blue-600",
       },
       {
         title: "Hình học → TikZ",
@@ -116,7 +116,7 @@ const groups = [
         examples: ["Tam giác", "Đường tròn", "Hình tọa độ"],
         href: "/tools/image-to-latex?mode=geometry",
         icon: Ruler,
-        tone: "from-cyan-500 to-indigo-500",
+        tone: "from-blue-500 to-blue-600",
       },
     ],
   },
@@ -130,7 +130,7 @@ const groups = [
         examples: ["Hệ Mặt Trời", "Con lắc", "Phân tử H2O"],
         href: "/tools/3d-animation",
         icon: Box,
-        tone: "from-blue-500 to-cyan-500",
+        tone: "from-blue-500 to-blue-600",
       },
     ],
   },
@@ -149,7 +149,7 @@ const suggestions = [
 export default function CreatePage() {
   return (
     <AppShell title="Tạo mới">
-      <section className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <section className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 sm:p-8">
         <div className="absolute bottom-6 right-8 hidden rounded-3xl border border-blue-100 bg-blue-50 p-4 text-sm font-bold text-blue-800 lg:block">
           Bản nháp → rà soát → xuất file
         </div>
@@ -165,11 +165,11 @@ export default function CreatePage() {
         </div>
       </section>
 
-      <section className="mt-6 rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-black text-slate-900">Gợi ý bắt đầu:</span>
           {suggestions.map(([label, href]) => (
-            <Link key={label} href={href} className="rounded-full bg-blue-50 px-3 py-2 text-xs font-extrabold text-blue-700 transition hover:bg-blue-600 hover:text-white">
+            <Link key={label} href={href} className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white">
               {label}
             </Link>
           ))}
@@ -191,10 +191,10 @@ export default function CreatePage() {
                   <Link
                     key={task.title}
                     href={task.href}
-                    className="group flex min-h-[250px] flex-col rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm outline-none transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md focus-visible:ring-4 focus-visible:ring-blue-100"
+                    className="group flex min-h-[250px] flex-col rounded-xl border border-slate-200 bg-white p-5 outline-none transition hover:border-blue-300 hover:shadow-sm focus-visible:ring-4 focus-visible:ring-blue-100"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
                         <Icon size={23} />
                       </span>
                       {isImageToLatexTask ? (

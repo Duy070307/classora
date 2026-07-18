@@ -151,7 +151,7 @@ export function BetaRequestsAdmin({ initialRequests, loadError = false }: { init
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof Mail; label: string; value: number; tone: "blue" | "amber" | "emerald" | "slate" }) {
   const colors = { blue: "bg-blue-50 text-blue-700", amber: "bg-amber-50 text-amber-700", emerald: "bg-emerald-50 text-emerald-700", slate: "bg-slate-100 text-slate-700" };
-  return <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"><span className={`flex h-10 w-10 items-center justify-center rounded-xl ${colors[tone]}`}><Icon size={19} /></span><p className="mt-4 text-sm font-semibold text-slate-500">{label}</p><p className="mt-1 text-2xl font-black text-slate-950">{value}</p></div>;
+  return <div className="rounded-xl border border-slate-200 bg-white p-5"><span className={`flex h-10 w-10 items-center justify-center rounded-lg ${colors[tone]}`}><Icon size={19} /></span><p className="mt-4 text-sm font-medium text-slate-500">{label}</p><p className="mt-1 text-2xl font-bold text-slate-950">{value}</p></div>;
 }
 
 function StatusBadge({ status }: { status: BetaRequestStatus }) {

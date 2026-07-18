@@ -24,7 +24,7 @@ export function ToolOutputPanel({
   if (loading) {
     return (
       <div className="ui-panel p-7 text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
           <Loader2 className="animate-spin" size={36} />
         </span>
         <p className="mt-5 font-bold text-ink">{loadingTitle}</p>

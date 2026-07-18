@@ -72,7 +72,7 @@ export function AuthoringWorkspace({
               aria-controls={`${workspaceId}-panel-${value}`}
               className={
                 view === value
-                  ? "bg-white text-emerald-800 shadow-sm"
+                  ? "bg-white text-blue-700 shadow-sm"
                   : "text-slate-600 hover:bg-white/70"
               }
               onClick={() => setView(value)}
@@ -137,7 +137,7 @@ export function AuthoringDisclosure({
       <summary className="cursor-pointer list-none px-4 py-3 font-bold text-slate-800 marker:hidden">
         <span className="flex min-h-6 items-center justify-between gap-3">
           <span>{title}</span>
-          <span aria-hidden="true" className="text-emerald-700">
+          <span aria-hidden="true" className="text-blue-700">
             ＋
           </span>
         </span>

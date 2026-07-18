@@ -48,7 +48,7 @@ export function OutputRefinementBar({
   }
 
   return (
-    <section className="card border-indigo-100 bg-gradient-to-r from-white to-indigo-50/60 p-4">
+    <section className="card border-blue-100 bg-blue-50/40 p-4">
       <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Tinh chỉnh đầu ra</p>
       <div className="flex flex-wrap gap-2">
         {actions.map((item) => (

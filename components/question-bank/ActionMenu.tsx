@@ -90,7 +90,7 @@ export function ActionMenu({
               type="button"
               role="menuitem"
               disabled={item.disabled}
-              className={`block min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition hover:bg-slate-50 focus:bg-emerald-50 focus:outline-none disabled:opacity-50 ${item.danger ? "mt-1 border-t border-slate-100 text-red-700" : "text-slate-700"}`}
+              className={`block min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition hover:bg-slate-50 focus:bg-blue-50 focus:outline-none disabled:opacity-50 ${item.danger ? "mt-1 border-t border-slate-100 text-red-700" : "text-slate-700"}`}
               onClick={() => {
                 setOpen(false);
                 void item.onSelect();

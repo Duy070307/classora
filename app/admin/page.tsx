@@ -95,7 +95,7 @@ export default async function AdminPage() {
         </section>
       </div>
 
-      <section className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-7 text-emerald-950">
+      <section className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm leading-7 text-blue-950">
         <p>
           <span className="font-black">Gợi ý khi mời giáo viên dùng thử: </span>
           Sau khi gửi link test, quản trị viên có thể theo dõi phản hồi tại mục Góp ý giáo viên để ưu tiên sửa những điểm ảnh hưởng nhiều nhất tới trải nghiệm.
@@ -108,11 +108,11 @@ export default async function AdminPage() {
 function StatCard({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: string }) {
   return (
     <div className="ui-panel p-4">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+      <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
         <Icon size={20} />
       </div>
       <p className="mt-4 text-sm font-semibold text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+      <p className="mt-1 text-2xl font-bold text-slate-950">{value}</p>
     </div>
   );
 }

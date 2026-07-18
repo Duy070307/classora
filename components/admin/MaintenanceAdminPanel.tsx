@@ -56,7 +56,7 @@ export function MaintenanceAdminPanel() {
     <section className="ui-panel mt-5 p-5 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><Wrench size={20} /></span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><Wrench size={20} /></span>
           <div>
             <h2 className="text-lg font-black text-slate-950">Chế độ bảo trì</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">Khi bật, tài khoản giáo viên đã được cấp sẽ tạm thời không dùng được công cụ. Admin vẫn truy cập bình thường. Trang đăng nhập và đăng ký dùng thử vẫn hoạt động.</p>
@@ -66,10 +66,10 @@ export function MaintenanceAdminPanel() {
       </div>
 
       <div className="mt-5 space-y-4">
-        <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold leading-6 text-emerald-900">Giáo viên sẽ được chuyển đến trang bảo trì ở lần tải trang hoặc gọi API tiếp theo.</p>
+        <p className="rounded-lg bg-blue-50 px-4 py-3 text-sm font-medium leading-6 text-blue-900">Giáo viên sẽ được chuyển đến trang bảo trì ở lần tải trang hoặc gọi API tiếp theo.</p>
         <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <span className="font-bold text-slate-900">Bật chế độ bảo trì</span>
-          <input type="checkbox" className="h-5 w-5 accent-emerald-700" checked={settings.enabled} disabled={loading || saving} onChange={(event) => setSettings((current) => ({ ...current, enabled: event.target.checked }))} />
+          <input type="checkbox" className="h-5 w-5 accent-blue-600" checked={settings.enabled} disabled={loading || saving} onChange={(event) => setSettings((current) => ({ ...current, enabled: event.target.checked }))} />
         </label>
         <label className="block">
           <span className="text-sm font-bold text-slate-800">Thông báo hiển thị cho giáo viên</span>
