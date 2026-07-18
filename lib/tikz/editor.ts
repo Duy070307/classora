@@ -4,11 +4,16 @@ import { stableTikzId } from "@/lib/tikz/model";
 import { inspectTikzSyntax } from "@/lib/tikz/syntax";
 import type { DiagramEdit, StructuredEditOperation, TikzDiagramDraft } from "@/lib/tikz/types";
 import { qualitySummary, validateTikzDraft } from "@/lib/tikz/validation";
+import { buildTikzReviewQueue, nextDiagramVersion } from "@/lib/tikz/readiness";
 
 function timestamp() { return new Date().toISOString(); }
 function commit(draft: TikzDiagramDraft, edit: DiagramEdit) {
+  if (draft.confirmedAsset) {
+    draft.metadata.version = nextDiagramVersion(draft.metadata.version);
+    draft.confirmedAsset = undefined;
+  }
   const generated = generateTikzFromDraft(draft); draft.tikz = { ...draft.tikz, snippet: generated.snippet, generatedSnippet: generated.snippet, standalone: generated.standalone, libraries: generated.libraries, packages: generated.packages, semanticSync: "synchronized" };
-  draft.compilation = inspectTikzSyntax(generated.snippet); draft.teacherEdits.push(edit); draft.metadata.updatedAt = edit.at; draft.validation = validateTikzDraft(draft); draft.quality = qualitySummary(draft); draft.status = "needs_review"; return draft;
+  draft.compilation = inspectTikzSyntax(generated.snippet); draft.teacherEdits.push(edit); draft.metadata.updatedAt = edit.at; draft.validation = validateTikzDraft(draft); draft.reviewQueue = buildTikzReviewQueue(draft); draft.quality = qualitySummary(draft); draft.status = "needs_review"; return draft;
 }
 
 export function applyStructuredEdit(current: TikzDiagramDraft, operation: StructuredEditOperation) {
@@ -24,7 +29,7 @@ export function applyStructuredEdit(current: TikzDiagramDraft, operation: Struct
 }
 
 export function applyManualTikzCode(current: TikzDiagramDraft, code: string) {
-  const draft = structuredClone(current); const at = timestamp(); draft.tikz.snippet = code; draft.tikz.standalone = buildStandaloneTikzDocument(code); draft.tikz.semanticSync = code === draft.tikz.generatedSnippet ? "synchronized" : "partially_detached"; draft.compilation = inspectTikzSyntax(code); draft.teacherEdits.push({ id: stableTikzId("edit", `${at}-code`), at, source: "code", operation: "edit_code", before: current.tikz.snippet, after: code }); draft.metadata.updatedAt = at; draft.validation = validateTikzDraft(draft); draft.quality = qualitySummary(draft); draft.status = "needs_review"; return draft;
+  const draft = structuredClone(current); const at = timestamp(); if (draft.confirmedAsset) { draft.metadata.version = nextDiagramVersion(draft.metadata.version); draft.confirmedAsset = undefined; } draft.tikz.snippet = code; draft.tikz.standalone = buildStandaloneTikzDocument(code); draft.tikz.semanticSync = code === draft.tikz.generatedSnippet ? "synchronized" : "partially_detached"; draft.compilation = inspectTikzSyntax(code); draft.teacherEdits.push({ id: stableTikzId("edit", `${at}-code`), at, source: "code", operation: "edit_code", before: current.tikz.snippet, after: code }); draft.metadata.updatedAt = at; draft.validation = validateTikzDraft(draft); draft.reviewQueue = buildTikzReviewQueue(draft); draft.quality = qualitySummary(draft); draft.status = "needs_review"; return draft;
 }
 
 export function undoLatestEdit(current: TikzDiagramDraft) {

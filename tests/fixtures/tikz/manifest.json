@@ -1,0 +1,39 @@
+[
+  {
+    "id": "degraded-rotated-page",
+    "sourceKind": "synthetic",
+    "category": "degraded_photo",
+    "sourceImage": "tests/fixtures/document-recognition/02-rotated-page.png",
+    "expectedClassification": "plane_geometry",
+    "rawStructure": {
+      "diagramType": "plane_geometry",
+      "confidence": 0.9,
+      "points": [{ "label": "A", "coordinate": [-2, 0] }, { "label": "B", "coordinate": [2, 0] }, { "label": "C", "coordinate": [0, 3] }],
+      "segments": [["A", "B"], ["B", "C"], ["C", "A"]]
+    },
+    "requiredObjects": ["point", "segment"],
+    "requiredRelationships": ["visible_edge"],
+    "forbiddenDuplicateLabels": ["A", "B", "C"],
+    "preprocessing": { "rotation": 90, "deskew": true, "grayscale": true, "lineEnhancement": true }
+  },
+  {
+    "id": "degraded-perspective-page",
+    "sourceKind": "synthetic",
+    "category": "degraded_photo",
+    "sourceImage": "tests/fixtures/document-recognition/03-perspective-photo.png",
+    "expectedClassification": "solid_geometry",
+    "rawStructure": {
+      "diagramType": "solid_geometry",
+      "figureType": "pyramid",
+      "confidence": 0.84,
+      "points": [{ "label": "A", "coordinate": [-3, 0] }, { "label": "B", "coordinate": [3, 0] }, { "label": "C", "coordinate": [2, 1.5] }, { "label": "D", "coordinate": [-2, 1.5] }, { "label": "S", "coordinate": [0, 4] }],
+      "solidEdges": [["A", "B"], ["B", "C"], ["C", "D"], ["S", "A"], ["S", "B"], ["S", "C"]],
+      "dashedEdges": [["D", "A"], ["S", "D"]]
+    },
+    "requiredObjects": ["point", "segment"],
+    "requiredRelationships": ["visible_edge", "hidden_edge"],
+    "forbiddenDuplicateLabels": ["A", "B", "C", "D", "S"],
+    "expectedWarnings": ["perspective-review"],
+    "preprocessing": { "perspectiveCorrection": true, "deskew": true, "thresholdMode": "adaptive", "lineEnhancement": true }
+  }
+]

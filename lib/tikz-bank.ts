@@ -49,6 +49,7 @@ export type TikzSnippet = {
 
 export type TikzSnippetInput = Pick<TikzSnippet, "title" | "description" | "category" | "subject" | "grade" | "tags" | "tikz_code" | "full_latex" | "preview_note"> & {
   source_type?: string;
+  metadata?: Record<string, unknown>;
 };
 
 const limits = {
@@ -87,6 +88,7 @@ export function validateTikzSnippetInput(value: unknown):
     full_latex: text(source.full_latex) || null,
     preview_note: text(source.preview_note) || null,
     source_type: text(source.source_type) || "teacher_created",
+    metadata: source.metadata && typeof source.metadata === "object" && !Array.isArray(source.metadata) ? source.metadata as Record<string, unknown> : undefined,
   };
 
   if (!data.title) return { ok: false, error: "Vui lòng nhập tiêu đề." };

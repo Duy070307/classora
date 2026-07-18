@@ -5,6 +5,7 @@ import {
   BorderStyle,
   Document,
   Footer,
+  ImageRun,
   Packer,
   PageNumber,
   Paragraph,
@@ -18,6 +19,7 @@ import {
 } from "docx";
 import { getDocumentSettings } from "@/lib/document-settings";
 import type { GeneratedDocument } from "@/lib/types";
+import type { ConfirmedDiagramAsset } from "@/lib/tikz/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
 import { containsMathLikeText } from "@/lib/content/math-symbol-normalize";
@@ -47,6 +49,10 @@ const footerCellBorders = {
 
 function run(text: string, options: { bold?: boolean; italics?: boolean; size?: number } = {}) {
   return new TextRun({ text, font: containsMathLikeText(text) ? "Cambria Math" : FONT, size: options.size ?? BODY_SIZE, bold: options.bold, italics: options.italics });
+}
+
+function diagramParagraphs(assets: ConfirmedDiagramAsset[]) {
+  return assets.flatMap((asset) => { if (!asset.pngDataUrl?.startsWith("data:image/png;base64,")) return []; const raw = atob(asset.pngDataUrl.slice(asset.pngDataUrl.indexOf(",") + 1)); const data = Uint8Array.from(raw, (character) => character.charCodeAt(0)); const ratio = asset.width / Math.max(1, asset.height); const width = ratio >= 1 ? 520 : 340; const height = Math.round(width / Math.max(0.2, ratio)); return [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120, after: 50 }, children: [new ImageRun({ data, type: "png", transformation: { width, height }, altText: { title: asset.altText, description: asset.altText, name: asset.altText } })] }), ...(asset.caption ? [paragraph(asset.caption, { italics: true, center: true, after: 100 })] : [])]; });
 }
 
 function paragraph(text = "", options: { bold?: boolean; italics?: boolean; center?: boolean; right?: boolean; before?: number; after?: number; size?: number; borderBottom?: boolean } = {}) {
@@ -108,13 +114,15 @@ function bodyParagraphs(text: string) {
   });
 }
 
-function questionBlocks(text: string) {
+function questionBlocks(text: string, assetsByQuestion = new Map<string, ConfirmedDiagramAsset[]>()) {
   const blocks = text.split(/(?=^Câu\s+\d+\.)/gim).map((block) => block.trim()).filter(Boolean);
   return blocks.flatMap((block) => {
     const lines = block.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     const question = lines.shift() || "";
     const options = lines.map((line) => line.match(/^([A-D])\.\s*(.*)$/)).filter(Boolean) as RegExpMatchArray[];
     const children: (Paragraph | Table)[] = bodyParagraphs(question);
+    const questionNumber = question.match(/^Câu\s+(\d+)\./i)?.[1];
+    if (questionNumber) children.push(...diagramParagraphs(assetsByQuestion.get(questionNumber) || []));
     if (options.length === 4 && options.every((item) => item[2].length <= 55)) {
       children.push(new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
@@ -129,6 +137,17 @@ function questionBlocks(text: string) {
     }
     return children;
   });
+}
+
+function diagramAssetsForPart(document: GeneratedDocument, type: "multiple_choice" | "true_false" | "short_answer") {
+  const assets = document.diagramAssets || []; const result = new Map<string, ConfirmedDiagramAsset[]>();
+  const questions = document.structuredExam?.parts.find((part) => part.type === type)?.questions || [];
+  for (const question of questions) {
+    const contents = new Set((question.visuals || []).map((visual) => visual.content).filter(Boolean));
+    const matched = assets.filter((asset) => contents.has(asset.pngDataUrl) || contents.has(asset.svgDataUrl));
+    if (matched.length) result.set(String(question.number), matched);
+  }
+  return result;
 }
 
 function docxTable(table: ParsedMarkdownTable) {
@@ -254,6 +273,8 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument, opt
   const mcCount = [...mc.matchAll(/^Câu\s+\d+\./gim)].length;
   const trueFalseCount = [...trueFalse.matchAll(/^Câu\s+\d+\./gim)].length;
   const essayCount = [...essay.matchAll(/^Câu\s+\d+\./gim)].length;
+  const mcAssets = diagramAssetsForPart(document, "multiple_choice"); const trueFalseAssets = diagramAssetsForPart(document, "true_false"); const essayAssets = diagramAssetsForPart(document, "short_answer");
+  const associatedAssetKeys = new Set([...mcAssets.values(), ...trueFalseAssets.values(), ...essayAssets.values()].flat().map((asset) => `${asset.diagramId}@${asset.version}`));
 
   const header = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -292,16 +313,17 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument, opt
     paragraph("", { after: 80, borderBottom: true }),
     ...(mc ? [
       paragraph(`PHẦN I. Thí sinh trả lời từ câu 1 đến câu ${mcCount || 12}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.`, { bold: true, before: 60, after: 35 }),
-      ...questionBlocks(mc)
+      ...questionBlocks(mc, mcAssets)
     ] : []),
     ...(trueFalse ? [
       paragraph(`PHẦN II. Thí sinh trả lời từ câu 1 đến câu ${trueFalseCount || 4}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.`, { bold: true, before: 100, after: 35 }),
-      ...bodyParagraphs(trueFalse)
+      ...questionBlocks(trueFalse, trueFalseAssets)
     ] : []),
     ...(essay ? [
       paragraph(`PHẦN III. Thí sinh trả lời từ câu 1 đến câu ${essayCount || 6}.`, { bold: true, before: 100, after: 35 }),
-      ...bodyParagraphs(essay)
+      ...questionBlocks(essay, essayAssets)
     ] : []),
+    ...diagramParagraphs((document.diagramAssets || []).filter((asset) => !associatedAssetKeys.has(`${asset.diagramId}@${asset.version}`))),
     paragraph("------ HẾT ------", { bold: true, italics: true, center: true, before: 160, after: 30 })
   ];
 

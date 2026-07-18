@@ -24,6 +24,7 @@ export type ExamQuestion = {
 };
 
 export type StructuredExam = {
+  diagramAssets?: import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   metadata: {
     title: string;
     examStyle: string;

@@ -67,6 +67,7 @@ export type ReviewPack = {
   exerciseTypes: ExerciseTypeSection[];
   workedExamples: WorkedExample[];
   practiceActivities: WorksheetActivity[];
+  diagramAssets?: import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   quickQuiz?: StructuredExam;
   solutions?: ExamSolutionSet;
   teacherNotes?: string[];

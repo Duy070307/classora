@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getDocumentSettings, type DocumentSettings } from "@/lib/document-settings";
@@ -35,6 +36,7 @@ export default function PrintPage() {
       {header.length ? <header className="mb-8 space-y-1 border-b border-slate-300 pb-4">{header.map((line) => <p key={line}>{line}</p>)}</header> : null}
       <h1 className="mb-8 text-center text-2xl font-bold">{document.title}</h1>
       <GenericDocumentContent content={document.content || "(Tài liệu chưa có nội dung.)"} />
+      {document.diagramAssets?.map((asset) => <figure key={`${asset.diagramId}-${asset.version}`} className="my-6 text-center"><Image src={asset.svgDataUrl || asset.pngDataUrl || ""} alt={asset.altText} width={asset.width} height={asset.height} className="mx-auto h-auto max-h-[560px] w-auto max-w-full" unoptimized />{asset.caption ? <figcaption className="mt-2 text-sm italic">{asset.caption}</figcaption> : null}</figure>)}
       <p className="mt-10 border-t border-amber-200 pt-4 text-xs text-amber-700">Nội dung là bản nháp hỗ trợ soạn tài liệu. Giáo viên cần kiểm tra và chỉnh sửa trước khi sử dụng.</p>
     </article>}
   </main>;

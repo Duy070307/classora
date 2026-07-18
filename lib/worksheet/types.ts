@@ -80,6 +80,7 @@ export type Worksheet = {
   objectives?: string[];
   keyKnowledge?: string[];
   activities: WorksheetActivity[];
+  diagramAssets?: import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   answerKey?: WorksheetAnswerKey;
   teacherGuide?: TeacherGuide;
   settings: {

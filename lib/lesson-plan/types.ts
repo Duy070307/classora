@@ -44,6 +44,7 @@ export type LessonPlan = {
   id?:string; ownerId?:string; title:string; subject?:string; grade?:string; topic?:string; textbookSeries?:string;
   lessonType:LessonType; periodCount:number; minutesPerPeriod:number;
   objectives:LessonObjective[]; preparation:LessonPreparation; periods:LessonPeriod[];
+  diagramAssets?:import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   assessmentPlan?:LessonAssessmentPlan; differentiation?:DifferentiationPlan; homework?:HomeworkPlan;
   linkedMaterials?:{slideDeckIds?:string[];worksheetIds?:string[];rubricIds?:string[];examIds?:string[];documentIds?:string[]};
   requirements?:string[]; keyKnowledge?:string[]; methods?:string[]; classProfile?:string; notes?:string;

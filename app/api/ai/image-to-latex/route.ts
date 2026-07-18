@@ -53,6 +53,12 @@ export async function POST(request: Request) {
       rotation,
       contrast: formData.get("contrast") === "enhanced" ? "enhanced" : "normal",
       useOriginal: formData.get("useOriginal") === "true",
+      perspectiveCorrection: formData.get("perspectiveCorrection") === "true",
+      deskew: formData.get("deskew") === "true",
+      grayscale: formData.get("grayscale") !== "false",
+      thresholdMode: formData.get("thresholdMode") === "adaptive" ? "adaptive" : "none",
+      denoise: formData.get("denoise") === "true",
+      lineEnhancement: formData.get("lineEnhancement") !== "false",
     });
     const result = await generateLatexFromImage({
       imageBase64: processed.base64,
@@ -72,6 +78,13 @@ export async function POST(request: Request) {
       standaloneLatex: result.standaloneLatex,
       warnings: result.warnings,
     }) : undefined;
+    if (tikzDraft) {
+      tikzDraft.source.mimeType = file.type;
+      tikzDraft.source.originalFileName = file.name;
+      tikzDraft.source.preprocessingSettings = processed.appliedSettings;
+      tikzDraft.source.sourceAvailable = true;
+      tikzDraft.classification.warnings = [...new Set([...tikzDraft.classification.warnings, ...processed.warnings])];
+    }
 
     return NextResponse.json({
       ok: true,
@@ -99,6 +112,10 @@ export async function POST(request: Request) {
         originalHeight: processed.originalHeight,
         processedWidth: processed.processedWidth,
         processedHeight: processed.processedHeight,
+        settingsHash: processed.settingsHash,
+        deskewAngle: processed.deskewAngle,
+        rotationConfidence: processed.rotationConfidence,
+        warnings: processed.warnings,
       },
     });
   } catch (error) {

@@ -2,6 +2,7 @@ import { buildStandaloneTikzDocument, requiredTikzLibraries } from "@/lib/ai/ext
 import { inspectTikzSyntax } from "@/lib/tikz/syntax";
 import type { DiagramClass, DiagramObject, DiagramObjectType, DiagramRelationship, DiagramRelationshipType, TikzDiagramDraft } from "@/lib/tikz/types";
 import { validateTikzDraft, qualitySummary } from "@/lib/tikz/validation";
+import { buildTikzReviewQueue } from "@/lib/tikz/readiness";
 
 type UnknownRecord = Record<string, unknown>;
 const record = (value: unknown): UnknownRecord => value && typeof value === "object" && !Array.isArray(value) ? value as UnknownRecord : {};
@@ -86,22 +87,29 @@ export function createTikzDiagramDraft(input: { sourceHash: string; sourceName?:
   const bounds = { minX: xs.length ? Math.min(...xs) : -4, minY: ys.length ? Math.min(...ys) : -3, maxX: xs.length ? Math.max(...xs) : 4, maxY: ys.length ? Math.max(...ys) : 5 };
   const draft: TikzDiagramDraft = {
     id: stableTikzId("tikz", `${input.sourceHash}-${input.tikzCode.slice(0, 200)}`),
-    source: { sourceType: input.sourceType || "image", sourceName: input.sourceName, sourceHash: input.sourceHash, originalWidth: input.width, originalHeight: input.height, processedWidth: input.processedWidth, processedHeight: input.processedHeight },
+    source: { sourceType: input.sourceType || "image", sourceName: input.sourceName, sourceHash: input.sourceHash, originalWidth: input.width, originalHeight: input.height, processedWidth: input.processedWidth, processedHeight: input.processedHeight, sourceAvailable: false },
     classification: { type: classification, subtype: text(raw.subtype || raw.figureType) || undefined, confidence: confidence(raw.confidence), detectedFeatures: [...new Set(semantics.objects.map((item) => item.type))], warnings: input.warnings || [], teacherConfirmed: false },
     objects: semantics.objects, relationships: semantics.relationships,
     layout: { bounds, scale: 1, coordinateSystem: classification === "function_graph" || classification === "coordinate_geometry" ? "cartesian" : "diagram" },
     tikz: { snippet: input.tikzCode, generatedSnippet: input.tikzCode, standalone: input.standaloneLatex || buildStandaloneTikzDocument(input.tikzCode), libraries: requiredTikzLibraries(input.tikzCode), packages: ["tikz"], semanticSync: "synchronized" },
     compilation: inspectTikzSyntax(input.tikzCode), validation: { valid: false, status: "needs_review", checks: [], warnings: [], missingObjects: [] },
     quality: { classification: 0, objectCoverage: 0, labelCoverage: 0, relationships: 0, compilation: 0, layout: 0, comparison: 0, teacherConfirmationRequired: true, overall: "needs_review" },
-    teacherEdits: [], status: "recognized", metadata: { createdAt: now, updatedAt: now, version: "2.0" },
+    teacherEdits: [], status: "recognized", metadata: { createdAt: now, updatedAt: now, version: "2.1" },
   };
-  draft.validation = validateTikzDraft(draft); draft.quality = qualitySummary(draft); draft.status = draft.validation.status === "ready" ? "valid" : "needs_review";
+  draft.validation = validateTikzDraft(draft); draft.reviewQueue = buildTikzReviewQueue(draft); draft.quality = qualitySummary(draft); draft.status = draft.validation.status === "ready" ? "valid" : "needs_review";
   return draft;
 }
 
 export function normalizeLegacyTikzDraft(value: unknown, fallbackCode = ""): TikzDiagramDraft {
   const source = record(value);
-  if (source.metadata && source.source && source.tikz && Array.isArray(source.objects)) return source as unknown as TikzDiagramDraft;
+  if (source.metadata && source.source && source.tikz && Array.isArray(source.objects)) {
+    const draft = structuredClone(source) as unknown as TikzDiagramDraft;
+    draft.source.sourceAvailable = draft.source.sourceAvailable ?? Boolean(draft.source.sourceAsset || draft.source.localDataUrl);
+    draft.reviewQueue = buildTikzReviewQueue(draft);
+    draft.validation = validateTikzDraft(draft); draft.quality = qualitySummary(draft);
+    draft.metadata.version ||= "2.0"; draft.documentReferences ||= [];
+    return draft;
+  }
   const code = text(record(source.tikz).snippet || source.tikzCode || source.tikz_code || source.content || fallbackCode);
   return createTikzDiagramDraft({ sourceHash: text(record(source.source).sourceHash) || stableTikzId("legacy", code), sourceName: text(record(source.source).sourceName || source.title) || "Mã TikZ cũ", sourceType: source.tikz_code ? "tikz_bank" : "existing_tikz", tikzCode: code, standaloneLatex: text(record(source.tikz).standalone || source.standaloneLatex || source.full_latex), rawStructure: source.detectedStructure || source.geometryStructure || record(source.metadata).tikzDiagramDraft || {} });
 }

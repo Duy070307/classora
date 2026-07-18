@@ -1,13 +1,16 @@
 import type { DocumentSettings } from "@/lib/document-settings";
+import Image from "next/image";
 import type { ExamQuestion } from "@/lib/exam-types";
+import type { ConfirmedDiagramAsset } from "@/lib/tikz/types";
 import { parseExamForPrint, type ExamPrintQuestion } from "@/lib/exam-print-format";
 import type { GeneratedDocument } from "@/lib/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 
-function Question({ item }: { item: ExamPrintQuestion }) {
+function Question({ item, assets = [] }: { item: ExamPrintQuestion; assets?: ConfirmedDiagramAsset[] }) {
   const compact = item.options.length === 4 && item.options.every((option) => option.text.length <= 55);
   return <section className="exam-question">
     <p><strong>Câu {item.number}. </strong>{item.stem}</p>
+    {assets.map((asset) => <figure key={`${asset.diagramId}-${asset.version}`} className="my-3 text-center"><Image src={asset.svgDataUrl || asset.pngDataUrl || ""} alt={asset.altText} width={asset.width} height={asset.height} className="mx-auto h-auto max-h-[420px] w-auto max-w-full" unoptimized />{asset.caption ? <figcaption className="mt-1 text-sm italic">{asset.caption}</figcaption> : null}</figure>)}
     {item.extra.map((line, index) => /\[(Hình vẽ|Hình minh họa|Hình ảnh)\]/i.test(line)
       ? <div key={index} className="exam-figure-placeholder">[Hình vẽ minh họa]</div>
       : <p key={index}>{line}</p>)}
@@ -48,6 +51,11 @@ function structuredToPrintQuestion(question: ExamQuestion): ExamPrintQuestion {
   };
 }
 
+function assetsForQuestion(question: ExamQuestion | undefined, assets: ConfirmedDiagramAsset[]) {
+  const contents = new Set((question?.visuals || []).map((visual) => visual.content).filter(Boolean));
+  return assets.filter((asset) => contents.has(asset.pngDataUrl) || contents.has(asset.svgDataUrl));
+}
+
 export function OfficialExamPrintView({ document, settings }: { document: GeneratedDocument; settings: DocumentSettings }) {
   const parsed = parseExamForPrint(document);
   const meta = document.examMeta ?? {};
@@ -61,6 +69,8 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
   const part3 = parsed.part3.length ? parsed.part3 : structuredShortAnswer.map(structuredToPrintQuestion);
   const hasStructuredAnswers = structuredMultipleChoice.length + structuredTrueFalse.length + structuredShortAnswer.length > 0;
   const includeTeacherPages = document.generationMeta?.mode !== "exam-mixer";
+  const diagramAssets = document.diagramAssets || [];
+  const associatedAssetKeys = new Set((document.structuredExam?.parts || []).flatMap((part) => part.questions.flatMap((question) => assetsForQuestion(question, diagramAssets).map((asset) => `${asset.diagramId}@${asset.version}`))));
   return <article className="official-exam-print">
     <section className="exam-student-pages">
       <header className="exam-print-header">
@@ -81,9 +91,10 @@ export function OfficialExamPrintView({ document, settings }: { document: Genera
         <p className="exam-code">Mã đề: {code}</p>
       </div>
       <div className="exam-separator" />
-      {part1.length ? <><h2>PHẦN I. Thí sinh trả lời từ câu 1 đến câu {part1.length}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</h2>{part1.map((item) => <Question key={`i-${item.number}`} item={item} />)}</> : null}
-      {part2.length ? <><h2>PHẦN II. Thí sinh trả lời từ câu 1 đến câu {part2.length}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</h2>{part2.map((item) => <Question key={`ii-${item.number}`} item={item} />)}</> : null}
-      {part3.length ? <><h2>PHẦN III. Thí sinh trả lời từ câu 1 đến câu {part3.length}.</h2>{part3.map((item) => <Question key={`iii-${item.number}`} item={item} />)}</> : null}
+      {part1.length ? <><h2>PHẦN I. Thí sinh trả lời từ câu 1 đến câu {part1.length}. Mỗi câu hỏi thí sinh chỉ chọn một phương án.</h2>{part1.map((item) => <Question key={`i-${item.number}`} item={item} assets={assetsForQuestion(structuredMultipleChoice.find((question) => String(question.number) === String(item.number)), diagramAssets)} />)}</> : null}
+      {part2.length ? <><h2>PHẦN II. Thí sinh trả lời từ câu 1 đến câu {part2.length}. Trong mỗi ý a), b), c), d) ở mỗi câu, thí sinh chọn đúng hoặc sai.</h2>{part2.map((item) => <Question key={`ii-${item.number}`} item={item} assets={assetsForQuestion(structuredTrueFalse.find((question) => String(question.number) === String(item.number)), diagramAssets)} />)}</> : null}
+      {part3.length ? <><h2>PHẦN III. Thí sinh trả lời từ câu 1 đến câu {part3.length}.</h2>{part3.map((item) => <Question key={`iii-${item.number}`} item={item} assets={assetsForQuestion(structuredShortAnswer.find((question) => String(question.number) === String(item.number)), diagramAssets)} />)}</> : null}
+      {diagramAssets.filter((asset) => !associatedAssetKeys.has(`${asset.diagramId}@${asset.version}`)).map((asset) => <figure key={`${asset.diagramId}-${asset.version}`} className="my-5 text-center"><Image src={asset.svgDataUrl || asset.pngDataUrl || ""} alt={asset.altText} width={asset.width} height={asset.height} className="mx-auto h-auto max-h-[520px] w-auto max-w-full" unoptimized />{asset.caption ? <figcaption className="mt-2 text-sm italic">{asset.caption}</figcaption> : null}</figure>)}
       <p className="exam-end">------ HẾT ------</p>
       <div className="exam-print-footer"><span>Mã đề {code}</span><span>Trang ...</span></div>
     </section>

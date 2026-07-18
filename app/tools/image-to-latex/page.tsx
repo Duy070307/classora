@@ -13,6 +13,8 @@ import { saveRecentTool } from "@/lib/recent-tools";
 import type { TikzDiagramDraft } from "@/lib/tikz/types";
 import { normalizeLegacyTikzDraft } from "@/lib/tikz/model";
 import { createDraftFromDescription } from "@/lib/tikz/description";
+import { getStorageMode } from "@/lib/data/storage-mode";
+import { fileToPrivateDataUrl, privateTikzAssetUrl, uploadPrivateTikzAsset } from "@/lib/tikz/private-assets";
 
 type Mode = "auto" | "formula" | "geometry";
 
@@ -92,6 +94,13 @@ export default function ImageToLatexPage() {
   const [rotation, setRotation] = useState<-90 | 0 | 90 | 180>(0);
   const [enhanceContrast, setEnhanceContrast] = useState(false);
   const [useOriginal, setUseOriginal] = useState(false);
+  const [perspectiveCorrection, setPerspectiveCorrection] = useState(false);
+  const [deskew, setDeskew] = useState(false);
+  const [grayscale, setGrayscale] = useState(true);
+  const [adaptiveThreshold, setAdaptiveThreshold] = useState(false);
+  const [denoise, setDenoise] = useState(false);
+  const [lineEnhancement, setLineEnhancement] = useState(true);
+  const [historyDocumentId, setHistoryDocumentId] = useState("");
   const [manualSource, setManualSource] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -111,7 +120,9 @@ export default function ImageToLatexPage() {
     queueMicrotask(() => {
       try {
         const pending = sessionStorage.getItem("soanlab:tikz-open"); if (!pending) return;
-        sessionStorage.removeItem("soanlab:tikz-open"); const draft = normalizeLegacyTikzDraft(JSON.parse(pending));
+        sessionStorage.removeItem("soanlab:tikz-open"); const raw = JSON.parse(pending) as Record<string, unknown>; const draft = normalizeLegacyTikzDraft(raw);
+        if (typeof raw.historyDocumentId === "string") setHistoryDocumentId(raw.historyDocumentId);
+        if (draft.source.localDataUrl) setPreviewUrl(draft.source.localDataUrl); else if (draft.source.sourceAsset?.id) setPreviewUrl(privateTikzAssetUrl(draft.source.sourceAsset.id));
         setMode("geometry"); setOutputType("tikz"); setTikzDraft(draft); setTikzCode(draft.tikz.snippet); setLatex(draft.tikz.snippet); setDisplayLatex(draft.tikz.snippet); setStandaloneLatex(draft.tikz.standalone); setWarnings(draft.validation.warnings);
       } catch { /* Bỏ qua dữ liệu phiên cũ không hợp lệ. */ }
     });
@@ -185,6 +196,12 @@ export default function ImageToLatexPage() {
       formData.set("rotation", String(rotation));
       formData.set("contrast", enhanceContrast ? "enhanced" : "normal");
       formData.set("useOriginal", String(useOriginal));
+      formData.set("perspectiveCorrection", String(perspectiveCorrection));
+      formData.set("deskew", String(deskew));
+      formData.set("grayscale", String(grayscale));
+      formData.set("thresholdMode", adaptiveThreshold ? "adaptive" : "none");
+      formData.set("denoise", String(denoise));
+      formData.set("lineEnhancement", String(lineEnhancement));
       const response = await fetch("/api/ai/image-to-latex", {
         method: "POST",
         body: formData,
@@ -241,6 +258,13 @@ export default function ImageToLatexPage() {
     setRotation(0);
     setEnhanceContrast(false);
     setUseOriginal(false);
+    setPerspectiveCorrection(false);
+    setDeskew(false);
+    setGrayscale(true);
+    setAdaptiveThreshold(false);
+    setDenoise(false);
+    setLineEnhancement(true);
+    setHistoryDocumentId("");
     setManualSource("");
     setError("");
     setMessage("");
@@ -284,7 +308,9 @@ export default function ImageToLatexPage() {
     URL.revokeObjectURL(url);
   }
 
-  function saveToHistory() {
+  async function dataUrlBlob(value: string) { return fetch(value).then((response) => response.blob()); }
+
+  async function saveToHistory() {
     const title = isTikzOutput ? "Ảnh hình học → TikZ" : "Ảnh công thức → LaTeX";
     const content = isTikzOutput
       ? latex
@@ -296,10 +322,23 @@ export default function ImageToLatexPage() {
         "```",
         explanation ? `\nGhi chú: ${explanation}` : "",
       ].filter(Boolean).join("\n");
-    const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content);
+    const document = createDocument(title, isTikzOutput ? "image-to-tikz" : "image-to-latex", content); if (historyDocumentId) document.id = historyDocumentId;
+    const savedDraft = tikzDraft ? structuredClone(tikzDraft) : undefined;
+    if (isTikzOutput && savedDraft && file && !savedDraft.source.sourceAsset?.id && !savedDraft.source.localDataUrl) {
+      const mode = await getStorageMode(); const privateAsset = mode.mode === "cloud" ? await uploadPrivateTikzAsset(file, "source") : null;
+      if (privateAsset) { savedDraft.source.sourceAsset = privateAsset; savedDraft.source.sourceAssetId = privateAsset.id; savedDraft.source.sourceAvailable = true; }
+      else if (mode.mode === "local") { savedDraft.source.localDataUrl = await fileToPrivateDataUrl(file); savedDraft.source.sourceAvailable = true; }
+      else { savedDraft.source.sourceAvailable = false; setMessage("Chưa lưu được ảnh nguồn riêng tư; mã và bản xem trước vẫn được giữ. Cần áp dụng cấu hình lưu trữ TikZ trước khi dùng production."); }
+    }
+    if (savedDraft?.source.sourceAsset?.id && savedDraft.confirmedAsset) {
+      const assetId = savedDraft.source.sourceAsset.id;
+      if (savedDraft.confirmedAsset.svgDataUrl && !savedDraft.confirmedAsset.svgAssetId) savedDraft.confirmedAsset.svgAssetId = (await uploadPrivateTikzAsset(await dataUrlBlob(savedDraft.confirmedAsset.svgDataUrl), "svg", assetId))?.id;
+      if (savedDraft.confirmedAsset.pngDataUrl && !savedDraft.confirmedAsset.pngAssetId) savedDraft.confirmedAsset.pngAssetId = (await uploadPrivateTikzAsset(await dataUrlBlob(savedDraft.confirmedAsset.pngDataUrl), "png", assetId))?.id;
+    }
     saveDocument({
       ...document,
-      tikzDiagramDraft: isTikzOutput ? tikzDraft : undefined,
+      tikzDiagramDraft: isTikzOutput ? savedDraft : undefined,
+      diagramAssets: savedDraft?.confirmedAsset ? [savedDraft.confirmedAsset] : undefined,
       generationMeta: {
         mode: isTikzOutput ? "geometry" : mode,
         confidence: confidence || undefined,
@@ -308,7 +347,8 @@ export default function ImageToLatexPage() {
         standaloneLatex: isTikzOutput ? standaloneLatex : undefined,
       },
     });
-    showMessage("Đã lưu vào lịch sử.");
+    if (savedDraft) { setTikzDraft(savedDraft); if (!historyDocumentId) setHistoryDocumentId(document.id); }
+    showMessage(savedDraft?.source.sourceAvailable === false ? "Đã lưu mã; ảnh nguồn chưa được lưu dài hạn." : "Đã lưu vào lịch sử.");
   }
 
   return (
@@ -408,6 +448,12 @@ export default function ImageToLatexPage() {
                   <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === -90 ? 180 : rotation - 90) as -90 | 0 | 90 | 180)}>Xoay trái</button>
                   <button type="button" className="btn-secondary" onClick={() => setRotation((rotation === 180 ? -90 : rotation + 90) as -90 | 0 | 90 | 180)}>Xoay phải</button>
                   <button type="button" className={`btn-secondary ${enhanceContrast ? "ring-2 ring-blue-500" : ""}`} onClick={() => setEnhanceContrast((value) => !value)}>Tăng tương phản</button>
+                  <button type="button" className={`btn-secondary ${deskew ? "ring-2 ring-blue-500" : ""}`} onClick={() => setDeskew((value) => !value)}>Tự sửa nghiêng</button>
+                  <button type="button" className={`btn-secondary ${perspectiveCorrection ? "ring-2 ring-blue-500" : ""}`} onClick={() => setPerspectiveCorrection((value) => !value)}>Cắt biên ảnh</button>
+                  <button type="button" className={`btn-secondary ${adaptiveThreshold ? "ring-2 ring-blue-500" : ""}`} onClick={() => setAdaptiveThreshold((value) => !value)}>Ảnh photocopy</button>
+                  <button type="button" className={`btn-secondary ${denoise ? "ring-2 ring-blue-500" : ""}`} onClick={() => setDenoise((value) => !value)}>Giảm nhiễu</button>
+                  <button type="button" className={`btn-secondary ${lineEnhancement ? "ring-2 ring-blue-500" : ""}`} onClick={() => setLineEnhancement((value) => !value)}>Giữ nét mảnh</button>
+                  <button type="button" className={`btn-secondary ${grayscale ? "ring-2 ring-blue-500" : ""}`} onClick={() => setGrayscale((value) => !value)}>Thang xám</button>
                   <button type="button" className={`btn-secondary ${useOriginal ? "ring-2 ring-blue-500" : ""}`} onClick={() => setUseOriginal((value) => !value)}>Dùng ảnh gốc</button>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -511,11 +557,11 @@ export default function ImageToLatexPage() {
                   <Download size={16} />
                   Tải Markdown
                 </button>
-                <button type="button" onClick={saveToHistory} disabled={!latex} className="btn-secondary disabled:opacity-50">
+                <button type="button" onClick={() => void saveToHistory()} disabled={!latex} className="btn-secondary disabled:opacity-50">
                   <Save size={16} />
                   Lưu lịch sử
                 </button>
-                {isTikzOutput ? <SaveToTikzBankButton tikzCode={tikzCode || latex} fullLatex={standaloneLatex} /> : null}
+                {isTikzOutput ? <SaveToTikzBankButton tikzCode={tikzCode || latex} fullLatex={standaloneLatex} draft={tikzDraft} /> : null}
               </div>
 
               {explanation || warnings.length ? (

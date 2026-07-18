@@ -63,6 +63,7 @@ export type GeneratedDocument = {
   reviewPack?: import("@/lib/review-pack/types").ReviewPack;
   questionCollection?: import("@/lib/question-bank-core/types").QuestionCollection;
   tikzDiagramDraft?: import("@/lib/tikz/types").TikzDiagramDraft;
+  diagramAssets?: import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   auditMeta?: {
     lastAuditedAt?: string;
     auditStatus: "not_audited" | "needs_fix" | "reviewed" | "ready";

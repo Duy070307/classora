@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { validateTikzSnippetInput } from "@/lib/tikz-bank";
 
-const selectFields = "id,created_at,updated_at,user_id,bank_scope,title,description,category,subject,grade,tags,tikz_code,full_latex,preview_note,source_type,needs_review";
+const selectFields = "id,created_at,updated_at,user_id,bank_scope,title,description,category,subject,grade,tags,tikz_code,full_latex,preview_note,source_type,needs_review,metadata";
 
 export async function GET() {
   try {

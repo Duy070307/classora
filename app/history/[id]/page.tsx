@@ -73,6 +73,7 @@ import {
   downloadReviewPackZip,
   printReviewPackPdf,
 } from "@/lib/review-pack/export";
+import { deletePrivateTikzAsset } from "@/lib/tikz/private-assets";
 
 export default function HistoryDetailPage() {
   const params = useParams<{ id: string }>();
@@ -695,17 +696,20 @@ export default function HistoryDetailPage() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <DocumentExportMenu document={document} />
           {document.type === "image-to-tikz" ? (
+            <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               className="btn-primary"
               onClick={() => {
-                sessionStorage.setItem("soanlab:tikz-open", JSON.stringify(document.tikzDiagramDraft || document));
+                sessionStorage.setItem("soanlab:tikz-open", JSON.stringify({ ...(document.tikzDiagramDraft || document), historyDocumentId: document.id }));
                 router.push("/tools/image-to-latex?mode=geometry&source=history");
               }}
             >
               <Eye size={16} />
               Mở lại &amp; chỉnh sửa
             </button>
+            {document.tikzDiagramDraft && !document.tikzDiagramDraft.source.sourceAvailable ? <span className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Ảnh nguồn của bản TikZ cũ không còn được lưu. Mã và bản xem trước vẫn có thể sử dụng.</span> : null}
+            </div>
           ) : null}
           {document.type === "document-recognition" ? (
             <Link
@@ -785,8 +789,9 @@ export default function HistoryDetailPage() {
             className="btn-secondary text-red-600"
             onClick={() => {
               if (window.confirm("Xóa tài liệu này khỏi lịch sử?")) {
+                const sourceAssetId = document.tikzDiagramDraft?.source.sourceAsset?.id;
                 deleteDocument(document.id);
-                void deleteCloudDocument(document.id);
+                void (async () => { await deleteCloudDocument(document.id); if (sourceAssetId) await deletePrivateTikzAsset(sourceAssetId); })();
                 router.push("/history");
               }
             }}

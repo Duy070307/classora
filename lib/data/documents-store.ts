@@ -38,6 +38,8 @@ function rowToDocument(row: DocumentRow): GeneratedDocument {
     rubric: typeof metadata.rubric === "object" && metadata.rubric ? metadata.rubric as GeneratedDocument["rubric"] : undefined,
     reviewPack: typeof metadata.reviewPack === "object" && metadata.reviewPack ? metadata.reviewPack as GeneratedDocument["reviewPack"] : undefined,
     questionCollection: typeof metadata.questionCollection === "object" && metadata.questionCollection ? metadata.questionCollection as GeneratedDocument["questionCollection"] : undefined,
+    tikzDiagramDraft: typeof metadata.tikzDiagramDraft === "object" && metadata.tikzDiagramDraft ? metadata.tikzDiagramDraft as GeneratedDocument["tikzDiagramDraft"] : undefined,
+    diagramAssets: Array.isArray(metadata.diagramAssets) ? metadata.diagramAssets as GeneratedDocument["diagramAssets"] : undefined,
     structuredExam: row.structured_data ? row.structured_data as GeneratedDocument["structuredExam"] : undefined
   };
 }
@@ -91,7 +93,9 @@ export async function saveDocumentToCloud(document: GeneratedDocument) {
       lessonPlan: document.lessonPlan,
       rubric: document.rubric,
       reviewPack: document.reviewPack,
-      questionCollection: document.questionCollection
+      questionCollection: document.questionCollection,
+      tikzDiagramDraft: document.tikzDiagramDraft,
+      diagramAssets: document.diagramAssets
     },
     structured_data: document.structuredExam ?? null,
     updated_at: new Date().toISOString()

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Save, X } from "lucide-react";
 import { tikzCategories } from "@/lib/tikz-bank";
+import type { TikzDiagramDraft } from "@/lib/tikz/types";
 
-export function SaveToTikzBankButton({ tikzCode, fullLatex }: { tikzCode: string; fullLatex?: string }) {
+export function SaveToTikzBankButton({ tikzCode, fullLatex, draft }: { tikzCode: string; fullLatex?: string; draft?: TikzDiagramDraft }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("Hình TikZ từ ảnh");
   const [category, setCategory] = useState("Hình học phẳng");
@@ -18,6 +19,8 @@ export function SaveToTikzBankButton({ tikzCode, fullLatex }: { tikzCode: string
     setBusy(true);
     setMessage("");
     try {
+      const bankDraft = draft ? structuredClone(draft) : undefined;
+      if (bankDraft) { delete bankDraft.source.localDataUrl; if (bankDraft.confirmedAsset) { delete bankDraft.confirmedAsset.svgDataUrl; delete bankDraft.confirmedAsset.pngDataUrl; } }
       const response = await fetch("/api/tikz-bank", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -32,6 +35,7 @@ export function SaveToTikzBankButton({ tikzCode, fullLatex }: { tikzCode: string
           full_latex: fullLatex || "",
           preview_note: note,
           source_type: "generated_from_image",
+          metadata: draft ? { tikzDiagramDraft: bankDraft, currentVersion: draft.metadata.version, sourceAvailable: Boolean(draft.source.sourceAvailable), compilationStatus: draft.compilation.success ? "compiled" : draft.compilation.available ? "failed" : "unavailable", validationStatus: draft.validation.status, supportedInsertionTargets: ["exam", "question-bank", "worksheet", "lesson-plan", "lesson-slides", "review-pack", "answer-solutions"], lastConfirmedAt: draft.confirmedAsset?.confirmedAt } : undefined,
         }),
       });
       const result = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null;

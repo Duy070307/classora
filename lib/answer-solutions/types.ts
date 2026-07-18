@@ -26,6 +26,7 @@ export type QuestionSolution = {
   assumptions?: string[];
   contentHash: string;
   teacherConfirmed?: boolean;
+  diagramAssetIds?: string[];
 };
 
 export type SolutionSummary = {
@@ -45,9 +46,9 @@ export type ExamSolutionSet = {
   generatedAt: string;
   verificationStatus: "not_checked" | "verified" | "needs_review" | "has_errors";
   questions: QuestionSolution[];
+  diagramAssets?: import("@/lib/tikz/types").ConfirmedDiagramAsset[];
   summary: SolutionSummary;
   metadata: { detailLevel: SolutionDetailLevel; auditVersion?: string; sourceType?: string; solutionVersion: string };
 };
 
 export type SemanticSolutionPatch = Pick<QuestionSolution, "questionId" | "verifiedAnswer" | "answerStatus" | "confidence" | "conciseAnswer" | "detailedSolution" | "steps" | "statementExplanations" | "warnings" | "assumptions">;
-

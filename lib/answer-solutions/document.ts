@@ -79,6 +79,7 @@ export function solutionSetToDocument(source: GeneratedDocument, set: ExamSoluti
     folder: "Đề kiểm tra",
     structuredExam: source.structuredExam,
     examSolutionSet: set,
+    diagramAssets: set.diagramAssets,
     generationMeta: { mode: `teacher-solutions-${mode}` },
   };
 }

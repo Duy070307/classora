@@ -1,6 +1,6 @@
 "use client";
 
-import { AlignmentType, BorderStyle, Document, HeadingLevel, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType } from "docx";
+import { AlignmentType, BorderStyle, Document, HeadingLevel, ImageRun, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType } from "docx";
 import { getDocumentSettings } from "@/lib/document-settings";
 import { getDocumentHeaderLines } from "@/lib/document-header";
 import type { GeneratedDocument } from "@/lib/types";
@@ -18,6 +18,12 @@ function safeFileName(value: string) {
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .toLowerCase();
+}
+
+function pngBytes(dataUrl?: string) { if (!dataUrl?.startsWith("data:image/png;base64,")) return null; const raw = atob(dataUrl.slice(dataUrl.indexOf(",") + 1)); return Uint8Array.from(raw, (character) => character.charCodeAt(0)); }
+
+function diagramParagraphs(document: GeneratedDocument) {
+  return (document.diagramAssets || []).flatMap((asset) => { const data = pngBytes(asset.pngDataUrl); if (!data) return []; const maxWidth = 560; const ratio = asset.width / Math.max(1, asset.height); const width = ratio >= 1 ? maxWidth : Math.round(360 * ratio); const height = Math.round(width / Math.max(0.2, ratio)); return [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 160, after: 60 }, children: [new ImageRun({ data, type: "png", transformation: { width, height }, altText: { title: asset.altText, description: asset.altText, name: asset.altText } })] }), ...(asset.caption ? [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: asset.caption, italics: true })] })] : [])]; });
 }
 
 export async function exportDocx(document: GeneratedDocument) {
@@ -102,7 +108,8 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
             spacing: { after: 240 },
             children: [textRun(cleanDocument.title, { bold: true, size: fontSize + 8 })]
           }),
-          ...contentBlocks
+          ...contentBlocks,
+          ...diagramParagraphs(cleanDocument)
         ]
       }
     ]

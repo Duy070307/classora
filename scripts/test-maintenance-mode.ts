@@ -41,7 +41,7 @@ assert.doesNotMatch(middlewareSource, /from\("system_settings"\)/, "Middleware k
 const userSource = readFileSync("lib/auth/user.ts", "utf8");
 assert.match(userSource, /process\.env\.ADMIN_EMAIL/);
 
-for (const apiRoute of ["app/api/ai/generate/route.ts", "app/api/ai/image-to-latex/route.ts", "app/api/ai/3d-animation/route.ts", "app/api/question-bank/ai-import/route.ts", "app/api/answer-sheet/layout/route.ts", "app/api/answer-sheet/recognize/route.ts", "app/api/tikz/render/route.ts"]) {
+for (const apiRoute of ["app/api/ai/generate/route.ts", "app/api/ai/image-to-latex/route.ts", "app/api/ai/3d-animation/route.ts", "app/api/question-bank/ai-import/route.ts", "app/api/answer-sheet/layout/route.ts", "app/api/answer-sheet/recognize/route.ts", "app/api/tikz/render/route.ts", "app/api/tikz/assets/route.ts", "app/api/tikz/compiler/route.ts"]) {
   const source = readFileSync(apiRoute, "utf8");
   assert.match(source, /getMaintenanceBlockForUser/, `${apiRoute} thiếu maintenance guard trực tiếp`);
   assert.match(source, /maintenance:\s*true/, `${apiRoute} thiếu maintenance JSON`);

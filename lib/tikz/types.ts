@@ -26,6 +26,67 @@ export type DiagramPoint = { x: number; y: number };
 export type DiagramBounds = { minX: number; minY: number; maxX: number; maxY: number };
 export type SourceBox = { x: number; y: number; width: number; height: number };
 
+export type TikzPreprocessingSettings = {
+  rotation: -90 | 0 | 90 | 180;
+  perspectiveCorrection: boolean;
+  deskew: boolean;
+  grayscale: boolean;
+  contrast: "normal" | "enhanced";
+  thresholdMode: "none" | "adaptive";
+  denoise: boolean;
+  lineEnhancement: boolean;
+  useOriginal: boolean;
+  cropBounds?: SourceBox;
+};
+
+export type PrivateTikzAssetRef = {
+  id: string;
+  kind: "source" | "svg" | "png" | "pdf";
+  mimeType: string;
+  size: number;
+  hash: string;
+  width?: number;
+  height?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ConfirmedDiagramAsset = {
+  diagramId: string;
+  version: string;
+  semanticHash: string;
+  tikzSource: string;
+  standaloneSource: string;
+  svgAssetId?: string;
+  pngAssetId?: string;
+  pdfAssetId?: string;
+  svgDataUrl?: string;
+  pngDataUrl?: string;
+  altText: string;
+  caption?: string;
+  width: number;
+  height: number;
+  confirmedAt: string;
+};
+
+export type DiagramDocumentReference = {
+  documentId: string;
+  documentType: "exam" | "question-bank" | "worksheet" | "lesson-plan" | "lesson-slides" | "review-pack" | "answer-solutions";
+  locationId: string;
+  diagramVersion: string;
+  insertedAt: string;
+};
+
+export type TikzReviewItem = {
+  id: string;
+  category: "label" | "hidden_edge" | "relationship" | "intersection" | "marker" | "unknown_object";
+  objectId?: string;
+  relationshipId?: string;
+  message: string;
+  blocking: boolean;
+  status: "pending" | "confirmed" | "ignored" | "keep_source";
+};
+
 export type DiagramObject = {
   id: string;
   type: DiagramObjectType;
@@ -63,6 +124,9 @@ export type TikzCompilationResult = {
   width?: number;
   height?: number;
   compileTimeMs?: number;
+  supportsPdf?: boolean;
+  supportsSvg?: boolean;
+  verifiedOutput?: boolean;
 };
 
 export type TikzValidationResult = {
@@ -118,6 +182,13 @@ export type TikzDiagramDraft = {
     originalHeight?: number;
     processedWidth?: number;
     processedHeight?: number;
+    mimeType?: string;
+    originalFileName?: string;
+    cropBounds?: SourceBox;
+    preprocessingSettings?: TikzPreprocessingSettings;
+    sourceAsset?: PrivateTikzAssetRef;
+    localDataUrl?: string;
+    sourceAvailable?: boolean;
   };
   classification: {
     type: DiagramClass;
@@ -135,6 +206,9 @@ export type TikzDiagramDraft = {
   validation: TikzValidationResult;
   comparison?: DiagramComparisonResult;
   quality: TikzQualitySummary;
+  reviewQueue?: TikzReviewItem[];
+  confirmedAsset?: ConfirmedDiagramAsset;
+  documentReferences?: DiagramDocumentReference[];
   teacherEdits: DiagramEdit[];
   status: "draft" | "recognized" | "needs_review" | "valid" | "confirmed" | "exported";
   metadata: { createdAt: string; updatedAt: string; version: string };
