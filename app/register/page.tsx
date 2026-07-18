@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 
 export default function RegisterPage() {
   return (
     <main className="warm-page flex min-h-screen items-center justify-center px-4 py-10">
       <section className="w-full max-w-xl rounded-[32px] border border-blue-100 bg-white p-6 text-center shadow-2xl shadow-blue-100/70 sm:p-9">
-        <Link href="/" className="inline-flex justify-center">
-          <BrandLogo />
-        </Link>
+        <BrandLockup href="/" className="justify-center" priority />
         <span className="mx-auto mt-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-blue-700">
           <LockKeyhole size={26} />
         </span>

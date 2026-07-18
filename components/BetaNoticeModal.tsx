@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 
 const storageKey = "soanlab-beta-notice-accepted";
 
@@ -82,9 +82,7 @@ export function BetaNoticeModal() {
     >
       <div className="ui-dialog max-h-[92vh] max-w-2xl overflow-y-auto">
         <div className="flex items-start gap-4">
-          <div className="shrink-0 rounded-lg border border-blue-100 bg-blue-50 p-2">
-            <BrandLogo variant="mark" compact />
-          </div>
+          <BrandLockup variant="iconOnly" />
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">SOẠN LAB</p>
             <h2 id="beta-notice-title" className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">

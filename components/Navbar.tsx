@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 
 const links = [
   ["Tính năng", "#tinh-nang"],
@@ -53,16 +53,11 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <Link href="#noi-dung-chinh" className="absolute left-4 top-2 z-[60] -translate-y-16 bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <Link href="#noi-dung-chinh" className="absolute left-4 top-2 z-[60] -translate-y-16 whitespace-nowrap bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-300">
         Bỏ qua điều hướng
       </Link>
       <div className="mx-auto flex min-h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="SOẠN LAB — Trang chủ">
-          <BrandLogo size="sm" className="pointer-events-none" />
-          <span className="hidden border-l border-slate-200 pl-3 text-xs font-medium leading-5 text-slate-500 xl:block">
-            Bộ công cụ hỗ trợ giáo viên
-          </span>
-        </Link>
+        <BrandLockup href="/" priority />
 
         <nav className="ml-auto hidden items-center gap-1 lg:flex" aria-label="Điều hướng trang chủ">
           {links.map(([label, href]) => (

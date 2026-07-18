@@ -25,7 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { AccountPanel } from "@/components/AccountPanel";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 import { FeedbackWidget } from "@/components/FeedbackWidget";
 
 type NavItem = [label: string, href: string, icon: typeof Home, badge?: string, adminOnly?: boolean];
@@ -176,15 +176,8 @@ function Content({
     <>
       <div aria-hidden="true" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
       <aside ref={drawerRef} role={mobileOpen ? "dialog" : undefined} aria-modal={mobileOpen ? "true" : undefined} className={`fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-none xl:w-72 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`} aria-label={mobileOpen ? "Menu điều hướng" : "Điều hướng chính"}>
-        <div className="flex min-h-[70px] items-center border-b border-slate-200/70 px-4 py-3">
-          <Link
-            href="/dashboard"
-            onClick={onClose}
-            className="group flex min-w-0 flex-1 rounded-lg px-1.5 py-1.5 transition hover:bg-blue-50/70"
-            aria-label="Về trang tổng quan Soạn Lab"
-          >
-            <BrandLogo size="md" showSubtitle className="pointer-events-none" />
-          </Link>
+        <div className="flex min-h-16 items-center border-b border-slate-200/70 px-3 py-2">
+          <BrandLockup variant="compact" href="/dashboard" onClick={onClose} className="min-w-0 flex-1" priority />
           <button ref={closeButtonRef} type="button" className="ui-icon-button ml-auto md:hidden" onClick={onClose} aria-label="Đóng menu">
             <X size={18} />
           </button>

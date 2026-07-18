@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, ClipboardCheck, LockKeyhole, UserCheck } from "lucide-react";
 import { BetaRequestForm } from "@/components/BetaRequestForm";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 
 export const metadata: Metadata = {
   title: "Đăng ký dùng thử SOẠN LAB",
@@ -14,7 +14,7 @@ export default function BetaRegistrationPage() {
     <main className="min-h-screen bg-slate-100 px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl overflow-hidden border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,.08)]">
         <header className="flex min-h-16 items-center justify-between gap-4 border-b border-slate-200 px-5 sm:px-8">
-          <BrandLogo href="/" size="sm" />
+          <BrandLockup href="/" priority />
           <Link href="/login" className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 hover:text-blue-700 hover:underline">Đăng nhập</Link>
         </header>
 

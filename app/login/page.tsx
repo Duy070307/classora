@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Check, Eye, EyeOff, FileText } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLockup";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function LoginContent() {
@@ -49,9 +49,7 @@ function LoginContent() {
         <section className="relative hidden overflow-hidden bg-slate-950 p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div className="pointer-events-none absolute inset-0 soft-grid-bg opacity-[.08]" aria-hidden="true" />
           <div className="relative">
-            <Link href="/" className="inline-flex rounded-md bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 focus:ring-offset-slate-950">
-              <BrandLogo size="sm" />
-            </Link>
+            <BrandLockup variant="inverse" href="/" priority />
             <p className="mt-14 text-sm font-semibold text-blue-300">Không gian làm việc dành cho giáo viên</p>
             <h1 className="mt-4 max-w-xl text-4xl font-bold leading-tight tracking-[-0.03em] xl:text-5xl">
               Tạo, rà soát và hoàn thiện tài liệu trong một quy trình rõ ràng.
@@ -72,9 +70,7 @@ function LoginContent() {
 
         <section className="flex min-w-0 items-center px-5 py-8 sm:px-10 lg:px-12 xl:px-16">
           <div className="mx-auto w-full max-w-md">
-            <Link href="/" className="inline-flex lg:hidden">
-              <BrandLogo />
-            </Link>
+            <BrandLockup href="/" className="lg:hidden" priority />
             <div className="mt-9 flex size-11 items-center justify-center border border-blue-200 bg-blue-50 text-blue-700 lg:mt-0" aria-hidden="true">
               <FileText size={21} />
             </div>
