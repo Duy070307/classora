@@ -9,10 +9,10 @@ export function ToolPageHeader({ title, description, category = "Công cụ giá
     <header className="ui-panel relative mb-5 overflow-hidden p-4 sm:p-5">
       <div className="absolute inset-y-0 left-0 w-1 bg-emerald-600" />
       <div className="relative">
-        <Link href="/tools" className="inline-flex min-h-10 items-center gap-1.5 rounded-xl px-2.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-50">
+        <Link href="/tools" className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-50">
           <ArrowLeft size={14} />Quay lại thư viện công cụ
         </Link>
-        {title === "Giáo án" ? <Link href="/tools/review-pack" className="ml-1 inline-flex min-h-10 items-center rounded-xl px-2.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-50">Tạo đề cương ôn tập</Link> : null}
+        {title === "Giáo án" ? <Link href="/tools/review-pack" className="ml-1 inline-flex min-h-11 items-center rounded-xl px-2.5 text-xs font-bold text-emerald-800 transition hover:bg-emerald-50">Tạo đề cương ôn tập</Link> : null}
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
           <SoanLabIcon name={resolvedIcon} size="lg" />
           <div className="min-w-0">
@@ -20,7 +20,7 @@ export function ToolPageHeader({ title, description, category = "Công cụ giá
               <span className="soft-badge">{category}</span>
               {exportable ? <SoanLabBadge tone="export">Xuất Word/PDF</SoanLabBadge> : null}
             </div>
-            <h1 className="mt-2 text-2xl font-black tracking-tight text-ink sm:text-3xl">{title}</h1>
+            <h1 className="mt-2 text-2xl font-black tracking-tight text-ink sm:text-[1.75rem]">{title}</h1>
             <p className="mt-1.5 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p>
           </div>
         </div>

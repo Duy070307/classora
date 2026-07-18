@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import {
   BookOpenCheck,
   Box,
@@ -110,6 +110,8 @@ function Content({
   const currentCategory = searchParams.get("category");
   const currentMode = searchParams.get("mode");
   const [isAdmin, setIsAdmin] = useState(false);
+  const drawerRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -126,6 +128,39 @@ function Content({
     };
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose?.();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    queueMicrotask(() => closeButtonRef.current?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileOpen, onClose]);
+
   const active = (href: string) => {
     if (href === "#feedback") return false;
     const [path, query] = href.split("?");
@@ -139,8 +174,8 @@ function Content({
 
   return (
     <>
-      <button type="button" aria-label="Đóng menu" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
-      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-none xl:w-72 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`} aria-label="Điều hướng chính">
+      <div aria-hidden="true" onClick={onClose} className={`fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden ${mobileOpen ? "block" : "hidden"}`} />
+      <aside ref={drawerRef} role={mobileOpen ? "dialog" : undefined} aria-modal={mobileOpen ? "true" : undefined} className={`fixed inset-y-0 left-0 z-50 flex w-[min(18rem,calc(100vw-2rem))] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 md:sticky md:top-0 md:z-auto md:h-screen md:w-64 md:shrink-0 md:translate-x-0 md:shadow-none xl:w-72 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`} aria-label={mobileOpen ? "Menu điều hướng" : "Điều hướng chính"}>
         <div className="flex min-h-[70px] items-center border-b border-slate-200/70 px-4 py-3">
           <Link
             href="/dashboard"
@@ -150,7 +185,7 @@ function Content({
           >
             <BrandLogo size="md" showSubtitle className="pointer-events-none" />
           </Link>
-          <button type="button" className="ui-icon-button ml-auto md:hidden" onClick={onClose} aria-label="Đóng menu">
+          <button ref={closeButtonRef} type="button" className="ui-icon-button ml-auto md:hidden" onClick={onClose} aria-label="Đóng menu">
             <X size={18} />
           </button>
         </div>

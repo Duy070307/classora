@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { FileDown, History, Search, Sparkles } from "lucide-react";
+import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
@@ -119,19 +119,19 @@ function ToolsContent() {
 
   return (
     <AppShell title="Công cụ">
-      <section className="ui-panel relative mb-5 overflow-hidden p-5 sm:p-6">
+      <section className="ui-panel relative mb-5 overflow-hidden p-4 sm:p-5">
         <div className="relative max-w-4xl">
           <p className="text-xs font-extrabold uppercase tracking-[.14em] text-emerald-700">
             Thư viện công cụ giáo viên
           </p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
             Tìm công cụ phù hợp cho tiết dạy hôm nay
           </h1>
-          <p className="mt-4 max-w-2xl text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
             Soạn đề, tạo tài liệu, viết nhận xét, xử lý LaTeX và lưu lại lịch sử
             trong một không gian gọn gàng.
           </p>
-          <label className="relative mt-5 block max-w-3xl">
+          <label className="relative mt-4 block max-w-3xl">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               size={19}
@@ -143,28 +143,17 @@ function ToolsContent() {
               placeholder="Tìm: đề, kiểm tra, giáo án, LaTeX, hình học..."
             />
           </label>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">
-              {toolRegistry.length}+ công cụ
-            </span>
-            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">
-              <Sparkles size={13} className="mr-1 inline" />
-              Tạo bản nháp
-            </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
-              <History size={13} className="mr-1 inline" />
-              Lưu lịch sử
-            </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600">
-              <FileDown size={13} className="mr-1 inline" />
-              Xuất Word/PDF
-            </span>
-          </div>
         </div>
       </section>
 
       <section className="sticky top-[68px] z-10 mb-5 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm backdrop-blur-xl">
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
+        <label className="block sm:hidden">
+          <span className="label">Danh mục công cụ</span>
+          <select className="form-field" value={category} onChange={(event) => change(event.target.value)}>
+            {displayCategories.map((item) => <option key={item}>{item}</option>)}
+          </select>
+        </label>
+        <div className="hidden flex-wrap gap-2 sm:flex">
           {displayCategories.map((item) => (
             <button
               key={item}
@@ -176,13 +165,13 @@ function ToolsContent() {
             </button>
           ))}
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-3">
+        <div className="mt-3 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-3">
           {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map(
             (item) => (
               <button
                 key={item}
                 onClick={() => setMode(item)}
-                className={`rounded-xl px-3 py-2 text-xs font-black ${mode === item ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100"}`}
+                className={`min-h-11 rounded-xl px-3 py-2 text-xs font-black ${mode === item ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
               >
                 {item}
               </button>

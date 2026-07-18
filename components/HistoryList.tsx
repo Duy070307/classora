@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   ClipboardCheck,
-  Download,
   Eye,
   FileCheck2,
   FolderOpen,
@@ -14,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
+import { ActionMenu } from "@/components/question-bank/ActionMenu";
 import { SoanLabEmptyState } from "@/components/ui/SoanLabEmptyState";
 import {
   deleteCloudDocument,
@@ -230,17 +230,14 @@ export function HistoryList() {
               <option key={folder}>{folder}</option>
             ))}
           </select>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="btn-secondary text-red-600"
-          >
-            Xóa tất cả
-          </button>
+          <ActionMenu
+            label="Thao tác"
+            items={[{ label: "Xóa toàn bộ lịch sử", onSelect: clearAll, danger: true }]}
+          />
         </div>
       </section>
 
-      <section className="sticky top-[68px] z-10 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-md backdrop-blur">
+      {selected.length ? <section className="sticky top-[68px] z-10 rounded-2xl border border-emerald-200 bg-white/95 p-3 shadow-md backdrop-blur">
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex min-h-11 items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-bold text-slate-800">
             <input
@@ -266,24 +263,13 @@ export function HistoryList() {
           <span className="text-sm font-semibold text-slate-600">
             Đã chọn {selected.length}
           </span>
-          {selected.length ? (
-            <>
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={!selected.length}
-            onClick={() => downloadBundle("md")}
-          >
-            <Download size={16} /> Xuất Markdown
-          </button>
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={!selected.length}
-            onClick={() => downloadBundle("txt")}
-          >
-            <Download size={16} /> Xuất TXT
-          </button>
+          <ActionMenu
+            label="Xuất đã chọn"
+            items={[
+              { label: "Xuất Markdown", onSelect: () => downloadBundle("md") },
+              { label: "Xuất TXT", onSelect: () => downloadBundle("txt") },
+            ]}
+          />
           <select
             className="form-field max-w-56"
             disabled={!selected.length}
@@ -315,12 +301,8 @@ export function HistoryList() {
           >
             Bỏ chọn
           </button>
-            </>
-          ) : (
-            <span className="text-xs text-slate-500">Chọn tài liệu để xuất, chuyển thư mục hoặc xóa hàng loạt.</span>
-          )}
         </div>
-      </section>
+      </section> : null}
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filteredItems.length ? (
@@ -427,14 +409,14 @@ export function HistoryList() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link
                   href={`/history/${item.id}`}
-                  className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+                  className="btn-secondary min-h-11 px-3 py-1.5 text-xs"
                 >
                   <Eye size={16} /> Xem
                 </Link>
                 {item.type === "document-recognition" ? (
                   <Link
                     href={`/tools/document-recognition?history=${encodeURIComponent(item.id)}`}
-                    className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+                    className="btn-secondary min-h-11 px-3 py-1.5 text-xs"
                   >
                     <FileCheck2 size={16} />
                     Tiếp tục rà soát
@@ -443,7 +425,7 @@ export function HistoryList() {
                 {item.type === "exam" ? (
                   <Link
                     href={`/tools/exam-audit?history=${encodeURIComponent(item.id)}`}
-                    className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+                    className="btn-secondary min-h-11 px-3 py-1.5 text-xs"
                   >
                     <ClipboardCheck size={16} />
                     Kiểm tra lại
@@ -452,7 +434,7 @@ export function HistoryList() {
                 {item.structuredExam ? (
                   <Link
                     href={`/tools/answer-solutions?history=${encodeURIComponent(item.id)}`}
-                    className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+                    className="btn-secondary min-h-11 px-3 py-1.5 text-xs"
                   >
                     <FileCheck2 size={16} />
                     Lời giải &amp; đáp án
@@ -462,7 +444,7 @@ export function HistoryList() {
                 item.generationMeta?.normalizedBlueprint ? (
                   <button
                     type="button"
-                    className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+                    className="btn-secondary min-h-11 px-3 py-1.5 text-xs"
                     onClick={() => {
                       sessionStorage.setItem(
                         EXAM_BLUEPRINT_SESSION_KEY,

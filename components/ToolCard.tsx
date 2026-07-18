@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Star } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 import { SoanLabIcon, iconNameFromHref } from "@/components/ui/SoanLabIcon";
 import { isFavoriteTool, toggleFavoriteTool } from "@/lib/favorites";
@@ -14,8 +14,6 @@ export function ToolCard({
   href,
   badge,
   categoryLabel,
-  tags,
-  example,
 }: {
   title: string;
   description: string;
@@ -26,9 +24,6 @@ export function ToolCard({
   example?: string;
 }) {
   const [favorite, setFavorite] = useState(false);
-  const displayExample = useMemo(() => example || "Ví dụ: tạo bản nháp, rà soát và xuất tài liệu", [example]);
-  const displayTags = tags?.length ? tags.slice(0, 3) : ["Bản nháp", "Rà soát", "Xuất file"];
-
   useEffect(() => {
     const refresh = () => setFavorite(isFavoriteTool(href));
     queueMicrotask(refresh);
@@ -37,7 +32,7 @@ export function ToolCard({
   }, [href]);
 
   return (
-    <article className="group relative flex min-h-[246px] min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm outline-none transition duration-200 hover:border-emerald-200 hover:shadow-md focus-within:ring-4 focus-within:ring-emerald-100 sm:p-5">
+    <article className="group relative flex min-h-[210px] min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm outline-none transition duration-200 hover:border-emerald-200 hover:shadow-md focus-within:ring-4 focus-within:ring-emerald-100">
       <button
         type="button"
         className={`absolute right-3 top-3 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-xl shadow-sm transition ${favorite ? "bg-amber-50 text-amber-600 ring-1 ring-amber-100" : "bg-white text-slate-500 ring-1 ring-slate-200 hover:bg-emerald-50 hover:text-emerald-700"}`}
@@ -50,24 +45,13 @@ export function ToolCard({
         <Star size={18} fill={favorite ? "currentColor" : "none"} />
       </button>
 
-      <SoanLabIcon name={iconNameFromHref(href)} className="mb-4" />
+      <SoanLabIcon name={iconNameFromHref(href)} className="mb-3" />
       <div className="flex min-h-6 flex-wrap items-center gap-2 pr-10">
         {categoryLabel ? <span className="text-[11px] font-extrabold uppercase tracking-wide text-emerald-700">{categoryLabel}</span> : null}
         {badge ? <SoanLabBadge tone={badge === "Mới" ? "new" : badge === "Hữu ích" ? "useful" : "popular"}>{badge}</SoanLabBadge> : null}
       </div>
-      <h3 className="mt-3 text-lg font-black leading-6 text-slate-900">{title}</h3>
-      <p className="mt-2 line-clamp-2 min-h-12 text-sm leading-6 text-slate-500">{description}</p>
-      <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-600">
-        {displayExample}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {displayTags.map((tag) => (
-          <span key={tag} className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-extrabold text-slate-600 ring-1 ring-slate-100">
-            {tag === "Bản nháp" ? <CheckCircle2 size={13} className="text-emerald-600" /> : null}
-            {tag}
-          </span>
-        ))}
-      </div>
+      <h3 className="mt-2 text-base font-black leading-6 text-slate-900 sm:text-lg">{title}</h3>
+      <p className="mt-1.5 line-clamp-3 text-sm leading-6 text-slate-600">{description}</p>
       <Link
         href={href}
         onClick={() => saveRecentTool({ href, title })}

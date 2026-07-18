@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, X } from "lucide-react";
+import { CheckCircle2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "soan_lab_onboarding_dismissed";
@@ -17,5 +17,5 @@ export function DashboardOnboarding() {
   }, []);
   function dismiss() { localStorage.setItem(STORAGE_KEY, "true"); setVisible(false); }
   if (!visible) return null;
-  return <section className="app-surface motion-enter relative mb-6 overflow-hidden border-emerald-200 bg-emerald-50/40 p-5 sm:p-6"><button type="button" onClick={dismiss} className="ui-icon-button absolute right-3 top-3" aria-label="Ẩn hướng dẫn"><X size={18} /></button><div className="pr-10"><span className="app-badge">Hướng dẫn nhanh · 3 phút</span><h2 className="mt-3 text-2xl font-extrabold tracking-tight text-ink">Bắt đầu với Soạn Lab</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted">Một quy trình ngắn để tạo tài liệu đầu tiên mà không cần viết prompt dài.</p></div><div className="mt-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">{steps.map((step, index) => <div key={step} className="flex items-center gap-3 rounded-xl border border-emerald-100 bg-white p-3"><CheckCircle2 size={18} className="shrink-0 text-emerald-700" /><p className="text-sm font-semibold text-slate-700"><span className="mr-1 text-emerald-700">{index + 1}.</span>{step}</p></div>)}</div><div className="mt-5 flex flex-wrap gap-2"><Link href="/tools/exam-generator" className="btn-primary">Thử tạo đề<ArrowRight size={16} /></Link><Link href="/tools" className="btn-secondary">Xem tất cả công cụ</Link></div></section>;
+  return <section className="ui-panel motion-enter relative mb-5 border-emerald-200 bg-emerald-50/40 p-4"><button type="button" onClick={dismiss} className="ui-icon-button absolute right-2 top-2" aria-label="Ẩn hướng dẫn"><X size={18} /></button><div className="pr-11 sm:flex sm:items-start sm:justify-between sm:gap-5"><div><p className="text-sm font-black text-slate-900">Bắt đầu với Soạn Lab trong 3 phút</p><p className="mt-1 text-sm leading-6 text-slate-600">{steps.map((step, index) => <span key={step} className="mr-2 inline-flex items-center gap-1"><CheckCircle2 size={14} className="text-emerald-700" /><span className="font-bold text-emerald-800">{index + 1}.</span>{step}</span>)}</p></div><Link href="/teacher-testing-guide" className="mt-2 inline-flex min-h-11 shrink-0 items-center text-sm font-black text-emerald-800 hover:underline sm:mt-0">Xem hướng dẫn</Link></div></section>;
 }

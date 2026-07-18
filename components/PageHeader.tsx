@@ -8,12 +8,12 @@ export function PageHeader({
   eyebrow?: string;
 }) {
   return (
-    <div className="ui-panel relative mb-5 overflow-hidden border-l-4 border-l-emerald-700 p-5 sm:p-6">
+    <header className="ui-panel relative mb-5 overflow-hidden border-l-4 border-l-emerald-700 p-4 sm:p-5">
       <div>
         <span className="soft-badge">{eyebrow}</span>
-        <h1 className="mt-2 text-3xl font-black tracking-[-0.025em] text-ink sm:text-4xl">{title}</h1>
-        {description ? <p className="mt-2 max-w-3xl leading-7 text-muted">{description}</p> : null}
+        <h1 className="mt-2 text-2xl font-black tracking-[-0.02em] text-ink sm:text-3xl">{title}</h1>
+        {description ? <p className="mt-1.5 max-w-3xl text-sm leading-6 text-muted sm:text-base">{description}</p> : null}
       </div>
-    </div>
+    </header>
   );
 }

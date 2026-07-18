@@ -11,7 +11,7 @@ export function TopBar({
   onOpenMenu: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
+    <header aria-label={title ? `Thanh công cụ: ${title}` : "Thanh công cụ"} className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
       <div className="mx-auto flex w-full max-w-[1440px] items-center gap-3">
         <button
           type="button"
@@ -21,10 +21,6 @@ export function TopBar({
         >
           <Menu size={19} />
         </button>
-        <div className="hidden min-w-0 md:block lg:w-56">
-          <p className="truncate text-sm font-black text-slate-900">{title || "Không gian làm việc"}</p>
-          <p className="mt-0.5 text-xs font-medium text-slate-500">Tạo bản nháp, rà soát và xuất file</p>
-        </div>
         <button
           type="button"
           onClick={() => window.dispatchEvent(new Event("classora-open-command-palette"))}

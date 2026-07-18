@@ -44,11 +44,11 @@ export default async function AdminPage() {
 
   return (
     <AppShell title="Quản trị">
-      <section className="ui-panel border-l-4 border-l-emerald-700 p-5 sm:p-6">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">Quản trị Soạn Lab</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">Tổng quan vận hành</h1>
-        <p className="mt-2 max-w-2xl leading-7 text-slate-600">Theo dõi tài khoản, tài liệu đã lưu và trạng thái đăng ký ở mức cần thiết cho quản trị viên.</p>
-      </section>
+      <PageHeader
+        eyebrow="Quản trị Soạn Lab"
+        title="Tổng quan vận hành"
+        description="Theo dõi tài khoản, tài liệu đã lưu và trạng thái đăng ký ở mức cần thiết cho quản trị viên."
+      />
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <StatCard icon={Users} label="Tài khoản gần đây" value={String(userCount)} />

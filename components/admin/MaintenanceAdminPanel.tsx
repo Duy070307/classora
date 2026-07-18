@@ -8,6 +8,7 @@ type ApiResult = { ok?: boolean; maintenance?: MaintenanceSettings; error?: stri
 
 export function MaintenanceAdminPanel() {
   const [settings, setSettings] = useState<MaintenanceSettings>({ enabled: false, message: DEFAULT_MAINTENANCE_MESSAGE });
+  const [savedEnabled, setSavedEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -18,7 +19,10 @@ export function MaintenanceAdminPanel() {
       .then(async (response) => ({ response, data: await response.json().catch(() => null) as ApiResult | null }))
       .then(({ response, data }) => {
         if (!active) return;
-        if (response.ok && data?.maintenance) setSettings(data.maintenance);
+        if (response.ok && data?.maintenance) {
+          setSettings(data.maintenance);
+          setSavedEnabled(data.maintenance.enabled);
+        }
         else setNotice({ type: "error", text: data?.error || "Không thể tải trạng thái bảo trì." });
       })
       .catch(() => { if (active) setNotice({ type: "error", text: "Không thể tải trạng thái bảo trì." }); })
@@ -27,6 +31,7 @@ export function MaintenanceAdminPanel() {
   }, []);
 
   async function save() {
+    if (settings.enabled && !savedEnabled && !window.confirm("Bật chế độ bảo trì sẽ tạm dừng quyền dùng công cụ của giáo viên. Tiếp tục lưu thay đổi?")) return;
     setSaving(true);
     setNotice(null);
     try {
@@ -38,6 +43,7 @@ export function MaintenanceAdminPanel() {
       const data = await response.json().catch(() => null) as ApiResult | null;
       if (!response.ok || !data?.maintenance) throw new Error(data?.error || "update_failed");
       setSettings(data.maintenance);
+      setSavedEnabled(data.maintenance.enabled);
       setNotice({ type: "success", text: "Đã cập nhật chế độ bảo trì." });
     } catch {
       setNotice({ type: "error", text: "Không thể cập nhật chế độ bảo trì. Vui lòng thử lại." });
@@ -74,7 +80,7 @@ export function MaintenanceAdminPanel() {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button type="button" className="btn-primary" disabled={loading || saving} onClick={() => { void save(); }}><Save size={17} />{saving ? "Đang lưu..." : "Lưu thay đổi"}</button>
-        {notice ? <p role="status" className={`text-sm font-bold ${notice.type === "success" ? "text-emerald-700" : "text-red-700"}`}>{notice.text}</p> : null}
+        {notice ? <p role={notice.type === "error" ? "alert" : "status"} aria-live="polite" className={`text-sm font-bold ${notice.type === "success" ? "text-emerald-700" : "text-red-700"}`}>{notice.text}</p> : null}
       </div>
     </section>
   );

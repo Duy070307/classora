@@ -167,7 +167,7 @@ textarea {
 }
 
 .ui-table th {
-  @apply border-b bg-slate-50 px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-slate-600;
+  @apply sticky top-0 z-[1] border-b bg-slate-50 px-4 py-3 text-xs font-extrabold uppercase tracking-wide text-slate-600;
 }
 
 .ui-table td {
@@ -175,9 +175,18 @@ textarea {
 }
 
 .ui-dialog {
-  @apply w-[calc(100%_-_2rem)] max-w-xl rounded-2xl border bg-white p-5 sm:p-6;
+  @apply max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-xl overflow-y-auto overscroll-contain rounded-2xl border bg-white p-5 sm:p-6;
   border-color: var(--card-border);
   box-shadow: 0 24px 64px rgba(15,23,42,.2);
+}
+
+.ui-segmented-control {
+  @apply grid min-w-0 gap-1.5 rounded-xl border border-slate-200 bg-slate-100 p-1.5;
+}
+
+.ui-segmented-control > button,
+.ui-segmented-control > [role="tab"] {
+  @apply min-h-11 min-w-0 rounded-lg px-3 py-2 text-sm font-bold transition duration-200;
 }
 
 .ui-section-heading {

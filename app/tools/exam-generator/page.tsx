@@ -21,7 +21,6 @@ import { getQuestions } from "@/lib/question-bank";
 import { applyTemplate, resolveTemplate } from "@/lib/templates";
 import type { ExamInput, GeneratedDocument, QuestionItem } from "@/lib/types";
 import { incrementUsage } from "@/lib/usage";
-import { sampleExamInput } from "@/lib/sample-data";
 import { structuredExamToText } from "@/lib/mock-exam-generator";
 import { formatQuestionOptions, isValidMultipleChoice } from "@/lib/question-bank";
 import { bankQuestionScope, canonicalSubject, filterStrictBankQuestions, normalizeBankText } from "@/lib/exam/question-bank-filter";
@@ -537,12 +536,6 @@ export default function ExamGeneratorPage() {
     setMessage("Đã tinh chỉnh nội dung.");
   }
 
-  function useSampleData() {
-    const settings = getDocumentSettings();
-    setInput({ ...sampleExamInput, schoolName: settings.schoolName || sampleExamInput.schoolName, teacherName: settings.teacherName || sampleExamInput.teacherName });
-    setMessage("Đã điền dữ liệu mẫu.");
-  }
-
   function applyQuickPreset(values: Partial<ExamInput>, bank?: Partial<{ useBank: boolean; bankSource: BankSource; bankCount: number }>) {
     setInput((current) => ({ ...current, ...values }));
     if (typeof bank?.useBank === "boolean") setUseBank(bank.useBank);
@@ -581,14 +574,13 @@ export default function ExamGeneratorPage() {
                     key={preset.label}
                     type="button"
                     onClick={() => applyQuickPreset(preset.values, preset.bank)}
-                    className="min-h-10 rounded-xl bg-white px-3 py-2 text-xs font-extrabold text-emerald-800 ring-1 ring-emerald-100 transition hover:bg-emerald-700 hover:text-white"
+                    className="min-h-11 rounded-xl bg-white px-3 py-2 text-xs font-extrabold text-emerald-800 ring-1 ring-emerald-100 transition hover:bg-emerald-700 hover:text-white"
                   >
                     {preset.label}
                   </button>
                 ))}
               </div>
             </details>
-            <button type="button" onClick={useSampleData} className="btn-secondary w-full">Điền thử mẫu nhanh</button>
             <FormDraftControls updatedAt={draft.updatedAt} onRestore={draft.restoreDraft} onClear={draft.clearDraft} />
             <div><p className="mb-2 text-xs font-extrabold uppercase tracking-wide text-blue-700">Mẫu nhanh theo môn</p><PresetSelect presets={examPresets} onApply={(values) => setInput((current) => ({ ...current, ...values }))} /></div>
             <TemplateSelect type="Đề kiểm tra" value={templateId} onChange={setTemplateId} />

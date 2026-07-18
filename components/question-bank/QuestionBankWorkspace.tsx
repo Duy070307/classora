@@ -547,6 +547,8 @@ function TypeFields({
 export function QuestionBankWorkspace() {
   const fileRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLElement>(null);
+  const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const [items, setItems] = useState<QuestionBankItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
@@ -569,6 +571,10 @@ export function QuestionBankWorkspace() {
   });
   const [queryInput, setQueryInput] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
+  const closeFilters = useCallback(() => {
+    setFilterOpen(false);
+    queueMicrotask(() => filterTriggerRef.current?.focus());
+  }, []);
   const [sort, setSort] = useState<QuestionSort>("newest");
   const [collections, setCollections] = useState<QuestionCollection[]>([]);
   const [activeCollectionId, setActiveCollectionId] = useState("");
@@ -696,6 +702,39 @@ export function QuestionBankWorkspace() {
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [closeEditor, editorOpen]);
+
+  useEffect(() => {
+    if (!filterOpen || !window.matchMedia("(max-width: 1023px)").matches) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeFilters();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = filterRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    queueMicrotask(() => filterRef.current?.querySelector<HTMLElement>('[aria-label="Đóng bộ lọc"]')?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [closeFilters, filterOpen]);
 
   function persist(next: QuestionBankItem[]) {
     try {
@@ -1452,14 +1491,17 @@ export function QuestionBankWorkspace() {
 
         <div className="grid min-w-0 gap-4 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
           {filterOpen ? (
-            <button
-              type="button"
-              aria-label="Đóng bộ lọc"
+            <div
+              aria-hidden="true"
               className="fixed inset-0 z-40 bg-slate-950/35 lg:hidden"
-              onClick={() => setFilterOpen(false)}
+              onClick={closeFilters}
             />
           ) : null}
           <aside
+            ref={filterRef}
+            role={filterOpen ? "dialog" : undefined}
+            aria-modal={filterOpen ? "true" : undefined}
+            aria-label={filterOpen ? "Bộ lọc câu hỏi" : undefined}
             className={`${filterOpen ? "fixed inset-y-0 left-0 z-50 block w-[min(88vw,320px)] overflow-y-auto bg-slate-50 p-4 shadow-2xl" : "hidden"} space-y-3 lg:static lg:z-auto lg:block lg:w-auto lg:overflow-visible lg:bg-transparent lg:p-0 lg:shadow-none`}
           >
             <section className="ui-panel p-3">
@@ -1521,10 +1563,11 @@ export function QuestionBankWorkspace() {
                   {activeFilters.length ? `(${activeFilters.length})` : ""}
                 </h2>
                 <button
+                  ref={filterTriggerRef}
                   type="button"
                   className="ui-icon-button lg:hidden"
                   aria-label="Đóng bộ lọc"
-                  onClick={() => setFilterOpen(false)}
+                  onClick={closeFilters}
                 >
                   <X size={18} />
                 </button>
