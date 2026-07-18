@@ -16,9 +16,11 @@ import {
 } from "lucide-react";
 import { OutputPreview } from "@/components/OutputPreview";
 import {
+  AssessmentDisclosure,
   AssessmentStatus,
   AssessmentWorkspace,
 } from "@/components/assessment/AssessmentWorkspace";
+import { AssessmentSourcePicker } from "@/components/assessment/AssessmentSourcePicker";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { auditStructuredExam } from "@/lib/exam-audit/audit";
@@ -125,6 +127,7 @@ export function ExamAuditWorkspace() {
   const [previewIds, setPreviewIds] = useState<string[]>([]);
   const [editQuestionId, setEditQuestionId] = useState("");
   const [questionDraft, setQuestionDraft] = useState<ExamQuestion | null>(null);
+  const [selectedSourceMethod, setSelectedSourceMethod] = useState("");
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -144,6 +147,7 @@ export function ExamAuditWorkspace() {
             saved,
             auditConfigFromDocument(saved),
             "Đã mở đề từ lịch sử.",
+            "history",
           );
         return;
       }
@@ -155,6 +159,7 @@ export function ExamAuditWorkspace() {
           payload.document,
           payload.config || auditConfigFromDocument(payload.document),
           "Đã nhận đề từ công cụ tạo đề.",
+          "current",
         );
     });
     // searchParams chỉ dùng để nạp nguồn ban đầu.
@@ -165,6 +170,7 @@ export function ExamAuditWorkspace() {
     source: GeneratedDocument,
     sourceConfig?: ExamAuditConfig,
     note = "Đã nạp đề để kiểm tra.",
+    sourceMethod?: "current" | "history" | "upload" | "paste",
   ) {
     const normalized = normalizeExamDocument(source);
     if (!normalized.structuredExam)
@@ -193,6 +199,7 @@ export function ExamAuditWorkspace() {
     setFixed([]);
     setPreviewIds([]);
     setMessage(note);
+    if (sourceMethod) setSelectedSourceMethod(sourceMethod);
   }
 
   function usePastedText() {
@@ -216,6 +223,7 @@ export function ExamAuditWorkspace() {
         requireFourOptions: true,
       },
       parsed.warnings[0] || "Đã nhận diện cấu trúc từ văn bản.",
+      "paste",
     );
   }
 
@@ -262,6 +270,7 @@ export function ExamAuditWorkspace() {
           requireFourOptions: true,
         },
         data.warnings?.[0] || "Đã đọc file. Vui lòng kiểm tra bản xem trước.",
+        "upload",
       );
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Chưa thể đọc file.");
@@ -521,9 +530,9 @@ export function ExamAuditWorkspace() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1280px] space-y-6">
       <section className="rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
               <ShieldCheck size={14} />
@@ -537,112 +546,147 @@ export function ExamAuditWorkspace() {
               trực quan và mức sẵn sàng trước khi xuất Word/PDF.
             </p>
           </div>
-          <Link href="/tools/exam-generator" className="btn-secondary">
-            Tạo đề mới
-          </Link>
         </div>
-        <div className="mt-6 grid gap-4 xl:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="font-black text-slate-900">Đề đang tạo</p>
-            <p className="mt-1 text-sm text-slate-600">
-              Nhận trực tiếp từ công cụ tạo đề qua nút “Kiểm tra đề trước khi
-              xuất”.
-            </p>
-            <button
-              type="button"
-              className="btn-secondary mt-3"
-              onClick={() => {
-                const payload = parseSessionPayload(
-                  sessionStorage.getItem(EXAM_AUDIT_SESSION_INPUT),
-                );
-                if (payload) openDocument(payload.document, payload.config);
-                else setMessage("Chưa có đề đang tạo trong phiên này.");
-              }}
+        <AssessmentSourcePicker
+          columns={4}
+          selectedId={selectedSourceMethod}
+          continueLabel={document ? "Tiếp tục cấu hình kiểm tra" : undefined}
+          continueHint="Nguồn đề đã sẵn sàng. Thầy cô có thể tiếp tục cấu hình các tiêu chí đối chiếu."
+          onContinue={
+            document
+              ? () =>
+                  window.document
+                    .getElementById("exam-audit-config")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              : undefined
+          }
+          options={[
+            {
+              id: "current",
+              title: "Đề đang tạo",
+              description:
+                "Nhận trực tiếp từ công cụ tạo đề hoặc quy trình đang mở.",
+              icon: ClipboardCheck,
+              action: (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    const payload = parseSessionPayload(
+                      sessionStorage.getItem(EXAM_AUDIT_SESSION_INPUT),
+                    );
+                    if (payload)
+                      openDocument(
+                        payload.document,
+                        payload.config,
+                        "Đã nạp đề hiện tại.",
+                        "current",
+                      );
+                    else setMessage("Chưa có đề đang tạo trong phiên này.");
+                  }}
+                >
+                  Nạp đề hiện tại
+                </button>
+              ),
+            },
+            {
+              id: "history",
+              title: "Lịch sử đã lưu",
+              description: "Mở lại một đề của thầy cô để kiểm tra.",
+              icon: ShieldCheck,
+              action: (
+                <select
+                  aria-label="Chọn đề đã lưu"
+                  className="form-field"
+                  value={
+                    selectedSourceMethod === "history" ? document?.id || "" : ""
+                  }
+                  onChange={(event) => {
+                    const saved = history.find(
+                      (item) => item.id === event.target.value,
+                    );
+                    if (saved)
+                      openDocument(
+                        saved,
+                        auditConfigFromDocument(saved),
+                        "Đã mở đề của thầy/cô từ lịch sử.",
+                        "history",
+                      );
+                  }}
+                >
+                  <option value="">Chọn một đề…</option>
+                  {history.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              ),
+            },
+            {
+              id: "upload",
+              title: "Tải Word, PDF hoặc TXT",
+              description: "Tối đa 8MB. PDF cần có lớp chữ để đọc trực tiếp.",
+              icon: Upload,
+              action: (
+                <label className="btn-secondary inline-flex cursor-pointer">
+                  <Upload size={16} />
+                  {loading ? "Đang đọc…" : "Chọn file"}
+                  <input
+                    className="hidden"
+                    type="file"
+                    accept=".docx,.pdf,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                    disabled={loading}
+                    onChange={(event) =>
+                      void uploadFile(event.target.files?.[0])
+                    }
+                  />
+                </label>
+              ),
+            },
+            {
+              id: "scan",
+              title: "Đề chụp hoặc PDF quét",
+              description:
+                "Nhận dạng và xác nhận cấu trúc trước khi kiểm tra chất lượng.",
+              icon: FileText,
+              action: (
+                <Link
+                  href="/tools/document-recognition"
+                  className="btn-secondary inline-flex"
+                >
+                  Đọc đề từ ảnh/PDF
+                </Link>
+              ),
+            },
+          ]}
+          secondary={
+            <AssessmentDisclosure
+              title="Dán nội dung đề"
+              description="Dùng khi thầy cô chưa có file hoặc đề trong lịch sử."
             >
-              <ClipboardCheck size={16} />
-              Nạp đề hiện tại
-            </button>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="font-black text-slate-900">Lịch sử đã lưu</p>
-            <select
-              className="form-field mt-3"
-              defaultValue=""
-              onChange={(event) => {
-                const saved = history.find(
-                  (item) => item.id === event.target.value,
-                );
-                if (saved)
-                  openDocument(
-                    saved,
-                    auditConfigFromDocument(saved),
-                    "Đã mở đề của thầy/cô từ lịch sử.",
-                  );
-              }}
-            >
-              <option value="">Chọn một đề…</option>
-              {history.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </div>
-          <label className="cursor-pointer rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 p-4">
-            <p className="font-black text-slate-900">Tải Word, PDF hoặc TXT</p>
-            <p className="mt-1 text-sm text-slate-600">
-              Tối đa 8MB. PDF cần có lớp chữ để đọc trực tiếp.
-            </p>
-            <span className="btn-secondary mt-3 inline-flex">
-              <Upload size={16} />
-              {loading ? "Đang đọc…" : "Chọn file"}
-            </span>
-            <input
-              className="hidden"
-              type="file"
-              accept=".docx,.pdf,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
-              disabled={loading}
-              onChange={(event) => void uploadFile(event.target.files?.[0])}
-            />
-          </label>
-          <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4">
-            <p className="font-black text-slate-900">Đề chụp hoặc PDF quét</p>
-            <p className="mt-1 text-sm leading-6 text-slate-600">
-              Nhận dạng và xác nhận cấu trúc trước khi kiểm tra chất lượng.
-            </p>
-            <Link
-              href="/tools/document-recognition"
-              className="btn-secondary mt-3 inline-flex"
-            >
-              <FileText size={16} />
-              Đọc đề từ ảnh/PDF
-            </Link>
-          </div>
-        </div>
-        <details className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-          <summary className="cursor-pointer font-black text-slate-900">
-            Hoặc dán nội dung đề
-          </summary>
-          <textarea
-            className="form-field mt-3 min-h-44"
-            value={pasteText}
-            onChange={(event) => setPasteText(event.target.value)}
-            placeholder="Dán đề, các phương án và đáp án nếu có…"
-          />
-          <button
-            type="button"
-            className="btn-secondary mt-3"
-            onClick={usePastedText}
-          >
-            <FileText size={16} />
-            Nhận diện đề đã dán
-          </button>
-        </details>
+              <textarea
+                className="form-field min-h-44"
+                value={pasteText}
+                onChange={(event) => setPasteText(event.target.value)}
+                placeholder="Dán đề, các phương án và đáp án nếu có…"
+              />
+              <button
+                type="button"
+                className="btn-secondary mt-3"
+                onClick={usePastedText}
+              >
+                <FileText size={16} />
+                Nhận diện đề đã dán
+              </button>
+            </AssessmentDisclosure>
+          }
+        />
       </section>
 
       {document?.structuredExam ? (
         <>
-          <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+          <section id="exam-audit-config" className="scroll-mt-4 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-black uppercase tracking-wide text-blue-700">

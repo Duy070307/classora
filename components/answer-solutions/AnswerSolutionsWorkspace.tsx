@@ -16,7 +16,11 @@ import {
 import { DocumentExportMenu } from "@/components/tools/DocumentExportMenu";
 import { OutputPreview } from "@/components/OutputPreview";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
-import { useUnsavedAssessmentWarning } from "@/components/assessment/AssessmentWorkspace";
+import {
+  AssessmentDisclosure,
+  useUnsavedAssessmentWarning,
+} from "@/components/assessment/AssessmentWorkspace";
+import { AssessmentSourcePicker } from "@/components/assessment/AssessmentSourcePicker";
 import {
   buildDeterministicSolutionSet,
   solutionSummary,
@@ -90,6 +94,10 @@ export function AnswerSolutionsWorkspace() {
   const [reviewId, setReviewId] = useState("");
   const [editingId, setEditingId] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingSource, setPendingSource] =
+    useState<GeneratedDocument | null>(null);
+  const [pendingNote, setPendingNote] = useState("");
+  const [selectedSourceMethod, setSelectedSourceMethod] = useState("");
 
   useUnsavedAssessmentWarning(hasUnsavedChanges);
 
@@ -105,11 +113,39 @@ export function AnswerSolutionsWorkspace() {
         : null;
       const initial = saved?.structuredExam ? saved : parseSession();
       if (initial)
-        loadSource(initial, "Đã nạp đề để tạo lời giải và kiểm tra đáp án.");
+        stageSource(
+          initial,
+          "Đề đã sẵn sàng. Bấm tiếp tục để kiểm tra đáp án.",
+          saved?.structuredExam ? "history" : "current",
+        );
     });
     // Chỉ nạp nguồn ban đầu một lần.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function stageSource(
+    document: GeneratedDocument,
+    note: string,
+    method: "current" | "upload" | "history" | "paste",
+  ) {
+    if (!document.structuredExam) {
+      setMessage("Tài liệu chưa có cấu trúc đề hợp lệ.");
+      return;
+    }
+    setPendingSource(document);
+    setPendingNote(note);
+    setSelectedSourceMethod(method);
+    setMessage(note);
+  }
+
+  function confirmPendingSource() {
+    if (!pendingSource) return;
+    loadSource(
+      pendingSource,
+      pendingNote || "Đã nạp đề để tạo lời giải và kiểm tra đáp án.",
+    );
+    setPendingSource(null);
+  }
 
   function loadSource(document: GeneratedDocument, note = "Đã nạp đề.") {
     if (!document.structuredExam)
@@ -159,9 +195,10 @@ export function AnswerSolutionsWorkspace() {
       pasteText,
     );
     document.structuredExam = parsed.exam;
-    loadSource(
+    stageSource(
       document,
       parsed.warnings[0] || "Đã nhận diện đề từ văn bản đã dán.",
+      "paste",
     );
   }
 
@@ -191,9 +228,10 @@ export function AnswerSolutionsWorkspace() {
         "Đề được nhập từ file để tạo lời giải.",
       );
       document.structuredExam = data.exam;
-      loadSource(
+      stageSource(
         document,
         "Đã đọc file. Vui lòng kiểm tra lại cấu trúc trước khi dùng lời giải.",
+        "upload",
       );
     } catch (error) {
       setMessage(
@@ -360,7 +398,7 @@ export function AnswerSolutionsWorkspace() {
       : null;
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1280px] space-y-6">
       {detailedDocument ? (
         <div className="flex flex-wrap gap-2">
           <button
@@ -401,77 +439,111 @@ export function AnswerSolutionsWorkspace() {
             Mở công cụ Kiểm tra đề
           </Link>
         </div>
-        <div className="mt-6 grid gap-3 lg:grid-cols-3">
-          <button
-            type="button"
-            className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left"
-            onClick={() => {
-              const current = parseSession();
-              if (current) loadSource(current);
-              else setMessage("Chưa có đề hiện tại trong phiên này.");
-            }}
-          >
-            <strong>Nạp đề hiện tại</strong>
-            <span className="mt-1 block text-sm text-slate-600">
-              Nhận đề từ công cụ tạo đề, kiểm tra đề hoặc trộn mã.
-            </span>
-          </button>
-          <label className="rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 p-4">
-            <strong>Tải DOCX, PDF hoặc TXT</strong>
-            <span className="mt-1 block text-sm text-slate-600">
-              Dùng bộ nhận diện đề hiện có.
-            </span>
-            <span className="btn-secondary mt-3 inline-flex">
-              <Upload size={16} />
-              {loading ? "Đang xử lý…" : "Chọn file"}
-            </span>
-            <input
-              className="hidden"
-              type="file"
-              accept=".docx,.pdf,.txt"
-              disabled={loading}
-              onChange={(event) => void upload(event.target.files?.[0])}
-            />
-          </label>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <strong>Lịch sử của thầy/cô</strong>
-            <select
-              className="form-field mt-3"
-              value=""
-              onChange={(event) => {
-                const item = history.find(
-                  (document) => document.id === event.target.value,
-                );
-                if (item) loadSource(item);
-              }}
+        <AssessmentSourcePicker
+          selectedId={selectedSourceMethod}
+          continueLabel={
+            pendingSource ? "Tiếp tục kiểm tra đáp án" : undefined
+          }
+          continueHint="SOẠN LAB chỉ tạo bộ lời giải sau khi thầy cô xác nhận nguồn đề."
+          onContinue={pendingSource ? confirmPendingSource : undefined}
+          options={[
+            {
+              id: "current",
+              title: "Đề hiện tại",
+              description:
+                "Nhận đề từ công cụ tạo đề, kiểm tra đề hoặc trộn mã.",
+              icon: ClipboardCheck,
+              action: (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    const current = parseSession();
+                    if (current)
+                      stageSource(
+                        current,
+                        "Đã chọn đề hiện tại.",
+                        "current",
+                      );
+                    else setMessage("Chưa có đề hiện tại trong phiên này.");
+                  }}
+                >
+                  Nạp đề hiện tại
+                </button>
+              ),
+            },
+            {
+              id: "upload",
+              title: "Tải DOCX, PDF hoặc TXT",
+              description: "Dùng bộ nhận diện đề hiện có.",
+              icon: Upload,
+              action: (
+                <label className="btn-secondary inline-flex cursor-pointer">
+                  <Upload size={16} />
+                  {loading ? "Đang xử lý…" : "Chọn file"}
+                  <input
+                    className="hidden"
+                    type="file"
+                    accept=".docx,.pdf,.txt"
+                    disabled={loading}
+                    onChange={(event) => void upload(event.target.files?.[0])}
+                  />
+                </label>
+              ),
+            },
+            {
+              id: "history",
+              title: "Lịch sử của thầy/cô",
+              description: "Chọn đề đã lưu để kiểm tra lại đáp án.",
+              icon: FileCheck2,
+              action: (
+                <select
+                  aria-label="Chọn đề đã lưu"
+                  className="form-field"
+                  value={
+                    selectedSourceMethod === "history"
+                      ? pendingSource?.id || source?.id || ""
+                      : ""
+                  }
+                  onChange={(event) => {
+                    const item = history.find(
+                      (document) => document.id === event.target.value,
+                    );
+                    if (item)
+                      stageSource(item, "Đã chọn đề từ lịch sử.", "history");
+                  }}
+                >
+                  <option value="">Chọn đề đã lưu…</option>
+                  {history.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              ),
+            },
+          ]}
+          secondary={
+            <AssessmentDisclosure
+              title="Dán nội dung đề"
+              description="Dùng khi thầy cô chưa có file hoặc đề trong lịch sử."
             >
-              <option value="">Chọn đề đã lưu…</option>
-              {history.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <details className="mt-4 rounded-2xl border border-slate-200 p-4">
-          <summary className="cursor-pointer font-black">
-            Hoặc dán nội dung đề
-          </summary>
-          <textarea
-            className="form-field mt-3 min-h-32"
-            value={pasteText}
-            onChange={(event) => setPasteText(event.target.value)}
-            placeholder="Dán đầy đủ nội dung đề và đáp án…"
-          />
-          <button
-            type="button"
-            className="btn-secondary mt-3"
-            onClick={usePaste}
-          >
-            Nhận diện đề đã dán
-          </button>
-        </details>
+              <textarea
+                className="form-field min-h-36"
+                value={pasteText}
+                onChange={(event) => setPasteText(event.target.value)}
+                placeholder="Dán đầy đủ nội dung đề và đáp án…"
+              />
+              <button
+                type="button"
+                className="btn-secondary mt-3"
+                onClick={usePaste}
+              >
+                Nhận diện đề đã dán
+              </button>
+            </AssessmentDisclosure>
+          }
+        />
         {message ? (
           <p className="mt-4 rounded-xl bg-slate-50 p-3 text-sm font-semibold text-slate-700">
             {message}

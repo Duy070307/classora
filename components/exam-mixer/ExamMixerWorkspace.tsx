@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -17,6 +16,7 @@ import {
   AssessmentDisclosure,
   AssessmentStatus,
 } from "@/components/assessment/AssessmentWorkspace";
+import { AssessmentSourcePicker } from "@/components/assessment/AssessmentSourcePicker";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
 import { EXAM_AUDIT_SESSION_INPUT } from "@/lib/exam-audit/document";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
@@ -120,6 +120,9 @@ export function ExamMixerWorkspace() {
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [pendingSource, setPendingSource] =
+    useState<GeneratedDocument | null>(null);
+  const [selectedSourceMethod, setSelectedSourceMethod] = useState("");
 
   useEffect(() => {
     queueMicrotask(async () => {
@@ -134,6 +137,7 @@ export function ExamMixerWorkspace() {
         ? docs.find((item) => item.id === historyId)
         : null;
       if (saved?.examVariantSet) {
+        setSelectedSourceMethod("history");
         setSource(saved);
         setSet(saved.examVariantSet);
         setSeed(saved.examVariantSet.seed);
@@ -143,11 +147,13 @@ export function ExamMixerWorkspace() {
         setActiveCode(saved.examVariantSet.variants[0]?.code || "");
         setMessage("Đã mở đúng bộ mã đề đã lưu.");
       } else if (saved?.structuredExam) {
+        setSelectedSourceMethod("history");
         setSource(saved);
         setMessage("Đã nạp đề từ lịch sử.");
       } else {
         const current = parseSessionSource();
         if (current?.structuredExam) {
+          setSelectedSourceMethod("current");
           setSource(current);
           setMessage("Đã nhận đề hiện tại.");
         }
@@ -193,6 +199,25 @@ export function ExamMixerWorkspace() {
     setMessage("Đã nạp đề để kiểm tra trước khi trộn mã.");
   }
 
+  function stageSource(
+    document: GeneratedDocument,
+    method: "current" | "history" | "upload",
+  ) {
+    if (!document.structuredExam && !document.examVariantSet) {
+      setMessage("Tài liệu này chưa có cấu trúc đề hợp lệ.");
+      return;
+    }
+    setPendingSource(document);
+    setSelectedSourceMethod(method);
+    setMessage("Đã chọn nguồn. Bấm tiếp tục để cấu hình mã đề.");
+  }
+
+  function confirmPendingSource() {
+    if (!pendingSource) return;
+    selectSource(pendingSource);
+    setPendingSource(null);
+  }
+
   async function uploadFile(file?: File) {
     if (!file) return;
     setUploading(true);
@@ -212,14 +237,14 @@ export function ExamMixerWorkspace() {
       if (data.maintenance) return window.location.assign("/maintenance");
       if (!response.ok || !data.exam)
         throw new Error(data.error || "Chưa thể đọc file đề.");
-      selectSource({
+      stageSource({
         id: crypto.randomUUID(),
         title: data.exam.metadata.title || file.name,
         type: "exam",
         content: "Đề nhập từ file",
         createdAt: new Date().toISOString(),
         structuredExam: data.exam,
-      });
+      }, "upload");
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "Chưa thể đọc file đề.",
@@ -307,9 +332,9 @@ export function ExamMixerWorkspace() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1280px] space-y-6">
       <section className="rounded-[30px] border border-blue-100 bg-white p-5 shadow-sm sm:p-7">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
               <Shuffle size={14} />
@@ -323,65 +348,88 @@ export function ExamMixerWorkspace() {
               nội dung, điểm số, dữ liệu trực quan và đáp án đúng.
             </p>
           </div>
-          <Link href="/tools/exam-generator" className="btn-secondary">
-            Tạo đề mới
-          </Link>
         </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="font-black">Đề hiện tại</p>
-            <button
-              type="button"
-              className="btn-secondary mt-3"
-              onClick={() => {
-                const current = parseSessionSource();
-                if (current) selectSource(current);
-                else setMessage("Chưa có đề trong phiên hiện tại.");
-              }}
-            >
-              <FileCheck2 size={16} />
-              Nạp đề hiện tại
-            </button>
-          </div>
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="font-black">Lịch sử của thầy/cô</p>
-            <select
-              className="form-field mt-3"
-              value=""
-              onChange={(event) => {
-                const item = history.find(
-                  (document) => document.id === event.target.value,
-                );
-                if (item) selectSource(item);
-              }}
-            >
-              <option value="">Chọn đề hoặc bộ mã…</option>
-              {history.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.examVariantSet ? "Bộ mã đề · " : ""}
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </div>
-          <label className="cursor-pointer rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 p-4">
-            <p className="font-black">Tải DOCX, PDF hoặc TXT</p>
-            <p className="mt-1 text-sm text-slate-600">
-              Dùng bộ nhận diện đề hiện có; không tạo parser riêng.
-            </p>
-            <span className="btn-secondary mt-3 inline-flex">
-              <Upload size={16} />
-              {uploading ? "Đang đọc…" : "Chọn file"}
-            </span>
-            <input
-              className="hidden"
-              type="file"
-              accept=".docx,.pdf,.txt"
-              disabled={uploading}
-              onChange={(event) => void uploadFile(event.target.files?.[0])}
-            />
-          </label>
-        </div>
+        <AssessmentSourcePicker
+          selectedId={selectedSourceMethod}
+          continueLabel={
+            pendingSource ? "Tiếp tục cấu hình mã đề" : undefined
+          }
+          continueHint="Nội dung và đáp án được giữ nguyên; hệ thống chỉ thay đổi thứ tự theo cấu hình."
+          onContinue={pendingSource ? confirmPendingSource : undefined}
+          options={[
+            {
+              id: "current",
+              title: "Đề hiện tại",
+              description: "Nhận đề đang mở từ quy trình tạo hoặc kiểm tra đề.",
+              icon: FileCheck2,
+              action: (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    const current = parseSessionSource();
+                    if (current) stageSource(current, "current");
+                    else setMessage("Chưa có đề trong phiên hiện tại.");
+                  }}
+                >
+                  Nạp đề hiện tại
+                </button>
+              ),
+            },
+            {
+              id: "history",
+              title: "Lịch sử của thầy/cô",
+              description: "Chọn một đề hoặc bộ mã đề đã lưu.",
+              icon: FileArchive,
+              action: (
+                <select
+                  aria-label="Chọn đề hoặc bộ mã đã lưu"
+                  className="form-field"
+                  value={
+                    selectedSourceMethod === "history"
+                      ? pendingSource?.id || source?.id || ""
+                      : ""
+                  }
+                  onChange={(event) => {
+                    const item = history.find(
+                      (document) => document.id === event.target.value,
+                    );
+                    if (item) stageSource(item, "history");
+                  }}
+                >
+                  <option value="">Chọn đề hoặc bộ mã…</option>
+                  {history.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.examVariantSet ? "Bộ mã đề · " : ""}
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              ),
+            },
+            {
+              id: "upload",
+              title: "Tải DOCX, PDF hoặc TXT",
+              description: "Đọc cấu trúc bằng bộ nhận diện đề hiện có.",
+              icon: Upload,
+              action: (
+                <label className="btn-secondary inline-flex cursor-pointer">
+                  <Upload size={16} />
+                  {uploading ? "Đang đọc…" : "Chọn file"}
+                  <input
+                    className="hidden"
+                    type="file"
+                    accept=".docx,.pdf,.txt"
+                    disabled={uploading}
+                    onChange={(event) =>
+                      void uploadFile(event.target.files?.[0])
+                    }
+                  />
+                </label>
+              ),
+            },
+          ]}
+        />
         {message ? (
           <p className="mt-4 rounded-xl bg-slate-50 p-3 text-sm font-semibold text-slate-700">
             {message}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Download, FileImage, RotateCcw, Save, Sparkles } from "lucide-react";
+import { Copy, RotateCcw, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import katex from "katex";
@@ -8,6 +8,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
 import { SaveToTikzBankButton } from "@/components/tikz/SaveToTikzBankButton";
 import { TikzReviewWorkspace } from "@/components/tikz/TikzReviewWorkspace";
+import { TikzUploadState } from "@/components/tikz/TikzUploadState";
+import { ActionMenu } from "@/components/question-bank/ActionMenu";
 import { createDocument, saveDocument } from "@/lib/history";
 import { saveRecentTool } from "@/lib/recent-tools";
 import type { TikzDiagramDraft } from "@/lib/tikz/types";
@@ -67,8 +69,6 @@ const modes: Array<{ value: Mode; label: string }> = [
   { value: "geometry", label: "Hình học → TikZ" },
 ];
 
-const exampleChips = ["Công thức phân số", "Căn thức", "Ma trận", "Tam giác", "Đường tròn", "Hình tọa độ"];
-
 const maxSize = 10 * 1024 * 1024;
 
 export default function ImageToLatexPage() {
@@ -105,6 +105,7 @@ export default function ImageToLatexPage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [bankDialogOpen, setBankDialogOpen] = useState(false);
   const isGeometryMode = mode === "geometry";
   const isTikzOutput = outputType === "tikz" || isGeometryMode;
 
@@ -177,6 +178,13 @@ export default function ImageToLatexPage() {
       setError("Ảnh quá lớn. Vui lòng dùng ảnh tối đa 10MB.");
       return;
     }
+    setLatex("");
+    setDisplayLatex("");
+    setTikzCode("");
+    setStandaloneLatex("");
+    setTikzDraft(undefined);
+    setWarnings([]);
+    setExplanation("");
     setFile(nextFile);
     setPreviewUrl(URL.createObjectURL(nextFile));
   }
@@ -351,10 +359,13 @@ export default function ImageToLatexPage() {
     showMessage(savedDraft?.source.sourceAvailable === false ? "Đã lưu mã; ảnh nguồn chưa được lưu dài hạn." : "Đã lưu vào lịch sử.");
   }
 
+  const hasOutput = Boolean(latex.trim() || tikzDraft);
+
   return (
     <div className="min-h-screen md:flex">
       <Sidebar />
-      <main className="flex-1 p-5 md:p-8">
+      <main className="min-w-0 flex-1 p-3 sm:p-5 lg:p-6">
+        <div className="mx-auto max-w-[1280px]">
         <PageHeader
           title="Ảnh công thức & hình học → LaTeX/TikZ"
           description="Upload ảnh công thức hoặc hình học đã cắt gọn, Soạn Lab sẽ chuyển thành mã LaTeX hoặc TikZ có thể sao chép."
@@ -367,79 +378,56 @@ export default function ImageToLatexPage() {
           <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[460px_1fr]">
-          <section className="tool-form-card">
-            <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
-              <p className="text-sm font-black text-slate-900">Mẹo để nhận diện tốt hơn</p>
-              <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
-                <li>• Cắt sát công thức hoặc hình cần nhận diện.</li>
-                <li>• Dùng ảnh rõ nét, không nghiêng mạnh.</li>
-                <li>• Tránh nhiều bài hoặc phần đề dài trong cùng một ảnh.</li>
-              </ul>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {exampleChips.map((chip) => (
-                  <span key={chip} className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-blue-700 ring-1 ring-blue-100">
-                    {chip}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
-              <p className="font-extrabold">Cắt ảnh trước khi upload</p>
-              <p className="mt-1">
-                Để kết quả chính xác hơn, vui lòng cắt ảnh chỉ chứa công thức hoặc hình cần nhận diện.
-                Tránh để lẫn chữ thừa, đáp án, phần trang giấy xung quanh hoặc nhiều bài trong cùng một ảnh.
-              </p>
-            </div>
-
-            {isGeometryMode ? (
-              <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-sm leading-6 text-cyan-950">
-                <p className="font-extrabold">Lưu ý khi vẽ lại hình học</p>
-                <p className="mt-1">
-                  Để vẽ lại hình chính xác hơn, vui lòng cắt ảnh chỉ chứa hình học cần nhận diện.
-                  Tránh để lẫn đề bài, lời giải, đáp án hoặc nhiều hình trong cùng một ảnh.
-                </p>
-                <p className="mt-2 font-semibold">
-                  Mã TikZ được tạo là bản nháp hỗ trợ vẽ lại hình. Giáo viên cần kiểm tra lại vị trí điểm, độ dài, góc, nét đứt và ký hiệu trước khi sử dụng.
-                </p>
-                <p className="mt-2">
-                  Công cụ phù hợp nhất với hình học phổ thông đã cắt gọn, rõ nét, có ít chữ thừa.
-                </p>
-                <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-                  <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Phù hợp với:</span> tam giác, đường tròn, hình học tọa độ, hình có điểm A/B/C, đường cao, trung tuyến, tiếp tuyến, góc vuông, nét đứt.</p>
-                  <p className="rounded-xl bg-white/80 p-3"><span className="font-extrabold">Không phù hợp với:</span> ảnh mờ, nhiều hình trong một ảnh, ảnh có cả đề bài dài, hình bị nghiêng mạnh hoặc bị che khuất.</p>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="form-section">
-              <p className="form-section-title">Ảnh đầu vào</p>
-              <label
-                className="flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-blue-200 bg-blue-50/40 p-5 text-center transition hover:border-blue-500 hover:bg-blue-50"
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  pickFile(event.dataTransfer.files.item(0));
-                }}
+        <section className="mb-5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+          <span className="label">Chế độ nhận diện</span>
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            {modes.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setMode(item.value)}
+                className={`min-h-11 rounded-xl border px-3 py-2 text-sm font-bold transition ${mode === item.value ? "border-emerald-600 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300"}`}
               >
-                <FileImage className="text-blue-600" size={34} />
-                <span className="mt-3 text-sm font-extrabold text-ink">Upload hoặc kéo thả ảnh</span>
-                <span className="mt-1 text-xs leading-5 text-muted">PNG, JPG/JPEG, WEBP · tối đa 10MB · có thể dán từ clipboard</span>
-                <input
-                  className="sr-only"
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  onChange={(event) => pickFile(event.target.files?.item(0) || null)}
-                />
-              </label>
-            </div>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </section>
 
-            <details className="rounded-2xl border border-slate-200 bg-white p-4">
-              <summary className="cursor-pointer text-sm font-black text-slate-900">Nhập mô tả hoặc mở mã TikZ có sẵn</summary>
-              <p className="mt-2 text-xs leading-5 text-slate-600">Dùng cho mô tả hình cơ bản hoặc dán một khối tikzpicture hiện có. Mẫu trong Ngân hàng TikZ cũng mở tại cùng trình chỉnh sửa này.</p>
-              <textarea className="form-field mt-3 min-h-28 font-mono text-xs" value={manualSource} onChange={(event) => setManualSource(event.target.value)} placeholder="Ví dụ: Hình chóp S.ABCD có cạnh SA, SB, SC, SD... hoặc dán mã TikZ" />
-              <button type="button" className="btn-secondary mt-2" onClick={openManualSource}>Mở trong trình rà soát</button>
+        {!previewUrl && !hasOutput ? (
+          <TikzUploadState
+            onFile={pickFile}
+            onPasteHelp={() =>
+              showMessage("Nhấn Ctrl+V để dán ảnh từ clipboard.")
+            }
+            manualSource={manualSource}
+            onManualSourceChange={setManualSource}
+            onOpenManualSource={openManualSource}
+            geometryMode={isGeometryMode}
+          />
+        ) : null}
+
+        {previewUrl || hasOutput ? (
+        <div className={`grid gap-6 ${previewUrl && !hasOutput ? "" : "grid-cols-1"}`}>
+          {previewUrl && !hasOutput ? <section className="tool-form-card">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-black text-slate-950">Ảnh đã chọn</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Kiểm tra hướng ảnh và thiết lập xử lý trước khi nhận dạng.
+                </p>
+              </div>
+              <button type="button" className="btn-secondary" onClick={reset}>
+                <RotateCcw size={16} /> Chọn ảnh khác
+              </button>
+            </div>
+            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <summary className="cursor-pointer text-sm font-black text-slate-800">
+                Mẹo để nhận diện tốt hơn
+              </summary>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Cắt sát phần hình, dùng ảnh rõ và tránh để lẫn đề bài, đáp án hoặc nhiều hình trong cùng một ảnh.
+              </p>
             </details>
 
             {previewUrl ? (
@@ -463,38 +451,30 @@ export default function ImageToLatexPage() {
               </div>
             ) : null}
 
-            <div>
-              <label className="label">Chế độ nhận diện</label>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3">
-                {modes.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setMode(item.value)}
-                    className={`rounded-2xl border px-3 py-2 text-sm font-bold transition ${mode === item.value ? "border-blue-600 bg-blue-50 text-blue-700" : "border-blue-100 bg-white text-slate-600 hover:border-blue-300"}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+            {busy ? (
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4" role="status" aria-live="polite">
+                <p className="font-black text-emerald-950">Đang xử lý ảnh</p>
+                <p className="mt-1 text-sm leading-6 text-emerald-900">
+                  Đang nhận dạng · Đang dựng hình · Đang kiểm tra
+                </p>
               </div>
-            </div>
+            ) : null}
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button type="button" onClick={generate} disabled={busy} className="btn-primary flex-1 disabled:opacity-60">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button type="button" onClick={generate} disabled={busy} className="btn-primary sm:min-w-52 disabled:opacity-60">
                 <Sparkles size={16} />
-                {busy ? "Đang nhận diện..." : isGeometryMode ? "Chuyển thành TikZ" : "Chuyển thành LaTeX"}
+                {busy ? "Đang nhận dạng…" : isGeometryMode ? "Nhận dạng hình" : "Chuyển thành LaTeX"}
               </button>
-              <button type="button" onClick={reset} className="btn-secondary">
-                <RotateCcw size={16} />
-                Xóa
-              </button>
+              <p className="text-sm font-semibold leading-6 text-slate-600">
+                Kết quả là bản nháp; giáo viên cần rà soát trước khi sử dụng.
+              </p>
             </div>
 
             {error ? <p className="rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p> : null}
             {message ? <p className="text-sm font-bold text-mint">{message}</p> : null}
-          </section>
+          </section> : null}
 
-          <section className="card overflow-hidden">
+          {hasOutput ? <section className="card overflow-hidden">
             <div className="border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 px-5 py-4">
               <h2 className="text-xl font-extrabold text-ink">{isTikzOutput ? "Mã TikZ" : "Kết quả LaTeX"}</h2>
               <p className="mt-1 text-sm text-muted">
@@ -520,7 +500,7 @@ export default function ImageToLatexPage() {
                 />
               </div>}
 
-              {isTikzOutput ? (
+              {isTikzOutput && !tikzDraft ? (
                 <div>
                   <label className="label">LaTeX standalone</label>
                   <textarea
@@ -532,36 +512,48 @@ export default function ImageToLatexPage() {
                 </div>
               ) : null}
 
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={copyLatex} disabled={!latex} className="btn-primary disabled:opacity-50">
+              <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+                <button type="button" onClick={copyLatex} className={isTikzOutput ? "btn-secondary" : "btn-primary"}>
                   <Copy size={16} />
-                  {isTikzOutput ? "Copy TikZ" : "Copy LaTeX"}
+                  {isTikzOutput ? "Sao chép mã" : "Sao chép LaTeX"}
                 </button>
-                {isTikzOutput ? (
-                  <>
-                    <button type="button" onClick={copyStandaloneLatex} disabled={!standaloneLatex} className="btn-secondary disabled:opacity-50">
-                      <Copy size={16} />
-                      Copy standalone LaTeX
-                    </button>
-                    <button type="button" onClick={() => download("tex")} disabled={!latex} className="btn-secondary disabled:opacity-50">
-                      <Download size={16} />
-                      Tải .tex
-                    </button>
-                  </>
-                ) : null}
-                <button type="button" onClick={() => download("txt")} disabled={!latex} className="btn-secondary disabled:opacity-50">
-                  <Download size={16} />
-                  Tải .txt
+                <ActionMenu
+                  label="Xuất"
+                  items={[
+                    ...(isTikzOutput && standaloneLatex
+                      ? [
+                          {
+                            label: "Sao chép LaTeX standalone",
+                            onSelect: copyStandaloneLatex,
+                          },
+                          {
+                            label: "Tải tệp TEX",
+                            onSelect: () => download("tex"),
+                          },
+                        ]
+                      : []),
+                    { label: "Tải tệp TXT", onSelect: () => download("txt") },
+                    { label: "Tải Markdown", onSelect: () => download("md") },
+                  ]}
+                />
+                <ActionMenu
+                  label="Lưu"
+                  items={[
+                    { label: "Lưu vào lịch sử", onSelect: saveToHistory },
+                    ...(isTikzOutput
+                      ? [
+                          {
+                            label: "Lưu vào Ngân hàng TikZ",
+                            onSelect: () => setBankDialogOpen(true),
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
+                {isTikzOutput ? <SaveToTikzBankButton tikzCode={tikzCode || latex} fullLatex={standaloneLatex} draft={tikzDraft} open={bankDialogOpen} onOpenChange={setBankDialogOpen} hideTrigger /> : null}
+                <button type="button" onClick={reset} className="btn-secondary">
+                  <RotateCcw size={16} /> Làm lại
                 </button>
-                <button type="button" onClick={() => download("md")} disabled={!latex} className="btn-secondary disabled:opacity-50">
-                  <Download size={16} />
-                  Tải Markdown
-                </button>
-                <button type="button" onClick={() => void saveToHistory()} disabled={!latex} className="btn-secondary disabled:opacity-50">
-                  <Save size={16} />
-                  Lưu lịch sử
-                </button>
-                {isTikzOutput ? <SaveToTikzBankButton tikzCode={tikzCode || latex} fullLatex={standaloneLatex} draft={tikzDraft} /> : null}
               </div>
 
               {explanation || warnings.length ? (
@@ -624,7 +616,11 @@ export default function ImageToLatexPage() {
                 </div>
               </div>}
             </div>
-          </section>
+          </section> : null}
+        </div>
+        ) : null}
+        {error && !previewUrl ? <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p> : null}
+        {message && !previewUrl ? <p className="mt-4 text-sm font-bold text-emerald-700">{message}</p> : null}
         </div>
       </main>
     </div>

@@ -30,6 +30,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import {
+  AssessmentActionBar,
   AssessmentStageNavigation,
   AssessmentStatus,
 } from "@/components/assessment/AssessmentWorkspace";
@@ -125,6 +126,9 @@ export function GradingAssistantWorkspace() {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState("");
   const [pasteKey, setPasteKey] = useState("");
+  const [sourceMode, setSourceMode] = useState<"history" | "paste">(
+    "history",
+  );
   const [pasteSubmission, setPasteSubmission] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [answerFilter, setAnswerFilter] = useState("all");
@@ -800,8 +804,8 @@ export function GradingAssistantWorkspace() {
 
   return (
     <AppShell title="Chấm bài" contentClassName="w-full p-3 sm:p-5 lg:p-6">
-      <div className="mx-auto max-w-[1700px]">
-        <header className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mx-auto max-w-[1280px]">
+        <header className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -809,7 +813,7 @@ export function GradingAssistantWorkspace() {
             <ArrowLeft size={16} />
             Trung tâm công cụ
           </Link>
-          <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+          <div className="mt-3">
             <div>
               <span className="soft-badge">Đánh giá &amp; kiểm tra</span>
               <h1 className="mt-3 text-3xl font-black text-slate-950">
@@ -819,35 +823,40 @@ export function GradingAssistantWorkspace() {
                 Nhận dạng bài làm, chấm phần khách quan theo đáp án và để giáo
                 viên quyết định mọi kết quả chưa chắc chắn.
               </p>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="rounded-2xl bg-blue-50 p-3 text-sm font-semibold text-blue-900">
+              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span className="inline-flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-sm font-semibold text-blue-900">
                 <ShieldCheck className="mr-2 inline" size={18} />
                 Điểm chỉ là bản nháp đến khi giáo viên xác nhận.
+                </span>
+                {job?.source.exam || job?.source.variantSet ? (
+                  <button
+                    type="button"
+                    className="text-sm font-bold text-emerald-700 underline-offset-4 hover:underline"
+                    onClick={() =>
+                      openAnswerSheet({
+                        id: job.source.documentId || crypto.randomUUID(),
+                        title: job.source.title,
+                        type: job.source.variantSet
+                          ? "exam-shuffler"
+                          : "exam",
+                        content: "Nguồn chấm bài",
+                        createdAt: new Date().toISOString(),
+                        structuredExam: job.source.exam,
+                        examVariantSet: job.source.variantSet,
+                      })
+                    }
+                  >
+                    Chưa có phiếu trả lời? Tạo phiếu chuẩn
+                  </button>
+                ) : (
+                  <Link
+                    href="/tools/answer-sheet"
+                    className="text-sm font-bold text-emerald-700 underline-offset-4 hover:underline"
+                  >
+                    Chưa có phiếu trả lời? Tạo phiếu chuẩn
+                  </Link>
+                )}
               </div>
-              {job?.source.exam || job?.source.variantSet ? (
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() =>
-                    openAnswerSheet({
-                      id: job.source.documentId || crypto.randomUUID(),
-                      title: job.source.title,
-                      type: job.source.variantSet ? "exam-shuffler" : "exam",
-                      content: "Nguồn chấm bài",
-                      createdAt: new Date().toISOString(),
-                      structuredExam: job.source.exam,
-                      examVariantSet: job.source.variantSet,
-                    })
-                  }
-                >
-                  Tạo phiếu trả lời chuẩn
-                </button>
-              ) : (
-                <Link href="/tools/answer-sheet" className="btn-secondary">
-                  Tạo phiếu trả lời chuẩn
-                </Link>
-              )}
             </div>
           </div>
           <div className="mt-5">
@@ -869,6 +878,7 @@ export function GradingAssistantWorkspace() {
                   "Rà soát",
                   "Xác nhận",
                 ][index],
+                completed: index + 1 < step,
                 disabled: !canOpenStage(index + 1),
                 disabledReason: !canOpenStage(index + 1)
                   ? stageDisabledReason(index + 1)
@@ -953,61 +963,123 @@ export function GradingAssistantWorkspace() {
             <p className="mt-1 text-sm text-slate-600">
               Ưu tiên đề có cấu trúc và đáp án đã được kiểm tra.
             </p>
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <label>
-                <span className="label">
-                  Đề, bộ mã đề hoặc rubric trong lịch sử
-                </span>
-                <select
-                  className="form-field mt-2"
-                  value=""
-                  onChange={(event) => {
-                    const document = history.find(
-                      (item) => item.id === event.target.value,
-                    );
-                    if (document) loadSource(document);
-                  }}
-                >
-                  <option value="">Chọn nguồn…</option>
-                  {history
-                    .filter(
-                      (item) =>
-                        item.structuredExam ||
-                        item.examVariantSet ||
-                        item.type === "rubric" ||
-                        item.gradingJob,
-                    )
-                    .map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.title}
-                        {item.examVariantSet
-                          ? " · Bộ mã đề"
-                          : item.type === "rubric"
-                            ? " · Rubric"
-                            : ""}
-                      </option>
-                    ))}
-                </select>
-              </label>
-              <div>
-                <span className="label">Hoặc dán đáp án</span>
-                <textarea
-                  className="form-field mt-2 min-h-28"
-                  value={pasteKey}
-                  onChange={(event) => setPasteKey(event.target.value)}
-                  placeholder={"1: A\n2: C\n3: D"}
-                />
-                <button
-                  type="button"
-                  className="btn-secondary mt-2"
-                  onClick={usePastedKey}
-                >
-                  Dùng đáp án đã dán
-                </button>
-              </div>
+            <div
+              role="tablist"
+              aria-label="Phương thức chọn nguồn chấm"
+              className="mt-5 inline-flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-1.5"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sourceMode === "history"}
+                className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-bold ${sourceMode === "history" ? "bg-emerald-700 text-white" : "text-slate-700 hover:bg-white"}`}
+                onClick={() => setSourceMode("history")}
+              >
+                Chọn đề đã lưu
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sourceMode === "paste"}
+                className={`min-h-11 shrink-0 rounded-xl px-4 text-sm font-bold ${sourceMode === "paste" ? "bg-emerald-700 text-white" : "text-slate-700 hover:bg-white"}`}
+                onClick={() => setSourceMode("paste")}
+              >
+                Dán đáp án
+              </button>
+            </div>
+
+            <div className="mt-4 max-w-4xl rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+              {sourceMode === "history" ? (
+                <label className="block max-w-2xl">
+                  <span className="label">
+                    Đề, bộ mã đề hoặc rubric trong lịch sử
+                  </span>
+                  <select
+                    className="form-field mt-2"
+                    value=""
+                    onChange={(event) => {
+                      const document = history.find(
+                        (item) => item.id === event.target.value,
+                      );
+                      if (document) loadSource(document);
+                    }}
+                  >
+                    <option value="">Chọn nguồn…</option>
+                    {history
+                      .filter(
+                        (item) =>
+                          item.structuredExam ||
+                          item.examVariantSet ||
+                          item.type === "rubric" ||
+                          item.gradingJob,
+                      )
+                      .map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.title}
+                          {item.examVariantSet
+                            ? " · Bộ mã đề"
+                            : item.type === "rubric"
+                              ? " · Rubric"
+                              : ""}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+              ) : (
+                <div className="max-w-2xl">
+                  <label htmlFor="grading-pasted-answer" className="label">
+                    Đáp án nhập thủ công
+                  </label>
+                  <textarea
+                    id="grading-pasted-answer"
+                    className="form-field mt-2 min-h-44"
+                    value={pasteKey}
+                    onChange={(event) => setPasteKey(event.target.value)}
+                    placeholder={"1: A\n2: C\n3: D"}
+                    aria-describedby="grading-pasted-answer-hint"
+                  />
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p
+                      id="grading-pasted-answer-hint"
+                      className="text-xs font-semibold leading-5 text-slate-600"
+                    >
+                      Mỗi dòng theo dạng số câu: đáp án, ví dụ 1: A.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn-secondary shrink-0"
+                      disabled={!pasteKey.trim()}
+                      onClick={usePastedKey}
+                    >
+                      Dùng đáp án đã dán
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             {job ? <SourceCard job={job} /> : null}
-            <div className="mt-5 flex justify-end">
+            <AssessmentActionBar
+              status={
+                !job ? (
+                  <AssessmentStatus
+                    tone="pending"
+                    label="Chưa thể tiếp tục"
+                    detail="Vui lòng chọn đề đã lưu hoặc dùng đáp án đã dán."
+                  />
+                ) : job.source.blockingErrors.length ? (
+                  <AssessmentStatus
+                    tone="blocked"
+                    label="Nguồn cần được sửa"
+                    detail={job.source.blockingErrors[0]}
+                  />
+                ) : (
+                  <AssessmentStatus
+                    tone="ready"
+                    label="Nguồn chấm đã sẵn sàng"
+                  />
+                )
+              }
+            >
               <button
                 className="btn-primary"
                 disabled={!job || Boolean(job.source.blockingErrors.length)}
@@ -1016,7 +1088,7 @@ export function GradingAssistantWorkspace() {
                 Tiếp tục tải bài
                 <ArrowRight size={16} />
               </button>
-            </div>
+            </AssessmentActionBar>
           </section>
         ) : null}
 

@@ -80,6 +80,7 @@ export type AssessmentStage = {
   id: string;
   label: string;
   shortLabel?: string;
+  completed?: boolean;
   disabled?: boolean;
   disabledReason?: string;
 };
@@ -96,32 +97,46 @@ export function AssessmentStageNavigation({
   label?: string;
 }) {
   const selectId = useId();
+  const activeIndex = Math.max(
+    0,
+    stages.findIndex((stage) => stage.id === activeId),
+  );
   return (
     <nav aria-label={label} className="min-w-0">
-      <label htmlFor={selectId} className="label md:hidden">
-        Bước hiện tại
-      </label>
-      <select
-        id={selectId}
-        className="form-field md:hidden"
-        value={activeId}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {stages.map((stage, index) => (
-          <option key={stage.id} value={stage.id} disabled={stage.disabled}>
-            {index + 1}. {stage.label}
-            {stage.disabled && stage.disabledReason
-              ? ` — ${stage.disabledReason}`
-              : ""}
-          </option>
-        ))}
-      </select>
+      <div className="rounded-2xl border border-slate-200 bg-white p-3 md:hidden">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <span className="text-xs font-black uppercase tracking-wide text-emerald-700">
+            Bước {activeIndex + 1}/{stages.length}
+          </span>
+          <span className="min-w-0 truncate text-sm font-bold text-slate-800">
+            {stages[activeIndex]?.label}
+          </span>
+        </div>
+        <label htmlFor={selectId} className="sr-only">
+          Chọn bước thực hiện
+        </label>
+        <select
+          id={selectId}
+          className="form-field"
+          value={activeId}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          {stages.map((stage, index) => (
+            <option key={stage.id} value={stage.id} disabled={stage.disabled}>
+              {index + 1}. {stage.label}
+              {stage.disabled && stage.disabledReason
+                ? ` — ${stage.disabledReason}`
+                : ""}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <ol className="hidden max-w-full gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1.5 md:flex">
+      <ol className="hidden max-w-full items-center gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-1.5 md:flex">
         {stages.map((stage, index) => {
           const active = stage.id === activeId;
           return (
-            <li key={stage.id} className="flex min-w-0 flex-1 items-center">
+            <li key={stage.id} className="flex shrink-0 items-center">
               <button
                 type="button"
                 disabled={stage.disabled}
@@ -133,14 +148,16 @@ export function AssessmentStageNavigation({
                     : undefined
                 }
                 onClick={() => onChange(stage.id)}
-                className={`flex min-h-11 w-full min-w-[8.5rem] items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-45 ${
+                className={`flex min-h-11 min-w-[8.75rem] items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                   active
                     ? "bg-emerald-700 text-white shadow-sm"
-                    : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+                    : stage.completed
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "text-slate-700 hover:bg-emerald-50 hover:text-emerald-800"
                 }`}
               >
                 <span
-                  className={`grid size-6 shrink-0 place-items-center rounded-full text-xs ${active ? "bg-white/20" : "bg-slate-100"}`}
+                  className={`grid size-6 shrink-0 place-items-center rounded-full text-xs ${active ? "bg-white/20" : stage.completed ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-700"}`}
                   aria-hidden="true"
                 >
                   {index + 1}
