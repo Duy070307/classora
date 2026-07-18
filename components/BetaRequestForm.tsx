@@ -52,9 +52,9 @@ export function BetaRequestForm() {
 
   if (success) {
     return (
-      <div className="rounded-[28px] border border-emerald-200 bg-emerald-50 p-6 text-center sm:p-8" role="status">
+      <div className="border border-emerald-200 bg-emerald-50 p-6 text-center sm:p-8" role="status" aria-live="polite">
         <CheckCircle2 className="mx-auto text-emerald-600" size={42} />
-        <h2 className="mt-4 text-xl font-black text-emerald-950">Đăng ký đã được ghi nhận</h2>
+        <h2 className="mt-4 text-xl font-bold text-emerald-950">Đăng ký đã được ghi nhận</h2>
         <p className="mx-auto mt-3 max-w-xl leading-7 text-emerald-900">{success}</p>
         <button type="button" className="btn-secondary mt-6" onClick={() => setSuccess("")}>Gửi đăng ký khác</button>
       </div>
@@ -89,7 +89,7 @@ export function BetaRequestForm() {
       <Field label="Ghi chú thêm" hint="Không bắt buộc">
         <textarea className="form-field mt-2 min-h-24 resize-y" value={form.note} onChange={(event) => update("note", event.target.value)} maxLength={1200} />
       </Field>
-      {error ? <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-700" role="alert">{error}</div> : null}
+      {error ? <div className="border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-700" role="alert" aria-live="assertive">{error}</div> : null}
       <button className="btn-primary min-h-12 w-full sm:w-auto sm:justify-self-start" disabled={loading}>
         <Send size={17} />
         {loading ? "Đang gửi đăng ký..." : "Gửi đăng ký dùng thử"}
@@ -100,7 +100,7 @@ export function BetaRequestForm() {
 
 function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (
-    <label className="block text-sm font-bold text-slate-900">
+    <label className="block text-sm font-semibold text-slate-900">
       <span>{label}{required ? <span className="ml-1 text-blue-600" aria-hidden="true">*</span> : null}</span>
       {hint ? <span className="ml-2 text-xs font-medium text-slate-400">{hint}</span> : null}
       {children}

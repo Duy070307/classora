@@ -5,15 +5,15 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { BetaNoticeModal } from "@/components/BetaNoticeModal";
 import { getSiteUrl } from "@/lib/site-url";
 
-const title = "Soạn Lab - Bộ công cụ hỗ trợ giáo viên Việt Nam";
+const title = "SOẠN LAB – Bộ công cụ AI hỗ trợ giáo viên";
 const description =
-  "Soạn Lab hỗ trợ giáo viên soạn đề kiểm tra, tạo phiếu học tập, giáo án, ngân hàng câu hỏi và xuất Word/PDF nhanh hơn.";
+  "Tạo đề kiểm tra, giáo án, phiếu học tập, ma trận, lời giải và hình TikZ; rà soát, chỉnh sửa và xuất Word/PDF.";
 const ogImage = "/og-image.png";
 const iconVersion = "soanlab-transparent-20260705";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
-  applicationName: "Soạn Lab",
+  applicationName: "SOẠN LAB",
   manifest: `/manifest.json?v=${iconVersion}`,
   keywords: [
     "Soạn Lab",
@@ -40,16 +40,16 @@ export const metadata: Metadata = {
   },
   title: {
     default: title,
-    template: "%s | Soạn Lab",
+    template: "%s | SOẠN LAB",
   },
   description,
   openGraph: {
     title,
     description,
-    siteName: "Soạn Lab",
+    siteName: "SOẠN LAB",
     type: "website",
     locale: "vi_VN",
-    images: [{ url: ogImage, alt: "Soạn Lab" }],
+    images: [{ url: ogImage, alt: "SOẠN LAB — Bộ công cụ hỗ trợ giáo viên Việt Nam" }],
   },
   twitter: {
     card: "summary_large_image",
