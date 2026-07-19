@@ -25,12 +25,12 @@ assert.match(lockup, /export function BrandLockup/);
 assert.match(lockup, /"default" \| "compact" \| "inverse" \| "iconOnly"/);
 assert.match(lockup, /BRAND_SUBTITLE = "Bộ công cụ hỗ trợ giáo viên"/);
 assert.match(lockup, /BRAND_ACCESSIBLE_NAME = `SOẠN LAB – \$\{BRAND_SUBTITLE\}`/);
-assert.match(lockup, /src="\/brand\/soan-lab-mark\.svg"/);
+assert.match(lockup, /src="\/brand\/soan-lab-mark\.png"/);
 
-// Mark vector có kích thước rõ theo ngữ cảnh, không có khung trang trí lồng thêm.
-assert.match(lockup, /iconOnly \? "size-8" : compact \? "size-9" : "size-10"/);
+// Mark gốc có kích thước rõ theo ngữ cảnh, không có khung trang trí lồng thêm.
+assert.match(lockup, /iconOnly \? "size-8" : compact \? "size-\[34px\]" : "size-\[38px\]"/);
 assert.match(lockup, /className=\{`\$\{iconSize\} shrink-0 object-contain`\}/);
-assert.doesNotMatch(lockup, /shadow|ring-white|absolute inset-x|top-1 h-px/);
+assert.doesNotMatch(lockup, /shadow|ring-white|absolute inset-x|top-1 h-px|soan-lab-mark\.svg/);
 
 // Text không wrap; compact chỉ ẩn subtitle dưới ngưỡng được định nghĩa.
 assert.match(lockup, /h-11 min-w-0 items-center gap-2\.5 whitespace-nowrap/);

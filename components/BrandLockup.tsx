@@ -26,14 +26,14 @@ export function BrandLockup({
   const iconOnly = variant === "iconOnly";
   const inverse = variant === "inverse";
   const compact = variant === "compact";
-  const iconSize = iconOnly ? "size-8" : compact ? "size-9" : "size-10";
+  const iconSize = iconOnly ? "size-8" : compact ? "size-[34px]" : "size-[38px]";
 
   const icon = (
     <Image
-      src="/brand/soan-lab-mark.svg"
+      src="/brand/soan-lab-mark.png"
       alt=""
-      width={40}
-      height={40}
+      width={128}
+      height={128}
       priority={priority}
       className={`${iconSize} shrink-0 object-contain`}
       aria-hidden="true"

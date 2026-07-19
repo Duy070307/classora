@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 function source(path: string) {
@@ -12,7 +13,8 @@ const footer = source("components/SiteFooter.tsx");
 const tikz = source("components/landing/LandingTikzShowcase.tsx");
 const visuals = source("components/landing/PublicProductVisuals.tsx");
 const lockup = source("components/BrandLockup.tsx");
-const mark = source("public/brand/soan-lab-mark.svg");
+const markPath = resolve(process.cwd(), "public/brand/soan-lab-mark.png");
+const wrongSvgPath = resolve(process.cwd(), "public/brand/soan-lab-mark.svg");
 const login = source("app/login/page.tsx");
 const trial = source("app/dang-ky-dung-thu/page.tsx");
 const trialForm = source("components/BetaRequestForm.tsx");
@@ -38,15 +40,17 @@ assert.match(landing, /Sau khi gửi yêu cầu, thầy\/cô vui lòng chờ qu�
 assert.match(trialForm, /Sau khi gửi, thầy\/cô vui lòng chờ quản trị viên duyệt/);
 assert.match(trialForm, /Thông tin tài khoản sẽ được gửi khi yêu cầu được chấp nhận/);
 
-// One canonical vector mark drives public, authenticated and inverse lockups.
+// One canonical historical asset drives public, authenticated and inverse lockups.
 assert.match(navbar, /<BrandLockup href="\/" priority \/>/);
-assert.match(lockup, /src="\/brand\/soan-lab-mark\.svg"/);
-assert.match(lockup, /iconOnly \? "size-8" : compact \? "size-9" : "size-10"/);
+assert.match(lockup, /src="\/brand\/soan-lab-mark\.png"/);
+assert.match(lockup, /iconOnly \? "size-8" : compact \? "size-\[34px\]" : "size-\[38px\]"/);
 assert.match(lockup, /h-11 min-w-0 items-center gap-2\.5/);
 assert.match(lockup, /text-\[16px\] font-bold/);
 assert.match(lockup, /BRAND_SUBTITLE = "Bộ công cụ hỗ trợ giáo viên"/);
-assert.equal((mark.match(/<rect\b/g) || []).length, 1);
-assert.equal((mark.match(/<path\b/g) || []).length, 1);
+assert.match(lockup, /object-contain/);
+assert.doesNotMatch(lockup, /soan-lab-mark\.svg|<svg|<path|border border-blue-200 bg-blue-50/);
+assert.equal(existsSync(wrongSvgPath), false);
+assert.equal(createHash("sha256").update(readFileSync(markPath)).digest("hex"), "08e981a7f629b10537633def1d628c1a58d534a0d1757158a3952b3db94cc5b5");
 
 // Footer uses the inverse lockup directly, with no white wrapper or oversized spacing.
 assert.match(footer, /<BrandLockup variant="inverse" href="\/" \/>/);
@@ -70,4 +74,4 @@ for (const command of ["security:test", "maintenance:test", "landing:tikz-test"]
   assert.match(packageJson, new RegExp(`npm run ${command}`));
 }
 
-console.log("Public visual refinement checks passed: light surfaces, concise approval copy, canonical vector branding, responsive safety and preserved auth/TikZ contracts.");
+console.log("Public visual refinement checks passed: light surfaces, concise approval copy, original canonical logo asset, responsive safety and preserved auth/TikZ contracts.");
