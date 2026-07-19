@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
+import { LandingTikzShowcase } from "@/components/landing/LandingTikzShowcase";
 
 const description = "Tạo đề kiểm tra, giáo án, phiếu học tập, ma trận, lời giải và hình TikZ; rà soát, chỉnh sửa và xuất Word/PDF.";
 
@@ -151,7 +152,7 @@ export default function HomePage() {
             <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] sm:text-4xl">Biến hình ảnh thành mã TikZ có thể chỉnh sửa</h2>
             <p className="mt-4 text-base leading-8 text-slate-300">Tải ảnh hình học, đồ thị hoặc sơ đồ. SOẠN LAB nhận dạng cấu trúc, dựng lại hình và cho phép giáo viên rà soát mã trước khi sử dụng.</p>
           </div>
-          <TikzComparison />
+          <LandingTikzShowcase />
           <div className="mt-7 grid divide-y divide-slate-800 border-y border-slate-800 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
             {["Chỉnh điểm và nhãn", "Kiểm tra nét khuất", "Sao chép mã", "Xuất SVG, PNG, TEX", "Lưu vào Ngân hàng TikZ"].map((item) => <p key={item} className="flex min-h-14 items-center gap-2 px-3 text-sm text-slate-300 first:pl-0"><Check className="shrink-0 text-blue-400" size={16} />{item}</p>)}
           </div>
@@ -245,14 +246,6 @@ function ProductWorkspacePreview() {
 
 function ExamDocumentMockup() {
   return <div className="min-w-0 p-4 sm:p-7"><div className="mx-auto max-w-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"><div className="flex items-center justify-between border-b border-slate-200 pb-4"><div><p className="text-xs font-semibold text-blue-700">ĐỀ KIỂM TRA · BẢN NHÁP</p><h3 className="mt-1 text-xl font-semibold text-slate-950">Đề kiểm tra học kỳ — Toán 12</h3></div><FileCheck2 className="text-blue-700" size={24} /></div><div className="mt-5 grid gap-5 md:grid-cols-[1fr_220px]"><div className="space-y-4 text-sm leading-6 text-slate-700"><p><strong>PHẦN I.</strong> Trắc nghiệm nhiều phương án lựa chọn</p>{[1,2,3].map((item) => <div key={item} className="border-b border-slate-100 pb-3"><strong>Câu {item}.</strong> Nội dung câu hỏi được tổ chức theo cấu trúc đã chọn.</div>)}</div><aside className="border-l border-slate-200 pl-4 text-sm"><p className="font-semibold text-slate-950">Kiểm tra trước khi xuất</p>{["Đủ số câu", "Đáp án đã tách", "Ma trận hợp lệ", "Cần giáo viên rà soát"].map((row, index) => <p key={row} className="mt-3 flex gap-2 text-slate-600"><span className={`mt-1 size-2 rounded-full ${index === 3 ? "bg-amber-500" : "bg-emerald-500"}`} />{row}</p>)}</aside></div></div></div>;
-}
-
-function TikzComparison() {
-  return <div className="mt-10 grid overflow-hidden border border-slate-700 bg-slate-900 lg:grid-cols-3"><div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r"><p className="text-xs font-semibold uppercase tracking-wide text-blue-300">1 · Ảnh nguồn</p><div className="mt-4 flex min-h-64 items-center justify-center bg-slate-100"><GeometryFigure rough /></div></div><div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r"><p className="text-xs font-semibold uppercase tracking-wide text-blue-300">2 · Bản xem trước</p><div className="mt-4 flex min-h-64 items-center justify-center bg-white"><GeometryFigure /></div></div><div className="min-w-0 p-5"><p className="text-xs font-semibold uppercase tracking-wide text-blue-300">3 · Mã TikZ</p><pre className="mt-4 min-h-64 overflow-x-auto bg-slate-950 p-4 text-xs leading-6 text-slate-300"><code>{`\\begin{tikzpicture}[scale=1]\n  \\coordinate (S) at (2,3);\n  \\coordinate (A) at (0,0);\n  \\coordinate (B) at (3,0);\n  \\coordinate (C) at (4,1);\n  \\coordinate (D) at (1,1);\n  \\draw (A)--(B)--(C);\n  \\draw[dashed] (C)--(D)--(A);\n  \\draw (S)--(A) (S)--(B) (S)--(C);\n  \\draw[dashed] (S)--(D);\n\\end{tikzpicture}`}</code></pre></div></div>;
-}
-
-function GeometryFigure({ rough = false }: { rough?: boolean }) {
-  return <svg viewBox="0 0 240 180" className={`h-48 w-64 max-w-full ${rough ? "rotate-1 opacity-75" : ""}`} role="img" aria-label="Hình chóp S.ABCD với các cạnh khuất nét đứt"><g fill="none" stroke="#1e293b" strokeWidth={rough ? 2.5 : 2}><path d="M115 20 L35 135 L150 142 L205 108 L80 102 Z" /><path d="M115 20 L150 142 M115 20 L205 108" /><path d="M115 20 L80 102 M80 102 L205 108" strokeDasharray="6 5" /></g>{[[115,16,"S"],[25,145,"A"],[150,158,"B"],[211,111,"C"],[68,99,"D"]].map(([x,y,label]) => <text key={label as string} x={x as number} y={y as number} fill="#0f172a" fontSize="13" fontWeight="600">{label as string}</text>)}</svg>;
 }
 
 function QuestionBankMockup() {

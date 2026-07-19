@@ -14,6 +14,7 @@ const landing = source("app/page.tsx");
 const hero = landing.split("</section>")[0];
 const navbar = source("components/Navbar.tsx");
 const footer = source("components/SiteFooter.tsx");
+const tikzShowcase = source("components/landing/LandingTikzShowcase.tsx");
 const login = source("app/login/page.tsx");
 const trial = source("app/dang-ky-dung-thu/page.tsx");
 const trialForm = source("components/BetaRequestForm.tsx");
@@ -52,9 +53,9 @@ assert.match(landing, /id="noi-dung-chinh" tabIndex=\{-1\}/);
 for (const id of ["tinh-nang", "cach-hoat-dong", "tikz", "dung-thu"]) {
   assert.match(landing, new RegExp(`id="${id}"`));
 }
-assert.match(landing, /Ảnh nguồn/);
-assert.match(landing, /Bản xem trước/);
-assert.match(landing, /Mã TikZ/);
+assert.match(tikzShowcase, /Ảnh nguồn/);
+assert.match(tikzShowcase, /Bản xem trước/);
+assert.match(tikzShowcase, /Mã TikZ/);
 assert.match(landing, /Xuất SVG, PNG, TEX/);
 assert.match(landing, /Định dạng hỗ trợ phụ thuộc từng công cụ/);
 assert.doesNotMatch(landing, /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);
@@ -63,7 +64,8 @@ assert.doesNotMatch(landing, /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);
 assert.match(globals, /body[\s\S]*overflow-x: hidden/);
 assert.match(globals, /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(landing, /grid max-w-7xl[\s\S]*lg:grid-cols/);
-assert.match(landing, /TikzComparison[\s\S]*lg:grid-cols-3/);
+assert.match(landing, /<LandingTikzShowcase \/>/);
+assert.match(tikzShowcase, /lg:grid-cols-3/);
 assert.doesNotMatch(landing, /framer-motion|autoplay|<video/);
 
 // Login: giữ nguyên luồng xác thực, có nhãn, thông báo lỗi và điều khiển mật khẩu.
