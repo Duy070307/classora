@@ -200,7 +200,7 @@ function Content({
                         </span>
                         <span className="min-w-0 flex-1 truncate">{label}</span>
                         {badge ? (
-                          <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800">
+                          <span className="rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-800">
                             {badge}
                           </span>
                         ) : null}

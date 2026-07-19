@@ -28,7 +28,7 @@ const globals = source("app/globals.css");
 assert.match(dashboard, /<section className="border-b border-slate-200 pb-6 pt-2">/);
 assert.doesNotMatch(dashboard, /<section className="ui-panel p-5 sm:p-6">/);
 assert.equal(count(dashboard, /Mở công cụ/g), 0);
-assert.match(dashboard, /className="group flex min-h-28 gap-3 border-b/);
+assert.match(dashboard, /data-tool-accent=\{tool\.accent\}[\s\S]*className=\{`group flex min-h-28 gap-3 border-b/);
 assert.match(dashboard, /focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500/);
 assert.equal(count(dashboard, /badge: "/g), 1);
 assert.match(dashboard, /mt-3 border-y border-slate-200/);
@@ -36,7 +36,7 @@ assert.match(dashboard, /mt-3 border-y border-slate-200/);
 // Tool Center: dense three-column list, mobile-safe controls and progressive favorite action.
 assert.match(tools, /block sm:hidden/);
 assert.match(tools, /flex-wrap gap-x-1 gap-y-2 sm:flex/);
-assert.match(tools, /md:grid-cols-2 xl:grid-cols-3/);
+assert.match(tools, /md:grid-cols-2[^\n]*xl:grid-cols-3/);
 assert.doesNotMatch(tools, /2xl:grid-cols-4/);
 assert.match(tools, /badge=\{tool\.badge === "Beta" \? "Beta" : undefined\}/);
 assert.doesNotMatch(toolCard, /ArrowRight/);

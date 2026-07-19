@@ -1,4 +1,4 @@
-import { SoanLabIllustration } from "@/components/ui/SoanLabIllustration";
+import { Inbox } from "lucide-react";
 
 export function SoanLabEmptyState({
   title = "Chưa có dữ liệu",
@@ -10,9 +10,11 @@ export function SoanLabEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[1.75rem] border border-blue-100 bg-gradient-to-br from-white via-white to-blue-50/70 p-5 text-center shadow-[0_14px_38px_rgba(30,64,175,.07)] sm:p-8">
-      <SoanLabIllustration variant="empty" className="max-w-[240px]" />
-      <h3 className="mt-5 text-xl font-extrabold text-ink">{title}</h3>
+    <section className="rounded-xl border border-slate-200 bg-white p-5 text-center sm:p-8">
+      <span className="mx-auto flex size-11 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-700">
+        <Inbox className="size-5" aria-hidden="true" />
+      </span>
+      <h3 className="mt-4 text-lg font-bold text-ink">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">{description}</p>
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </section>

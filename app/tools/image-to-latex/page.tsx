@@ -375,7 +375,7 @@ export default function ImageToLatexPage() {
         />
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
+          <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-black text-cyan-800">Beta</span>
         </div>
 
         <section className="mb-5 rounded-xl border border-slate-200 bg-white p-3">
@@ -475,7 +475,7 @@ export default function ImageToLatexPage() {
           </section> : null}
 
           {hasOutput ? <section className="card overflow-hidden">
-            <div className="border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 px-5 py-4">
+            <div className="border-b border-cyan-100 border-l-2 border-l-cyan-600 bg-cyan-50/40 px-5 py-4">
               <h2 className="text-xl font-extrabold text-ink">{isTikzOutput ? "Mã TikZ" : "Kết quả LaTeX"}</h2>
               <p className="mt-1 text-sm text-muted">
                 {isTikzOutput
@@ -596,7 +596,7 @@ export default function ImageToLatexPage() {
 
               {isTikzOutput && tikzDraft ? null : <div>
                 <p className="label">{isTikzOutput ? "Bản xem trước hình vẽ" : "Preview nếu LaTeX render được"}</p>
-                <div className="mt-2 min-h-36 overflow-auto rounded-xl border border-blue-100 bg-white p-5 text-center text-xl">
+                <div className="mt-2 min-h-36 overflow-auto rounded-xl border border-cyan-200 bg-white p-5 text-center text-xl">
                   {!latex ? (
                     <p className="text-sm text-muted">{isGeometryMode ? "Chưa có mã TikZ để xem trước." : "Chưa có LaTeX để preview."}</p>
                   ) : isTikzOutput ? (

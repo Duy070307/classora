@@ -531,10 +531,10 @@ export function ExamAuditWorkspace() {
 
   return (
     <div className="mx-auto max-w-[1280px] space-y-6">
-      <section className="border-b border-slate-200 bg-white px-1 pb-5">
+      <section data-tool-accent="amber" className="border-b border-l-2 border-b-slate-200 border-l-amber-600 bg-white px-3 pb-5">
         <div>
           <div>
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700">
               <ShieldCheck size={14} />
               Kiểm tra trước khi xuất
             </span>

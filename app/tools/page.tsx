@@ -13,7 +13,10 @@ import {
   categoryOrder,
   getToolSearchText,
   toolRegistry,
+  type ToolCategory,
+  type ToolMeta,
 } from "@/lib/tool-registry";
+import { accentForToolCategory, toolAccentClasses } from "@/lib/ui-accent";
 
 type Mode = "Tất cả" | "Phổ biến" | "Yêu thích" | "Gần đây";
 
@@ -101,6 +104,13 @@ function ToolsContent() {
           : 0,
       );
   }, [category, favorites, mode, query, recent]);
+  const groupedView = mode === "Tất cả" && category === "Tất cả" && !query.trim();
+  const groups = categoryOrder
+    .map((groupCategory) => ({
+      category: groupCategory,
+      tools: tools.filter((tool) => tool.category === groupCategory),
+    }))
+    .filter((group) => group.tools.length);
 
   function change(value: string) {
     setCategory(value);
@@ -187,15 +197,11 @@ function ToolsContent() {
       </section>
 
       {tools.length ? (
-        <div className="grid gap-0 md:gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {tools.map((tool) => (
-            <ToolCard
-              key={tool.href}
-              {...tool}
-              badge={tool.badge === "Beta" ? "Beta" : undefined}
-            />
-          ))}
-        </div>
+        groupedView ? (
+          <div className="space-y-8">
+            {groups.map((group) => <ToolGroup key={group.category} category={group.category} tools={group.tools} />)}
+          </div>
+        ) : <ToolGrid tools={tools} />
       ) : (
         <SoanLabEmptyState
           title="Chưa tìm thấy công cụ phù hợp."
@@ -208,5 +214,29 @@ function ToolsContent() {
         />
       )}
     </AppShell>
+  );
+}
+
+function ToolGrid({ tools }: { tools: ToolMeta[] }) {
+  return (
+    <div className="grid gap-0 md:grid-cols-2 md:gap-3 xl:grid-cols-3">
+      {tools.map((tool) => (
+        <ToolCard key={tool.href} {...tool} badge={tool.badge === "Beta" ? "Beta" : undefined} />
+      ))}
+    </div>
+  );
+}
+
+function ToolGroup({ category, tools }: { category: ToolCategory; tools: ToolMeta[] }) {
+  const tone = accentForToolCategory(category);
+  const accent = toolAccentClasses[tone];
+  return (
+    <section data-category-accent={tone} aria-labelledby={`tool-category-${category}`}>
+      <div className="mb-3 flex items-center gap-3 border-b border-slate-200 pb-3">
+        <span className={`h-6 w-1 rounded-full ${accent.dot}`} aria-hidden="true" />
+        <h2 id={`tool-category-${category}`} className="text-lg font-bold text-slate-950 sm:text-xl">{categoryLabels[category]}</h2>
+      </div>
+      <ToolGrid tools={tools} />
+    </section>
   );
 }

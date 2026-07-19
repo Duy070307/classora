@@ -39,10 +39,10 @@ export const metadata: Metadata = {
 };
 
 const capabilities = [
-  [FileText, "Soạn tài liệu", "Đề kiểm tra, giáo án, phiếu học tập và đề cương."],
-  [ClipboardCheck, "Kiểm tra và chuẩn hóa", "Rà soát cấu trúc, đáp án, ma trận và chất lượng đề."],
-  [Sigma, "Trực quan hóa bằng TikZ", "Dựng lại hình học, đồ thị và sơ đồ thành mã chỉnh sửa được."],
-  [Download, "Xuất tài liệu", "Tiếp tục làm việc với Word, PDF, Excel và PowerPoint."],
+  [FileText, "Soạn tài liệu", "Đề kiểm tra, giáo án, phiếu học tập và đề cương.", "text-violet-700"],
+  [ClipboardCheck, "Kiểm tra và chuẩn hóa", "Rà soát cấu trúc, đáp án, ma trận và chất lượng đề.", "text-amber-700"],
+  [Sigma, "Trực quan hóa bằng TikZ", "Dựng lại hình học, đồ thị và sơ đồ thành mã chỉnh sửa được.", "text-cyan-700"],
+  [Download, "Xuất tài liệu", "Tiếp tục làm việc với Word, PDF, Excel và PowerPoint.", "text-blue-700"],
 ] as const;
 
 const steps = [
@@ -53,9 +53,9 @@ const steps = [
 ] as const;
 
 const workflowGroups = [
-  ["Đánh giá", ["Tạo đề kiểm tra", "Ma trận & bảng đặc tả", "Kiểm tra chất lượng đề", "Lời giải & đáp án", "Trộn mã đề", "Phiếu trả lời", "Chấm bài"]],
-  ["Tài liệu dạy học", ["Giáo án", "Phiếu học tập", "Đề cương ôn tập"]],
-  ["Quản lý & tái sử dụng", ["Ngân hàng câu hỏi", "Lịch sử tài liệu", "Ngân hàng TikZ"]],
+  ["Đánh giá", ["Tạo đề kiểm tra", "Ma trận & bảng đặc tả", "Kiểm tra chất lượng đề", "Lời giải & đáp án", "Trộn mã đề", "Phiếu trả lời", "Chấm bài"], "text-amber-700"],
+  ["Tài liệu dạy học", ["Giáo án", "Phiếu học tập", "Đề cương ôn tập"], "text-violet-700"],
+  ["Quản lý & tái sử dụng", ["Ngân hàng câu hỏi", "Lịch sử tài liệu", "Ngân hàng TikZ"], "text-blue-700"],
 ] as const;
 
 const values = [
@@ -99,9 +99,9 @@ export default function HomePage() {
 
       <section id="tinh-nang" className="border-b border-slate-200 bg-white scroll-mt-20">
         <div className="mx-auto grid max-w-7xl divide-y divide-slate-200 px-4 sm:px-6 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4 lg:px-8">
-          {capabilities.map(([Icon, title, copy]) => (
+          {capabilities.map(([Icon, title, copy, accent]) => (
             <div key={title} className="flex gap-3 py-6 md:px-5 first:pl-0 last:pr-0">
-              <Icon className="mt-0.5 shrink-0 text-blue-700" size={20} />
+              <Icon className={`mt-0.5 shrink-0 ${accent}`} size={20} />
               <div><h2 className="font-semibold text-slate-950">{title}</h2><p className="mt-1 text-sm leading-6 text-slate-600">{copy}</p></div>
             </div>
           ))}
@@ -125,14 +125,14 @@ export default function HomePage() {
 
       <section className="border-y border-slate-200 bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <SectionHeading eyebrow="Luồng tài liệu" title="Từ yêu cầu ban đầu đến tài liệu có thể sử dụng" copy="Các công cụ được nối theo công việc thật: tạo đề, kiểm tra, hoàn thiện đáp án, chuẩn bị mã đề và tiếp tục chấm bài." />
+          <SectionHeading eyebrow="Luồng tài liệu" title="Từ yêu cầu ban đầu đến tài liệu có thể sử dụng" copy="Các công cụ được nối theo công việc thật: tạo đề, kiểm tra, hoàn thiện đáp án, chuẩn bị mã đề và tiếp tục chấm bài." accentClass="text-amber-700" />
           <div className="mt-10 grid overflow-hidden border border-slate-200 bg-slate-50 lg:grid-cols-[330px_minmax(0,1fr)]">
             <div className="border-b border-slate-200 bg-white lg:border-b-0 lg:border-r">
-              {workflowGroups.map(([group, items], groupIndex) => (
+              {workflowGroups.map(([group, items, accent], groupIndex) => (
                 <div key={group} className="border-b border-slate-200 p-5 last:border-b-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{group}</p>
+                  <p className={`text-xs font-semibold uppercase tracking-wide ${accent}`}>{group}</p>
                   <div className="mt-3 space-y-1">
-                    {items.map((item, itemIndex) => <div key={item} className={`flex min-h-9 items-center gap-2 text-sm ${groupIndex === 0 && itemIndex === 0 ? "font-semibold text-blue-700" : "text-slate-600"}`}>{groupIndex === 0 && itemIndex === 0 ? <span className="h-5 w-0.5 bg-blue-600" /> : <span className="w-0.5" />}{item}</div>)}
+                    {items.map((item, itemIndex) => <div key={item} className={`flex min-h-9 items-center gap-2 text-sm ${groupIndex === 0 && itemIndex === 0 ? "font-semibold text-amber-800" : "text-slate-600"}`}>{groupIndex === 0 && itemIndex === 0 ? <span className="h-5 w-0.5 bg-amber-500" /> : <span className="w-0.5" />}{item}</div>)}
                   </div>
                 </div>
               ))}
@@ -148,13 +148,13 @@ export default function HomePage() {
       <section id="tikz" className="scroll-mt-20 bg-slate-950 px-4 py-16 text-white sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold text-blue-300">Hình học &amp; trực quan</p>
+            <p className="text-sm font-semibold text-cyan-300">Hình học &amp; trực quan</p>
             <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] sm:text-4xl">Biến hình ảnh thành mã TikZ có thể chỉnh sửa</h2>
             <p className="mt-4 text-base leading-8 text-slate-300">Tải ảnh hình học, đồ thị hoặc sơ đồ. SOẠN LAB nhận dạng cấu trúc, dựng lại hình và cho phép giáo viên rà soát mã trước khi sử dụng.</p>
           </div>
           <LandingTikzShowcase />
           <div className="mt-7 grid divide-y divide-slate-800 border-y border-slate-800 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
-            {["Chỉnh điểm và nhãn", "Kiểm tra nét khuất", "Sao chép mã", "Xuất SVG, PNG, TEX", "Lưu vào Ngân hàng TikZ"].map((item) => <p key={item} className="flex min-h-14 items-center gap-2 px-3 text-sm text-slate-300 first:pl-0"><Check className="shrink-0 text-blue-400" size={16} />{item}</p>)}
+            {["Chỉnh điểm và nhãn", "Kiểm tra nét khuất", "Sao chép mã", "Xuất SVG, PNG, TEX", "Lưu vào Ngân hàng TikZ"].map((item) => <p key={item} className="flex min-h-14 items-center gap-2 px-3 text-sm text-slate-300 first:pl-0"><Check className="shrink-0 text-cyan-400" size={16} />{item}</p>)}
           </div>
         </div>
       </section>
@@ -173,9 +173,9 @@ export default function HomePage() {
             <p className="mt-4 text-sm leading-6 text-slate-500">Định dạng hỗ trợ phụ thuộc từng công cụ và loại tài liệu.</p>
           </div>
           <div className="grid border-y border-slate-200 sm:grid-cols-2">
-            {[[FileText, "Word & PDF", "Đề, giáo án, phiếu học tập"], [FileSpreadsheet, "Excel", "Ma trận và dữ liệu có cấu trúc"], [Presentation, "PowerPoint", "Slide bài giảng"], [Code2, "TEX, SVG & PNG", "Hình TikZ và tài sản trực quan"]].map(([Icon, title, copy]) => {
+            {[[FileText, "Word & PDF", "Đề, giáo án, phiếu học tập", "text-blue-700"], [FileSpreadsheet, "Excel", "Ma trận và dữ liệu có cấu trúc", "text-amber-700"], [Presentation, "PowerPoint", "Slide bài giảng", "text-violet-700"], [Code2, "TEX, SVG & PNG", "Hình TikZ và tài sản trực quan", "text-cyan-700"]].map(([Icon, title, copy, accent]) => {
               const I = Icon as typeof FileText;
-              return <div key={title as string} className="flex gap-3 border-b border-slate-200 py-5 sm:border-r sm:px-5 sm:[&:nth-child(2n)]:border-r-0"><I className="shrink-0 text-blue-700" size={20} /><div><h3 className="font-semibold text-slate-950">{title as string}</h3><p className="mt-1 text-sm leading-6 text-slate-600">{copy as string}</p></div></div>;
+              return <div key={title as string} className="flex gap-3 border-b border-slate-200 py-5 sm:border-r sm:px-5 sm:[&:nth-child(2n)]:border-r-0"><I className={`shrink-0 ${accent as string}`} size={20} /><div><h3 className="font-semibold text-slate-950">{title as string}</h3><p className="mt-1 text-sm leading-6 text-slate-600">{copy as string}</p></div></div>;
             })}
           </div>
         </div>
@@ -219,8 +219,8 @@ export default function HomePage() {
   );
 }
 
-function SectionHeading({ eyebrow, title, copy }: { eyebrow: string; title: string; copy?: string }) {
-  return <div className="max-w-3xl"><p className="text-sm font-semibold text-blue-700">{eyebrow}</p><h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">{title}</h2>{copy ? <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">{copy}</p> : null}</div>;
+function SectionHeading({ eyebrow, title, copy, accentClass = "text-blue-700" }: { eyebrow: string; title: string; copy?: string; accentClass?: string }) {
+  return <div className="max-w-3xl"><p className={`text-sm font-semibold ${accentClass}`}>{eyebrow}</p><h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">{title}</h2>{copy ? <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">{copy}</p> : null}</div>;
 }
 
 function ProductWorkspacePreview() {

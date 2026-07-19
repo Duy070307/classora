@@ -198,7 +198,7 @@ export default function CreatePage() {
                         <Icon size={23} />
                       </span>
                       {isImageToLatexTask ? (
-                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
+                        <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-black text-cyan-800">Beta</span>
                       ) : null}
                     </div>
                     <h3 className="mt-5 text-lg font-black text-slate-900">{task.title}</h3>

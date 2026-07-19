@@ -13,7 +13,7 @@ export function ToolCategorySection({ title, tools }: { title: string; tools: To
       <h2 className="text-xl font-bold text-ink">{title}</h2>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {tools.map((tool) => (
-          <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} categoryLabel={title} />
+          <ToolCard key={tool.href} title={tool.title} description={tool.description} href={tool.href} badge={tool.badge} />
         ))}
       </div>
     </section>

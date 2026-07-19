@@ -85,15 +85,15 @@ export function LandingTikzShowcase() {
   return (
     <div className="mt-10 grid overflow-hidden border border-slate-700 bg-slate-900 lg:grid-cols-3">
       <div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r">
-        <p className="text-xs font-semibold uppercase tracking-wide text-blue-300">1 · Ảnh nguồn</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">1 · Ảnh nguồn</p>
         <div className="mt-4 flex min-h-64 items-center justify-center bg-slate-100"><LandingPyramidFigure /></div>
       </div>
       <div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r">
-        <p className="text-xs font-semibold uppercase tracking-wide text-blue-300">2 · Bản xem trước</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">2 · Bản xem trước</p>
         <div className="mt-4 flex min-h-64 items-center justify-center bg-white"><LandingPyramidFigure /></div>
       </div>
       <div className="min-w-0 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-blue-300">3 · Mã TikZ</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">3 · Mã TikZ</p>
         <pre className="mt-4 min-h-64 overflow-x-auto bg-slate-950 p-4 text-xs leading-6 text-slate-300"><code>{LANDING_PYRAMID_TIKZ}</code></pre>
       </div>
     </div>

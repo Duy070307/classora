@@ -142,7 +142,7 @@ export function ThreeDAnimationTool() {
       <section className="space-y-5">
         <div className="rounded-[28px] border border-blue-100 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">Beta</span>
+            <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-black text-cyan-800">Beta</span>
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Công cụ trực quan</span>
           </div>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950">Tạo mô phỏng 3D</h1>

@@ -538,7 +538,7 @@ export function ExamBlueprintWorkspace() {
   return (
     <AppShell title="Ma trận & bảng đặc tả">
       <div className="mx-auto max-w-[1500px] space-y-5">
-        <header className="border-b border-slate-200 bg-white pb-5 pt-1">
+        <header data-tool-accent="amber" className="border-b border-l-2 border-b-slate-200 border-l-amber-600 bg-white pb-5 pl-3 pt-1">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -548,7 +548,7 @@ export function ExamBlueprintWorkspace() {
           </Link>
           <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Đánh giá &amp; kiểm tra</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Đánh giá &amp; kiểm tra</p>
               <h1 className="mt-1 text-3xl font-bold text-slate-950">
                 Ma trận &amp; bảng đặc tả
               </h1>

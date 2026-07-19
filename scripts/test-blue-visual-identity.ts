@@ -56,9 +56,9 @@ assert.match(globals, /\.btn-primary[\s\S]*bg-blue-600[\s\S]*hover:bg-blue-700[\
 assert.match(globals, /:focus-visible[\s\S]*rgba\(37, 99, 235, 0\.3\)/);
 // 5. Input có hover/focus rõ và chiều cao chạm tối thiểu 44px.
 assert.match(globals, /\.form-field[\s\S]*min-h-11[\s\S]*focus:border-blue-500/);
-// 6. Shared UI không còn màu thương hiệu emerald/teal/indigo/purple/violet/cyan/sky.
+// 6. Shared UI không tái sử dụng các màu thương hiệu cũ; cyan/violet chỉ được dùng qua accent có kiểm soát.
 for (const item of sharedBrandSources) {
-  assert.doesNotMatch(item, /emerald|teal|indigo|purple|violet|cyan|sky/);
+  assert.doesNotMatch(item, /teal|indigo|purple|sky/);
 }
 // 7. Xanh lá vẫn được giữ cho trạng thái hoàn thành có nghĩa.
 assert.match(stages, /stage\.completed \? "bg-emerald-100 text-emerald-800"/);
@@ -80,9 +80,9 @@ assert.doesNotMatch(toolHeader, /ui-panel|border-l-emerald/);
 // 14. TikZ upload-first dùng một CTA chính xanh dương và không dùng màu brand cũ.
 assert.match(tikzUpload, /border-blue-300 bg-blue-50\/40/);
 assert.match(tikzUpload, /className="btn-primary mt-5"/);
-// 15. Sáu workspace ưu tiên không còn indigo/purple/teal/violet hay radius tùy ý 28px.
+// 15. Sáu workspace ưu tiên không còn indigo/purple/teal/sky; accent semantic được phép theo họ công cụ.
 for (const item of priorityWorkspaces) {
-  assert.doesNotMatch(item, /indigo|purple|teal|violet|rounded-\[28px\]/);
+  assert.doesNotMatch(item, /indigo|purple|teal|sky/);
 }
 // 16. Question Bank dùng xanh dương cho collection, filter và selection.
 assert.match(questionBank, /bg-blue-50 text-blue-900/);

@@ -357,7 +357,7 @@ export function RubricWorkspace() {
   return (
     <AppShell title="Tạo rubric">
       <div className="mx-auto max-w-[1580px] space-y-5">
-        <header className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <header data-tool-accent="rose" className="rounded-[28px] border border-rose-200 bg-white p-5 shadow-sm">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -367,7 +367,7 @@ export function RubricWorkspace() {
           </Link>
           <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="soft-badge">Đánh giá học tập</span>
+              <span className="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800">Đánh giá học tập</span>
               <h1 className="mt-3 text-3xl font-black">Tạo rubric chấm bài</h1>
               <p className="mt-2 max-w-3xl text-sm text-slate-600">
                 Tạo tiêu chí, mức độ, mô tả minh chứng và thang điểm có cấu

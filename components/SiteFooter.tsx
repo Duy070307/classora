@@ -19,7 +19,7 @@ export function SiteFooter() {
           <p className="mt-3 max-w-md leading-6">Bộ công cụ hỗ trợ giáo viên Việt Nam tạo, rà soát, chỉnh sửa và xuất tài liệu.</p>
         </div>
         <nav className="flex flex-wrap gap-x-6 gap-y-3 md:justify-end" aria-label="Liên kết cuối trang">
-          {links.map(([label, href]) => <Link key={href} href={href} className="min-h-8 font-medium text-slate-300 hover:text-white">{label}</Link>)}
+          {links.map(([label, href]) => <Link key={href} href={href} className="-mx-2.5 inline-flex min-h-11 items-center px-2.5 font-medium text-slate-300 hover:text-white">{label}</Link>)}
         </nav>
       </div>
       <div className="mx-auto mt-7 flex max-w-7xl flex-col gap-2 border-t border-slate-800 pt-5 text-xs sm:flex-row sm:items-center sm:justify-between">

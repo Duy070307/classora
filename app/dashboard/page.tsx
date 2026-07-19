@@ -13,16 +13,18 @@ import {
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { DashboardOnboarding } from "@/components/DashboardOnboarding";
+import { SoanLabBadge } from "@/components/ui/SoanLabBadge";
 import { getHistory } from "@/lib/history";
 import type { GeneratedDocument } from "@/lib/types";
+import { toolAccentClasses, type ToolAccentTone } from "@/lib/ui-accent";
 
 const quickTools = [
-  { title: "Tạo đề kiểm tra", desc: "Tạo đề, đáp án, thang điểm, ma trận và bản đặc tả.", href: "/tools/exam-generator", icon: ClipboardList, keywords: "đề kiểm tra thi thptqg" },
-  { title: "Ma trận & bảng đặc tả", desc: "Lập ma trận trước khi ra đề, xuất Excel/Word và đối chiếu đề hiện có.", href: "/tools/exam-blueprint", icon: ClipboardList, keywords: "ma trận đặc tả blueprint đối chiếu đề" },
-  { title: "Ngân hàng câu hỏi", desc: "Lưu, tìm kiếm và quản lý câu hỏi theo môn/lớp/chủ đề.", href: "/question-bank", icon: BookOpenCheck, keywords: "ngân hàng câu hỏi import" },
-  { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan", icon: FileText, keywords: "giáo án kế hoạch bài dạy" },
-  { title: "Phiếu học tập", desc: "Tạo bài tập theo chủ đề, có gợi ý đáp án để rà soát.", href: "/tools/worksheet-generator", icon: BookOpenCheck, keywords: "phiếu học tập worksheet bài tập" },
-  { title: "Hình học → TikZ", desc: "Nhận diện hình học đã cắt gọn và tạo mã TikZ để giáo viên rà soát.", href: "/tools/image-to-latex?mode=geometry", icon: ImageIcon, badge: "Beta", keywords: "latex hình học tikz công thức" },
+  { title: "Tạo đề kiểm tra", desc: "Tạo đề, đáp án, thang điểm, ma trận và bản đặc tả.", href: "/tools/exam-generator", icon: ClipboardList, accent: "amber", keywords: "đề kiểm tra thi thptqg" },
+  { title: "Ma trận & bảng đặc tả", desc: "Lập ma trận trước khi ra đề, xuất Excel/Word và đối chiếu đề hiện có.", href: "/tools/exam-blueprint", icon: ClipboardList, accent: "amber", keywords: "ma trận đặc tả blueprint đối chiếu đề" },
+  { title: "Ngân hàng câu hỏi", desc: "Lưu, tìm kiếm và quản lý câu hỏi theo môn/lớp/chủ đề.", href: "/question-bank", icon: BookOpenCheck, accent: "blue", keywords: "ngân hàng câu hỏi import" },
+  { title: "Giáo án", desc: "Tạo kế hoạch bài dạy dạng bản nháp tham khảo.", href: "/tools/lesson-plan", icon: FileText, accent: "violet", keywords: "giáo án kế hoạch bài dạy" },
+  { title: "Phiếu học tập", desc: "Tạo bài tập theo chủ đề, có gợi ý đáp án để rà soát.", href: "/tools/worksheet-generator", icon: BookOpenCheck, accent: "violet", keywords: "phiếu học tập worksheet bài tập" },
+  { title: "Hình học → TikZ", desc: "Nhận diện hình học đã cắt gọn và tạo mã TikZ để giáo viên rà soát.", href: "/tools/image-to-latex?mode=geometry", icon: ImageIcon, badge: "Beta", accent: "cyan", keywords: "latex hình học tikz công thức" },
 ] as const;
 
 export default function DashboardPage() {
@@ -70,13 +72,14 @@ export default function DashboardPage() {
         <div className="grid overflow-hidden border-y border-slate-200 md:grid-cols-2 xl:grid-cols-3">
             {quickTools.slice(0, 6).map((tool) => {
               const Icon = tool.icon;
+              const accent = toolAccentClasses[tool.accent as ToolAccentTone];
               return (
-                <Link key={tool.href} href={tool.href} className="group flex min-h-28 gap-3 border-b border-slate-200 p-4 transition hover:bg-slate-50 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 md:border-r">
-                  <Icon className="mt-0.5 shrink-0 text-blue-700" size={20} />
+                <Link data-tool-accent={tool.accent} key={tool.href} href={tool.href} className={`group flex min-h-28 gap-3 border-b border-l-2 border-slate-200 p-4 transition ${accent.border} ${accent.hover} focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 md:border-r`}>
+                  <span className={`mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border ${accent.icon}`}><Icon size={18} /></span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="font-semibold text-slate-950">{tool.title}</h2>
-                      {"badge" in tool && tool.badge ? <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">{tool.badge}</span> : null}
+                      {"badge" in tool && tool.badge ? <SoanLabBadge tone="beta">{tool.badge}</SoanLabBadge> : null}
                     </div>
                     <p className="mt-1 text-sm leading-6 text-slate-600">{tool.desc}</p>
                   </div>

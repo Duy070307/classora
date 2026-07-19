@@ -1,4 +1,5 @@
 import { BookOpenCheck, Box, CheckCircle2, Database, FileCheck2, FileText, Grid2X2, KeyRound, MessageSquareText, PenLine, Sigma, Shuffle, UploadCloud, UsersRound } from "lucide-react";
+import { toolAccentClasses, type ToolAccentTone } from "@/lib/ui-accent";
 
 export type SoanLabIconName =
   | "exam" | "matrix" | "answer" | "shuffle" | "worksheet" | "lesson"
@@ -55,12 +56,13 @@ const map = {
   default: CheckCircle2
 } as const;
 
-export function SoanLabIcon({ name = "default", className = "", size = "md", plain = false }: { name?: SoanLabIconName; className?: string; size?: "sm" | "md" | "lg"; plain?: boolean }) {
+export function SoanLabIcon({ name = "default", className = "", size = "md", plain = false, tone }: { name?: SoanLabIconName; className?: string; size?: "sm" | "md" | "lg"; plain?: boolean; tone?: ToolAccentTone }) {
   const Icon = map[name];
   const sizes = plain ? "h-auto w-auto" : size === "lg" ? "h-14 w-14 rounded-xl" : size === "sm" ? "h-10 w-10 rounded-lg" : "h-12 w-12 rounded-lg";
   const iconSize = size === "lg" ? 30 : size === "sm" ? 18 : 22;
+  const palette = tone ? toolAccentClasses[tone] : null;
   return (
-    <span className={`relative inline-flex shrink-0 items-center justify-center ${plain ? "text-blue-700" : "overflow-hidden bg-blue-600 text-white ring-1 ring-blue-700/10"} ${sizes} ${className}`}>
+    <span className={`relative inline-flex shrink-0 items-center justify-center ${plain ? palette?.text || "text-blue-700" : palette ? `overflow-hidden border ${palette.icon}` : "overflow-hidden bg-blue-600 text-white ring-1 ring-blue-700/10"} ${sizes} ${className}`}>
       <Icon size={iconSize} strokeWidth={2} className="relative" />
     </span>
   );

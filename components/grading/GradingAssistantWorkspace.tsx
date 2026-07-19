@@ -805,7 +805,7 @@ export function GradingAssistantWorkspace() {
   return (
     <AppShell title="Chấm bài" contentClassName="w-full p-3 sm:p-5 lg:p-6">
       <div className="mx-auto max-w-[1280px]">
-        <header className="border-b border-slate-200 bg-white px-1 pb-4">
+        <header data-tool-accent="rose" className="border-b border-l-2 border-b-slate-200 border-l-rose-600 bg-white px-3 pb-4">
           <Link
             href="/tools"
             className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
@@ -815,7 +815,7 @@ export function GradingAssistantWorkspace() {
           </Link>
           <div className="mt-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Đánh giá &amp; kiểm tra</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-700">Đánh giá &amp; kiểm tra</p>
               <h1 className="mt-1 text-3xl font-bold text-slate-950">
                 Chấm bài
               </h1>
@@ -824,7 +824,7 @@ export function GradingAssistantWorkspace() {
                 viên quyết định mọi kết quả chưa chắc chắn.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                <span className="inline-flex items-center gap-2 border-l-2 border-blue-500 pl-3 text-sm font-semibold text-blue-900">
+                <span className="inline-flex items-center gap-2 border-l-2 border-rose-500 pl-3 text-sm font-semibold text-rose-900">
                 <ShieldCheck className="mr-2 inline" size={18} />
                 Điểm chỉ là bản nháp đến khi giáo viên xác nhận.
                 </span>

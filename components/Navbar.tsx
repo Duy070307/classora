@@ -53,7 +53,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
-      <Link href="#noi-dung-chinh" className="absolute left-4 top-2 z-[60] -translate-y-16 whitespace-nowrap bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <Link href="#noi-dung-chinh" className="absolute left-4 top-2 z-[60] -translate-y-16 whitespace-nowrap bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-300">
         Bỏ qua điều hướng
       </Link>
       <div className="mx-auto flex min-h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
