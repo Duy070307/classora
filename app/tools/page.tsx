@@ -149,15 +149,17 @@ function ToolsContent() {
             Soạn đề, tạo tài liệu, viết nhận xét, xử lý LaTeX và lưu lại lịch sử
             trong một không gian gọn gàng.
           </p>
-          <label className="relative mt-4 block max-w-3xl">
+          <label className="relative mt-4 block w-full max-w-3xl">
             <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              size={19}
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              size={16}
+              aria-hidden="true"
             />
             <input
-              className="form-field h-12 pl-12"
+              className="form-field h-12 !pl-11"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              aria-label="Tìm công cụ"
               placeholder="Tìm: đề, kiểm tra, giáo án, LaTeX, hình học..."
             />
           </label>

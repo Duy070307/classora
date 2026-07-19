@@ -14,6 +14,14 @@ assert.match(tools, /displayCategoryRegistry/);
 assert.doesNotMatch(tools, /mt-2 flex flex-wrap items-center gap-1 border-t/);
 assert.doesNotMatch(tools, /min-h-screen|min-h-\[\d+px\].*filter/i);
 
+// Ô tìm kiếm Tool Center chỉ có một icon, chừa đủ khoảng trái và giữ nguyên hành vi.
+assert.equal(tools.match(/<Search\b/g)?.length, 1);
+assert.match(tools, /pointer-events-none absolute left-3\.5 top-1\/2 -translate-y-1\/2[^"]*"\s*size=\{16\}/);
+assert.match(tools, /className="form-field h-12 !pl-11"/);
+assert.match(tools, /aria-label="Tìm công cụ"/);
+assert.match(tools, /placeholder="Tìm: đề, kiểm tra, giáo án, LaTeX, hình học\.\.\."/);
+assert.match(tools, /value=\{query\}\s*onChange=\{\(e\) => setQuery\(e\.target\.value\)\}/);
+
 const globals = source("app/globals.css");
 const blueprint = source("components/exam-blueprint/ExamBlueprintWorkspace.tsx");
 assert.match(globals, /--app-topbar-height: 4rem/);
