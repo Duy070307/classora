@@ -67,9 +67,78 @@ function text(value: unknown) {
   return typeof value === "string" ? value.trim().replace(/\r\n?/g, "\n") : "";
 }
 
+function record(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function nullableText(...values: unknown[]) {
+  for (const value of values) {
+    const normalized = text(value);
+    if (normalized) return normalized;
+  }
+  return null;
+}
+
 export function normalizeTikzTags(value: unknown) {
   const source = Array.isArray(value) ? value : typeof value === "string" ? value.split(",") : [];
   return [...new Set(source.map((item) => text(item)).filter(Boolean))].slice(0, 15).map((item) => item.slice(0, 50));
+}
+
+export function normalizeTikzSnippetRecord(value: unknown): TikzSnippet | null {
+  const source = record(value);
+  const id = text(source.id);
+  const title = nullableText(source.title, source.name);
+  const tikzCode = nullableText(source.tikz_code, source.tikzCode, source.code, source.content);
+  if (!id || !title || !tikzCode || !/\\(?:begin\s*\{(?:tikzpicture|circuitikz)\}|draw\b|path\b|node\b|coordinate\b)/i.test(tikzCode)) return null;
+
+  const rawScope = text(source.bank_scope ?? source.bankScope).toLowerCase();
+  const scope: TikzBankScope = rawScope === "system" || source.is_shared === true || text(source.visibility) === "public" ? "system" : "user";
+  const metadata = record(source.metadata);
+  const now = new Date(0).toISOString();
+
+  return {
+    id,
+    created_at: nullableText(source.created_at, source.createdAt) || now,
+    updated_at: nullableText(source.updated_at, source.updatedAt, source.created_at, source.createdAt) || now,
+    user_id: scope === "system" ? null : nullableText(source.user_id, source.userId, source.owner_id, source.ownerId),
+    bank_scope: scope,
+    title,
+    description: nullableText(source.description),
+    category: nullableText(source.category),
+    subject: nullableText(source.subject, source.subject_name, source.subjectName),
+    grade: nullableText(source.grade, source.class_name, source.className),
+    tags: normalizeTikzTags(source.tags),
+    tikz_code: tikzCode,
+    full_latex: nullableText(source.full_latex, source.fullLatex, source.standalone_latex, source.standaloneLatex),
+    preview_note: nullableText(source.preview_note, source.previewNote),
+    source_type: nullableText(source.source_type, source.sourceType),
+    needs_review: typeof source.needs_review === "boolean" ? source.needs_review : typeof source.needsReview === "boolean" ? source.needsReview : true,
+    slug: nullableText(source.slug),
+    subcategory: nullableText(source.subcategory),
+    grades: normalizeTikzTags(source.grades),
+    complexity: nullableText(source.complexity),
+    package_dependencies: normalizeTikzTags(source.package_dependencies ?? source.packageDependencies),
+    source_name: nullableText(source.source_name, source.sourceName),
+    source_url: nullableText(source.source_url, source.sourceUrl),
+    source_author: nullableText(source.source_author, source.sourceAuthor),
+    source_license: nullableText(source.source_license, source.sourceLicense),
+    originality_mode: nullableText(source.originality_mode, source.originalityMode),
+    sha256: nullableText(source.sha256),
+    imported_at: nullableText(source.imported_at, source.importedAt),
+    metadata: scope === "system" ? {} : metadata,
+  };
+}
+
+export function normalizeTikzSnippetRecords(values: unknown) {
+  if (!Array.isArray(values)) return { snippets: [] as TikzSnippet[], rejected: 0 };
+  const snippets: TikzSnippet[] = [];
+  let rejected = 0;
+  for (const value of values) {
+    const normalized = normalizeTikzSnippetRecord(value);
+    if (normalized) snippets.push(normalized);
+    else rejected += 1;
+  }
+  return { snippets, rejected };
 }
 
 export function validateTikzSnippetInput(value: unknown):

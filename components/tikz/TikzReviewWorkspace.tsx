@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Check, Code2, Eye, FileInput, GitCompare, Move, RotateCcw, ShieldCheck, Undo2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
+import { SourceModeTabs } from "@/components/tools/WorkflowNavigation";
 import { listCloudDocuments, saveDocumentToCloud } from "@/lib/data/documents-store";
 import { getHistory, saveDocument } from "@/lib/history";
 import { getQuestions, saveQuestions } from "@/lib/question-bank";
@@ -56,7 +57,7 @@ export function TikzReviewWorkspace({ draft, sourceUrl, onChange }: { draft: Tik
       {!compiler.available ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-900">Bản xem trước hiện được dựng từ cấu trúc hình. Mã TikZ chưa được kiểm tra bằng trình biên dịch TeX trên máy chủ này.</p> : <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">Máy chủ có môi trường TeX. Chỉ khi tệp PDF hợp lệ được tạo, SOẠN LAB mới ghi nhận “Đã biên dịch bằng TeX”.</p>}
       {reviewQueue.filter((item) => item.status === "pending").length ? <p className="mt-2 text-sm font-black text-amber-700">Còn {reviewQueue.filter((item) => item.status === "pending").length} mục cần xác nhận.</p> : null}
     </div>
-    <div role="tablist" aria-label="Không gian rà soát TikZ" className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1.5">{tabs.map((item) => <button type="button" role="tab" aria-selected={tab === item.id} key={item.id} onClick={() => setTab(item.id)} className={`min-h-11 shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${tab === item.id ? "bg-blue-600 text-white" : "text-slate-600 hover:bg-blue-50 hover:text-blue-800"}`}>{item.label}</button>)}</div>
+    <SourceModeTabs value={tab} onChange={(value) => setTab(value as Tab)} items={tabs} label="Không gian rà soát TikZ" />
 
     {tab === "review" ? <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-4 rounded-xl bg-slate-50 p-3 text-xs font-bold text-slate-700"><label className="min-h-11">Thu phóng <input className="ml-2 align-middle" type="range" min="70" max="160" value={zoom * 100} onChange={(event) => setZoom(Number(event.target.value) / 100)} /></label>{sourceUrl ? <label className="flex min-h-11 items-center"><input type="checkbox" checked={overlay} onChange={(event) => setOverlay(event.target.checked)} /> <span className="ml-1">Chồng ảnh gốc</span></label> : null}{overlay ? <label className="min-h-11">Độ mờ <input className="ml-2 align-middle" type="range" min="10" max="90" value={opacity} onChange={(event) => setOpacity(Number(event.target.value))} /></label> : null}<label className="flex min-h-11 items-center"><input type="checkbox" checked={showBoxes} onChange={(event) => setShowBoxes(event.target.checked)} /> <span className="ml-1">Khung đối tượng</span></label><label className="flex min-h-11 items-center"><input type="checkbox" checked={showLabels} onChange={(event) => setShowLabels(event.target.checked)} /> <span className="ml-1">Nhãn</span></label><label className="flex min-h-11 items-center"><input type="checkbox" checked={showHidden} onChange={(event) => setShowHidden(event.target.checked)} /> <span className="ml-1">Cạnh khuất</span></label></div>

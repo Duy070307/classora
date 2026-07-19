@@ -774,8 +774,8 @@ export function ExamBlueprintWorkspace() {
               />
             ) : null}
           </main>
-          <aside className="space-y-4 xl:border-l xl:border-slate-200 xl:pl-4">
-            <section className="sticky top-20 border-y border-slate-200 bg-white py-4">
+          <aside className="min-w-0 space-y-4 xl:self-start xl:border-l xl:border-slate-200 xl:pl-4">
+            <section className="app-sticky-summary border-y border-slate-200 bg-white py-4 pr-1">
               <h2 className="font-semibold">Tổng hợp trực tiếp</h2>
               <div className="mt-3 divide-y divide-slate-100 border-y border-slate-100">
                 <Metric label="Tổng số câu" value={totals.sectionQuestions} />

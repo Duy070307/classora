@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import katex from "katex";
 import { Sidebar } from "@/components/Sidebar";
 import { ToolPageHeader as PageHeader } from "@/components/tools/ToolPageHeader";
+import { SourceModeTabs } from "@/components/tools/WorkflowNavigation";
 import { SaveToTikzBankButton } from "@/components/tikz/SaveToTikzBankButton";
 import { TikzReviewWorkspace } from "@/components/tikz/TikzReviewWorkspace";
 import { TikzUploadState } from "@/components/tikz/TikzUploadState";
@@ -378,20 +379,9 @@ export default function ImageToLatexPage() {
           <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-black text-cyan-800">Beta</span>
         </div>
 
-        <section className="mb-5 rounded-xl border border-slate-200 bg-white p-3">
+        <section className="mb-5 border-y border-slate-200 bg-white py-3">
           <span className="label">Chế độ nhận diện</span>
-          <div className="mt-2 grid gap-2 sm:grid-cols-3">
-            {modes.map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                onClick={() => setMode(item.value)}
-                className={`min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold transition ${mode === item.value ? "border-blue-300 bg-blue-50 text-blue-800" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300"}`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          <SourceModeTabs value={mode} onChange={(value) => setMode(value as Mode)} items={modes.map((item) => ({ id: item.value, label: item.label }))} label="Chế độ nhận diện ảnh" />
         </section>
 
         {!previewUrl && !hasOutput ? (

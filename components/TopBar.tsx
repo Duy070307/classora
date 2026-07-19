@@ -11,7 +11,7 @@ export function TopBar({
   onOpenMenu: () => void;
 }) {
   return (
-    <header aria-label={title ? `Thanh công cụ: ${title}` : "Thanh công cụ"} className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
+    <header aria-label={title ? `Thanh công cụ: ${title}` : "Thanh công cụ"} className="app-topbar sticky top-0 z-20 flex items-center border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur-xl sm:px-5">
       <div className="mx-auto flex w-full max-w-[1440px] items-center gap-3">
         <button
           type="button"

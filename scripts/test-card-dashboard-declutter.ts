@@ -34,8 +34,8 @@ assert.equal(count(dashboard, /badge: "/g), 1);
 assert.match(dashboard, /mt-3 border-y border-slate-200/);
 
 // Tool Center: dense three-column list, mobile-safe controls and progressive favorite action.
-assert.match(tools, /block sm:hidden/);
-assert.match(tools, /flex-wrap gap-x-1 gap-y-2 sm:flex/);
+assert.match(tools, /<details className="group lg:hidden">/);
+assert.match(tools, /className="hidden min-w-0 items-center gap-3 lg:flex"/);
 assert.match(tools, /md:grid-cols-2[^\n]*xl:grid-cols-3/);
 assert.doesNotMatch(tools, /2xl:grid-cols-4/);
 assert.match(tools, /badge=\{tool\.badge === "Beta" \? "Beta" : undefined\}/);
@@ -68,7 +68,8 @@ assert.match(exam, /ToolOutputActions/);
 
 // Blueprint: underline tabs and one summary list instead of metric cards.
 assert.match(blueprint, /hidden grid-cols-4 border-b border-slate-200 md:grid/);
-assert.match(blueprint, /aside className="space-y-4 xl:border-l xl:border-slate-200 xl:pl-4"/);
+assert.match(blueprint, /aside className="min-w-0 space-y-4 xl:self-start xl:border-l xl:border-slate-200 xl:pl-4"/);
+assert.match(blueprint, /className="app-sticky-summary/);
 assert.match(blueprint, /divide-y divide-slate-100 border-y border-slate-100/);
 assert.doesNotMatch(blueprint, /function Metric[\s\S]*rounded-xl bg-slate-50 p-3/);
 assert.match(blueprint, /function Metric[\s\S]*items-center justify-between/);

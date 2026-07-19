@@ -26,7 +26,8 @@ assert.match(actionMenu, /max-h-\[min\(24rem,calc\(100dvh-6rem\)\)\]/);
 
 const toolCenter = source("app/tools/page.tsx");
 assert.match(toolCenter, /<select className="form-field" value=\{category\}/);
-assert.match(toolCenter, /className="hidden flex-wrap gap-x-1 gap-y-2 sm:flex"/);
+assert.match(toolCenter, /Lọc &amp; sắp xếp/);
+assert.match(toolCenter, /displayCategoryRegistry/);
 assert.doesNotMatch(toolCenter, /flex gap-2 overflow-x-auto px-1/);
 
 const toolCard = source("components/ToolCard.tsx");

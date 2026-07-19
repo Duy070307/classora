@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { SlidersHorizontal, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { ToolCard } from "@/components/ToolCard";
@@ -24,18 +24,33 @@ const displayCategories = [
   "Tất cả",
   "Soạn đề",
   "Tài liệu",
-  "Nhận xét",
-  "Phụ huynh",
+  "Đánh giá",
   "Toán/LaTeX",
   "Trực quan",
   "Quản lý dữ liệu",
 ];
 
+const displayCategoryRegistry: Record<string, ToolCategory | null> = {
+  "Tất cả": null,
+  "Soạn đề": "exam-assessment",
+  "Tài liệu": "lesson-materials",
+  "Đánh giá": "homeroom-parent",
+  "Toán/LaTeX": "formula-latex",
+  "Trực quan": "visual-tools",
+  "Quản lý dữ liệu": "personalization",
+};
+
+const registryCategoryDisplay: Partial<Record<ToolCategory, string>> = Object.fromEntries(
+  Object.entries(displayCategoryRegistry)
+    .filter((entry): entry is [string, ToolCategory] => Boolean(entry[1]))
+    .map(([label, key]) => [key, label]),
+);
+
 function categoryMatches(toolCategory: string, label: string) {
   if (label === "Tất cả") return true;
   if (label === "Soạn đề") return toolCategory === "exam-assessment";
   if (label === "Tài liệu") return toolCategory === "lesson-materials";
-  if (label === "Nhận xét" || label === "Phụ huynh")
+  if (label === "Đánh giá")
     return toolCategory === "homeroom-parent";
   if (label === "Toán/LaTeX") return toolCategory === "formula-latex";
   if (label === "Trực quan") return toolCategory === "visual-tools";
@@ -67,15 +82,10 @@ function ToolsContent() {
       setRecent(getRecentTools().map((x) => x.href));
     };
     queueMicrotask(() => {
-      const registryCategory =
-        categoryParam && categoryParam in categoryLabels
-          ? categoryLabels[categoryParam as keyof typeof categoryLabels]
-          : "Tất cả";
-      setCategory(
-        registryCategory === "Soạn đề & kiểm tra"
-          ? "Soạn đề"
-          : registryCategory,
-      );
+      const registryCategory = categoryParam && categoryParam in categoryLabels
+        ? categoryParam as ToolCategory
+        : null;
+      setCategory(registryCategory ? registryCategoryDisplay[registryCategory] || categoryLabels[registryCategory] : "Tất cả");
       refresh();
     });
     window.addEventListener("classora-favorites-change", refresh);
@@ -105,6 +115,7 @@ function ToolsContent() {
       );
   }, [category, favorites, mode, query, recent]);
   const groupedView = mode === "Tất cả" && category === "Tất cả" && !query.trim();
+  const hasActiveFilters = Boolean(query.trim() || category !== "Tất cả" || mode !== "Tất cả");
   const groups = categoryOrder
     .map((groupCategory) => ({
       category: groupCategory,
@@ -114,7 +125,7 @@ function ToolsContent() {
 
   function change(value: string) {
     setCategory(value);
-    const slug = categoryOrder.find((x) => categoryLabels[x] === value);
+    const slug = displayCategoryRegistry[value];
     router.replace(slug ? `/tools?category=${slug}` : "/tools", {
       scroll: false,
     });
@@ -153,47 +164,55 @@ function ToolsContent() {
         </div>
       </section>
 
-      <section className="sticky top-[68px] z-10 mb-4 border-y border-slate-200 bg-white/95 py-3 backdrop-blur-xl">
-        <label className="block sm:hidden">
-          <span className="label">Danh mục công cụ</span>
-          <select className="form-field" value={category} onChange={(event) => change(event.target.value)}>
-            {displayCategories.map((item) => <option key={item}>{item}</option>)}
-          </select>
-        </label>
-        <div className="hidden flex-wrap gap-x-1 gap-y-2 sm:flex">
-          {displayCategories.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => change(item)}
-              className={`min-h-11 shrink-0 border-b-2 px-3 text-sm font-semibold transition ${category === item ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950"}`}
-            >
-              {item}
-            </button>
-          ))}
+      <section className="sticky top-[var(--app-topbar-height)] z-10 mb-4 border-y border-slate-200 bg-white/95 py-2 backdrop-blur-xl">
+        <div className="hidden min-w-0 items-center gap-3 lg:flex">
+          <nav aria-label="Danh mục công cụ" className="min-w-0 flex-1 overflow-x-auto">
+            <div className="flex w-max items-center gap-1">
+              {displayCategories.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => change(item)}
+                  aria-current={category === item ? "page" : undefined}
+                  className={`min-h-11 shrink-0 border-b-2 px-3 text-sm font-semibold transition ${category === item ? "border-blue-600 text-blue-700" : "border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950"}`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </nav>
+          <label className="flex shrink-0 items-center gap-2 text-xs font-semibold text-slate-500">
+            Hiển thị
+            <select className="form-field min-h-10 w-32 py-1.5" value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
+              {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map((item) => <option key={item}>{item}</option>)}
+            </select>
+          </label>
+          {hasActiveFilters ? <button type="button" onClick={clear} className="btn-ghost shrink-0 text-xs">Xóa bộ lọc</button> : null}
+          <span className="shrink-0 text-sm font-semibold text-slate-500">{tools.length} công cụ</span>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-2">
-          {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map(
-            (item) => (
-              <button
-                key={item}
-                onClick={() => setMode(item)}
-                className={`min-h-11 border-b-2 px-3 py-2 text-xs font-semibold ${mode === item ? "border-slate-900 text-slate-950" : "border-transparent text-slate-600 hover:text-slate-950"}`}
-              >
-                {item}
-              </button>
-            ),
-          )}
-          <button
-            onClick={clear}
-            className="min-h-11 rounded-lg px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
-          >
-            Xóa bộ lọc
-          </button>
-          <span className="ml-auto text-sm font-semibold text-slate-400">
-            {tools.length} công cụ
-          </span>
-        </div>
+
+        <details className="group lg:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg px-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+            <SlidersHorizontal size={17} className="text-blue-700" />
+            Lọc &amp; sắp xếp
+            <span className="ml-auto text-xs font-semibold text-slate-500">{tools.length} công cụ</span>
+          </summary>
+          <div className="grid gap-3 border-t border-slate-100 px-2 pb-2 pt-3 sm:grid-cols-2">
+            <label>
+              <span className="label">Danh mục</span>
+              <select className="form-field" value={category} onChange={(event) => change(event.target.value)}>
+                {displayCategories.map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </label>
+            <label>
+              <span className="label">Hiển thị</span>
+              <select className="form-field" value={mode} onChange={(event) => setMode(event.target.value as Mode)}>
+                {(["Tất cả", "Phổ biến", "Yêu thích", "Gần đây"] as Mode[]).map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </label>
+            {hasActiveFilters ? <button type="button" onClick={clear} className="btn-secondary sm:col-span-2">Xóa bộ lọc</button> : null}
+          </div>
+        </details>
       </section>
 
       {tools.length ? (

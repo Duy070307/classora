@@ -54,7 +54,7 @@ assert.equal(accentForToolHeader("Giáo án"), "violet");
 assert.equal(accentForToolCategory("exam-assessment", "/tools/exam-generator"), "amber");
 assert.equal(accentForToolCategory("exam-assessment", "/tools/grading-assistant"), "rose");
 assert.match(tikzPage, /border-l-cyan-600 bg-cyan-50\/40/);
-assert.match(lessonSlides, /data-tool-accent="violet"/);
+assert.match(lessonSlides, /accent="violet"/);
 assert.match(examBlueprint, /data-tool-accent="amber"/);
 assert.match(examAudit, /data-tool-accent="amber"/);
 assert.match(grading, /data-tool-accent="rose"/);

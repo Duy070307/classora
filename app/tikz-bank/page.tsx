@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Code2, Copy, Download, Edit3, FileUp, Plus, Save, Search, Trash2, X } from "lucide-react";
+import { AlertTriangle, Check, Code2, Copy, Download, Edit3, FileUp, LoaderCircle, Plus, RefreshCw, Save, Search, Trash2, X } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
+import { SourceModeTabs } from "@/components/tools/WorkflowNavigation";
 import { TikzBankImportModal } from "@/components/tikz/TikzBankImportModal";
 import { buildStandaloneLatex, tikzCategories, tikzFilename, type TikzSnippet } from "@/lib/tikz-bank";
 import { normalizeLegacyTikzDraft } from "@/lib/tikz/model";
@@ -30,6 +31,7 @@ export default function TikzBankPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
   const [tab, setTab] = useState<SourceTab>("all");
@@ -43,23 +45,28 @@ export default function TikzBankPage() {
   const [showImport, setShowImport] = useState(false);
   const [editing, setEditing] = useState<TikzSnippet | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const loadRequestId = useRef(0);
 
   const load = useCallback(async () => {
+    const requestId = ++loadRequestId.current;
     setLoading(true);
+    setLoadError(null);
     try {
       const response = await fetch("/api/tikz-bank", { cache: "no-store" });
       const result = await response.json().catch(() => null) as { ok?: boolean; snippets?: TikzSnippet[]; isAdmin?: boolean; userId?: string; error?: string } | null;
       if (!response.ok || !result?.ok) {
-        setMessage({ tone: "error", text: result?.error || "Chưa tải được Ngân hàng TikZ. Vui lòng thử lại." });
+        if (requestId === loadRequestId.current) setLoadError(result?.error || "Chưa tải được Ngân hàng TikZ. Vui lòng thử lại.");
         return;
       }
-      setSnippets(Array.isArray(result.snippets) ? result.snippets : []);
+      if (!Array.isArray(result.snippets)) throw new Error("INVALID_TIKZ_BANK_RESPONSE");
+      if (requestId !== loadRequestId.current) return;
+      setSnippets(result.snippets);
       setIsAdmin(Boolean(result.isAdmin));
       setUserId(result.userId || "");
     } catch {
-      setMessage({ tone: "error", text: "Chưa tải được Ngân hàng TikZ. Vui lòng thử lại." });
+      if (requestId === loadRequestId.current) setLoadError("Chưa tải được Ngân hàng TikZ. Vui lòng thử lại.");
     } finally {
-      setLoading(false);
+      if (requestId === loadRequestId.current) setLoading(false);
     }
   }, []);
 
@@ -225,12 +232,13 @@ export default function TikzBankPage() {
 
       {message ? <div className={`mb-5 rounded-2xl border p-4 text-sm font-bold ${message.tone === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-700"}`} role="status">{message.text}</div> : null}
 
-      <section className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {([['all', 'Tất cả'], ['system', 'Ngân hàng SOẠN LAB'], ['user', 'Của tôi']] as Array<[SourceTab, string]>).map(([value, label]) => (
-            <button key={value} type="button" onClick={() => setTab(value)} className={`min-h-10 shrink-0 rounded-full px-4 text-sm font-black ${tab === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}>{label}</button>
-          ))}
-        </div>
+      <section className="border-y border-slate-200 bg-white py-4">
+        <SourceModeTabs
+          value={tab}
+          onChange={(value) => setTab(value as SourceTab)}
+          label="Nguồn mã TikZ"
+          items={[{ id: "all", label: "Tất cả" }, { id: "system", label: "Ngân hàng SOẠN LAB" }, { id: "user", label: "Của tôi" }]}
+        />
         <label className="relative mt-3 block">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input value={query} onChange={(event) => setQuery(event.target.value)} className="form-field pl-11" placeholder="Tìm theo tên, chủ đề, tag hoặc nội dung mã TikZ…" />
@@ -248,7 +256,14 @@ export default function TikzBankPage() {
         Mã TikZ là bản tham khảo để thầy cô sao chép và chỉnh sửa. Với hình phức tạp, thầy cô nên kiểm tra lại khi biên dịch LaTeX.
       </section>
 
-      {loading ? <div className="empty-state mt-6"><p className="font-bold text-slate-700">Đang tải Ngân hàng TikZ…</p></div> : filtered.length ? (
+      {loadError ? <div className="mt-6 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950 sm:flex-row sm:items-center" role="alert">
+        <AlertTriangle className="shrink-0 text-amber-700" size={20} />
+        <p className="min-w-0 flex-1 font-semibold">{loadError}{snippets.length ? " Dữ liệu đã tải trước đó vẫn được giữ nguyên." : ""}</p>
+        <button type="button" className="btn-secondary shrink-0" disabled={loading} onClick={() => { void load(); }}><RefreshCw size={16} />Thử lại</button>
+      </div> : null}
+
+      {loading && snippets.length === 0 ? <div className="empty-state mt-6" role="status"><p className="flex items-center gap-2 font-bold text-slate-700"><LoaderCircle className="animate-spin text-blue-600" size={18} />Đang tải Ngân hàng TikZ…</p></div> : null}
+      {!loading && loadError && snippets.length === 0 ? null : filtered.length ? (
         <div className="mt-6 grid gap-4 xl:grid-cols-2">
           {filtered.map((item) => {
             const canManage = isAdmin || (item.bank_scope === "user" && item.user_id === userId);
@@ -279,7 +294,7 @@ export default function TikzBankPage() {
             </article>;
           })}
         </div>
-      ) : <div className="empty-state mt-6"><Code2 className="mx-auto text-blue-600" size={34} /><p className="mt-3 font-bold text-slate-900">{emptyText}</p></div>}
+      ) : !loading && !loadError ? <div className="empty-state mt-6"><Code2 className="mx-auto text-blue-600" size={34} /><p className="mt-3 font-bold text-slate-900">{emptyText}</p></div> : null}
 
       {showForm ? <SnippetModal form={form} setForm={setForm} editing={Boolean(editing)} busy={busy} onClose={() => setShowForm(false)} onSave={() => { void saveSnippet(); }} /> : null}
       {showImport ? <TikzBankImportModal onClose={() => setShowImport(false)} onImported={load} /> : null}

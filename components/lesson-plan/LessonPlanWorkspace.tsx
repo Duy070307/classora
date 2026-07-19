@@ -25,6 +25,7 @@ import {
 } from "@/components/authoring/AuthoringWorkspace";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
 import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
+import { SourceModeTabs, WorkflowStageNavigation } from "@/components/tools/WorkflowNavigation";
 import { generateToolContent } from "@/lib/ai/client";
 import { listCloudDocuments } from "@/lib/data/documents-store";
 import { getHistory, saveDocument } from "@/lib/history";
@@ -630,11 +631,10 @@ export function LessonPlanWorkspace() {
         title="Giáo án"
         description="Xây dựng tiến trình dạy học có mục tiêu, hoạt động giáo viên/học sinh, minh chứng đánh giá và tài liệu liên kết."
       />
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-bold">
-        <Step active={stage === "setup"} label="1. Nguồn & thiết lập" />
-        <Step active={stage === "outline"} label="2. Kiểm tra tiến trình" />
-        <Step active={stage === "editor"} label="3. Chỉnh sửa & xuất" />
-      </div>
+      <WorkflowStageNavigation
+        activeId={stage}
+        items={[{ id: "setup", label: "Nguồn & thiết lập" }, { id: "outline", label: "Kiểm tra tiến trình" }, { id: "editor", label: "Chỉnh sửa & xuất" }]}
+      />
       {message ? (
         <p className="mb-4 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-sm font-bold text-blue-900">
           {message}
@@ -737,24 +737,11 @@ function Setup({
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
       <main className="space-y-5">
-        <nav className="flex gap-2 overflow-x-auto rounded-2xl border bg-white p-2">
-          {(
-            [
-              ["topic", "Nhập chủ đề"],
-              ["document", "Từ tài liệu"],
-              ["saved", "Từ nội dung đã lưu"],
-              ["existing", "Chỉnh sửa giáo án cũ"],
-            ] as Array<[LessonPlanInputMode, string]>
-          ).map(([key, label]) => (
-            <button
-              key={key}
-              className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-black ${mode === key ? "bg-blue-600 text-white" : "text-slate-600"}`}
-              onClick={() => setMode(key)}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        <SourceModeTabs
+          value={mode}
+          onChange={(value) => setMode(value as LessonPlanInputMode)}
+          items={[{ id: "topic", label: "Nhập chủ đề" }, { id: "document", label: "Từ tài liệu" }, { id: "saved", label: "Từ nội dung đã lưu" }, { id: "existing", label: "Chỉnh sửa giáo án cũ" }]}
+        />
         {mode !== "topic" ? (
           <section className="rounded-[24px] border bg-white p-5">
             <h2 className="font-black">Nguồn nội dung đã xác nhận</h2>
@@ -1879,15 +1866,6 @@ function RegenerationDialog({
         </p>
       </div>
     </div>
-  );
-}
-function Step({ active, label }: { active: boolean; label: string }) {
-  return (
-    <span
-      className={`rounded-full px-3 py-1 ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
-    >
-      {label}
-    </span>
   );
 }
 function Field({

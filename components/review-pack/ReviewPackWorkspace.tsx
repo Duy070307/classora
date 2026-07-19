@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import {
   AlertTriangle,
   ArrowDown,
-  ArrowLeft,
   ArrowUp,
   CheckCircle2,
   FileText,
@@ -16,6 +14,8 @@ import { useEffect, useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { AuthoringWorkspace } from "@/components/authoring/AuthoringWorkspace";
 import { ActionMenu } from "@/components/question-bank/ActionMenu";
+import { ToolPageHeader } from "@/components/tools/ToolPageHeader";
+import { SourceModeTabs, WorkflowStageNavigation } from "@/components/tools/WorkflowNavigation";
 import { generateToolContent } from "@/lib/ai/client";
 import { listCloudDocuments } from "@/lib/data/documents-store";
 import { getHistory, saveDocument } from "@/lib/history";
@@ -389,26 +389,11 @@ export function ReviewPackWorkspace() {
   return (
     <AppShell title="Đề cương ôn tập">
       <div className="mx-auto max-w-[1560px] space-y-5">
-        <header className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <Link
-            href="/tools"
-            className="inline-flex items-center gap-1 text-sm font-bold text-blue-700"
-          >
-            <ArrowLeft size={16} />
-            Trung tâm công cụ
-          </Link>
-          <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <span className="soft-badge">Tài liệu dạy học</span>
-              <h1 className="mt-3 text-3xl font-black text-slate-950">
-                Đề cương ôn tập
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                Tạo gói ôn tập hoàn chỉnh từ chủ đề, tài liệu, nội dung đã lưu
-                hoặc kết quả chấm bài đã xác nhận.
-              </p>
-            </div>
-            {stage === "editor" ? (
+        <ToolPageHeader
+          title="Đề cương ôn tập"
+          category="Tài liệu dạy học"
+          description="Tạo gói ôn tập hoàn chỉnh từ chủ đề, tài liệu, nội dung đã lưu hoặc kết quả chấm bài đã xác nhận."
+          actions={stage === "editor" ? (
               <div className="flex flex-wrap gap-2">
                 <button className="btn-primary" onClick={save}>
                   <Save size={16} />
@@ -437,15 +422,11 @@ export function ReviewPackWorkspace() {
                 />
               </div>
             ) : null}
-          </div>
-        </header>
-        <div className="flex flex-wrap items-center gap-2 text-sm font-bold">
-          <Step active={stage === "setup"} label="1. Thiết lập" />
-          <span>→</span>
-          <Step active={stage === "outline"} label="2. Dàn ý" />
-          <span>→</span>
-          <Step active={stage === "editor"} label="3. Biên tập & xuất" />
-        </div>
+        />
+        <WorkflowStageNavigation
+          activeId={stage}
+          items={[{ id: "setup", label: "Thiết lập" }, { id: "outline", label: "Dàn ý" }, { id: "editor", label: "Biên tập & xuất" }]}
+        />
         {stage === "setup" ? (
           <Setup
             pack={pack}
@@ -628,17 +609,11 @@ function Setup({
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
       <main className="space-y-5">
-        <nav className="flex gap-2 overflow-x-auto rounded-2xl border bg-white p-2">
-          {modes.map(([key, label]) => (
-            <button
-              key={key}
-              className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-black ${mode === key ? "bg-blue-600 text-white" : "text-slate-600"}`}
-              onClick={() => setMode(key)}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        <SourceModeTabs
+          value={mode}
+          onChange={(value) => setMode(value as ReviewInputMode)}
+          items={modes.map(([id, label]) => ({ id, label }))}
+        />
         {mode !== "topic" ? (
           <section className="rounded-[24px] border bg-white p-5">
             <h2 className="font-black">Nguồn nội dung</h2>
@@ -1275,15 +1250,6 @@ function SectionEditor({
   );
 }
 
-function Step({ active, label }: { active: boolean; label: string }) {
-  return (
-    <span
-      className={`rounded-full px-3 py-1 ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
-    >
-      {label}
-    </span>
-  );
-}
 function Field({
   label,
   value,
