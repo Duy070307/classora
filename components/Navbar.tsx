@@ -14,8 +14,16 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 12);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -52,7 +60,7 @@ export function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
+    <header data-scrolled={scrolled ? "true" : "false"} className={`sticky top-0 z-40 border-b backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-200 ${scrolled || open ? "border-slate-200/90 bg-white/95 shadow-[0_4px_16px_rgba(15,23,42,.05)]" : "border-transparent bg-white/85"}`}>
       <Link href="#noi-dung-chinh" className="absolute left-4 top-2 z-[60] -translate-y-16 whitespace-nowrap bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-300">
         Bỏ qua điều hướng
       </Link>
@@ -61,13 +69,13 @@ export function Navbar() {
 
         <nav className="ml-auto hidden items-center gap-1 lg:flex" aria-label="Điều hướng trang chủ">
           {links.map(([label, href]) => (
-            <Link key={href} href={href} className="inline-flex min-h-11 items-center px-3 text-sm font-medium text-slate-600 transition hover:text-blue-700">
+            <Link key={href} href={href} className="public-nav-link inline-flex min-h-11 items-center border-b-2 border-transparent px-3 text-sm font-medium text-slate-600 transition duration-200 hover:border-blue-200 hover:text-blue-700">
               {label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <Link href="/login" className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-slate-700 hover:text-blue-700">
             Đăng nhập
           </Link>
@@ -92,7 +100,7 @@ export function Navbar() {
       {open ? (
         <>
           <button type="button" aria-label="Đóng menu" className="fixed inset-0 top-16 z-40 bg-slate-950/30 lg:hidden" onClick={() => setOpen(false)} />
-          <div ref={menuRef} id="public-mobile-menu" className="absolute inset-x-0 top-full z-50 border-b border-slate-200 bg-white px-4 py-4 shadow-lg lg:hidden">
+          <div ref={menuRef} id="public-mobile-menu" className="public-menu-panel absolute inset-x-0 top-full z-50 border-b border-slate-200 bg-white px-4 py-4 shadow-lg lg:hidden">
             <nav className="mx-auto grid max-w-7xl" aria-label="Điều hướng di động">
               {links.map(([label, href]) => (
                 <Link key={href} href={href} onClick={() => setOpen(false)} className="flex min-h-11 items-center border-b border-slate-100 text-sm font-medium text-slate-700 last:border-b-0 hover:text-blue-700">

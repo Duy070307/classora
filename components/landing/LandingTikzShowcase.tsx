@@ -1,3 +1,7 @@
+"use client";
+
+import { useRef, useState } from "react";
+
 type VertexId = "S" | "A" | "B" | "C" | "D";
 type EdgeStyle = "solid" | "dashed";
 
@@ -82,19 +86,59 @@ export function LandingPyramidFigure() {
 }
 
 export function LandingTikzShowcase() {
+  const [activePanel, setActivePanel] = useState<"source" | "preview" | "code">("source");
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const tabs = [
+    ["source", "Ảnh nguồn"],
+    ["preview", "Bản xem trước"],
+    ["code", "Mã TikZ"],
+  ] as const;
+
+  function moveTab(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : event.key === "ArrowRight" ? (index + 1) % tabs.length : (index - 1 + tabs.length) % tabs.length;
+    setActivePanel(tabs[next][0]);
+    tabRefs.current[next]?.focus();
+  }
+
   return (
-    <div className="mt-10 grid overflow-hidden border border-slate-700 bg-slate-900 lg:grid-cols-3">
-      <div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r">
-        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">1 · Ảnh nguồn</p>
-        <div className="mt-4 flex min-h-64 items-center justify-center bg-slate-100"><LandingPyramidFigure /></div>
+    <div className="mt-10 overflow-hidden rounded-xl border border-slate-700 bg-slate-900" data-testid="tikz-comparison">
+      <div className="grid grid-cols-3 border-b border-slate-700 p-1.5 lg:hidden" role="tablist" aria-label="So sánh quy trình TikZ">
+        {tabs.map(([id, label], index) => (
+          <button
+            key={id}
+            ref={(node) => { tabRefs.current[index] = node; }}
+            id={`tikz-tab-${id}`}
+            type="button"
+            role="tab"
+            aria-selected={activePanel === id}
+            aria-controls={`tikz-panel-${id}`}
+            tabIndex={activePanel === id ? 0 : -1}
+            onClick={() => setActivePanel(id)}
+            onKeyDown={(event) => moveTab(event, index)}
+            className={`min-h-11 rounded-lg px-2 text-xs font-semibold transition duration-200 ${activePanel === id ? "bg-cyan-400 text-slate-950" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      <div className="border-b border-slate-700 p-5 lg:border-b-0 lg:border-r">
-        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">2 · Bản xem trước</p>
-        <div className="mt-4 flex min-h-64 items-center justify-center bg-white"><LandingPyramidFigure /></div>
-      </div>
-      <div className="min-w-0 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">3 · Mã TikZ</p>
-        <pre className="mt-4 min-h-64 overflow-x-auto bg-slate-950 p-4 text-xs leading-6 text-slate-300"><code>{LANDING_PYRAMID_TIKZ}</code></pre>
+      <div className="grid lg:grid-cols-3">
+        <div id="tikz-panel-source" role="tabpanel" aria-labelledby="tikz-tab-source" className={`border-b border-slate-700 p-5 lg:block lg:border-b-0 lg:border-r ${activePanel === "source" ? "block public-switch-panel" : "hidden"}`}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">1 · Ảnh nguồn</p>
+          <div className="mt-4 flex min-h-64 items-center justify-center bg-slate-100"><LandingPyramidFigure /></div>
+          <p className="mt-3 text-sm leading-6 text-slate-400">Ảnh đã cắt gọn, chỉ giữ lại hình cần nhận diện.</p>
+        </div>
+        <div id="tikz-panel-preview" role="tabpanel" aria-labelledby="tikz-tab-preview" className={`border-b border-slate-700 p-5 lg:block lg:border-b-0 lg:border-r ${activePanel === "preview" ? "block public-switch-panel" : "hidden"}`}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">2 · Bản xem trước</p>
+          <div className="mt-4 flex min-h-64 items-center justify-center bg-white"><LandingPyramidFigure /></div>
+          <p className="mt-3 text-sm leading-6 text-slate-400">Chỉnh điểm, nhãn và nét khuất trước khi xác nhận.</p>
+        </div>
+        <div id="tikz-panel-code" role="tabpanel" aria-labelledby="tikz-tab-code" className={`min-w-0 p-5 lg:block ${activePanel === "code" ? "block public-switch-panel" : "hidden"}`}>
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-300">3 · Mã TikZ</p>
+          <pre className="mt-4 min-h-64 overflow-x-auto bg-slate-950 p-4 text-xs leading-6 text-slate-300"><code>{LANDING_PYRAMID_TIKZ}</code></pre>
+          <p className="mt-3 text-sm leading-6 text-slate-400">Mã giữ đúng các cạnh khuất AD, DC và SD bằng nét đứt.</p>
+        </div>
       </div>
     </div>
   );

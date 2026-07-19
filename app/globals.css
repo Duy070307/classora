@@ -146,8 +146,14 @@ textarea {
 .soft-grid-bg { background-image: linear-gradient(rgba(37,99,235,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,.03) 1px, transparent 1px); background-size: 24px 24px; }
 .loading-dot { @apply h-1.5 w-1.5 rounded-full bg-blue-600; animation: loading-bounce 900ms ease-in-out infinite; }
 .motion-enter { animation: motion-enter 420ms cubic-bezier(.2,.8,.2,1) both; }
+.public-switch-panel { animation: public-panel-enter 220ms cubic-bezier(.2,.8,.2,1) both; }
+.public-menu-panel { animation: public-menu-enter 180ms ease-out both; }
+.public-interactive-row { will-change: transform, background-color; }
+.public-interactive-row:hover { transform: translateY(-1px); }
 @keyframes loading-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-4px); opacity: 1; } }
 @keyframes motion-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes public-panel-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes public-menu-enter { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
 ::selection { background: rgba(37,99,235,.18); color: #1e3a8a; }
 
@@ -212,6 +218,8 @@ button, a, input, select, textarea {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .public-switch-panel, .public-menu-panel { animation: none !important; }
+  .public-interactive-row:hover { transform: none; }
 }
 
 main {

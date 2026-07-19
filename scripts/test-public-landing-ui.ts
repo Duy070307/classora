@@ -27,7 +27,7 @@ const packageJson = source("package.json");
 assert.equal(count(hero, /href="\/dang-ky-dung-thu"/g), 1);
 assert.match(hero, /Đăng ký dùng thử/);
 assert.match(hero, /Giữ quyền kiểm soát ở từng bước/);
-assert.match(hero, /ProductWorkspacePreview/);
+assert.match(hero, /HeroProductVisual/);
 assert.match(hero, /Bản nháp luôn cần giáo viên rà soát/);
 
 // Landing không dùng bằng chứng xã hội hoặc số liệu không thể kiểm chứng.

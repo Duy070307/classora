@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Check, ClipboardCheck, LockKeyhole, UserCheck } from "lucide-react";
 import { BetaRequestForm } from "@/components/BetaRequestForm";
 import { BrandLockup } from "@/components/BrandLockup";
+import { AuthProductPreview } from "@/components/landing/PublicProductVisuals";
 
 export const metadata: Metadata = {
   title: "Đăng ký dùng thử SOẠN LAB",
@@ -11,15 +12,15 @@ export const metadata: Metadata = {
 
 export default function BetaRegistrationPage() {
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-6xl overflow-hidden border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,.08)]">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto min-h-screen max-w-7xl border-x border-slate-200 bg-white">
         <header className="flex min-h-16 items-center justify-between gap-4 border-b border-slate-200 px-5 sm:px-8">
           <BrandLockup href="/" priority />
           <Link href="/login" className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 hover:text-blue-700 hover:underline">Đăng nhập</Link>
         </header>
 
-        <div className="grid lg:grid-cols-[.72fr_1.28fr]">
-          <section className="relative overflow-hidden bg-slate-950 p-6 text-white sm:p-9 lg:p-10">
+        <div className="grid lg:grid-cols-[.74fr_1.26fr]">
+          <section className="relative order-2 overflow-hidden bg-slate-950 p-6 text-white sm:p-9 lg:order-1 lg:p-10">
             <div className="pointer-events-none absolute inset-0 soft-grid-bg opacity-[.08]" aria-hidden="true" />
             <div className="relative">
               <span className="inline-flex size-11 items-center justify-center border border-blue-400/30 bg-blue-500/10 text-blue-300"><UserCheck size={22} /></span>
@@ -37,10 +38,13 @@ export default function BetaRegistrationPage() {
                 <Check className="mt-0.5 shrink-0 text-blue-300" size={17} />
                 Thầy/cô sẽ nhận thông tin tiếp theo sau khi yêu cầu được xem xét.
               </p>
+              <div className="mt-9 [&_figcaption]:text-slate-300">
+                <AuthProductPreview />
+              </div>
             </div>
           </section>
 
-          <section className="min-w-0 p-5 sm:p-8 lg:p-10">
+          <section className="order-1 min-w-0 p-5 sm:p-8 lg:order-2 lg:p-10">
             <div className="mb-7 border-b border-slate-200 pb-5">
               <h2 className="text-2xl font-bold text-slate-950">Thông tin giáo viên</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">Các trường có dấu <span className="font-bold text-blue-700">*</span> là bắt buộc.</p>

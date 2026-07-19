@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check, Eye, EyeOff, FileText } from "lucide-react";
+import { Eye, EyeOff, FileText } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
+import { AuthProductPreview } from "@/components/landing/PublicProductVisuals";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function LoginContent() {
@@ -44,8 +45,8 @@ function LoginContent() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto grid min-h-[calc(100vh-2.5rem)] max-w-6xl overflow-hidden border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,.08)] sm:min-h-[calc(100vh-4rem)] lg:grid-cols-[1.08fr_.92fr]">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto grid min-h-screen max-w-7xl border-x border-slate-200 bg-white lg:grid-cols-[1.04fr_.96fr]">
         <section className="relative hidden overflow-hidden bg-slate-950 p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div className="pointer-events-none absolute inset-0 soft-grid-bg opacity-[.08]" aria-hidden="true" />
           <div className="relative">
@@ -58,17 +59,12 @@ function LoginContent() {
               Tiếp tục công việc với đề kiểm tra, giáo án, phiếu học tập, ngân hàng câu hỏi và tài liệu đã lưu.
             </p>
           </div>
-          <div className="relative border-t border-white/15 pt-6">
-            {["Công cụ theo từng nhiệm vụ", "Bản nháp có thể rà soát", "Xuất file để tiếp tục chỉnh sửa"].map((item) => (
-              <p key={item} className="mt-3 flex items-center gap-3 text-sm text-slate-200">
-                <Check size={16} className="text-blue-300" aria-hidden="true" />
-                {item}
-              </p>
-            ))}
+          <div className="relative mt-10 max-w-lg [&_figcaption]:text-slate-300">
+            <AuthProductPreview />
           </div>
         </section>
 
-        <section className="flex min-w-0 items-center px-5 py-8 sm:px-10 lg:px-12 xl:px-16">
+        <section className="flex min-w-0 items-center px-5 py-10 sm:px-10 lg:px-12 xl:px-16">
           <div className="mx-auto w-full max-w-md">
             <BrandLockup href="/" className="lg:hidden" priority />
             <div className="mt-9 flex size-11 items-center justify-center border border-blue-200 bg-blue-50 text-blue-700 lg:mt-0" aria-hidden="true">

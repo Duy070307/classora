@@ -52,10 +52,10 @@ export function BetaRequestForm() {
 
   if (success) {
     return (
-      <div className="border border-emerald-200 bg-emerald-50 p-6 text-center sm:p-8" role="status" aria-live="polite">
-        <CheckCircle2 className="mx-auto text-emerald-600" size={42} />
-        <h2 className="mt-4 text-xl font-bold text-emerald-950">Đăng ký đã được ghi nhận</h2>
-        <p className="mx-auto mt-3 max-w-xl leading-7 text-emerald-900">{success}</p>
+      <div className="border border-green-200 bg-green-50 p-6 text-center sm:p-8" role="status" aria-live="polite">
+        <CheckCircle2 className="mx-auto text-green-600" size={42} />
+        <h2 className="mt-4 text-xl font-bold text-green-950">Đăng ký đã được ghi nhận</h2>
+        <p className="mx-auto mt-3 max-w-xl leading-7 text-green-900">{success}</p>
         <button type="button" className="btn-secondary mt-6" onClick={() => setSuccess("")}>Gửi đăng ký khác</button>
       </div>
     );

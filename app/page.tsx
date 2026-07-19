@@ -6,10 +6,8 @@ import {
   Check,
   CheckCircle2,
   ClipboardCheck,
-  ClipboardList,
   Code2,
   Download,
-  FileCheck2,
   FileSpreadsheet,
   FileText,
   Layers3,
@@ -21,6 +19,8 @@ import {
 import { Navbar } from "@/components/Navbar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LandingTikzShowcase } from "@/components/landing/LandingTikzShowcase";
+import { HeroProductVisual, QuestionBankProductVisual } from "@/components/landing/PublicProductVisuals";
+import { AssessmentWorkflowStory, TeachingDocumentWorkflow } from "@/components/landing/PublicWorkflowStories";
 
 const description = "Tạo đề kiểm tra, giáo án, phiếu học tập, ma trận, lời giải và hình TikZ; rà soát, chỉnh sửa và xuất Word/PDF.";
 
@@ -52,12 +52,6 @@ const steps = [
   ["Xuất tài liệu hoàn chỉnh", "Tải file, in hoặc lưu lịch sử để dùng lại."],
 ] as const;
 
-const workflowGroups = [
-  ["Đánh giá", ["Tạo đề kiểm tra", "Ma trận & bảng đặc tả", "Kiểm tra chất lượng đề", "Lời giải & đáp án", "Trộn mã đề", "Phiếu trả lời", "Chấm bài"], "text-amber-700"],
-  ["Tài liệu dạy học", ["Giáo án", "Phiếu học tập", "Đề cương ôn tập"], "text-violet-700"],
-  ["Quản lý & tái sử dụng", ["Ngân hàng câu hỏi", "Lịch sử tài liệu", "Ngân hàng TikZ"], "text-blue-700"],
-] as const;
-
 const values = [
   [Layers3, "Có cấu trúc", "Mỗi công cụ có quy trình và trường nhập phù hợp với công việc giáo viên."],
   [ShieldCheck, "Có thể rà soát", "Giáo viên xem, sửa và xác nhận trước khi xuất tài liệu."],
@@ -73,7 +67,7 @@ export default function HomePage() {
       <section id="noi-dung-chinh" tabIndex={-1} className="relative scroll-mt-16 overflow-hidden border-b border-slate-200 bg-white focus:outline-none">
         <div className="pointer-events-none absolute inset-0 soft-grid-bg opacity-70" aria-hidden="true" />
         <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-blue-100/55 blur-3xl" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,.85fr)_minmax(620px,1.15fr)] lg:items-center lg:px-8 lg:py-24">
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:px-8 xl:grid-cols-[minmax(0,.85fr)_minmax(620px,1.15fr)] xl:items-center xl:py-24">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold text-blue-700">Bộ công cụ AI dành cho giáo viên Việt Nam</p>
             <h1 className="mt-4 text-4xl font-bold leading-[1.08] tracking-[-0.035em] text-slate-950 sm:text-5xl lg:text-[3.65rem]">
@@ -93,7 +87,7 @@ export default function HomePage() {
               Bản nháp luôn cần giáo viên rà soát trước khi sử dụng.
             </p>
           </div>
-          <ProductWorkspacePreview />
+          <HeroProductVisual />
         </div>
       </section>
 
@@ -108,7 +102,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="cach-hoat-dong" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section id="cach-hoat-dong" className="scroll-mt-20 bg-slate-50 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Quy trình làm việc" title="Một quy trình rõ ràng, không phải một ô chat trống" copy="SOẠN LAB tổ chức công việc từ cấu hình đầu vào đến bản xuất cuối cùng để giáo viên luôn biết mình đang ở bước nào." />
           <ol className="mt-10 grid border-y border-slate-200 md:grid-cols-2 lg:grid-cols-4">
@@ -123,25 +117,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-slate-200 bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section id="assessment-workflow" className="scroll-mt-20 border-y border-blue-100 bg-blue-50/40 px-4 py-16 sm:px-6 sm:py-20 lg:px-8" aria-labelledby="assessment-workflow-title">
         <div className="mx-auto max-w-7xl">
-          <SectionHeading eyebrow="Luồng tài liệu" title="Từ yêu cầu ban đầu đến tài liệu có thể sử dụng" copy="Các công cụ được nối theo công việc thật: tạo đề, kiểm tra, hoàn thiện đáp án, chuẩn bị mã đề và tiếp tục chấm bài." accentClass="text-amber-700" />
-          <div className="mt-10 grid overflow-hidden border border-slate-200 bg-slate-50 lg:grid-cols-[330px_minmax(0,1fr)]">
-            <div className="border-b border-slate-200 bg-white lg:border-b-0 lg:border-r">
-              {workflowGroups.map(([group, items, accent], groupIndex) => (
-                <div key={group} className="border-b border-slate-200 p-5 last:border-b-0">
-                  <p className={`text-xs font-semibold uppercase tracking-wide ${accent}`}>{group}</p>
-                  <div className="mt-3 space-y-1">
-                    {items.map((item, itemIndex) => <div key={item} className={`flex min-h-9 items-center gap-2 text-sm ${groupIndex === 0 && itemIndex === 0 ? "font-semibold text-amber-800" : "text-slate-600"}`}>{groupIndex === 0 && itemIndex === 0 ? <span className="h-5 w-0.5 bg-amber-500" /> : <span className="w-0.5" />}{item}</div>)}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <ExamDocumentMockup />
-          </div>
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium text-slate-600" aria-label="Quy trình đề kiểm tra">
-            {["Tạo đề", "Kiểm tra", "Lời giải", "Trộn mã", "Phiếu trả lời", "Chấm bài"].map((item, index) => <span key={item} className="inline-flex items-center gap-3">{index ? <ArrowRight className="text-slate-300" size={15} /> : null}{item}</span>)}
-          </div>
+          <SectionHeading id="assessment-workflow-title" eyebrow="Quy trình đánh giá" title="Một luồng xuyên suốt từ tạo đề đến chấm bài" copy="Chọn từng bước để xem phần giao diện giáo viên sẽ làm việc. Mỗi kết quả đều có điểm dừng để rà soát trước khi đi tiếp." accentClass="text-amber-700" />
+          <AssessmentWorkflowStory />
+        </div>
+      </section>
+
+      <section id="teaching-workflow" className="scroll-mt-20 bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8" aria-labelledby="teaching-workflow-title">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeading id="teaching-workflow-title" eyebrow="Tài liệu dạy học" title="Nhiều loại tài liệu, cùng một cách làm việc" copy="Chọn loại tài liệu để xem cấu trúc đầu ra. Nội dung được tổ chức theo nhiệm vụ thay vì năm công cụ rời rạc." accentClass="text-violet-700" />
+          <TeachingDocumentWorkflow />
         </div>
       </section>
 
@@ -159,14 +145,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section className="bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.78fr_1.22fr] lg:items-center">
           <SectionHeading eyebrow="Tái sử dụng nội dung" title="Tạo một lần, chỉnh sửa và dùng lại" copy="Câu hỏi và tài liệu đã xác nhận có thể được tìm lại, tổ chức thành bộ và đưa vào công việc tiếp theo." />
-          <QuestionBankMockup />
+          <QuestionBankProductVisual />
         </div>
       </section>
 
-      <section className="border-y border-slate-200 bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <section className="border-y border-slate-200 bg-slate-50 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div>
             <SectionHeading eyebrow="Xuất & tiếp tục chỉnh sửa" title="Xuất file để tiếp tục làm việc theo cách của thầy cô" copy="SOẠN LAB tạo bản nháp có thể tiếp tục chỉnh sửa, in hoặc lưu trữ. Bản học sinh và bản giáo viên được tách rõ ở các công cụ phù hợp." />
@@ -181,7 +167,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section className="bg-white px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Giá trị cốt lõi" title="Được thiết kế cho công việc thật của giáo viên" />
           <div className="mt-9 grid border-y border-slate-200 md:grid-cols-2 lg:grid-cols-4">
@@ -190,16 +176,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="dung-thu" className="scroll-mt-20 border-y border-blue-200 bg-blue-50/70 px-4 py-14 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+      <section id="dung-thu" className="scroll-mt-20 border-y border-blue-200 bg-blue-50/70 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
           <div>
             <p className="text-sm font-semibold text-blue-700">Thử nghiệm giới hạn</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Đăng ký dùng thử SOẠN LAB</h2>
-            <p className="mt-3 max-w-3xl leading-7 text-slate-600">Tài khoản được cấp thủ công để nhóm phát triển có thể tiếp nhận phản hồi và cải thiện sản phẩm. Gửi yêu cầu không đồng nghĩa tài khoản được tạo ngay lập tức.</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/dang-ky-dung-thu" className="btn-primary">Gửi yêu cầu dùng thử</Link>
-            <Link href="/login" className="btn-secondary">Đã có tài khoản? Đăng nhập</Link>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Quyền truy cập được xem xét thủ công</h2>
+            <p className="mt-3 max-w-4xl leading-7 text-slate-600">SOẠN LAB đang mở thử nghiệm giới hạn để tiếp nhận phản hồi từ giáo viên. Gửi yêu cầu không đồng nghĩa tài khoản được tạo ngay lập tức.</p>
           </div>
         </div>
       </section>
@@ -219,35 +201,6 @@ export default function HomePage() {
   );
 }
 
-function SectionHeading({ eyebrow, title, copy, accentClass = "text-blue-700" }: { eyebrow: string; title: string; copy?: string; accentClass?: string }) {
-  return <div className="max-w-3xl"><p className={`text-sm font-semibold ${accentClass}`}>{eyebrow}</p><h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">{title}</h2>{copy ? <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">{copy}</p> : null}</div>;
-}
-
-function ProductWorkspacePreview() {
-  return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-[0_24px_70px_rgba(15,23,42,.14)]" aria-label="Minh họa giao diện tạo đề kiểm tra của SOẠN LAB">
-      <div className="flex h-10 items-center gap-2 border-b border-slate-200 bg-slate-50 px-4"><span className="size-2.5 rounded-full bg-slate-300" /><span className="size-2.5 rounded-full bg-slate-300" /><span className="size-2.5 rounded-full bg-blue-400" /><span className="ml-3 truncate text-[11px] font-medium text-slate-500">SOẠN LAB · Tạo đề kiểm tra</span></div>
-      <div className="grid min-h-[430px] sm:grid-cols-[175px_minmax(0,1fr)]">
-        <div className="hidden border-r border-slate-200 bg-slate-950 p-4 text-slate-300 sm:block">
-          <p className="text-xs font-bold tracking-wide text-white">SOẠN LAB</p>
-          <div className="mt-6 space-y-1 text-xs">{["Trang tổng quan", "Tạo đề kiểm tra", "Ma trận & đặc tả", "Ngân hàng câu hỏi", "Lịch sử"].map((item, index) => <div key={item} className={`flex min-h-9 items-center border-l-2 px-3 ${index === 1 ? "border-blue-400 bg-white/10 text-white" : "border-transparent"}`}>{item}</div>)}</div>
-        </div>
-        <div className="min-w-0 bg-slate-100 p-3 sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-semibold text-blue-700">ĐÁNH GIÁ & KIỂM TRA</p><h2 className="mt-1 text-lg font-semibold text-slate-950 sm:text-xl">Tạo đề kiểm tra</h2></div><span className="text-xs font-medium text-slate-500">Đã lưu bản nháp</span></div>
-          <div className="mt-4 grid gap-3 md:grid-cols-[190px_minmax(0,1fr)]">
-            <div className="border border-slate-200 bg-white p-3 text-xs text-slate-600"><p className="font-semibold text-slate-900">Thiết lập đề</p>{["Môn học: Toán", "Lớp: 12", "Thời gian: 90 phút", "Cấu trúc: 3 phần"].map((row) => <p key={row} className="mt-3 border-b border-slate-100 pb-2">{row}</p>)}<div className="mt-4 h-9 bg-blue-600 text-center font-semibold leading-9 text-white">Tạo đề kiểm tra</div></div>
-            <div className="min-h-[300px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6"><div className="grid grid-cols-2 gap-4 text-center text-[9px] font-medium text-slate-700"><div>SỞ GIÁO DỤC VÀ ĐÀO TẠO</div><div>ĐỀ KIỂM TRA HỌC KỲ</div></div><div className="mx-auto mt-5 h-px w-24 bg-slate-700" /><h3 className="mt-5 text-center text-sm font-bold text-slate-950">MÔN: TOÁN 12</h3><p className="mt-2 text-center text-[10px] text-slate-500">Thời gian làm bài: 90 phút</p><div className="mt-6 space-y-3 text-[10px] leading-4 text-slate-700"><p><strong>PHẦN I.</strong> Câu trắc nghiệm nhiều phương án lựa chọn.</p><p><strong>Câu 1.</strong> Cho hàm số có bảng biến thiên như hình dưới. Mệnh đề nào đúng?</p><div className="grid grid-cols-2 gap-2"><span>A. Hàm số đồng biến</span><span>B. Hàm số nghịch biến</span><span>C. Có hai cực trị</span><span>D. Không có cực trị</span></div><p><strong>PHẦN II.</strong> Câu trắc nghiệm đúng sai.</p></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ExamDocumentMockup() {
-  return <div className="min-w-0 p-4 sm:p-7"><div className="mx-auto max-w-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8"><div className="flex items-center justify-between border-b border-slate-200 pb-4"><div><p className="text-xs font-semibold text-blue-700">ĐỀ KIỂM TRA · BẢN NHÁP</p><h3 className="mt-1 text-xl font-semibold text-slate-950">Đề kiểm tra học kỳ — Toán 12</h3></div><FileCheck2 className="text-blue-700" size={24} /></div><div className="mt-5 grid gap-5 md:grid-cols-[1fr_220px]"><div className="space-y-4 text-sm leading-6 text-slate-700"><p><strong>PHẦN I.</strong> Trắc nghiệm nhiều phương án lựa chọn</p>{[1,2,3].map((item) => <div key={item} className="border-b border-slate-100 pb-3"><strong>Câu {item}.</strong> Nội dung câu hỏi được tổ chức theo cấu trúc đã chọn.</div>)}</div><aside className="border-l border-slate-200 pl-4 text-sm"><p className="font-semibold text-slate-950">Kiểm tra trước khi xuất</p>{["Đủ số câu", "Đáp án đã tách", "Ma trận hợp lệ", "Cần giáo viên rà soát"].map((row, index) => <p key={row} className="mt-3 flex gap-2 text-slate-600"><span className={`mt-1 size-2 rounded-full ${index === 3 ? "bg-amber-500" : "bg-emerald-500"}`} />{row}</p>)}</aside></div></div></div>;
-}
-
-function QuestionBankMockup() {
-  return <div className="overflow-hidden border border-slate-200 bg-white shadow-sm"><div className="flex flex-wrap items-center gap-3 border-b border-slate-200 p-4"><ClipboardList className="text-blue-700" size={20} /><strong className="text-slate-950">Ngân hàng câu hỏi</strong><span className="ml-auto text-xs text-slate-500">Tìm kiếm · Bộ câu hỏi · Lịch sử</span></div><div className="grid sm:grid-cols-[170px_minmax(0,1fr)]"><aside className="hidden border-r border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 sm:block"><p className="font-semibold text-slate-900">Bộ câu hỏi</p>{["Tất cả câu hỏi", "Toán 12", "Ôn tập học kỳ"].map((item, index) => <p key={item} className={`mt-3 ${index === 1 ? "font-semibold text-blue-700" : ""}`}>{item}</p>)}</aside><div className="min-w-0 p-4"><div className="h-10 border border-slate-200 bg-slate-50 px-3 text-sm leading-10 text-slate-400">Tìm nội dung, đáp án, chủ đề…</div><div className="mt-3 border-t border-slate-200">{["Khảo sát sự biến thiên của hàm số", "Giá trị lớn nhất và nhỏ nhất", "Tiệm cận của đồ thị hàm số"].map((item, index) => <div key={item} className="flex gap-3 border-b border-slate-200 py-4"><span className="text-xs font-semibold text-blue-700">0{index+1}</span><div><p className="text-sm font-semibold text-slate-900">{item}</p><p className="mt-1 text-xs text-slate-500">Toán · Lớp 12 · Có đáp án và lời giải</p></div></div>)}</div></div></div></div>;
+function SectionHeading({ id, eyebrow, title, copy, accentClass = "text-blue-700" }: { id?: string; eyebrow: string; title: string; copy?: string; accentClass?: string }) {
+  return <div className="max-w-3xl"><p className={`text-sm font-semibold ${accentClass}`}>{eyebrow}</p><h2 id={id} className="mt-3 text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">{title}</h2>{copy ? <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">{copy}</p> : null}</div>;
 }
