@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, ClipboardCheck, LockKeyhole, UserCheck } from "lucide-react";
+import { ClipboardCheck, MailCheck, UserCheck } from "lucide-react";
 import { BetaRequestForm } from "@/components/BetaRequestForm";
 import { BrandLockup } from "@/components/BrandLockup";
 
 export const metadata: Metadata = {
   title: "Đăng ký dùng thử SOẠN LAB",
-  description: "Gửi thông tin để được xem xét cấp tài khoản dùng thử SOẠN LAB dành cho giáo viên.",
+  description: "Gửi thông tin đăng ký trải nghiệm SOẠN LAB dành cho giáo viên.",
 };
 
 export default function BetaRegistrationPage() {
@@ -22,20 +22,16 @@ export default function BetaRegistrationPage() {
           <section className="order-2 border-t border-blue-200 bg-blue-50/70 p-6 text-slate-950 sm:p-9 lg:order-1 lg:border-r lg:border-t-0 lg:p-10" data-testid="trial-information-panel">
             <div>
               <span className="inline-flex size-11 items-center justify-center border border-blue-200 bg-white text-blue-700"><UserCheck size={22} /></span>
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Thử nghiệm giới hạn</p>
+              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Trải nghiệm dành cho giáo viên</p>
               <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Đăng ký dùng thử SOẠN LAB</h1>
               <p className="mt-5 leading-7 text-slate-600">
-                Gửi thông tin để nhóm phát triển xem xét nhu cầu và cấp quyền truy cập phù hợp cho giáo viên.
+                Gửi thông tin để đăng ký trải nghiệm các công cụ soạn và rà soát tài liệu dành cho giáo viên.
               </p>
               <div className="mt-8 border-t border-blue-200 pt-5">
-                <Info icon={ClipboardCheck} text="Thông tin giúp SOẠN LAB hiểu công việc thầy/cô cần hỗ trợ." />
-                <Info icon={UserCheck} text="Mỗi yêu cầu được quản trị viên xem xét thủ công trước khi cấp tài khoản." />
-                <Info icon={LockKeyhole} text="Gửi yêu cầu không đồng nghĩa với việc tài khoản được tạo ngay lập tức." />
+                <Info icon={ClipboardCheck} text="Điền thông tin và nhu cầu sử dụng của thầy/cô." />
+                <Info icon={UserCheck} text="Sau khi gửi, thầy/cô vui lòng chờ quản trị viên duyệt." />
+                <Info icon={MailCheck} text="Thông tin tài khoản sẽ được gửi khi yêu cầu được chấp nhận." />
               </div>
-              <p className="mt-8 flex gap-3 border-l-2 border-green-600 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
-                <Check className="mt-0.5 shrink-0 text-green-700" size={17} />
-                Thầy/cô sẽ nhận thông tin tiếp theo sau khi yêu cầu được xem xét.
-              </p>
             </div>
           </section>
 

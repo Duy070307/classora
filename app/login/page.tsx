@@ -82,8 +82,8 @@ function LoginContent() {
             <button className="btn-primary min-h-12 w-full" disabled={loading}>{loading ? "Đang đăng nhập..." : supabase ? "Đăng nhập" : "Tiếp tục sử dụng"}</button>
           </form>
 
-          <div className="mt-6 border-l-2 border-blue-600 bg-white px-4 py-3 text-sm leading-6 text-slate-600">
-            SOẠN LAB đang mở thử nghiệm giới hạn. Yêu cầu truy cập được xem xét thủ công trước khi cấp tài khoản.
+          <div className="mt-6 border-l-2 border-blue-600 bg-blue-50/60 px-4 py-3 text-sm leading-6 text-slate-600">
+            Sau khi gửi yêu cầu, thầy/cô vui lòng chờ quản trị viên duyệt tài khoản.
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold">

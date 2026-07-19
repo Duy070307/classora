@@ -25,16 +25,17 @@ assert.match(lockup, /export function BrandLockup/);
 assert.match(lockup, /"default" \| "compact" \| "inverse" \| "iconOnly"/);
 assert.match(lockup, /BRAND_SUBTITLE = "Bộ công cụ hỗ trợ giáo viên"/);
 assert.match(lockup, /BRAND_ACCESSIBLE_NAME = `SOẠN LAB – \$\{BRAND_SUBTITLE\}`/);
-assert.match(lockup, /src="\/brand\/soan-lab-mark\.png"/);
+assert.match(lockup, /src="\/brand\/soan-lab-mark\.svg"/);
 
-// Mark 32px, một container, không shadow/ring/khung trang trí lồng thêm.
-assert.match(lockup, /className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-blue-200 bg-blue-50"/);
-assert.match(lockup, /className="size-6 object-contain"/);
+// Mark vector có kích thước rõ theo ngữ cảnh, không có khung trang trí lồng thêm.
+assert.match(lockup, /iconOnly \? "size-8" : compact \? "size-9" : "size-10"/);
+assert.match(lockup, /className=\{`\$\{iconSize\} shrink-0 object-contain`\}/);
 assert.doesNotMatch(lockup, /shadow|ring-white|absolute inset-x|top-1 h-px/);
 
 // Text không wrap; compact chỉ ẩn subtitle dưới ngưỡng được định nghĩa.
-assert.match(lockup, /h-10 min-w-0 items-center gap-2\.5 whitespace-nowrap/);
-assert.match(lockup, /text-\[15px\][^\n]*whitespace-nowrap|whitespace-nowrap[^\n]*text-\[15px\]/);
+assert.match(lockup, /h-11 min-w-0 items-center gap-2\.5 whitespace-nowrap/);
+assert.match(lockup, /text-\[16px\][^\n]*whitespace-nowrap|whitespace-nowrap[^\n]*text-\[16px\]/);
+assert.match(lockup, /text-xs font-medium leading-4/);
 assert.match(lockup, /max-\[339px\]:hidden/);
 
 // Icon-only có tên truy cập và tooltip; link có focus state rõ.
@@ -51,7 +52,7 @@ assert.match(sidebar, /min-h-16 items-center[^\n]*px-3 py-2/);
 assert.doesNotMatch(sidebar, /BrandLogo|showSubtitle/);
 
 // Footer và vùng tối dùng inverse trực tiếp, không có capsule trắng bao ngoài.
-assert.match(footer, /bg-slate-950/);
+assert.match(footer, /bg-\[#1E3A5F\]/);
 assert.match(footer, /<BrandLockup variant="inverse" href="\/" \/>/);
 assert.match(login, /<BrandLockup href="\/" priority \/>/);
 assert.doesNotMatch(login, /variant="inverse"|bg-slate-950/);

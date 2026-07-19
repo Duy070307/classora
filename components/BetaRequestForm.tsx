@@ -90,6 +90,9 @@ export function BetaRequestForm() {
         <textarea className="form-field mt-2 min-h-24 resize-y" value={form.note} onChange={(event) => update("note", event.target.value)} maxLength={1200} />
       </Field>
       {error ? <div className="border border-red-200 bg-red-50 p-4 text-sm font-semibold leading-6 text-red-700" role="alert" aria-live="assertive">{error}</div> : null}
+      <p className="max-w-2xl text-sm leading-6 text-slate-600">
+        Sau khi gửi, thầy/cô vui lòng chờ quản trị viên duyệt. Thông tin tài khoản sẽ được gửi khi yêu cầu được chấp nhận.
+      </p>
       <button className="btn-primary min-h-12 w-full sm:w-auto sm:justify-self-start" disabled={loading}>
         <Send size={17} />
         {loading ? "Đang gửi đăng ký..." : "Gửi đăng ký dùng thử"}

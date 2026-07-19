@@ -65,10 +65,10 @@ for (const publicSource of [landing, visuals, workflows, tikz, login, trial]) {
   assert.doesNotMatch(publicSource, /testimonial|khách hàng nói gì|10\.000|99%|4\.9\/5/i);
 }
 
-// CTA chỉ xuất hiện ở hero và final CTA; khối thử nghiệm chỉ giải thích xét duyệt thủ công.
+// CTA chỉ xuất hiện ở hero và final CTA; thông điệp duyệt tài khoản nằm gọn gần CTA.
 assert.equal(count(landing, /href="\/dang-ky-dung-thu"/g), 2);
-assert.match(landing, /Quyền truy cập được xem xét thủ công/);
-assert.match(landing, /không đồng nghĩa tài khoản được tạo ngay lập tức/);
+assert.doesNotMatch(landing, /Quyền truy cập được xem xét thủ công/);
+assert.match(landing, /Sau khi gửi yêu cầu, thầy\/cô vui lòng chờ quản trị viên duyệt tài khoản/);
 
 // Motion ngắn, không autoplay và bị vô hiệu hóa khi người dùng giảm chuyển động.
 assert.match(globals, /public-panel-enter 220ms/);
@@ -96,6 +96,7 @@ assert.match(login, /autoComplete="current-password"/);
 assert.match(trial, /data-testid="trial-information-panel"/);
 assert.match(trial, /bg-blue-50\/70/);
 assert.doesNotMatch(trial, /AuthProductPreview|bg-slate-950|text-white/);
+assert.match(trialForm, /Sau khi gửi, thầy\/cô vui lòng chờ quản trị viên duyệt/);
 assert.match(trial, /order-2[\s\S]*lg:order-1/);
 assert.match(trialForm, /fetch\("\/api\/beta-request"/);
 assert.match(trialForm, /method: "POST"/);

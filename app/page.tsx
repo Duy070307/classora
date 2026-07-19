@@ -131,16 +131,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="tikz" className="scroll-mt-20 bg-slate-950 px-4 py-16 text-white sm:px-6 sm:py-24 lg:px-8">
+      <section id="tikz" className="scroll-mt-20 border-y border-cyan-100 bg-cyan-50 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold text-cyan-300">Hình học &amp; trực quan</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] sm:text-4xl">Biến hình ảnh thành mã TikZ có thể chỉnh sửa</h2>
-            <p className="mt-4 text-base leading-8 text-slate-300">Tải ảnh hình học, đồ thị hoặc sơ đồ. SOẠN LAB nhận dạng cấu trúc, dựng lại hình và cho phép giáo viên rà soát mã trước khi sử dụng.</p>
+            <p className="text-sm font-semibold text-cyan-700">Hình học &amp; trực quan</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl">Biến hình ảnh thành mã TikZ có thể chỉnh sửa</h2>
+            <p className="mt-4 text-base leading-8 text-slate-600">Tải ảnh hình học, đồ thị hoặc sơ đồ. SOẠN LAB nhận dạng cấu trúc, dựng lại hình và cho phép giáo viên rà soát mã trước khi sử dụng.</p>
           </div>
           <LandingTikzShowcase />
-          <div className="mt-7 grid divide-y divide-slate-800 border-y border-slate-800 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
-            {["Chỉnh điểm và nhãn", "Kiểm tra nét khuất", "Sao chép mã", "Xuất SVG, PNG, TEX", "Lưu vào Ngân hàng TikZ"].map((item) => <p key={item} className="flex min-h-14 items-center gap-2 px-3 text-sm text-slate-300 first:pl-0"><Check className="shrink-0 text-cyan-400" size={16} />{item}</p>)}
+          <div className="mt-7 grid divide-y divide-blue-200 border-y border-blue-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-5">
+            {["Chỉnh điểm và nhãn", "Kiểm tra nét khuất", "Sao chép mã", "Xuất SVG, PNG, TEX", "Lưu vào Ngân hàng TikZ"].map((item) => <p key={item} className="flex min-h-14 items-center gap-2 px-3 text-sm text-slate-700 first:pl-0"><Check className="shrink-0 text-cyan-700" size={16} />{item}</p>)}
           </div>
         </div>
       </section>
@@ -176,23 +176,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="dung-thu" className="scroll-mt-20 border-y border-blue-200 bg-blue-50/70 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div>
-            <p className="text-sm font-semibold text-blue-700">Thử nghiệm giới hạn</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">Quyền truy cập được xem xét thủ công</h2>
-            <p className="mt-3 max-w-4xl leading-7 text-slate-600">SOẠN LAB đang mở thử nghiệm giới hạn để tiếp nhận phản hồi từ giáo viên. Gửi yêu cầu không đồng nghĩa tài khoản được tạo ngay lập tức.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-4 py-16 text-center sm:px-6 sm:py-20">
+      <section id="dung-thu" className="scroll-mt-20 border-t border-slate-200 bg-white px-4 py-16 text-center sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">Dành ít thời gian hơn cho việc lặp lại.<br />Dành nhiều thời gian hơn cho việc dạy.</h2>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/dang-ky-dung-thu" className="btn-primary min-h-12 px-5">Đăng ký dùng thử</Link>
             <Link href="/login" className="btn-secondary min-h-12 px-5">Đăng nhập</Link>
           </div>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-slate-600">Sau khi gửi yêu cầu, thầy/cô vui lòng chờ quản trị viên duyệt tài khoản.</p>
         </div>
       </section>
 

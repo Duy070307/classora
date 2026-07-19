@@ -78,13 +78,13 @@ assert.match(login, /aria-label=\{showPassword \? "Ẩn mật khẩu" : "Hiện 
 assert.match(login, /role="alert" aria-live="assertive"/);
 assert.match(login, /href="\/dang-ky-dung-thu"/);
 
-// Đăng ký thử nghiệm: hành vi gửi không đổi và không ngụ ý cấp tài khoản tức thời.
+// Đăng ký thử nghiệm: hành vi gửi không đổi và có thông điệp duyệt ngắn gọn.
 assert.match(trialForm, /fetch\("\/api\/beta-request"/);
 assert.match(trialForm, /method: "POST"/);
 assert.match(trialForm, /role="status" aria-live="polite"/);
 assert.match(trialForm, /role="alert" aria-live="assertive"/);
-assert.match(trial, /xem xét thủ công/);
-assert.match(trial, /không đồng nghĩa với việc tài khoản được tạo ngay lập tức/);
+assert.doesNotMatch(trial, /xem xét thủ công|không đồng nghĩa với việc tài khoản được tạo ngay lập tức/);
+assert.match(trialForm, /Sau khi gửi, thầy\/cô vui lòng chờ quản trị viên duyệt/);
 assert.match(trial, /href="\/login"/);
 
 // Bảo trì và footer: dùng thông điệp quản trị, giữ lối ra an toàn và liên kết thật.

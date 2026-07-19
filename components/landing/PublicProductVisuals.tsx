@@ -20,7 +20,7 @@ function ExamGeneratorFrame() {
       variant="browser"
     >
       <div className="grid min-h-[410px] sm:grid-cols-[168px_minmax(0,1fr)]">
-        <aside className="hidden border-r border-slate-800 bg-slate-950 p-4 text-slate-300 sm:block" aria-label="Điều hướng minh họa">
+        <aside className="hidden border-r border-blue-700 bg-blue-800 p-4 text-blue-100 sm:block" aria-label="Điều hướng minh họa">
           <p className="text-xs font-bold tracking-wide text-white">SOẠN LAB</p>
           <div className="mt-6 space-y-1 text-xs">
             {["Trang tổng quan", "Tạo đề kiểm tra", "Ma trận & đặc tả", "Ngân hàng câu hỏi", "Lịch sử"].map((item, index) => (
@@ -127,7 +127,7 @@ function AnswerSheetPreview() {
 }
 
 function GradingPreview() {
-  return <div className="grid gap-5 p-5 md:grid-cols-[1fr_220px]"><div>{["Câu 01 · C", "Câu 02 · A", "Câu 03 · D", "Câu 04 · B"].map((item, index) => <p key={item} className="flex items-center justify-between border-b border-slate-200 py-3 text-sm text-slate-700"><span>{item}</span><span className={index === 2 ? "text-amber-700" : "text-green-700"}>{index === 2 ? "Cần xác nhận" : "Đã khớp"}</span></p>)}</div><aside className="bg-slate-950 p-5 text-white"><p className="text-xs text-slate-300">Điểm tạm tính</p><p className="mt-2 text-4xl font-bold">8,25</p><p className="mt-4 text-xs leading-5 text-slate-300">Giáo viên xác nhận trước khi lưu kết quả.</p></aside></div>;
+  return <div className="grid gap-5 p-5 md:grid-cols-[1fr_220px]"><div>{["Câu 01 · C", "Câu 02 · A", "Câu 03 · D", "Câu 04 · B"].map((item, index) => <p key={item} className="flex items-center justify-between border-b border-slate-200 py-3 text-sm text-slate-700"><span>{item}</span><span className={index === 2 ? "text-amber-700" : "text-green-700"}>{index === 2 ? "Cần xác nhận" : "Đã khớp"}</span></p>)}</div><aside className="bg-blue-800 p-5 text-white"><p className="text-xs text-blue-100">Điểm tạm tính</p><p className="mt-2 text-4xl font-bold">8,25</p><p className="mt-4 text-xs leading-5 text-blue-100">Giáo viên xác nhận trước khi lưu kết quả.</p></aside></div>;
 }
 
 const teachingCopy: Record<TeachingVisualId, { title: string; caption: string }> = {
