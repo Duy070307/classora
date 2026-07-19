@@ -232,8 +232,8 @@ function Content({
             );
           })}
         </nav>
-        <div className="border-t border-slate-100 bg-slate-50/80 p-4">
-          <AccountPanel />
+        <div className="border-t border-slate-100 bg-slate-50/80 p-3">
+          <AccountPanel onNavigate={onClose} />
         </div>
       </aside>
       <FeedbackWidget />
