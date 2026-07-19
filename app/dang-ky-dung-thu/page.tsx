@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Check, ClipboardCheck, LockKeyhole, UserCheck } from "lucide-react";
 import { BetaRequestForm } from "@/components/BetaRequestForm";
 import { BrandLockup } from "@/components/BrandLockup";
-import { AuthProductPreview } from "@/components/landing/PublicProductVisuals";
 
 export const metadata: Metadata = {
   title: "Đăng ký dùng thử SOẠN LAB",
@@ -20,27 +19,23 @@ export default function BetaRegistrationPage() {
         </header>
 
         <div className="grid lg:grid-cols-[.74fr_1.26fr]">
-          <section className="relative order-2 overflow-hidden bg-slate-950 p-6 text-white sm:p-9 lg:order-1 lg:p-10">
-            <div className="pointer-events-none absolute inset-0 soft-grid-bg opacity-[.08]" aria-hidden="true" />
-            <div className="relative">
-              <span className="inline-flex size-11 items-center justify-center border border-blue-400/30 bg-blue-500/10 text-blue-300"><UserCheck size={22} /></span>
-              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-blue-300">Thử nghiệm giới hạn</p>
+          <section className="order-2 border-t border-blue-200 bg-blue-50/70 p-6 text-slate-950 sm:p-9 lg:order-1 lg:border-r lg:border-t-0 lg:p-10" data-testid="trial-information-panel">
+            <div>
+              <span className="inline-flex size-11 items-center justify-center border border-blue-200 bg-white text-blue-700"><UserCheck size={22} /></span>
+              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Thử nghiệm giới hạn</p>
               <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Đăng ký dùng thử SOẠN LAB</h1>
-              <p className="mt-5 leading-7 text-slate-300">
+              <p className="mt-5 leading-7 text-slate-600">
                 Gửi thông tin để nhóm phát triển xem xét nhu cầu và cấp quyền truy cập phù hợp cho giáo viên.
               </p>
-              <div className="mt-8 border-t border-white/15 pt-5">
+              <div className="mt-8 border-t border-blue-200 pt-5">
                 <Info icon={ClipboardCheck} text="Thông tin giúp SOẠN LAB hiểu công việc thầy/cô cần hỗ trợ." />
                 <Info icon={UserCheck} text="Mỗi yêu cầu được quản trị viên xem xét thủ công trước khi cấp tài khoản." />
                 <Info icon={LockKeyhole} text="Gửi yêu cầu không đồng nghĩa với việc tài khoản được tạo ngay lập tức." />
               </div>
-              <p className="mt-8 flex gap-3 border-l-2 border-blue-400 pl-4 text-sm leading-6 text-slate-300">
-                <Check className="mt-0.5 shrink-0 text-blue-300" size={17} />
+              <p className="mt-8 flex gap-3 border-l-2 border-green-600 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
+                <Check className="mt-0.5 shrink-0 text-green-700" size={17} />
                 Thầy/cô sẽ nhận thông tin tiếp theo sau khi yêu cầu được xem xét.
               </p>
-              <div className="mt-9 [&_figcaption]:text-slate-300">
-                <AuthProductPreview />
-              </div>
             </div>
           </section>
 
@@ -58,5 +53,5 @@ export default function BetaRegistrationPage() {
 }
 
 function Info({ icon: Icon, text }: { icon: typeof ClipboardCheck; text: string }) {
-  return <div className="flex gap-3 border-b border-white/10 py-4 last:border-b-0"><Icon className="mt-0.5 shrink-0 text-blue-300" size={18} /><p className="text-sm leading-6 text-slate-200">{text}</p></div>;
+  return <div className="flex gap-3 border-b border-blue-200/80 py-4 last:border-b-0"><Icon className="mt-0.5 shrink-0 text-blue-700" size={18} /><p className="text-sm leading-6 text-slate-600">{text}</p></div>;
 }

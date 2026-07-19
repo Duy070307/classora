@@ -6,26 +6,8 @@ export type TeachingVisualId = "lesson-plan" | "worksheet" | "slides" | "review-
 
 export function HeroProductVisual() {
   return (
-    <div className="relative min-w-0 pb-0 xl:pb-10" data-testid="hero-product-visual">
+    <div className="min-w-0" data-testid="hero-product-visual">
       <ExamGeneratorFrame />
-      <ProductScreenshotFrame
-        title="Kiểm tra trước khi xuất"
-        caption="Rà soát cấu trúc và tách rõ nội dung học sinh, giáo viên."
-        variant="compact"
-        className="absolute bottom-24 -left-8 hidden w-72 xl:block"
-      >
-        <div className="bg-white p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Kiểm tra đề</p>
-          <div className="mt-3 space-y-2">
-            {["Đủ số câu theo từng phần", "Đáp án được tách riêng", "Ma trận khớp cấu trúc"].map((item) => (
-              <p key={item} className="flex items-center gap-2 text-xs text-slate-700">
-                <CheckCircle2 className="shrink-0 text-green-600" size={15} aria-hidden="true" />
-                {item}
-              </p>
-            ))}
-          </div>
-        </div>
-      </ProductScreenshotFrame>
     </div>
   );
 }
@@ -34,7 +16,7 @@ function ExamGeneratorFrame() {
   return (
     <ProductScreenshotFrame
       title="Tạo đề kiểm tra"
-      caption="Thiết lập cấu trúc đề và số câu theo từng phần."
+      caption="Thiết lập cấu trúc, rà soát nội dung và xuất tài liệu trong cùng một quy trình."
       variant="browser"
     >
       <div className="grid min-h-[410px] sm:grid-cols-[168px_minmax(0,1fr)]">

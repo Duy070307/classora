@@ -30,11 +30,13 @@ for (const variant of ["browser", "workspace", "comparison", "compact"]) assert.
 assert.match(frame, /<figcaption/);
 assert.match(frame, /data-product-screenshot/);
 
-// Hero chỉ có một hình chính trên mobile; crop phụ chỉ xuất hiện ở màn rộng.
+// Hero dùng đúng một khung sản phẩm, không có caption hoặc panel tuyệt đối bị tách khỏi giao diện.
 assert.equal(count(landing, /<HeroProductVisual \/>/g), 1);
 assert.match(visuals, /data-testid="hero-product-visual"/);
-assert.match(visuals, /hidden w-72 xl:block/);
-assert.match(visuals, /Thiết lập cấu trúc đề và số câu theo từng phần/);
+const heroVisual = visuals.slice(visuals.indexOf("export function HeroProductVisual"), visuals.indexOf("function ExamGeneratorFrame"));
+assert.equal(count(heroVisual, /<ProductScreenshotFrame/g), 0, "Hero wrapper không được thêm frame nổi thứ hai");
+assert.doesNotMatch(heroVisual, /\babsolute\b|(?:^|\s)-(?:left|right|top|bottom|translate)-|AuthProductPreview/);
+assert.match(visuals, /Thiết lập cấu trúc, rà soát nội dung và xuất tài liệu trong cùng một quy trình/);
 assert.doesNotMatch(landing, /device-frame|perspective-|rotate-[xy]|autoplay/);
 
 // Luồng đánh giá là tab tương tác bảy bước và chỉ hiển thị một visual đang chọn.
@@ -82,10 +84,18 @@ assert.match(navbar, /event\.key !== "Tab"/);
 assert.match(navbar, /document\.body\.style\.overflow = "hidden"/);
 assert.match(navbar, /trigger\?\.focus/);
 
-// Login/trial cùng dùng visual hệ thống nhưng không thay đổi logic biểu mẫu.
-assert.match(login, /<AuthProductPreview \/>/);
+// Login tập trung vào biểu mẫu; trang đăng ký dùng panel sáng và cả hai giữ nguyên logic.
+assert.match(login, /data-testid="login-form-container"/);
+assert.match(login, /max-w-\[440px\]/);
+assert.match(login, /flex min-h-screen items-center justify-center/);
+assert.doesNotMatch(login, /AuthProductPreview|bg-slate-950|variant="inverse"/);
 assert.match(login, /signInWithPassword/);
-assert.match(trial, /<AuthProductPreview \/>/);
+assert.match(login, /showPassword \? "text" : "password"/);
+assert.match(login, /autoComplete="email"/);
+assert.match(login, /autoComplete="current-password"/);
+assert.match(trial, /data-testid="trial-information-panel"/);
+assert.match(trial, /bg-blue-50\/70/);
+assert.doesNotMatch(trial, /AuthProductPreview|bg-slate-950|text-white/);
 assert.match(trial, /order-2[\s\S]*lg:order-1/);
 assert.match(trialForm, /fetch\("\/api\/beta-request"/);
 assert.match(trialForm, /method: "POST"/);

@@ -53,7 +53,8 @@ assert.doesNotMatch(sidebar, /BrandLogo|showSubtitle/);
 // Footer và vùng tối dùng inverse trực tiếp, không có capsule trắng bao ngoài.
 assert.match(footer, /bg-slate-950/);
 assert.match(footer, /<BrandLockup variant="inverse" href="\/" \/>/);
-assert.match(login, /<BrandLockup variant="inverse" href="\/" priority \/>/);
+assert.match(login, /<BrandLockup href="\/" priority \/>/);
+assert.doesNotMatch(login, /variant="inverse"|bg-slate-950/);
 assert.doesNotMatch(login, /rounded-md bg-white px-3 py-2[\s\S]*BrandLockup/);
 
 // Mọi consumer dùng BrandLockup; modal là vị trí icon-only thật sự bị giới hạn.
