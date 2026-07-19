@@ -6,8 +6,8 @@ export type DiagramValidation = {
   warnings: string[];
   missingComponents: string[];
   failureReasons: string[];
-  detected: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
-  generated: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number };
+  detected: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number; circles: number; angles: number };
+  generated: { lines: number; points: number; axes: number; curves: number; guides: number; labels: number; circles: number; angles: number };
 };
 
 function array(value: unknown) { return Array.isArray(value) ? value : []; }
@@ -46,6 +46,8 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     curves: array(structure.curves).length,
     guides: array(structure.guides).length,
     labels: new Set(structureLabels(structure)).size,
+    circles: array(structure.circles).length,
+    angles: array(structure.angleLabels).length + array(structure.angles).length,
   };
   const draws = [...tikz.matchAll(/\\draw(?:\[[^\]]*\])?/g)].length;
   const generated = {
@@ -55,6 +57,8 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
     curves: [...tikz.matchAll(/plot(?:\[[^\]]*\])?\s*coordinates|\.\.\s*controls|\\(?:draw|path)[^;]*\bplot\b/g)].length,
     guides: [...tikz.matchAll(/\\draw\[[^\]]*dashed[^\]]*\]/g)].length,
     labels: [...tikz.matchAll(/\\node(?:\[[^\]]*\])?\s+(?:at|\{)/g)].length,
+    circles: [...tikz.matchAll(/\\draw(?:\[[^\]]*\])?\s*\([^)]+\)\s+circle\s*\(/g)].length,
+    angles: [...tikz.matchAll(/(?:°|\^\{?\\circ\}?)/g)].length,
   };
   const missingComponents: string[] = [];
   const hardFailures: string[] = [];
@@ -62,7 +66,16 @@ export function validateDiagramCompleteness(diagramType: string, structure: Reco
   if (new Set(commandLines).size !== commandLines.length) hardFailures.push("duplicate_tikz_elements");
   if (/upper_slanted_intersection|lower_slanted_intersection|line_transversal|line_horizontal_|line_vertical_/i.test(tikz)) hardFailures.push("internal_name_visible");
 
-  if (diagramType === "function_graph" || diagramType === "coordinate_graph") {
+  if (diagramType === "circle_geometry_with_background") {
+    const expectedLabels = structureLabels(structure);
+    const expectsCenterO = expectedLabels.includes("O") || array(structure.circles).some((item) => String(record(item).center || "") === "O");
+    const expectsThirtyDegrees = array(structure.angleLabels).some((item) => /30\s*(?:°|\\circ)/.test(String(record(item).label || item || "")));
+    if (generated.circles < Math.max(1, detected.circles)) missingComponents.push("principal_circle");
+    if (generated.circles === 0) hardFailures.push("missing_principal_circle");
+    if (expectsCenterO && !hasTikzLabel(tikz, "O")) { missingComponents.push("center_O"); hardFailures.push("missing_circle_center"); }
+    if (expectsThirtyDegrees && !/(?:30\s*°|30\s*\^\{?\\circ\}?)/.test(tikz)) { missingComponents.push("angle_30_degrees"); hardFailures.push("missing_visible_angle"); }
+    if (generated.lines > 0 && generated.circles === 0) hardFailures.push("lines_without_principal_circle");
+  } else if (diagramType === "function_graph" || diagramType === "coordinate_graph") {
     const hasCurveOrSegment = generated.curves > 0 || /%\s*segment-|\\draw[^;]*--/i.test(tikz) && draws > generated.axes;
     if (generated.axes < 2) missingComponents.push("axes");
     if (!hasCurveOrSegment) missingComponents.push("curve_or_segment");

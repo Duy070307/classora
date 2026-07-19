@@ -20,10 +20,12 @@ export function normalizeDiagramClass(value: unknown): DiagramClass {
   const raw = text(value).toLowerCase();
   const aliases: Record<string, DiagramClass> = {
     geometry_diagram: "solid_geometry", coordinate_graph: "coordinate_geometry", chart: "statistical_chart",
-    triangle: "plane_geometry", circle: "plane_geometry", polygon: "plane_geometry", mixed: "plane_geometry",
+    triangle: "plane_geometry", circle: "circle_geometry_with_background", ferris_wheel: "circle_geometry_with_background",
+    circle_with_background: "circle_geometry_with_background", circular_geometry: "circle_geometry_with_background",
+    polygon: "plane_geometry", mixed: "plane_geometry",
   };
   if (aliases[raw]) return aliases[raw];
-  const supported: DiagramClass[] = ["solid_geometry", "plane_geometry", "function_graph", "coordinate_geometry", "line_angle_diagram", "statistical_chart", "physics_diagram", "formula_or_text", "unknown"];
+  const supported: DiagramClass[] = ["solid_geometry", "plane_geometry", "function_graph", "coordinate_geometry", "line_angle_diagram", "circle_geometry_with_background", "statistical_chart", "physics_diagram", "formula_or_text", "unknown"];
   return supported.includes(raw as DiagramClass) ? raw as DiagramClass : "unknown";
 }
 
@@ -34,12 +36,22 @@ function confidence(value: unknown): "high" | "medium" | "low" {
 
 function pointObject(item: unknown, index: number): DiagramObject | null {
   const source = typeof item === "string" ? { label: item } : record(item);
-  const label = text(source.label || source.name); if (!label) return null;
+  const label = text(source.label || source.name); const key = label || text(source.id); if (!key) return null;
   const coordinate = Array.isArray(source.coordinate) ? source.coordinate : [source.x, source.y];
   const hints: Record<string, { x: number; y: number }> = { "left-lower": { x: -2.5, y: 0 }, "lower-left": { x: -2.5, y: 0 }, bottom: { x: 0, y: -1 }, "lower-right": { x: 2.5, y: 0 }, "right-upper": { x: 2, y: 2 }, "upper-right": { x: 2, y: 2 }, "left-upper": { x: -2, y: 2 }, "upper-left": { x: -2, y: 2 }, top: { x: 0, y: 4 }, center: { x: 0, y: 1 } };
   const position = coordinate.some((part) => part !== undefined) ? { x: number(coordinate[0], index % 4), y: number(coordinate[1], Math.floor(index / 4)) } : hints[text(source.relativePosition || source.approximatePosition).toLowerCase()] || { x: (index % 4) * 1.5 - 2.25, y: Math.floor(index / 4) * 1.5 };
-  return { id: stableTikzId("point", label), type: "point", label, position, confidence: confidence(source.confidence), teacherConfirmed: false };
+  return {
+    id: stableTikzId("point", key), type: "point", label: label || undefined, position,
+    confidence: confidence(source.confidence), teacherConfirmed: false,
+    metadata: {
+      ...(text(source.role) ? { role: text(source.role) } : {}),
+      ...(text(source.circlePosition) ? { circlePosition: text(source.circlePosition) } : {}),
+      ...(typeof source.primary === "boolean" ? { primary: source.primary } : {}),
+    },
+  };
 }
+
+function pointId(value: unknown) { return stableTikzId("point", text(value)); }
 
 function edgeObject(item: unknown, index: number, defaultStyle: DiagramObject["style"]): DiagramObject | null {
   const source: UnknownRecord = Array.isArray(item) ? { from: item[0], to: item[1] } : record(item);
@@ -58,9 +70,62 @@ export function extractSemanticDiagram(raw: unknown) {
   list(source.points).forEach((item, index) => { const object = pointObject(item, index); if (object) objects.push(object); });
   const addEdges = (value: unknown, style: DiagramObject["style"]) => list(value).forEach((item, index) => { const object = edgeObject(item, index, style); if (object) { objects.push(object); relationships.push(relation(style === "dashed" ? "hidden_edge" : "visible_edge", object.id, [object.id, ...(object.points || [])])); } });
   addEdges(source.solidEdges || source.segments, "solid"); addEdges(source.dashedEdges, "dashed");
-  list(source.circles).forEach((item, index) => { const circle = record(item); const center = text(circle.center || "O"); objects.push({ id: stableTikzId("circle", `${center}-${index}`), type: "circle", label: center, radius: number(circle.radius, 1.5), position: objects.find((object) => object.label === center)?.position, confidence: confidence(circle.confidence), teacherConfirmed: false }); });
+  const circles: Array<{ id: string; center: string }> = [];
+  list(source.circles).forEach((item, index) => {
+    const circle = record(item); const center = text(circle.center);
+    const id = stableTikzId("circle", text(circle.id) || `${center}-${index}`); const centerId = pointId(center);
+    const centerPoint = objects.find((object) => object.id === centerId || object.label === center);
+    const centerCoordinate = list(circle.coordinate || circle.position);
+    objects.push({
+      id, type: "circle", radius: number(circle.radius, 1.5), position: centerPoint?.position || (centerCoordinate.length >= 2 ? { x: number(centerCoordinate[0]), y: number(centerCoordinate[1]) } : undefined),
+      points: center ? [centerId] : undefined, confidence: confidence(circle.confidence), teacherConfirmed: false,
+      metadata: { principal: circle.principal !== false },
+    });
+    circles.push({ id, center });
+    if (center) relationships.push(relation("center_of", `${center}-${id}`, [centerId, id]));
+    const onCircle = list(circle.points || circle.pointsOnCircle).map(text).filter(Boolean);
+    onCircle.forEach((point) => relationships.push(relation("lies_on_circle", `${point}-${id}`, [pointId(point), id])));
+  });
+  const principalCircleId = circles[0]?.id;
+  for (const object of objects.filter((item) => item.type === "point")) {
+    if (!principalCircleId) break;
+    const circlePosition = text(object.metadata?.circlePosition).toLowerCase();
+    if (circlePosition === "on" && !relationships.some((item) => item.type === "lies_on_circle" && item.objectIds.includes(object.id) && item.objectIds.includes(principalCircleId))) relationships.push(relation("lies_on_circle", `${object.id}-${principalCircleId}`, [object.id, principalCircleId]));
+    if (circlePosition === "inside") relationships.push(relation("inside_circle", `${object.id}-${principalCircleId}`, [object.id, principalCircleId]));
+    if (circlePosition === "outside") relationships.push(relation("outside_circle", `${object.id}-${principalCircleId}`, [object.id, principalCircleId]));
+  }
+  const addCircleSegments = (value: unknown, relationshipType: "radius_of" | "diameter_of" | "chord_of" | "secant_of" | "tangent_to") => {
+    list(value).forEach((item, index) => {
+      const entry: UnknownRecord = Array.isArray(item) ? { from: item[0], to: item.at(-1) } : record(item);
+      const from = text(entry.from || entry.start); const to = text(entry.to || entry.end); if (!from || !to) return;
+      const object = edgeObject({ ...entry, from, to }, index, entry.style === "dashed" ? "dashed" : "solid"); if (!object) return;
+      objects.push(object);
+      relationships.push(relation(relationshipType, `${object.id}-${principalCircleId || "circle"}`, [object.id, ...(object.points || []), ...(principalCircleId ? [principalCircleId] : [])], entry.certain));
+    });
+  };
+  addCircleSegments(source.radii, "radius_of");
+  addCircleSegments(source.diameters, "diameter_of");
+  addCircleSegments(source.chords, "chord_of");
+  addCircleSegments(source.secants, "secant_of");
+  addCircleSegments(source.tangents, "tangent_to");
+  const addAngleObjects = (value: unknown, type: "arc" | "angle_marker") => list(value).forEach((item, index) => {
+    const entry = typeof item === "string" ? { label: item } : record(item);
+    const near = text(entry.near || entry.vertex || entry.center); const coordinate = list(entry.position || entry.coordinate);
+    const nearPoint = objects.find((object) => object.id === pointId(near));
+    const position = coordinate.length >= 2 ? { x: number(coordinate[0]), y: number(coordinate[1]) } : nearPoint?.position;
+    const marker: DiagramObject = {
+      id: stableTikzId(type, `${text(entry.label)}-${near}-${index}`), type, label: text(entry.label) || undefined,
+      position, points: near ? [pointId(near)] : undefined, radius: number(entry.radius, 0.45),
+      confidence: confidence(entry.confidence), teacherConfirmed: false,
+      metadata: { startAngle: number(entry.startAngle, 0), endAngle: number(entry.endAngle, 30), ...(near ? { near } : {}) },
+    };
+    objects.push(marker);
+    if (near) relationships.push(relation("angle_between", marker.id, [marker.id, pointId(near)], entry.certain));
+  });
+  addAngleObjects(source.arcs, "arc");
+  addAngleObjects(source.angleLabels || source.angles, "angle_marker");
   list(source.intersections || list(source.relations).filter((item) => record(item).type === "intersection")).forEach((item, index) => { const value = record(item); const point = text(value.point || value.label); const lines = list(value.lines).flatMap((line) => list(line).map((label) => stableTikzId("point", text(label)))); if (point) relationships.push(relation("intersects", `${point}-${index}`, [stableTikzId("point", point), ...lines])); });
-  list(source.relations).forEach((item, index) => { const value = record(item); const kind = text(value.type); const ids = list(value.points || value.segment || value.objectIds).map((label) => stableTikzId("point", text(label))); if (kind === "perpendicular") relationships.push(relation("perpendicular", String(index), [...list(value.segment1).map((label) => stableTikzId("point", text(label))), ...list(value.segment2).map((label) => stableTikzId("point", text(label)))], value.certain)); if (kind === "midpoint" || kind === "midpoint_of") relationships.push(relation("midpoint_of", String(index), [stableTikzId("point", text(value.point)), ...ids])); if (kind === "parallel") relationships.push(relation("parallel", String(index), ids)); if (kind === "pointOnSegment") relationships.push(relation("lies_on", String(index), [stableTikzId("point", text(value.point)), ...ids])); });
+  list(source.relations).forEach((item, index) => { const value = record(item); const kind = text(value.type); const ids = list(value.points || value.segment || value.objectIds).map((label) => stableTikzId("point", text(label))); if (kind === "perpendicular") relationships.push(relation("perpendicular", String(index), [...list(value.segment1).map((label) => stableTikzId("point", text(label))), ...list(value.segment2).map((label) => stableTikzId("point", text(label)))], value.certain)); if (kind === "midpoint" || kind === "midpoint_of") relationships.push(relation("midpoint_of", String(index), [stableTikzId("point", text(value.point)), ...ids])); if (kind === "parallel") relationships.push(relation("parallel", String(index), ids)); if (kind === "pointOnSegment") relationships.push(relation("lies_on", String(index), [stableTikzId("point", text(value.point)), ...ids])); if (["pointOnCircle", "lies_on_circle"].includes(kind) && principalCircleId) relationships.push(relation("lies_on_circle", String(index), [pointId(value.point), principalCircleId], value.certain)); });
   list(source.rightAngles).forEach((item, index) => { const value = typeof item === "string" ? { vertex: item } : record(item); const vertex = text(value.vertex); if (vertex) objects.push({ id: stableTikzId("right-angle", `${vertex}-${index}`), type: "right_angle_marker", points: [stableTikzId("point", vertex)], confidence: confidence(value.certain === false ? 0.3 : 0.9), teacherConfirmed: false, metadata: { vertex } }); });
   const axes = record(source.axes); if (Object.keys(axes).length) {
     objects.push({ id: "axis-x", type: "axis", label: text(axes.xLabel) || "x", coordinates: [{ x: -4, y: 0 }, { x: 4, y: 0 }], confidence: "high", teacherConfirmed: false });

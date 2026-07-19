@@ -22,7 +22,7 @@ import type { GeneratedDocument } from "@/lib/types";
 import type { ConfirmedDiagramAsset } from "@/lib/tikz/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
-import { containsMathLikeText } from "@/lib/content/math-symbol-normalize";
+import { wordTextChildren } from "@/lib/docx/math";
 
 const FONT = "Times New Roman";
 const BODY_SIZE = 24;
@@ -47,8 +47,8 @@ const footerCellBorders = {
   top: { style: BorderStyle.SINGLE, size: 4, color: "000000" }
 };
 
-function run(text: string, options: { bold?: boolean; italics?: boolean; size?: number } = {}) {
-  return new TextRun({ text, font: containsMathLikeText(text) ? "Cambria Math" : FONT, size: options.size ?? BODY_SIZE, bold: options.bold, italics: options.italics });
+function runs(text: string, options: { bold?: boolean; italics?: boolean; size?: number; mathHint?: boolean } = {}) {
+  return wordTextChildren(text, { font: FONT, size: options.size ?? BODY_SIZE, bold: options.bold, italics: options.italics, mathHint: options.mathHint });
 }
 
 function diagramParagraphs(assets: ConfirmedDiagramAsset[]) {
@@ -60,7 +60,7 @@ function paragraph(text = "", options: { bold?: boolean; italics?: boolean; cent
     alignment: options.center ? AlignmentType.CENTER : options.right ? AlignmentType.RIGHT : AlignmentType.JUSTIFIED,
     spacing: { before: options.before ?? 0, after: options.after ?? 45, line: 252 },
     border: options.borderBottom ? { bottom: { style: BorderStyle.SINGLE, size: 4, color: "000000", space: 3 } } : undefined,
-    children: [run(text, options)]
+    children: runs(text, options)
   });
 }
 
@@ -95,13 +95,13 @@ function bodyParagraphs(text: string) {
       return [new Paragraph({
         spacing: { before: 80, after: 25, line: 252 },
         keepNext: true,
-        children: [run(`Câu ${question[1]}. `, { bold: true }), run(question[2])]
+        children: [...runs(`Câu ${question[1]}. `, { bold: true }), ...runs(question[2])]
       })];
     }
     const option = line.match(/^([A-D])\.\s*(.*)$/);
-    if (option) return [new Paragraph({ spacing: { after: 10, line: 240 }, indent: { left: 240 }, children: [run(`${option[1]}. `, { bold: true }), run(option[2])] })];
+    if (option) return [new Paragraph({ spacing: { after: 10, line: 240 }, indent: { left: 240 }, children: [...runs(`${option[1]}. `, { bold: true }), ...runs(option[2])] })];
     const subItem = line.match(/^([a-d])\)\s*(.*)$/i);
-    if (subItem) return [new Paragraph({ spacing: { after: 18, line: 252 }, indent: { left: 280 }, children: [run(`${subItem[1].toLowerCase()}) `, { bold: true }), run(subItem[2])] })];
+    if (subItem) return [new Paragraph({ spacing: { after: 18, line: 252 }, indent: { left: 280 }, children: [...runs(`${subItem[1].toLowerCase()}) `, { bold: true }), ...runs(subItem[2])] })];
     if (/\[(Hình vẽ|Hình minh họa|Hình ảnh)\]/i.test(line)) {
       return [new Table({
         alignment: AlignmentType.RIGHT,
@@ -128,8 +128,8 @@ function questionBlocks(text: string, assetsByQuestion = new Map<string, Confirm
         width: { size: 100, type: WidthType.PERCENTAGE },
         borders: noBorders,
         rows: [
-          new TableRow({ children: options.slice(0, 2).map((item) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders, margins: { top: 20, bottom: 20, left: 100, right: 100 }, children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [run(`${item[1]}. `, { bold: true }), run(item[2])] })] })) }),
-          new TableRow({ children: options.slice(2, 4).map((item) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders, margins: { top: 20, bottom: 20, left: 100, right: 100 }, children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [run(`${item[1]}. `, { bold: true }), run(item[2])] })] })) })
+          new TableRow({ children: options.slice(0, 2).map((item) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders, margins: { top: 20, bottom: 20, left: 100, right: 100 }, children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [...runs(`${item[1]}. `, { bold: true }), ...runs(item[2])] })] })) }),
+          new TableRow({ children: options.slice(2, 4).map((item) => new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders, margins: { top: 20, bottom: 20, left: 100, right: 100 }, children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [...runs(`${item[1]}. `, { bold: true }), ...runs(item[2])] })] })) })
         ]
       }));
     } else {
@@ -160,7 +160,7 @@ function docxTable(table: ParsedMarkdownTable) {
         width: { size: Math.floor(100 / cells.length), type: WidthType.PERCENTAGE },
         shading: rowIndex === 0 ? { fill: "F1F5F9" } : undefined,
         margins: { top: 70, bottom: 70, left: 90, right: 90 },
-        children: [new Paragraph({ alignment: rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT, children: [run(cell, { bold: rowIndex === 0, size: 22 })] })]
+        children: [new Paragraph({ alignment: rowIndex === 0 ? AlignmentType.CENTER : AlignmentType.LEFT, children: runs(cell, { bold: rowIndex === 0, size: 22 }) })]
       }))
     }))
   });
@@ -332,7 +332,7 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument, opt
     borders: { ...noBorders, top: { style: BorderStyle.SINGLE, size: 4, color: "000000" } },
     rows: [new TableRow({ children: [
       new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: footerCellBorders, children: [paragraph(`Mã đề ${examCode}`, { after: 0 })] }),
-      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: footerCellBorders, children: [new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { after: 0 }, children: [run("Trang "), new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: BODY_SIZE }), run("/"), new TextRun({ children: [PageNumber.TOTAL_PAGES_IN_SECTION], font: FONT, size: BODY_SIZE })] })] })
+      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: footerCellBorders, children: [new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { after: 0 }, children: [...runs("Trang "), new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: BODY_SIZE }), ...runs("/"), new TextRun({ children: [PageNumber.TOTAL_PAGES_IN_SECTION], font: FONT, size: BODY_SIZE })] })] })
     ] })]
   })] });
 

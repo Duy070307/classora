@@ -4,6 +4,7 @@ import ExcelJS from "exceljs";
 import { AlignmentType, BorderStyle, Document, HeadingLevel, Packer, PageOrientation, Paragraph, SectionType, Table, TableCell, TableRow, TextRun, WidthType } from "docx";
 import type { ExamBlueprint } from "@/lib/exam-source/types";
 import type { BlueprintComparison } from "@/lib/exam-blueprint/workflow";
+import { wordTextChildren } from "@/lib/docx/math";
 
 const levels = { recognition: "Nhận biết", comprehension: "Thông hiểu", application: "Vận dụng", advancedApplication: "Vận dụng cao" } as const;
 const types = { multiple_choice: "Trắc nghiệm", true_false: "Đúng/Sai", short_answer: "Trả lời ngắn", essay: "Tự luận", mixed: "Kết hợp" } as const;
@@ -37,7 +38,7 @@ export async function buildBlueprintXlsx(blueprint: ExamBlueprint, comparison?: 
   const buffer = await workbook.xlsx.writeBuffer(); return new Blob([new Uint8Array(buffer as ArrayBuffer)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 }
 
-const cell = (text: string | number, bold = false) => new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: String(text), bold, font: "Arial", size: 18 })] })], borders: { top: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, bottom: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, left: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, right: { style: BorderStyle.SINGLE, size: 1, color: "777777" } } });
+const cell = (text: string | number, bold = false) => new TableCell({ children: [new Paragraph({ children: wordTextChildren(String(text), { bold, font: "Arial", size: 18 }) })], borders: { top: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, bottom: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, left: { style: BorderStyle.SINGLE, size: 1, color: "777777" }, right: { style: BorderStyle.SINGLE, size: 1, color: "777777" } } });
 const table = (rows: Array<Array<string | number>>) => new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: rows.map((row, index) => new TableRow({ tableHeader: index === 0, cantSplit: true, children: row.map((value) => cell(value, index === 0)) })) });
 
 export async function buildBlueprintDocx(blueprint: ExamBlueprint, comparison?: BlueprintComparison) {

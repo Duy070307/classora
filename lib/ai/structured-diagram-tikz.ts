@@ -18,8 +18,9 @@ function canonicalPointLabel(value: unknown) {
 export function normalizeDiagramType(value: unknown) {
   const type = String(value || "unknown").trim().toLowerCase();
   if (type === "geometry_diagram" || type === "solid_geometry") return "solid_geometry";
+  if (["circle", "ferris_wheel", "circle_with_background", "circular_geometry", "circle_geometry_with_background"].includes(type)) return "circle_geometry_with_background";
   if (type === "coordinate_graph" || type === "coordinate_geometry") return "coordinate_geometry";
-  if (["plane_geometry", "function_graph", "line_angle_diagram", "statistical_chart", "physics_diagram", "formula_or_text", "unknown"].includes(type)) return type;
+  if (["plane_geometry", "function_graph", "line_angle_diagram", "circle_geometry_with_background", "statistical_chart", "physics_diagram", "formula_or_text", "unknown"].includes(type)) return type;
   return "unknown";
 }
 
@@ -178,7 +179,7 @@ export function generateStructuredDiagramTikz(structure: Record<string, unknown>
   const normalizedDiagramType = normalizeDiagramType(structure.diagramType);
   const diagramType = normalizedDiagramType === "coordinate_geometry" ? "coordinate_graph" : normalizedDiagramType;
   if (!new Set(["line_angle_diagram", "coordinate_graph", "function_graph"]).has(diagramType)) {
-    if (!["solid_geometry", "plane_geometry", "statistical_chart", "physics_diagram"].includes(diagramType)) return null;
+    if (!["solid_geometry", "plane_geometry", "circle_geometry_with_background", "statistical_chart", "physics_diagram"].includes(diagramType)) return null;
     const draft = createTikzDiagramDraft({ sourceHash: stableTikzId("structure", JSON.stringify(structure)), sourceType: "description", rawStructure: structure, tikzCode: "\\begin{tikzpicture}\n\\end{tikzpicture}" });
     const generated = generateTikzFromDraft(draft); const validation = validateDiagramCompleteness(diagramType, structure, generated.snippet);
     return { diagramType, confidence: Number(structure.confidence ?? 0.5), tikzCode: generated.snippet, standaloneLatex: generated.standalone, validation, fallbackUsed: false };

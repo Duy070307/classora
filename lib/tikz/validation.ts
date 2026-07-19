@@ -4,6 +4,7 @@ function check(code: string, passed: boolean, severity: "info" | "warning" | "er
 function labels(draft: TikzDiagramDraft) { return draft.objects.filter((object) => object.label || object.text); }
 function points(draft: TikzDiagramDraft) { return draft.objects.filter((object) => object.type === "point"); }
 function segments(draft: TikzDiagramDraft) { return draft.objects.filter((object) => object.type === "segment" || object.type === "line" || object.type === "ray" || object.type === "vector"); }
+function circles(draft: TikzDiagramDraft) { return draft.objects.filter((object) => object.type === "circle"); }
 function hasDetachedReference(draft: TikzDiagramDraft, object: DiagramObject) { const ids = new Set(draft.objects.map((item) => item.id)); return (object.points || []).some((id) => !ids.has(id)); }
 
 export function validateTikzDraft(draft: TikzDiagramDraft): TikzValidationResult {
@@ -14,6 +15,19 @@ export function validateTikzDraft(draft: TikzDiagramDraft): TikzValidationResult
   checks.push(check("references", detached.length === 0, "error", detached.length ? "Có đối tượng tham chiếu điểm không tồn tại." : "Các tham chiếu đối tượng hợp lệ.", detached.map((item) => item.id)));
   const duplicateLabels = labels(draft).filter((item, index, all) => item.label && all.findIndex((candidate) => candidate.label === item.label && candidate.type === item.type) !== index);
   checks.push(check("duplicate_labels", duplicateLabels.length === 0, "warning", duplicateLabels.length ? "Có nhãn bị lặp cần kiểm tra." : "Không phát hiện nhãn lặp ngoài chủ ý.", duplicateLabels.map((item) => item.id)));
+  if (draft.classification.type === "circle_geometry_with_background") {
+    const circleItems = circles(draft); const pointLabels = new Set(points(draft).map((item) => item.label));
+    const centerRelations = draft.relationships.filter((item) => item.type === "center_of");
+    const circleRelations = draft.relationships.filter((item) => ["radius_of", "diameter_of", "chord_of", "secant_of", "tangent_to", "lies_on_circle"].includes(item.type));
+    const angleLabels = draft.objects.filter((item) => item.type === "angle_marker" || item.type === "arc").map((item) => item.label).filter(Boolean);
+    checks.push(check("principal_circle", circleItems.length > 0, "error", circleItems.length ? "Đã nhận diện đường tròn chính." : "Thiếu đường tròn chính; không thể chỉ dựng các đoạn thẳng nền."));
+    checks.push(check("circle_center", pointLabels.has("O") && centerRelations.length > 0, "error", pointLabels.has("O") && centerRelations.length > 0 ? "Tâm O đã được gắn với đường tròn." : "Thiếu tâm O hoặc quan hệ tâm–đường tròn."));
+    checks.push(check("circle_relations", circleRelations.length > 0, "warning", circleRelations.length ? "Đã lưu quan hệ điểm/đoạn thẳng với đường tròn." : "Chưa xác nhận bán kính, đường kính, dây hoặc điểm thuộc đường tròn."));
+    const expectsThirtyDegrees = angleLabels.some((label) => /30\s*(?:°|\\circ)/.test(String(label)));
+    checks.push(check("circle_angle_labels", !expectsThirtyDegrees || draft.objects.some((item) => (item.type === "angle_marker" || item.type === "arc") && Boolean(item.position)), "error", expectsThirtyDegrees ? "Nhãn góc 30° đã gắn với vị trí hình học." : "Không có nhãn góc bắt buộc cần kiểm tra."));
+    if (!circleItems.length) missingObjects.push("Đường tròn chính");
+    if (!pointLabels.has("O")) missingObjects.push("Tâm O");
+  }
   if (draft.classification.type === "solid_geometry") {
     const subtype = draft.classification.subtype || ""; const pointLabels = new Set(points(draft).map((item) => item.label));
     if (subtype === "pyramid") {
@@ -44,7 +58,13 @@ export function validateTikzDraft(draft: TikzDiagramDraft): TikzValidationResult
   const errors = checks.filter((item) => !item.passed && item.severity === "error"); const warnings = checks.filter((item) => !item.passed && item.severity === "warning");
   const unreliable = draft.classification.type === "unknown" || draft.classification.confidence === "low" || draft.objects.length < 2;
   const status = unreliable ? "unreliable" : errors.length ? "needs_review" : warnings.length || !draft.classification.teacherConfirmed ? "warning" : "ready";
-  return { valid: !errors.length && !unreliable, status, checks, warnings: [...draft.classification.warnings, ...warnings.map((item) => item.message)], missingObjects };
+  const confidenceWarnings = draft.classification.confidence === "low"
+    ? [
+      ...(draft.classification.type === "circle_geometry_with_background" ? ["Chưa xác định chắc chắn đường tròn chính hoặc một số quan hệ góc."] : []),
+      "Cắt ảnh chỉ còn phần hình và thử lại.",
+    ]
+    : [];
+  return { valid: !errors.length && !unreliable, status, checks, warnings: [...draft.classification.warnings, ...warnings.map((item) => item.message), ...confidenceWarnings], missingObjects };
 }
 
 export function qualitySummary(draft: TikzDiagramDraft): TikzQualitySummary {

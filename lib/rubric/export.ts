@@ -5,21 +5,22 @@ import { printGeneratedDocument } from "@/lib/print-document";
 import type { Rubric, RubricAudience } from "@/lib/rubric/types";
 import { rubricCoverage } from "@/lib/rubric/coverage";
 import { rubricToDocument } from "@/lib/rubric/workflow";
+import { wordTextChildren } from "@/lib/docx/math";
 
 const safeName = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "");
 function download(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1200); }
 const borders = { top: { style: BorderStyle.SINGLE, size: 1, color: "94A3B8" }, bottom: { style: BorderStyle.SINGLE, size: 1, color: "94A3B8" }, left: { style: BorderStyle.SINGLE, size: 1, color: "94A3B8" }, right: { style: BorderStyle.SINGLE, size: 1, color: "94A3B8" } };
-function cell(text: string, bold = false) { return new TableCell({ children: [new Paragraph({ children: [new TextRun({ text, bold, font: "Arial", size: 18 })] })], borders }); }
+function cell(text: string, bold = false) { return new TableCell({ children: [new Paragraph({ children: wordTextChildren(text, { bold, font: "Arial", size: 18 }) })], borders }); }
 
 export async function buildRubricDocx(rubric: Rubric, audience: RubricAudience = "teacher") {
   const headers = ["Tiêu chí", "Trọng số", ...rubric.levels.map((level) => `${level.label} (${level.score})`)];
   const rows = rubric.criteria.map((criterion) => [criterion.title, `${Math.round(criterion.weight * 100) / 100}%`, ...rubric.levels.map((level) => criterion.descriptors.find((item) => item.levelId === level.id)?.text || "—")]);
   const table = new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headers, ...rows].map((row, index) => new TableRow({ tableHeader: index === 0, cantSplit: true, children: row.map((value) => cell(value, index === 0)) })) });
-  const teacherNotes = audience === "teacher" ? rubric.criteria.filter((item) => item.evidence).map((item) => new Paragraph({ children: [new TextRun({ text: `${item.title} — Minh chứng: ${item.evidence}`, font: "Arial", size: 20 })] })) : [];
+  const teacherNotes = audience === "teacher" ? rubric.criteria.filter((item) => item.evidence).map((item) => new Paragraph({ children: wordTextChildren(`${item.title} — Minh chứng: ${item.evidence}`, { font: "Arial", size: 20 }) })) : [];
   return Packer.toBlob(new Document({ sections: [{ properties: { type: SectionType.CONTINUOUS, page: { size: { orientation: PageOrientation.LANDSCAPE }, margin: { top: 600, right: 500, bottom: 600, left: 500 } } }, children: [
     new Paragraph({ heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER, children: [new TextRun({ text: rubric.title.toUpperCase(), bold: true, font: "Arial" })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Môn: ${rubric.subject || "—"} · Khối: ${rubric.grade || "—"} · Tổng điểm: ${rubric.totalScore}`, font: "Arial", size: 21 })] }),
-    new Paragraph({ children: [new TextRun({ text: rubric.instructions || "", font: "Arial", size: 20 })] }), table, ...teacherNotes,
+    new Paragraph({ children: wordTextChildren(rubric.instructions || "", { font: "Arial", size: 20 }) }), table, ...teacherNotes,
     new Paragraph({ spacing: { before: 300 }, children: [new TextRun({ text: "Giáo viên cần rà soát tiêu chí và mô tả trước khi sử dụng chính thức.", italics: true, font: "Arial", size: 18 })] }),
   ] }] }));
 }

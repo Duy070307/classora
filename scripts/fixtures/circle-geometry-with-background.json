@@ -1,0 +1,32 @@
+{
+  "diagramType": "circle_geometry_with_background",
+  "figureType": "circle",
+  "confidence": 0.92,
+  "points": [
+    { "id": "O", "label": "O", "coordinate": [0, 0], "role": "center", "circlePosition": "inside" },
+    { "id": "A", "label": "A", "coordinate": [3, 0], "circlePosition": "on" },
+    { "id": "vertical-top", "coordinate": [0, 3], "circlePosition": "on" },
+    { "id": "vertical-bottom", "coordinate": [0, -3], "circlePosition": "on" },
+    { "id": "oblique-left", "coordinate": [-2.6, 1.5], "circlePosition": "on" },
+    { "id": "oblique-right", "coordinate": [2.6, -1.5], "circlePosition": "on" }
+  ],
+  "circles": [
+    { "id": "principal-circle", "center": "O", "radius": 3, "points": ["A", "vertical-top", "vertical-bottom", "oblique-left", "oblique-right"], "principal": true }
+  ],
+  "radii": [
+    { "from": "O", "to": "A", "style": "solid" }
+  ],
+  "diameters": [
+    { "from": "vertical-top", "through": "O", "to": "vertical-bottom", "style": "solid" },
+    { "from": "oblique-left", "through": "O", "to": "oblique-right", "style": "solid" }
+  ],
+  "angleLabels": [
+    { "label": "30°", "near": "O", "position": [0, 0], "startAngle": 0, "endAngle": 30, "radius": 0.55 }
+  ],
+  "decorativeElements": [
+    { "type": "ferris_wheel_spokes", "primary": false }
+  ],
+  "warnings": [
+    "Ảnh nền có nhiều chi tiết trang trí; chỉ giữ quan hệ hình học nhìn thấy rõ."
+  ]
+}

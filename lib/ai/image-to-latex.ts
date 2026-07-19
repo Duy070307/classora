@@ -85,6 +85,8 @@ const geometryAccuracyRules = `General geometry recognition rules:
 - Measurements should be placed near the corresponding segment.
 - Labels should stay near their original positions.
 - Preserve right-angle markers, angle arcs, circles, coordinate axes, and dashed auxiliary lines when visible.
+- When a principal circle appears over a decorative background such as a Ferris wheel, classify it as circle_geometry_with_background. Keep the circle, center, radii, diameters, chords, secants and visible angle labels as primary geometry. Put decorative spokes or scenery in decorativeElements and do not promote them to primary segments.
+- A lines-only result is invalid when a principal circle is visible.
 - Do not include problem statement text.
 
 Common school diagram pattern:
@@ -105,13 +107,15 @@ Common school diagram pattern:
 Return a structured JSON object. The final UI will show only clean TikZ, but your JSON should include:
 {
   "type": "tikz",
-  "diagramType": "triangle|circle|coordinate|polygon|mixed|unknown",
+  "diagramType": "triangle|circle|circle_geometry_with_background|coordinate|polygon|mixed|unknown",
   "points": [{ "name": "A", "x": 0, "y": 0, "labelPosition": "below" }],
   "segments": [{ "from": "A", "to": "B", "style": "solid|dashed", "thick": true }],
   "circles": [{ "center": "O", "radius": 2, "style": "solid" }],
   "arcs": [],
   "angles": [],
   "rightAngles": [],
+  "angleLabels": [],
+  "decorativeElements": [],
   "measurements": [{ "text": "5 cm", "near": "AB" }],
   "shadedRegions": [],
   "tikzCode": "\\begin{tikzpicture}[scale=1]\\n...\\n\\end{tikzpicture}",
@@ -301,21 +305,31 @@ Trả về đúng JSON:
   "warnings": ["cảnh báo nếu có"]
 }`;
 
-  const structurePrompt = `Trước khi tạo TikZ, hãy phân loại ảnh thành đúng một trong: solid_geometry, plane_geometry, function_graph, line_angle_diagram, coordinate_geometry, statistical_chart, physics_diagram, formula_or_text, unknown. Sau đó liệt kê đầy đủ mọi thành phần nhìn thấy: đường thẳng, trục, đường cong, đoạn thẳng, điểm được đánh dấu, giao điểm, nét gióng đứt, marker góc vuông và nhãn. Chỉ trả JSON cấu trúc; không tạo TikZ, không giải bài toán cho đến khi cấu trúc đã rõ.
+  const structurePrompt = `Trước khi tạo TikZ, hãy phân loại ảnh thành đúng một trong: solid_geometry, plane_geometry, function_graph, line_angle_diagram, circle_geometry_with_background, coordinate_geometry, statistical_chart, physics_diagram, formula_or_text, unknown. Sau đó liệt kê đầy đủ mọi thành phần nhìn thấy: đường thẳng, trục, đường cong, đoạn thẳng, điểm được đánh dấu, giao điểm, nét gióng đứt, marker góc vuông và nhãn. Chỉ trả JSON cấu trúc; không tạo TikZ, không giải bài toán cho đến khi cấu trúc đã rõ.
 Nếu ảnh là đồ thị tọa độ, tuyệt đối không chỉ trả điểm O. Nếu ảnh có nhiều đường thẳng, tuyệt đối không chỉ trả một đoạn. Giữ nhãn đúng như ảnh và phân biệt nhãn điểm, nhãn đường, nhãn góc.
 Ưu tiên tính đúng đắn hình học hơn độ giống pixel. Nhận diện figureType như triangle, quadrilateral, parallelogram, trapezoid, rectangle, square, circle, pyramid, prism, cuboid hoặc unknown.
 Giữ nguyên chính xác mọi nhãn điểm nhìn thấy, gồm chữ hoa và dấu phẩy. Không đổi O thành 0, H thành M, I thành U; không thêm điểm thay thế.
 Phân loại riêng solidEdges và dashedEdges theo đúng ảnh; hidden/auxiliary edge dùng dashedEdges. Không suy diễn cạnh ẩn.
 Phân tích base/apex, intersection, pointOnSegment và perpendicular trước khi vẽ. Chỉ ghi vuông góc khi có ký hiệu rõ; nếu mơ hồ đặt certain=false và thêm warning.
+Nếu ảnh có một đường tròn chính nhưng nền có nhiều nan/đường trang trí (ví dụ vòng quay), dùng circle_geometry_with_background. Giữ đường tròn, tâm, bán kính/đường kính/dây/cát tuyến và góc nhìn thấy làm hình học chính; đưa nan hoặc chi tiết nền không mang quan hệ toán học vào decorativeElements và không biến chúng thành đoạn thẳng chính. Không được bỏ đường tròn rồi chỉ trả các đường chéo.
 
 Trả về JSON theo đúng dạng:
 {
-  "diagramType": "solid_geometry|plane_geometry|function_graph|line_angle_diagram|coordinate_geometry|statistical_chart|physics_diagram|formula_or_text|unknown",
+  "diagramType": "solid_geometry|plane_geometry|function_graph|line_angle_diagram|circle_geometry_with_background|coordinate_geometry|statistical_chart|physics_diagram|formula_or_text|unknown",
   "confidence": 0.82,
   "figureType": "pyramid|triangle|circle|quadrilateral|unknown",
   "points": [{"label":"A","relativePosition":"left-lower|bottom|lower-right|right-upper|left-upper|top|center"}],
   "solidEdges": [["A","B"]],
   "dashedEdges": [["A","C"]],
+  "circles": [{"id":"principal-circle","center":"O","radius":3,"points":["A"],"principal":true}],
+  "radii": [{"from":"O","to":"A"}],
+  "diameters": [{"from":"top","through":"O","to":"bottom"}],
+  "chords": [],
+  "secants": [],
+  "tangents": [],
+  "arcs": [],
+  "angleLabels": [{"label":"30°","near":"O","startAngle":0,"endAngle":30}],
+  "decorativeElements": [],
   "visualHints": {"AB":"nearly-horizontal","DC":"nearly-horizontal","basePerspective":"quadrilateral","baseOrder":["A","B","C","D"]},
   "relations": [
     {"type":"base","points":["A","B","C","D"]},
@@ -361,7 +375,7 @@ Không markdown fence. Có thể bỏ trống mảng nếu ảnh không thể hi
       if (attempt === 2) break;
       retryCount += 1;
       specializedRaw = await requester.request(`Phân tích lại toàn bộ ảnh. Lần trước thiếu: ${specialized.validation.missingComponents.join(", ")}.
-Detected ${specialized.diagramType}, nhưng cấu trúc/TikZ dự kiến chưa đầy đủ. Hãy trả JSON cấu trúc hoàn chỉnh với mọi lines, points, intersections, rightAngles, angleLabels, axes, ticks, curves, segments, guides và labels nhìn thấy. Không trả TikZ, không markdown fence.`, true);
+Detected ${specialized.diagramType}, nhưng cấu trúc/TikZ dự kiến chưa đầy đủ. Hãy trả JSON cấu trúc hoàn chỉnh với mọi circles, radii, diameters, chords, secants, tangents, arcs, lines, points, intersections, rightAngles, angleLabels, axes, ticks, curves, segments, guides và labels nhìn thấy. Tách decorativeElements khỏi hình học chính. Không trả TikZ, không markdown fence.`, true);
     }
     const structure = parseGeometryStructure(specializedRaw);
     if (structure) {
@@ -531,8 +545,8 @@ ${schoolValidation.reasons.join(", ")}`;
     const finalGenericValidation = validateGenericGeometryTikz(extraction.tikzCode);
     const detectedStructure = extractJson(specializedRaw) || {};
     const detectedType = String(detectedStructure.diagramType || "solid_geometry");
-    const typeAliases: Record<string, string> = { geometry_diagram: "solid_geometry", coordinate_graph: "coordinate_geometry" };
-    const normalizedType = typeAliases[detectedType] || (["line_angle_diagram", "coordinate_geometry", "function_graph", "solid_geometry"].includes(detectedType)
+    const typeAliases: Record<string, string> = { geometry_diagram: "solid_geometry", coordinate_graph: "coordinate_geometry", circle: "circle_geometry_with_background", ferris_wheel: "circle_geometry_with_background", circle_with_background: "circle_geometry_with_background" };
+    const normalizedType = typeAliases[detectedType] || (["line_angle_diagram", "circle_geometry_with_background", "coordinate_geometry", "function_graph", "solid_geometry", "plane_geometry", "statistical_chart", "physics_diagram"].includes(detectedType)
       ? detectedType
       : "solid_geometry");
     const diagramValidation = validateDiagramCompleteness(normalizedType, detectedStructure, extraction.tikzCode);

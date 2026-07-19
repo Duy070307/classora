@@ -12,7 +12,12 @@ export function compareDiagramModels(source: Pick<TikzDiagramDraft, "objects" | 
   const sourceRatio = Math.max(0.01, (source.layout.bounds.maxX - source.layout.bounds.minX) / Math.max(0.01, source.layout.bounds.maxY - source.layout.bounds.minY));
   const renderRatio = Math.max(0.01, (rendered.layout.bounds.maxX - rendered.layout.bounds.minX) / Math.max(0.01, rendered.layout.bounds.maxY - rendered.layout.bounds.minY));
   const sourceRenderAlignment = Math.round(Math.max(0, 100 - Math.abs(Math.log(sourceRatio / renderRatio)) * 45));
-  const suspiciousDifferences = [missingObjects.length ? `Thiếu ${missingObjects.length} đối tượng.` : "", extraObjects.length > Math.max(2, sourceObjects.size * 0.25) ? `Có ${extraObjects.length} đối tượng ngoài mô hình nguồn.` : "", sourceRenderAlignment < 60 ? "Tỉ lệ khung hình thay đổi đáng kể." : ""].filter(Boolean);
-  const blocking = objectCoverage < 70 || structuralSimilarity < 65; const status = blocking ? "mismatch" : objectCoverage < 90 || labelCoverage < 85 || suspiciousDifferences.length ? "needs_review" : "near_match";
+  const sourceCircles = source.objects.filter((item) => item.type === "circle").length; const renderedCircles = rendered.objects.filter((item) => item.type === "circle").length;
+  const sourceAngles = new Set(source.objects.filter((item) => item.type === "angle_marker" || item.type === "arc").map((item) => item.label).filter(Boolean));
+  const renderedAngles = new Set(rendered.objects.filter((item) => item.type === "angle_marker" || item.type === "arc").map((item) => item.label).filter(Boolean));
+  const missingAngles = [...sourceAngles].filter((label) => !renderedAngles.has(label));
+  const missingPrincipalCircle = sourceCircles > renderedCircles;
+  const suspiciousDifferences = [missingObjects.length ? `Thiếu ${missingObjects.length} đối tượng.` : "", missingPrincipalCircle ? "Bản dựng thiếu đường tròn chính so với cấu trúc nguồn." : "", missingAngles.length ? `Thiếu ${missingAngles.length} nhãn góc nhìn thấy.` : "", extraObjects.length > Math.max(2, sourceObjects.size * 0.25) ? `Có ${extraObjects.length} đối tượng ngoài mô hình nguồn.` : "", sourceRenderAlignment < 60 ? "Tỉ lệ khung hình thay đổi đáng kể." : ""].filter(Boolean);
+  const blocking = missingPrincipalCircle || objectCoverage < 70 || structuralSimilarity < 65; const status = blocking ? "mismatch" : objectCoverage < 90 || labelCoverage < 85 || suspiciousDifferences.length ? "needs_review" : "near_match";
   return { objectCoverage, labelCoverage, structuralSimilarity, sourceRenderAlignment, missingObjects, extraObjects, suspiciousDifferences, status };
 }

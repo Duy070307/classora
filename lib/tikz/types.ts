@@ -4,6 +4,7 @@ export type DiagramClass =
   | "function_graph"
   | "coordinate_geometry"
   | "line_angle_diagram"
+  | "circle_geometry_with_background"
   | "statistical_chart"
   | "physics_diagram"
   | "formula_or_text"
@@ -20,7 +21,9 @@ export type DiagramRelationshipType =
   | "connected_to" | "lies_on" | "collinear" | "parallel" | "perpendicular"
   | "intersects" | "midpoint_of" | "center_of" | "tangent_to" | "hidden_edge"
   | "visible_edge" | "equal_length" | "equal_angle" | "shared_context"
-  | "label_for" | "endpoint_of" | "vertex_of";
+  | "label_for" | "endpoint_of" | "vertex_of" | "lies_on_circle"
+  | "inside_circle" | "outside_circle" | "radius_of" | "diameter_of"
+  | "chord_of" | "secant_of" | "angle_between";
 
 export type DiagramPoint = { x: number; y: number };
 export type DiagramBounds = { minX: number; minY: number; maxX: number; maxY: number };

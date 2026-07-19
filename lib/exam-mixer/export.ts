@@ -6,6 +6,7 @@ import { buildOfficialExamDocxBlob } from "@/lib/export-exam-docx";
 import { variantComparisonRows } from "@/lib/exam-mixer/engine";
 import { variantToDocument } from "@/lib/exam-mixer/document";
 import type { ExamVariant, ExamVariantSet } from "@/lib/exam-mixer/types";
+import { wordTextChildren } from "@/lib/docx/math";
 
 const border = { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" };
 const borders = { top: border, bottom: border, left: border, right: border, insideHorizontal: border, insideVertical: border };
@@ -24,7 +25,7 @@ function downloadBlob(blob: Blob, name: string) {
 }
 
 function cell(text: string, header = false) {
-  return new TableCell({ borders, shading: header ? { fill: "EFF6FF" } : undefined, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text, bold: header, font: "Times New Roman", size: 22 })] })] });
+  return new TableCell({ borders, shading: header ? { fill: "EFF6FF" } : undefined, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: wordTextChildren(text, { bold: header, font: "Times New Roman", size: 22 }) })] });
 }
 
 async function answerKeyBlob(set: ExamVariantSet, variants: ExamVariant[]) {

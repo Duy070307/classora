@@ -7,7 +7,7 @@ import type { GeneratedDocument } from "@/lib/types";
 import { exportOfficialExamDocx } from "@/lib/export-exam-docx";
 import { parseDocumentContent } from "@/lib/documents/document-content";
 import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
-import { containsMathLikeText } from "@/lib/content/math-symbol-normalize";
+import { wordTextChildren, type WordMathWarning } from "@/lib/docx/math";
 
 function safeFileName(value: string) {
   return value
@@ -46,25 +46,28 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
   if (cleanDocument.type === "exam") throw new Error("generic_docx_does_not_export_student_exam");
   const settings = getDocumentSettings();
   const fontSize = Number(settings.fontSize) * 2;
-  const textRun = (text: string, options: { bold?: boolean; size?: number } = {}) => new TextRun({
-    text,
-    bold: options.bold,
-    font: containsMathLikeText(text) ? "Cambria Math" : settings.fontFamily,
+  const mathWarnings: WordMathWarning[] = [];
+  const textRuns = (text: string, options: { bold?: boolean; italics?: boolean; size?: number; mathHint?: boolean } = {}) => wordTextChildren(text, {
+    font: settings.fontFamily,
     size: options.size ?? fontSize,
+    bold: options.bold,
+    italics: options.italics,
+    mathHint: options.mathHint,
+    warnings: mathWarnings,
   });
   const contentBlocks = parseDocumentContent(cleanDocument.content).map((block) => {
     if (block.type === "heading") {
       return new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 220, after: 100 },
-        children: [textRun(block.text, { bold: true, size: fontSize + 2 })]
+        children: textRuns(block.text, { bold: true, size: fontSize + 2 })
       });
     }
     if (block.type === "bullet") {
       return new Paragraph({
         spacing: { after: 70 },
         bullet: { level: 0 },
-        children: [textRun(block.text)]
+        children: textRuns(block.text)
       });
     }
     if (block.type === "table") {
@@ -82,14 +85,14 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
           tableHeader: rowIndex === 0,
           cantSplit: true,
           children: row.map((cell) => new TableCell({
-            children: [new Paragraph({ children: [textRun(cell, { bold: rowIndex === 0, size: Math.max(fontSize - 2, 18) })] })]
+            children: [new Paragraph({ children: textRuns(cell, { bold: rowIndex === 0, size: Math.max(fontSize - 2, 18) }) })]
           }))
         }))
       });
     }
     return new Paragraph({
       spacing: { after: 90 },
-      children: [textRun(block.text)]
+      children: textRuns(block.text)
     });
   });
   const headerLines = getDocumentHeaderLines(settings);
@@ -106,7 +109,7 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { after: 240 },
-            children: [textRun(cleanDocument.title, { bold: true, size: fontSize + 8 })]
+            children: textRuns(cleanDocument.title, { bold: true, size: fontSize + 8 })
           }),
           ...contentBlocks,
           ...diagramParagraphs(cleanDocument)
@@ -115,5 +118,7 @@ export async function buildGenericDocxBlob(document: GeneratedDocument) {
     ]
   });
 
-  return Packer.toBlob(doc);
+  const blob = await Packer.toBlob(doc);
+  if (mathWarnings.length) console.warn("SOAN_LAB_DOCX_MATH_WARNING", { count: mathWarnings.length, codes: [...new Set(mathWarnings)] });
+  return blob;
 }

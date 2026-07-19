@@ -3,6 +3,7 @@ import type { DiagramObject, TikzDiagramDraft } from "@/lib/tikz/types";
 
 function n(value: number) { return Number(value.toFixed(3)); }
 function latexLabel(value = "") { return value.replace(/[{}\\]/g, "").slice(0, 80); }
+function latexAngleLabel(value = "") { return latexLabel(value).replace(/°/g, "^\\circ"); }
 function pointName(id: string) { return `p${id.replace(/[^a-z0-9]/gi, "").slice(-10)}`; }
 function position(object: DiagramObject, index: number) { return object.position || { x: (index % 5) * 1.5, y: Math.floor(index / 5) * 1.5 }; }
 function style(object: DiagramObject) { return object.style === "dashed" ? "dashed" : object.style === "dotted" ? "dotted" : "solid"; }
@@ -31,7 +32,17 @@ export function generateTikzFromDraft(draft: TikzDiagramDraft) {
       const target = center ? `(${center})` : at ? `(${n(at.x)},${n(at.y)})` : "(0,0)";
       lines.push(`  \\draw[${style(object)}] ${target} circle (${n(object.radius || 1)});`);
     }
-    if (object.type === "arc" && object.position) lines.push(`  \\draw[${style(object)}] (${n(object.position.x)},${n(object.position.y)}) arc (0:90:${n(object.radius || 0.5)});`);
+    if ((object.type === "arc" || object.type === "angle_marker") && object.position) {
+      const startAngle = Number(object.metadata?.startAngle ?? 0); const endAngle = Number(object.metadata?.endAngle ?? 90);
+      const radius = n(object.radius || 0.5); const center = `(${n(object.position.x)},${n(object.position.y)})`;
+      lines.push(`  \\draw[${style(object)}] ${center} ++(${n(startAngle)}:${radius}) arc (${n(startAngle)}:${n(endAngle)}:${radius});`);
+      if (object.label) {
+        const middle = (startAngle + endAngle) / 2; const labelRadius = radius * 1.35;
+        const radians = middle * Math.PI / 180;
+        const labelX = object.position.x + labelRadius * Math.cos(radians); const labelY = object.position.y + labelRadius * Math.sin(radians);
+        lines.push(`  \\node at (${n(labelX)},${n(labelY)}) {$${latexAngleLabel(object.label)}$};`);
+      }
+    }
     if (object.type === "axis" && object.coordinates?.length && object.coordinates.length >= 2) {
       const [from, to] = object.coordinates; lines.push(`  \\draw[->] (${n(from.x)},${n(from.y)}) -- (${n(to.x)},${n(to.y)}) node[${object.label === "y" ? "above" : "right"}] {$${latexLabel(object.label)}$};`);
     }
