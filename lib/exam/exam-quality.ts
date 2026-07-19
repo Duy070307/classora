@@ -113,6 +113,32 @@ export function normalizeNumericShortAnswer(value: string) {
     .replace(/\s+/g, "");
 }
 
+function numericValue(value: string) {
+  const normalized = normalizeNumericShortAnswer(value).replace(",", ".");
+  if (/^[+-]?\d+\/\d+$/.test(normalized)) {
+    const [numerator, denominator] = normalized.split("/").map(Number);
+    return denominator ? numerator / denominator : undefined;
+  }
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function canonicalShortAnswer(question: ExamQuestion): ExamQuestion["shortAnswer"] | undefined {
+  if (question.part !== "short_answer") return undefined;
+  const displayText = normalizeNumericShortAnswer(question.answer) || question.answer.trim();
+  const scoring = question.sourceMetadata?.scoringRules;
+  const rules = scoring && typeof scoring === "object" ? scoring as Record<string, unknown> : {};
+  const acceptedForms = Array.isArray(rules.acceptedAnswers) ? rules.acceptedAnswers.filter((item): item is string => typeof item === "string") : undefined;
+  return {
+    displayText,
+    canonicalValue: numericValue(displayText),
+    ...(acceptedForms?.length ? { acceptedForms: [...new Set([displayText, ...acceptedForms])] } : {}),
+    ...(typeof rules.tolerance === "number" && Number.isFinite(rules.tolerance) ? { tolerance: Math.max(0, rules.tolerance) } : {}),
+    ...(typeof rules.unit === "string" && rules.unit.trim() ? { unit: rules.unit.trim() } : {}),
+    ...(typeof rules.roundingInstruction === "string" && rules.roundingInstruction.trim() ? { roundingInstruction: rules.roundingInstruction.trim() } : {}),
+  };
+}
+
 export function validateShortAnswerNumeric(question: ExamQuestion): ExamQualityValidation {
   const answer = normalizeNumericShortAnswer(question.answer);
   if (!/^[+-]?(?:\d+(?:[.,]\d+)?|\d+\/\d+)$/.test(answer)) return { valid: false, reason: "non_numeric_short_answer" };
@@ -122,17 +148,23 @@ export function validateShortAnswerNumeric(question: ExamQuestion): ExamQualityV
   return { valid: true };
 }
 
-const missingVisualPattern = /(?:dựa\s+vào|quan\s+sát|nhìn\s+vào|xét|cho)\s+(?:đồ\s*thị|hình(?:\s+vẽ)?|bảng(?:\s+biến\s+thiên)?|biểu\s*đồ)|(?:đồ\s*thị|hình\s*vẽ|hình|bảng\s+biến\s+thiên|bảng|biểu\s*đồ)\s+(?:dưới\s+đây|sau\s+đây|sau|bên\s+dưới|bên\s+cạnh)|theo\s+biểu\s*đồ|như\s+hình\s*vẽ/i;
+const missingVisualPattern = /(?:dựa\s+vào|quan\s+sát|nhìn\s+vào|xét|cho)\s+(?:đồ\s*thị|hình(?:\s+vẽ)?|bảng(?:\s+biến\s+thiên)?|biểu\s*đồ|sơ\s*đồ)|(?:đồ\s*thị|hình\s*vẽ|hình|bảng\s+biến\s+thiên|bảng|biểu\s*đồ|sơ\s*đồ)\s+(?:dưới\s+đây|sau\s+đây|sau|bên\s+dưới|bên\s+cạnh|đã\s+cho)|theo\s+biểu\s*đồ|như\s+hình\s*vẽ/i;
+const missingPassagePattern = /(?:dựa\s+vào|đọc|theo)\s+(?:đoạn\s+(?:văn|trích)|văn\s+bản|bài\s+đọc)\s+(?:trên|dưới\s+đây|sau\s+đây|đã\s+cho)|(?:đoạn\s+(?:văn|trích)|văn\s+bản|bài\s+đọc)\s+(?:trên|sau)/i;
 
-export function validateVisualDependency(question: Pick<ExamQuestion, "stem">): ExamQualityValidation {
-  return missingVisualPattern.test(question.stem)
-    ? { valid: false, reason: "missing_visual_asset" }
-    : { valid: true };
+export function validateVisualDependency(question: Pick<ExamQuestion, "stem" | "visuals" | "sourceMetadata">): ExamQualityValidation {
+  const visuals = question.visuals || [];
+  const hasVisual = visuals.some((item) => ["image", "figure", "chart", "tikz", "svg"].includes(item.type) && Boolean(item.content || item.alt));
+  const hasTable = visuals.some((item) => item.type === "table" && Boolean(item.content || item.alt)) || typeof question.sourceMetadata?.table === "string";
+  const hasPassage = ["passage", "sourcePassage", "readingPassage", "attachedContent"].some((key) => typeof question.sourceMetadata?.[key] === "string" && String(question.sourceMetadata?.[key]).trim());
+  if (missingPassagePattern.test(question.stem) && !hasPassage) return { valid: false, reason: "missing_passage_asset" };
+  if (/bảng/i.test(question.stem) && missingVisualPattern.test(question.stem) && !hasTable) return { valid: false, reason: "missing_table_asset" };
+  if (missingVisualPattern.test(question.stem) && !hasVisual && !hasTable) return { valid: false, reason: "missing_visual_asset" };
+  return { valid: true };
 }
 
 export function normalizeExamQuestionMath(question: ExamQuestion): ExamQuestion {
   const answer = question.part === "short_answer" ? normalizeNumericShortAnswer(question.answer) : normalizeTeacherMathNotation(question.answer);
-  return {
+  const normalized = {
     ...question,
     stem: normalizeTeacherMathNotation(question.stem),
     answer,
@@ -140,4 +172,5 @@ export function normalizeExamQuestionMath(question: ExamQuestion): ExamQuestion 
     options: question.options ? Object.fromEntries(answerLetters.map((letter) => [letter, normalizeTeacherMathNotation(question.options?.[letter] || "")])) as Record<AnswerLetter, string> : undefined,
     trueFalseItems: question.trueFalseItems?.map((item) => ({ ...item, text: normalizeTeacherMathNotation(item.text) })),
   };
+  return { ...normalized, shortAnswer: canonicalShortAnswer(normalized) };
 }

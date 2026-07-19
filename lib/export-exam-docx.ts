@@ -22,6 +22,7 @@ import type { GeneratedDocument } from "@/lib/types";
 import type { ConfirmedDiagramAsset } from "@/lib/tikz/types";
 import { splitMarkdownTables, type ParsedMarkdownTable } from "@/lib/markdown-table";
 import { normalizeGeneratedDocument } from "@/lib/content/generated-content";
+import { validateExamDocxBlob } from "@/lib/docx/validate-exam";
 import { wordTextChildren } from "@/lib/docx/math";
 
 const FONT = "Times New Roman";
@@ -373,7 +374,15 @@ export async function buildOfficialExamDocxBlob(document: GeneratedDocument, opt
       }])
     ]
   });
-  return Packer.toBlob(docx);
+  const blob = await Packer.toBlob(docx);
+  if (document.structuredExam) {
+    const validation = await validateExamDocxBlob(blob, document.structuredExam, { includeTeacher: options.includeTeacher });
+    if (!validation.valid) {
+      if (process.env.NODE_ENV === "development") console.error("[exam-docx-validation]", validation.errors);
+      throw new Error("File Word chưa được tạo vì còn lỗi cấu trúc.");
+    }
+  }
+  return blob;
 }
 
 function safeFileName(value: string) {

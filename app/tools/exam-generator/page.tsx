@@ -34,8 +34,11 @@ import { validateTopicItem } from "@/lib/generation/topic-validator";
 import { getCurrentSampleId, getExamSamplePrefill, mergeDefined } from "@/lib/sample-prefill";
 import { BOOK_SERIES_HELPER_TEXT, BOOK_SERIES_OPTIONS, DEFAULT_BOOK_SERIES, withSourceAlignmentNote } from "@/lib/curriculum";
 import { getQueryPrefill } from "@/lib/public-beta-presets";
-import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EXAM_AUDIT_SESSION_RESULT } from "@/lib/exam-audit/document";
+import { auditConfigFromDocument, auditStatusLabel, EXAM_AUDIT_SESSION_INPUT, EXAM_AUDIT_SESSION_RESULT, withAuditResult } from "@/lib/exam-audit/document";
+import { auditStructuredExam } from "@/lib/exam-audit/audit";
 import { FileExamGenerator } from "@/components/exam-generator/FileExamGenerator";
+import { ExamQuestionEditor } from "@/components/exam-generator/ExamQuestionEditor";
+import { stableHash } from "@/lib/answer-solutions/hash";
 import { openExamMixer } from "@/lib/exam-mixer/session";
 import { openAnswerSolutions } from "@/lib/answer-solutions/session";
 import { openGradingAssistant } from "@/lib/grading/session";
@@ -146,6 +149,8 @@ export default function ExamGeneratorPage() {
   const [document, setDocument] = useState<GeneratedDocument | null>(null);
   const [loading, setLoading] = useState(false);
   const generationLock = useRef(false);
+  const autosaveSignature = useRef("");
+  const [autosaveStatus, setAutosaveStatus] = useState("");
   const [message, setMessage] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [useBank, setUseBank] = useState(false);
@@ -159,6 +164,11 @@ export default function ExamGeneratorPage() {
   const [allowRelatedTopics, setAllowRelatedTopics] = useState(false);
   const normalizeExamDraft = useCallback((saved: ExamInput) => ({ ...initialInput, ...saved }), []);
   const draft = useFormDraft("/tools/exam-generator", input, setInput, normalizeExamDraft);
+
+  function finalizeGeneratedDocument(next: GeneratedDocument) {
+    if (!next.structuredExam) return next;
+    return withAuditResult(next, auditStructuredExam(next.structuredExam, auditConfigFromDocument(next)));
+  }
 
   const bankPreview = useMemo(() => {
     if (bankSource === "ai") return { valid: [] as QuestionItem[], invalidSkipped: 0 };
@@ -217,6 +227,19 @@ export default function ExamGeneratorPage() {
         .catch(() => undefined);
     });
   }, []);
+
+  useEffect(() => {
+    if (!document?.structuredExam) return;
+    const signature = stableHash({ exam: document.structuredExam, audit: document.auditMeta, solutions: document.examSolutionSet, variants: document.examVariantSet });
+    if (signature === autosaveSignature.current) return;
+    setAutosaveStatus("Đang tự động lưu...");
+    const timer = window.setTimeout(() => {
+      saveDocument(document);
+      autosaveSignature.current = signature;
+      setAutosaveStatus("Đã tự động lưu vào lịch sử");
+    }, 900);
+    return () => window.clearTimeout(timer);
+  }, [document]);
 
   useEffect(() => {
     const raw = sessionStorage.getItem(EXAM_AUDIT_SESSION_RESULT);
@@ -402,7 +425,7 @@ export default function ExamGeneratorPage() {
         requestedCognitiveRates: { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate },
         warnings: notes,
       };
-      setDocument(next);
+      setDocument(finalizeGeneratedDocument(next));
       incrementUsage();
       setMessage(status.isPartial ? status.warnings[0] : `Đã tạo đề với ${selected.length} câu từ ngân hàng và ${aiQuestions.length} câu được tạo bổ sung.`);
       setLoading(false);
@@ -509,7 +532,7 @@ export default function ExamGeneratorPage() {
       requestedTotalScore: input.totalScore,
       requestedCognitiveRates: { recognition: input.recognitionRate, understanding: input.understandingRate, application: input.applicationRate, advanced: input.advancedRate },
     };
-    setDocument(next);
+    setDocument(finalizeGeneratedDocument(next));
     incrementUsage();
     setMessage(bankWarning || (!structureAudit.complete
       ? `SOẠN LAB chỉ tạo được ${structureAudit.finalCount}/${structureAudit.request.requestedQuestionCount} câu đúng cấu trúc. Một số câu chưa đạt yêu cầu đã được loại. Thầy cô nên bấm Tạo lại hoặc giảm yêu cầu.`
@@ -702,7 +725,7 @@ export default function ExamGeneratorPage() {
           </form>
           }
           output={
-            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo đề kiểm tra..." loadingDescription="Soạn Lab đang soạn bản nháp có đáp án, thang điểm và ma trận." hasOutput={Boolean(document)} showWarning={false}>
+            <ToolOutputPanel loading={loading} loadingTitle="Đang tạo và kiểm tra lần lượt các phần..." loadingDescription="SOẠN LAB giữ lại câu hợp lệ và chỉ bổ sung phần còn thiếu trước khi hoàn tất đề." hasOutput={Boolean(document)} showWarning={false}>
               {document ? (
               <>
                 <div className="mb-3 rounded-2xl border border-blue-100 bg-blue-50 p-3 text-sm text-blue-950">
@@ -724,6 +747,8 @@ export default function ExamGeneratorPage() {
                     </div>
                   </details>
                 </div>
+                <ExamQuestionEditor document={document} input={input} onChange={setDocument} />
+                {autosaveStatus ? <p className="mb-3 text-xs font-medium text-slate-500" role="status">{autosaveStatus}</p> : null}
                 <ToolOutputActions document={document} onSave={handleSave} onGenerateAgain={generate} />
                 <OutputRefinementBar tool="exam" input={input} currentContent={document.content} onRefined={handleRefined} />
                 <OutputPreview document={document} />

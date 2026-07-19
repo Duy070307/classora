@@ -1,6 +1,7 @@
 import type { ExamPartType, ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import { sanitizeExamStructure } from "@/lib/exam/exam-structure";
 import { targetTrueFalsePatterns } from "@/lib/exam/exam-quality";
+import { stableHash } from "@/lib/answer-solutions/hash";
 
 export const examSectionTypes = ["multiple_choice", "true_false", "short_answer"] as const;
 
@@ -109,6 +110,12 @@ export function assembleSectionedExam(
       duration: String(input.duration || ""),
       examCode: String(input.examCode || "0101").padStart(4, "0"),
       schoolName: String(input.schoolName || ""),
+      totalScore: Number(input.totalScore ?? 10),
+      requestedSectionCounts: {
+        partI: requestedCountForSection(input, "multiple_choice"),
+        partII: requestedCountForSection(input, "true_false"),
+        partIII: requestedCountForSection(input, "short_answer"),
+      },
     },
     parts,
     teacherOnly: {
@@ -153,6 +160,13 @@ export type ExamSectionChunkRequest = {
   prompt: string;
 };
 
+export type ExamGenerationStage = {
+  phase: "generating" | "validating" | "supplementing" | "finalizing";
+  type?: ExamPartType;
+  attempt?: number;
+  remaining?: number;
+};
+
 function partKey(type: ExamPartType): "partI" | "partII" | "partIII" {
   return type === "multiple_choice" ? "partI" : type === "true_false" ? "partII" : "partIII";
 }
@@ -160,6 +174,7 @@ function partKey(type: ExamPartType): "partI" | "partII" | "partIII" {
 export async function collectExamSections(
   input: Record<string, unknown>,
   generateChunk: (request: ExamSectionChunkRequest) => Promise<{ questions: ExamQuestion[]; rawCount?: number; warnings?: string[] } | null>,
+  options: { onStage?: (stage: ExamGenerationStage) => void } = {},
 ) {
   const requested = {
     partI: requestedCountForSection(input, "multiple_choice"),
@@ -196,12 +211,14 @@ export async function collectExamSections(
       const count = sectionChunkSize(type, remaining);
       const sectionInput = buildSectionOnlyInput(input, type, count, existingStems);
       try {
+        options.onStage?.({ phase: attempt ? "supplementing" : "generating", type, attempt, remaining });
         const basePrompt = buildExamSectionPrompt(input, type, count, existingStems);
         const prompt = attempt >= 2
           ? `${basePrompt}\nLần thử bổ sung ${attempt + 1}: chỉ trả một JSON array đơn giản gồm đúng ${count} câu của phần đang thiếu. Không tạo đáp án tổng hợp, ma trận, đặc tả hoặc văn bản ngoài mảng JSON.`
           : basePrompt;
         const generated = await generateChunk({ type, count, remaining, attempt, existingStems, input: sectionInput, prompt });
         if (!generated) continue;
+        options.onStage?.({ phase: "validating", type, attempt, remaining });
         diagnostics.generatedRaw[key] += generated.rawCount ?? generated.questions.length;
         diagnostics.parsed[key] += generated.questions.length;
         if (!generated.questions.length) continue;
@@ -210,7 +227,9 @@ export async function collectExamSections(
         const existing = sections[type] || [];
         const candidates = generated.questions.map((question, index) => ({
           ...question,
-          id: `${type}-${existing.length + index + 1}-${attempt + 1}`,
+          id: question.id?.trim() && !existing.some((item) => item.id === question.id)
+            ? question.id
+            : `${type}-${stableHash({ topic: question.topic || input.topic, stem: question.stem, index: existing.length + index })}`,
           part: type,
           topic: question.topic || String(input.topic || ""),
         }));
@@ -227,6 +246,7 @@ export async function collectExamSections(
     }
   }
 
+  options.onStage?.({ phase: "finalizing" });
   const audit = sanitizeExamStructure(assembleSectionedExam(input, sections), input);
   diagnostics.duplicateRemoved += audit.duplicateRemovedCount;
   diagnostics.final = sectionCounts(audit.exam);

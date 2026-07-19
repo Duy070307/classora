@@ -8,13 +8,21 @@ export type ExamQuestion = {
   number: number;
   stem: string;
   options?: Record<"A" | "B" | "C" | "D", string>;
-  trueFalseItems?: { label: "a" | "b" | "c" | "d"; text: string; answer: boolean }[];
+  trueFalseItems?: { id?: string; label: "a" | "b" | "c" | "d"; text: string; answer: boolean }[];
   answer: string;
   explanation: string;
   score: number;
   difficulty: QuestionDifficulty;
   topic: string;
   cognitiveLevel?: QuestionDifficulty;
+  shortAnswer?: {
+    displayText: string;
+    canonicalValue?: number;
+    acceptedForms?: string[];
+    tolerance?: number;
+    unit?: string;
+    roundingInstruction?: string;
+  };
   visuals?: {
     type: "image" | "figure" | "chart" | "table" | "tikz" | "svg";
     content?: string;

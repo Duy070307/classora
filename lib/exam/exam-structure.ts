@@ -1,6 +1,8 @@
 import type { ExamQuestion, ExamPartType, StructuredExam } from "@/lib/exam-types";
 import type { ExamInput } from "@/lib/types";
 import { balanceMultipleChoiceAnswers, balanceTrueFalsePatterns, normalizeExamQuestionMath, normalizeTeacherMathNotation, validateMultipleChoiceOptions, validateShortAnswerNumeric, validateTrueFalseQuality, validateVisualDependency } from "@/lib/exam/exam-quality";
+import { compareExamQuestions, type DuplicateFinding } from "@/lib/exam/duplicate-detection";
+import { ensureStableExamIdentity } from "@/lib/exam/identity";
 
 export type ExamStructureRequest = {
   sectionCounts: { partI: number; partII: number; partIII: number };
@@ -34,21 +36,9 @@ export function calculateExamStructure(input: Partial<ExamInput> & Record<string
   };
 }
 
-function normalizedStem(value: string) {
-  return value.normalize("NFKD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/\s+/g, " ").replace(/[^a-z0-9=+\-*/^() ]/g, "").trim();
-}
-
 function coreExpression(value: string) {
   const normalized = value.replace(/\s+/g, "").toLowerCase();
   return normalized.match(/(?:y|f\(x\))=[^,;.?!]+/)?.[0] || "";
-}
-
-function nearDuplicate(left: string, right: string) {
-  const a = new Set(left.split(" ").filter((token) => token.length > 2));
-  const b = new Set(right.split(" ").filter((token) => token.length > 2));
-  if (!a.size || !b.size) return false;
-  const overlap = [...a].filter((token) => b.has(token)).length;
-  return overlap / Math.max(a.size, b.size) >= 0.9;
 }
 
 function questionInvalidReason(question: ExamQuestion, type: ExamPartType, thptStyle: boolean) {
@@ -73,28 +63,51 @@ function questionInvalidReason(question: ExamQuestion, type: ExamPartType, thptS
   return "";
 }
 
+export function normalizeExamScores(parts: StructuredExam["parts"], totalScore: number) {
+  const questions = parts.flatMap((part) => part.questions);
+  if (!questions.length || !Number.isFinite(totalScore) || totalScore <= 0) return parts;
+  const counts = Object.fromEntries(parts.map((part) => [part.type, part.questions.length]));
+  if (totalScore === 10 && counts.multiple_choice === 12 && counts.true_false === 4 && counts.short_answer === 6) {
+    return parts.map((part) => ({ ...part, questions: part.questions.map((question) => ({ ...question, score: part.type === "multiple_choice" ? 0.25 : part.type === "true_false" ? 1 : 0.5 })) }));
+  }
+  const currentTotal = questions.reduce((sum, question) => sum + (Number.isFinite(question.score) && question.score > 0 ? question.score : 0), 0);
+  if (Math.abs(currentTotal - totalScore) <= 0.001) return parts;
+  const weights = questions.map((question) => currentTotal > 0 && question.score > 0 ? question.score / currentTotal : 1 / questions.length);
+  const scores = weights.map((weight) => Number((weight * totalScore).toFixed(3)));
+  scores[scores.length - 1] = Number((totalScore - scores.slice(0, -1).reduce((sum, score) => sum + score, 0)).toFixed(3));
+  let cursor = 0;
+  return parts.map((part) => ({ ...part, questions: part.questions.map((question) => ({ ...question, score: scores[cursor++] })) }));
+}
+
 export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamInput> & Record<string, unknown>) {
   const request = calculateExamStructure(input);
   const limits: Record<ExamPartType, number> = { multiple_choice: request.sectionCounts.partI, true_false: request.sectionCounts.partII, short_answer: request.sectionCounts.partIII };
-  const seen: string[] = [];
-  const expressions = new Map<string, number>();
-  const trueFalseSignatures = new Set<string>();
+  const identified = ensureStableExamIdentity(exam);
+  const acceptedQuestions: ExamQuestion[] = [];
+  const similarityWarnings: DuplicateFinding[] = [];
   let duplicateRemovedCount = 0;
   let invalidRemovedCount = 0;
   const rejectionReasons: Record<string, number> = {};
   const thptStyle = /THPTQG|tốt nghiệp/i.test(String(input.examStyle || ""));
-  const parts = exam.parts.map((part) => {
+  const mergedParts = new Map<ExamPartType, StructuredExam["parts"][number]>();
+  identified.parts.forEach((part) => {
+    const current = mergedParts.get(part.type);
+    if (current) current.questions.push(...part.questions);
+    else mergedParts.set(part.type, { ...part, questions: [...part.questions] });
+  });
+  let parts = [...mergedParts.values()].map((part) => {
     let questions = part.questions.map(normalizeExamQuestionMath).filter((question) => {
       const invalidReason = questionInvalidReason(question, part.type, thptStyle);
       if (invalidReason) { invalidRemovedCount += 1; rejectionReasons[invalidReason] = (rejectionReasons[invalidReason] || 0) + 1; return false; }
-      const stem = normalizedStem(question.stem);
+      const duplicate = acceptedQuestions.map((existing) => compareExamQuestions(existing, question)).find(Boolean);
+      if (duplicate?.confidence === "exact" || duplicate?.confidence === "high") { duplicateRemovedCount += 1; return false; }
+      if (duplicate?.confidence === "possible") similarityWarnings.push(duplicate);
       const expression = coreExpression(question.stem);
-      const statementSignature = part.type === "true_false" ? question.trueFalseItems?.map((item) => normalizedStem(item.text)).join("|") || "" : "";
-      if (statementSignature && trueFalseSignatures.has(statementSignature)) { duplicateRemovedCount += 1; return false; }
-      if (seen.some((existing) => existing === stem || nearDuplicate(existing, stem)) || (expression && (expressions.get(expression) || 0) >= 1)) { duplicateRemovedCount += 1; return false; }
-      seen.push(stem);
-      if (statementSignature) trueFalseSignatures.add(statementSignature);
-      if (expression) expressions.set(expression, (expressions.get(expression) || 0) + 1);
+      if (expression) {
+        const sameExpression = acceptedQuestions.find((existing) => coreExpression(existing.stem) === expression);
+        if (sameExpression) similarityWarnings.push({ firstQuestionId: sameExpression.id, secondQuestionId: question.id, confidence: "possible", reason: "same_reasoning", score: 0.65 });
+      }
+      acceptedQuestions.push(question);
       return true;
     }).slice(0, limits[part.type]).map((question, index) => ({ ...question, number: index + 1 }));
     if (part.type === "multiple_choice") questions = balanceMultipleChoiceAnswers(questions);
@@ -119,6 +132,7 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
       }
     }
   }
+  parts = normalizeExamScores(parts, request.totalScore);
   const scoringGuide = parts.flatMap((part) => part.questions.map((question) => `${part.title} - Câu ${question.number}: ${question.answer}${question.explanation ? ` — ${question.explanation}` : ""}`)).join("\n");
   const generated = {
     partI: parts.find((part) => part.type === "multiple_choice")?.questions.length || 0,
@@ -128,6 +142,6 @@ export function sanitizeExamStructure(exam: StructuredExam, input: Partial<ExamI
   const missing = { partI: Math.max(0, request.sectionCounts.partI - generated.partI), partII: Math.max(0, request.sectionCounts.partII - generated.partII), partIII: Math.max(0, request.sectionCounts.partIII - generated.partIII) };
   const finalCount = generated.partI + generated.partII + generated.partIII;
   const countSummary = `Cấu trúc đã kiểm tra: PHẦN I ${generated.partI}/${request.sectionCounts.partI}; PHẦN II ${generated.partII}/${request.sectionCounts.partII}; PHẦN III ${generated.partIII}/${request.sectionCounts.partIII}; tổng ${finalCount}/${request.requestedQuestionCount}.`;
-  const sanitized = { ...exam, parts, teacherOnly: { ...exam.teacherOnly, scoringGuide, matrix: [normalizeTeacherMathNotation(exam.teacherOnly.matrix), countSummary].filter(Boolean).join("\n"), specification: [normalizeTeacherMathNotation(exam.teacherOnly.specification), countSummary].filter(Boolean).join("\n"), notes: [normalizeTeacherMathNotation(exam.teacherOnly.notes), countSummary].filter(Boolean).join("\n") } };
-  return { exam: sanitized, request, generated, missing, finalCount, complete: missing.partI + missing.partII + missing.partIII === 0, duplicateRemovedCount, invalidRemovedCount, rejectionReasons };
+  const sanitized = ensureStableExamIdentity({ ...identified, metadata: { ...identified.metadata, totalScore: request.totalScore, requestedSectionCounts: request.sectionCounts }, parts, teacherOnly: { ...identified.teacherOnly, scoringGuide, matrix: [normalizeTeacherMathNotation(identified.teacherOnly.matrix), countSummary].filter(Boolean).join("\n"), specification: [normalizeTeacherMathNotation(identified.teacherOnly.specification), countSummary].filter(Boolean).join("\n"), notes: [normalizeTeacherMathNotation(identified.teacherOnly.notes), countSummary].filter(Boolean).join("\n") } });
+  return { exam: sanitized, request, generated, missing, finalCount, complete: missing.partI + missing.partII + missing.partIII === 0, duplicateRemovedCount, invalidRemovedCount, rejectionReasons, similarityWarnings };
 }

@@ -1,5 +1,8 @@
 import type { ExamPartType, ExamQuestion, StructuredExam } from "@/lib/exam-types";
 import type { QuestionDifficulty } from "@/lib/types";
+import { findExamDuplicates } from "@/lib/exam/duplicate-detection";
+import { duplicateExamQuestionIds } from "@/lib/exam/identity";
+import { validateVisualDependency } from "@/lib/exam/exam-quality";
 import {
   EXAM_AUDIT_VERSION,
   type ExamAuditConfig,
@@ -42,15 +45,6 @@ export function examContentHash(exam: StructuredExam) {
 function issueId(code: string, questionId?: string, suffix = "") {
   return `${code}:${questionId || "exam"}${suffix ? `:${suffix}` : ""}`;
 }
-
-function hasVisual(question: ExamQuestion) {
-  return Boolean(
-    question.visuals?.length
-    || /!\[[^\]]*]\([^)]*\)|<svg\b|\\begin\{(?:tikzpicture|tabular)\}|(?:^|\n)\s*\|.+\|/i.test(question.stem),
-  );
-}
-
-const visualReference = /(?:dựa\s+vào\s+(?:đồ\s*thị|hình|bảng)|đồ\s*thị\s+dưới\s+đây|hình\s+vẽ\s+bên|bảng\s+biến\s+thiên\s+sau|bảng\s+số\s+liệu\s+dưới\s+đây|quan\s+sát\s+hình|theo\s+sơ\s+đồ\s+sau)/i;
 
 function tokens(value: string, stripNumbers = false) {
   return new Set(normalizeAuditText(value, stripNumbers).split(" ").filter((token) => token.length > 1 && !["cho", "biet", "hay", "tinh", "cau", "phat", "bieu"].includes(token)));
@@ -107,7 +101,7 @@ function simpleExpressionValue(stem: string) {
   const match = stem.match(/(?:tính|giá trị của)\s+([+\-]?\d+(?:[.,]\d+)?(?:\s*[+\-*/]\s*[+\-]?\d+(?:[.,]\d+)?){1,5})(?:\s|\?|$)/i);
   if (!match) return null;
   const expression = match[1].replace(/,/g, ".").replace(/\s+/g, "");
-  const values = expression.match(/[+\-]?\d+(?:\.\d+)?|[+\-*/]/g);
+  const values = expression.match(/\d+(?:\.\d+)?|[+\-*/]/g);
   if (!values || values.join("") !== expression) return null;
   const numbers: number[] = [];
   const operators: string[] = [];
@@ -125,10 +119,14 @@ function simpleExpressionValue(stem: string) {
     return true;
   };
   let expectNumber = true;
+  let unarySign = 1;
   for (const token of values) {
-    if (/^[+\-]?\d/.test(token) && expectNumber) {
-      numbers.push(Number(token));
+    if (/^\d/.test(token) && expectNumber) {
+      numbers.push(unarySign * Number(token));
+      unarySign = 1;
       expectNumber = false;
+    } else if ((token === "+" || token === "-") && expectNumber) {
+      unarySign = token === "-" ? -unarySign : unarySign;
     } else if (/^[+\-*/]$/.test(token) && !expectNumber) {
       while (operators.length && precedence(operators.at(-1) || "") >= precedence(token)) if (!apply()) return null;
       operators.push(token);
@@ -169,7 +167,9 @@ function auditQuestionBasics(question: ExamQuestion, issues: ExamAuditIssue[]) {
   const combined = [question.stem, question.answer, question.explanation, ...Object.values(question.options || {}), ...(question.trueFalseItems || []).map((item) => item.text)].join("\n");
   if (notationProblems(combined)) pushQuestionIssue(issues, question, "malformed_notation", "warning", "Ký hiệu toán học cần chuẩn hóa", "Phát hiện cú pháp như sqrt(...), infinity, <=, >= hoặc dấu LaTeX chưa cân bằng.", "Xem trước và chuẩn hóa ký hiệu mà không đổi ý nghĩa câu hỏi.", { canAutoFix: true, fixKind: "normalize_notation", currentValue: combined.slice(0, 500) });
   if (/\s{2,}|[ \t]+\n/.test(combined)) pushQuestionIssue(issues, question, "duplicate_whitespace", "info", "Khoảng trắng chưa gọn", "Nội dung có khoảng trắng lặp hoặc khoảng trắng thừa cuối dòng.", "Chuẩn hóa khoảng trắng.", { canAutoFix: true, fixKind: "normalize_notation" });
-  if (visualReference.test(question.stem) && !hasVisual(question)) pushQuestionIssue(issues, question, "missing_visual", "error", "Thiếu hình hoặc bảng được tham chiếu", "Câu hỏi tham chiếu đến hình hoặc bảng nhưng chưa có dữ liệu trực quan.", "Đính kèm đúng hình, đồ thị, bảng, TikZ, SVG hoặc sửa lại câu hỏi. Không thể tự tạo dữ liệu còn thiếu.");
+  const dependency = validateVisualDependency(question);
+  if (!dependency.valid) pushQuestionIssue(issues, question, "missing_visual", "error", "Thiếu nội dung được tham chiếu", dependency.reason === "missing_passage_asset" ? "Câu hỏi tham chiếu đoạn văn hoặc bài đọc nhưng nội dung nguồn chưa được đính kèm." : dependency.reason === "missing_table_asset" ? "Câu hỏi tham chiếu bảng nhưng dữ liệu bảng chưa được đính kèm." : "Câu hỏi tham chiếu đến hình hoặc biểu đồ nhưng chưa có dữ liệu trực quan.", "Đính kèm đúng hình, bảng hoặc đoạn đọc; hoặc sửa lại câu hỏi. Không tự tạo dữ liệu còn thiếu.");
+  if (/phương án nhiễu|nội dung câu hỏi|điền nội dung|placeholder|lorem ipsum|\[chèn[^\]]*\]/i.test(combined)) pushQuestionIssue(issues, question, "placeholder_content", "error", "Còn nội dung giữ chỗ", "Câu hỏi hoặc phương án còn văn bản mẫu chưa thể dùng cho học sinh.", "Thay toàn bộ nội dung giữ chỗ bằng dữ liệu hoàn chỉnh.");
   if (/\.{3,}|_{3,}|\[điền[^\]]*\]/i.test(question.stem)) pushQuestionIssue(issues, question, "missing_data", "warning", "Có dữ liệu chưa hoàn chỉnh", "Đề bài còn chỗ trống hoặc ký hiệu giữ chỗ nên có thể chưa đủ dữ liệu để giải.", "Bổ sung dữ liệu và điều kiện còn thiếu.", { confidence: "high" });
 }
 
@@ -255,17 +255,14 @@ function auditShortAnswers(questions: ExamQuestion[], issues: ExamAuditIssue[], 
 }
 
 function auditDuplicates(exam: StructuredExam, issues: ExamAuditIssue[]) {
-  const questions = exam.parts.flatMap((part) => part.questions);
-  for (let left = 0; left < questions.length; left += 1) for (let right = left + 1; right < questions.length; right += 1) {
-    const first = questions[left];
-    const second = questions[right];
-    const exact = normalizeAuditText(first.stem) === normalizeAuditText(second.stem);
-    const close = !exact && first.stem.length > 35 && similarity(first.stem, second.stem) >= 0.84;
-    const numberVariant = !exact && first.stem.length > 35 && normalizeAuditText(first.stem, true) === normalizeAuditText(second.stem, true);
-    if (!exact && !close && !numberVariant) continue;
-    const code = exact ? "duplicate_question" : numberVariant ? "number_variant_duplicate" : "near_duplicate_question";
-    issues.push({ id: issueId(code, second.id, first.id), code, severity: exact ? "error" : "warning", questionId: second.id, questionNumber: second.number, section: sectionLabels[second.part], title: exact ? "Câu hỏi bị trùng" : "Câu hỏi gần trùng", description: `${sectionLabels[first.part]} Câu ${first.number} và ${sectionLabels[second.part]} Câu ${second.number} có nội dung ${exact ? "giống nhau" : numberVariant ? "chỉ thay đổi số liệu nhỏ" : "rất tương tự"}.`, suggestedFix: "Giáo viên chọn giữ một câu hoặc thay bằng câu khác; không tự xóa để tránh thiếu số lượng.", canAutoFix: false, confidence: exact ? "high" : "medium" });
-  }
+  const questions = new Map(exam.parts.flatMap((part) => part.questions).map((question) => [question.id, question]));
+  findExamDuplicates(exam).forEach((finding) => {
+    const first = questions.get(finding.firstQuestionId); const second = questions.get(finding.secondQuestionId);
+    if (!first || !second) return;
+    const blocking = finding.confidence === "exact" || finding.confidence === "high";
+    const code = finding.confidence === "exact" ? "duplicate_question" : finding.confidence === "high" ? "near_duplicate_question" : "possible_similarity";
+    issues.push({ id: issueId(code, second.id, first.id), code, severity: blocking ? "error" : "warning", questionId: second.id, questionNumber: second.number, section: sectionLabels[second.part], title: finding.confidence === "exact" ? "Câu hỏi bị trùng" : finding.confidence === "high" ? "Câu hỏi gần trùng với độ tin cậy cao" : "Hai câu có thể tương tự", description: `${sectionLabels[first.part]} Câu ${first.number} và ${sectionLabels[second.part]} Câu ${second.number} được phát hiện theo tiêu chí ${finding.reason}.`, suggestedFix: "Giáo viên rà soát và chỉ thay câu khi nội dung thực sự trùng; không tự xóa cảnh báo mức có thể tương tự.", canAutoFix: false, confidence: finding.confidence === "possible" ? "medium" : "high" });
+  });
 }
 
 function auditCognitiveDistribution(exam: StructuredExam, config: ExamAuditConfig, issues: ExamAuditIssue[]) {
@@ -294,6 +291,8 @@ export function auditStructuredExam(exam: StructuredExam, config: ExamAuditConfi
     partsByType.set(part.type, [...(partsByType.get(part.type) || []), part]);
   });
   const expectedByType: Record<ExamPartType, number> | undefined = counts ? { multiple_choice: counts.partI, true_false: counts.partII, short_answer: counts.partIII } : undefined;
+
+  duplicateExamQuestionIds(exam).forEach((id) => issues.push({ id: issueId("duplicate_question_id", id), code: "duplicate_question_id", severity: "error", title: "Mã câu hỏi bị trùng", description: `Mã ổn định “${id}” xuất hiện nhiều lần hoặc bị trống.`, suggestedFix: "Cấp lại mã duy nhất cho câu bị xung đột trước khi lưu hoặc xuất.", canAutoFix: false }));
 
   if (expectedByType) {
     const expectedSectionCount = Object.values(expectedByType).filter((count) => count > 0).length;

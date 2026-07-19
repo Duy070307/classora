@@ -28,7 +28,8 @@ const safeInvalid = calculateExamStructure({ multipleChoiceCount: "x", trueFalse
 assert.equal(safeInvalid.requestedQuestionCount, 0);
 assert.equal(safeInvalid.totalScore, 10);
 assert.ok((safeInvalid.warnings || []).length >= 3);
-const mc = Array.from({ length: 12 }, (_, index) => ({ ...question(index), stem: `Câu hàm số số ${index + 1}: xét biểu thức y=x^3-${index + 1}x.`, correctAnswer: ["A", "B", "C", "D"][index % 4] }));
+const mcSkills = ["tập xác định", "đạo hàm", "đồng biến", "nghịch biến", "điểm cực đại", "điểm cực tiểu", "giá trị lớn nhất", "giá trị nhỏ nhất", "tiệm cận đứng", "tiệm cận ngang", "tương giao", "hệ số góc tiếp tuyến"];
+const mc = Array.from({ length: 12 }, (_, index) => ({ ...question(index), stem: `Câu hàm số số ${index + 1}: xác định ${mcSkills[index]} cho dữ kiện riêng của bài.`, correctAnswer: ["A", "B", "C", "D"][index % 4] }));
 const tfSkills = ["đơn điệu của đa thức bậc ba", "tiệm cận của hàm phân thức", "cực trị từ bảng biến thiên", "tương giao giữa đồ thị và đường thẳng"];
 const tf = Array.from({ length: 4 }, (_, index) => ({ id: `tf${index}`, stem: `Xét các khẳng định về ${tfSkills[index]}.`, statements: [0, 1, 2, 3].map((item) => ({ text: `Khẳng định ${item + 1} liên quan đến ${tfSkills[index]}.`, answer: item % 2 === 0 })), answer: `a Đúng; b Sai; c Đúng; d Sai ${index}`, explanation: `Phân tích ${tfSkills[index]} bằng công cụ phù hợp.`, score: 1, difficulty: "Thông hiểu", topic: "hàm số" }));
 const shortSkills = ["Tính f(2) với hàm số đã cho", "Tính giá trị cực đại của hàm số", "Tìm số đường tiệm cận", "Tìm số nghiệm của phương trình", "Tính tổng hoành độ các giao điểm", "Tính hệ số góc tiếp tuyến"];

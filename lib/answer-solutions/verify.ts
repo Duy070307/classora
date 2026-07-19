@@ -17,14 +17,14 @@ function numericExpected(question: ExamQuestion) {
   return extractDeterministicCalculation(question.stem);
 }
 
-function verifyQuestion(question: ExamQuestion, sectionId: string, detailLevel: SolutionDetailLevel): QuestionSolution {
+export function verifyQuestionDeterministically(question: ExamQuestion, sectionId: string = question.part, detailLevel: SolutionDetailLevel = "standard"): QuestionSolution {
   const hash = questionSolutionHash(question);
   if (missingVisual(question)) return { questionId: question.id, questionNumber: question.number, sectionId, questionType: question.part, currentAnswer: question.answer, answerStatus: "uncertain", confidence: "low", conciseAnswer: String(question.answer), detailedSolution: "Không thể tạo lời giải chắc chắn vì câu hỏi đang thiếu hình hoặc dữ liệu liên quan.", warnings: ["Thiếu hình hoặc dữ liệu được tham chiếu."], contentHash: hash };
   if (question.part === "true_false") {
     const statements = question.trueFalseItems || [];
     const concise = statements.map((item) => `${item.label}) ${item.answer ? "Đúng" : "Sai"}`).join("; ");
     const structuralMatch = statements.length === 4 && statements.every((item) => typeof item.answer === "boolean");
-    return { questionId: question.id, questionNumber: question.number, sectionId, questionType: question.part, currentAnswer: question.answer, verifiedAnswer: structuralMatch ? concise : undefined, answerStatus: structuralMatch ? "not_verified" : "uncertain", confidence: structuralMatch ? "medium" : "low", conciseAnswer: concise || String(question.answer), detailedSolution: detail(question.explanation, detailLevel, "Giáo viên cần đối chiếu từng mệnh đề với dữ kiện."), statementExplanations: statements.map((item, index) => ({ statementId: `${question.id}:${stableHash(item.text)}`, statementIndex: index, value: item.answer, explanation: question.explanation || "Cần kiểm tra độc lập theo dữ kiện của mệnh đề.", confidence: question.explanation ? "medium" : "low" })), warnings: structuralMatch ? ["Chân trị hiện tại mới được kiểm tra tính nhất quán cấu trúc, chưa phải xác minh ngữ nghĩa độc lập."] : ["Cấu trúc mệnh đề Đúng/Sai chưa hợp lệ."], contentHash: hash };
+    return { questionId: question.id, questionNumber: question.number, sectionId, questionType: question.part, currentAnswer: question.answer, verifiedAnswer: structuralMatch ? concise : undefined, answerStatus: structuralMatch ? "not_verified" : "uncertain", confidence: structuralMatch ? "medium" : "low", conciseAnswer: concise || String(question.answer), detailedSolution: detail(question.explanation, detailLevel, "Giáo viên cần đối chiếu từng mệnh đề với dữ kiện."), statementExplanations: statements.map((item, index) => ({ statementId: item.id || `${question.id}:${stableHash(item.text)}`, statementIndex: index, value: item.answer, explanation: question.explanation || "Cần kiểm tra độc lập theo dữ kiện của mệnh đề.", confidence: question.explanation ? "medium" : "low" })), warnings: structuralMatch ? ["Chân trị hiện tại mới được kiểm tra tính nhất quán cấu trúc, chưa phải xác minh ngữ nghĩa độc lập."] : ["Cấu trúc mệnh đề Đúng/Sai chưa hợp lệ."], contentHash: hash };
   }
   const expected = numericExpected(question);
   if (question.part === "multiple_choice") {
@@ -60,7 +60,7 @@ export function buildDeterministicSolutionSet(exam: StructuredExam, options: { e
   const questions = exam.parts.flatMap((part) => part.questions.map((question) => {
     const cached = previous.get(question.id);
     if (cached?.contentHash === questionSolutionHash(question) && options.previous?.metadata.detailLevel === detailLevel) { hits += 1; return cached; }
-    return verifyQuestion(question, part.type, detailLevel);
+    return verifyQuestionDeterministically(question, part.type, detailLevel);
   }));
   const summary = solutionSummary(questions, hits);
   return { examId: options.examId, examHash: examSolutionHash(exam), generatedAt: new Date().toISOString(), verificationStatus: summary.mismatchCount ? "has_errors" : summary.uncertainCount ? "needs_review" : summary.verifiedCount === summary.totalQuestions ? "verified" : "not_checked", questions, summary, metadata: { detailLevel, solutionVersion: "1.0" } };
